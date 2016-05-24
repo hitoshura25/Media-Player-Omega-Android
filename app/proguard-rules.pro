@@ -20,3 +20,6 @@
 -keep class retrofit2.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+# Parcel library
+-keep class **$$Parcelable { *; }

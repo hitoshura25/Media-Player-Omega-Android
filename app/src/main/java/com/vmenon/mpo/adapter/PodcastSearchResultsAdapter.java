@@ -15,61 +15,66 @@ import java.util.List;
 
 public class PodcastSearchResultsAdapter extends
         RecyclerView.Adapter<PodcastSearchResultsAdapter.ViewHolder> {
-    private List<Podcast> mDataset;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    public interface PodcastSelectedListener {
+        void onPodcastSelected(Podcast podcast);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        private TextView mTextView;
+        private TextView nameText;
         private ImageView imageView;
-        private View rootView;
+        private Podcast podcast;
 
         public ViewHolder(View v) {
             super(v);
-            mTextView = (TextView) v.findViewById(R.id.podcastName);
+            nameText = (TextView) v.findViewById(R.id.podcastName);
             imageView = (ImageView) v.findViewById(R.id.podcastImage);
-            rootView = v;
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    private List<Podcast> podcasts;
+    private PodcastSelectedListener listener;
+
     public PodcastSearchResultsAdapter(List<Podcast> myDataset) {
-        mDataset = myDataset;
+        podcasts = myDataset;
     }
 
-    // Create new views (invoked by the layout manager)
+    public void setListener(PodcastSelectedListener listener) {
+        this.listener = listener;
+    }
+
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.podcast_result, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        ViewHolder vh = new ViewHolder(v);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_result, parent,
+                false);
+        final ViewHolder vh = new ViewHolder(v);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null && vh.podcast != null) {
+                    listener.onPodcastSelected(vh.podcast);
+                }
+            }
+        });
+
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        Podcast podcast = mDataset.get(position);
-        holder.mTextView.setText(podcast.name);
+        Podcast podcast = podcasts.get(position);
+        holder.podcast = podcast;
+        holder.nameText.setText(podcast.name);
 
-        Glide.with(holder.rootView.getContext())
+        Glide.with(holder.itemView.getContext())
                 .load(podcast.artworkUrl)
                 .centerCrop()
-                .placeholder(R.drawable.ic_search_white_48dp)
                 .crossFade()
                 .into(holder.imageView);
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return podcasts.size();
     }
 }

@@ -14,13 +14,16 @@ import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 import com.vmenon.mpo.service.ServiceFactory;
 
+import org.parceler.Parcels;
+
 import java.util.List;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PodcastSearchResultsActivity extends AppCompatActivity {
+public class PodcastSearchResultsActivity extends AppCompatActivity implements
+        PodcastSearchResultsAdapter.PodcastSelectedListener {
     private MediaPlayerOmegaService service;
     private RecyclerView podcastList;
 
@@ -52,6 +55,12 @@ public class PodcastSearchResultsActivity extends AppCompatActivity {
         handleIntent(intent);
     }
 
+    @Override
+    public void onPodcastSelected(Podcast podcast) {
+        Intent intent = new Intent(this, PodcastDetailsActivity.class);
+        intent.putExtra(PodcastDetailsActivity.EXTRA_PODCAST, Parcels.wrap(podcast));
+        startActivity(intent);
+    }
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -75,10 +84,12 @@ public class PodcastSearchResultsActivity extends AppCompatActivity {
                         @Override
                         public final void onNext(List<Podcast> response) {
                             PodcastSearchResultsAdapter adapter = new PodcastSearchResultsAdapter(response);
+                            adapter.setListener(PodcastSearchResultsActivity.this);
                             podcastList.setAdapter(adapter);
                         }
                     });
         }
     }
+
 
 }
