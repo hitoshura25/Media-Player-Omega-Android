@@ -1,64 +1,39 @@
 package com.vmenon.mpo.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.vmenon.mpo.R;
-import com.vmenon.mpo.api.Podcast;
-import com.vmenon.mpo.service.MediaPlayerOmegaService;
-import com.vmenon.mpo.service.ServiceFactory;
-
-import java.util.Collection;
-
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-
-    private MediaPlayerOmegaService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        service = ServiceFactory.newInstance();
-
-        View addPodcastButton = findViewById(R.id.addPodcastButton);
-        addPodcastButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAddPodcast();
-            }
-        });
     }
 
     @Override
-    public void setTitle(int titleId) {
-        super.setTitle(titleId);
-    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
 
-    public void onAddPodcast() {
-        service.searchPodcasts("polygon")
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Collection<Podcast>>() {
-                    @Override
-                    public final void onCompleted() {
-                        // do nothing
-                    }
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView =
+                (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
 
-                    @Override
-                    public final void onError(Throwable e) {
-                        Log.e("Error getting podcasts", e.getMessage());
-                    }
-
-                    @Override
-                    public final void onNext(Collection<Podcast> response) {
-
-                    }
-                });
+        return true;
     }
 }

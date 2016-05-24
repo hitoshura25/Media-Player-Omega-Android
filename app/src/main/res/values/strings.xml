@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Media Player Omega Android</string>
     <string name="podcasts">Podcasts</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search term or feed url</string>
+    <string name="podcast_search_title">%1$s podcasts</string>
 </resources>
