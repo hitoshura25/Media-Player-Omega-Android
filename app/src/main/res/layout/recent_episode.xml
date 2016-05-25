@@ -11,16 +11,60 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/episodeName"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:gravity="top"
+            android:orientation="horizontal">
 
-        <WebView
+            <ImageView
+                android:id="@+id/episodeImage"
+                android:layout_width="@dimen/episodeThumbnailSize"
+                android:layout_height="@dimen/episodeThumbnailSize"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:scaleType="centerInside"
+                android:layout_alignParentStart="true"/>
+
+            <LinearLayout
+                android:id="@+id/episodeInfoContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:orientation="vertical"
+                android:layout_toRightOf="@id/episodeImage"
+                android:layout_toLeftOf="@+id/episodeMenuButton"
+                android:layout_alignParentTop="true">
+
+                <TextView
+                    android:id="@+id/episodeName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:gravity="top"/>
+                <TextView
+                    android:id="@+id/episodeDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@id/episodeMenuButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_more_vert_black_18dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_alignParentEnd="true"/>
+
+        </RelativeLayout>
+
+        <TextView
             android:id="@+id/episodeDescription"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
     </LinearLayout>
 

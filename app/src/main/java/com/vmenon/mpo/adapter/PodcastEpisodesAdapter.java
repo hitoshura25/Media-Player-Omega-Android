@@ -1,14 +1,23 @@
 package com.vmenon.mpo.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class PodcastEpisodesAdapter extends
@@ -21,12 +30,20 @@ public class PodcastEpisodesAdapter extends
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView nameText;
         private TextView descriptionText;
+        private TextView publishedText;
+        private ImageView thumbnailImage;
+        private ImageButton menuButton;
         private Episode episode;
 
         public ViewHolder(View v) {
             super(v);
             nameText = (TextView) v.findViewById(R.id.episodeName);
             descriptionText = (TextView) v.findViewById(R.id.episodeDescription);
+            publishedText = (TextView) v.findViewById(R.id.episodeDate);
+            thumbnailImage = (ImageView) v.findViewById(R.id.episodeImage);
+            menuButton = (ImageButton) v.findViewById(R.id.episodeMenuButton);
+
+            descriptionText.setMovementMethod(new LinkMovementMethod());
         }
     }
 
@@ -55,6 +72,21 @@ public class PodcastEpisodesAdapter extends
             }
         });
 
+        vh.menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(vh.menuButton.getContext(), vh.menuButton);
+                popupMenu.inflate(R.menu.episode_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+
         return vh;
     }
 
@@ -63,7 +95,20 @@ public class PodcastEpisodesAdapter extends
         Episode episode = episodes.get(position);
         holder.episode = episode;
         holder.nameText.setText(episode.getName());
-        holder.descriptionText.setText(episode.getDescription());
+        holder.descriptionText.setText(Html.fromHtml(
+                episode.getDescription().replaceAll("(<(//)img>)|(<img.+?>)", "")));
+        holder.publishedText.setText(new SimpleDateFormat().format(
+                new Date(episode.getPublished())));
+
+        if (episode.getArtworkUrl() != null) {
+            Glide.with(holder.thumbnailImage.getContext())
+                    .load(episode.getArtworkUrl())
+                    .fitCenter()
+                    .into(holder.thumbnailImage);
+            holder.thumbnailImage.setVisibility(View.VISIBLE);
+        } else {
+            holder.thumbnailImage.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -30,6 +30,10 @@ public class Episode {
     @Expose
     long length;
 
+    @SerializedName("artworkUrl")
+    @Expose
+    String artworkUrl;
+
     /**
      * 
      * @return
@@ -136,6 +140,10 @@ public class Episode {
      */
     public void setLength(long length) {
         this.length = length;
+    }
+
+    public String getArtworkUrl() {
+        return artworkUrl;
     }
 
 }

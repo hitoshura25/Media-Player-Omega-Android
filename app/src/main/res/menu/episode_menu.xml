@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/play_episode"
+        android:title="@string/play"
+        android:icon="@android:drawable/ic_media_play"/>
+    <item android:id="@+id/download_episode"
+        android:title="@string/download"
+        android:icon="@android:drawable/ic_menu_save"/>
+</menu>

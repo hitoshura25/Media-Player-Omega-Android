@@ -1,6 +1,5 @@
 package com.vmenon.mpo.activity;
 
-import android.os.Build;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,18 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.PodcastEpisodesAdapter;
-import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.api.PodcastDetails;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
@@ -65,6 +61,16 @@ public class PodcastDetailsActivity extends AppCompatActivity implements
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
+        final View nestedScrollView = findViewById(R.id.nestedScrollView);
+        nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        nestedScrollView.setScrollY(0);
+                        nestedScrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
+                });
+
         if (savedInstanceState == null) {
             MediaPlayerOmegaService service = ServiceFactory.newInstance();
             service.getPodcastDetails(podcast.feedUrl)
@@ -106,25 +112,11 @@ public class PodcastDetailsActivity extends AppCompatActivity implements
     private void displayPodcastDetails(PodcastDetails podcastDetails) {
         descriptionText.setText(Html.fromHtml(podcastDetails.getDescription()));
         Glide.with(this).load(podcastDetails.getImageUrl()).fitCenter().into(podcastImage);
+        RecyclerView episodeList = (RecyclerView) findViewById(R.id.episodesList);
 
-        for (int i = 0; i < podcastDetails.getEpisodes().size() && i < 10; i++) {
-            Episode episode = podcastDetails.getEpisodes().get(i);
-            View view = LayoutInflater.from(this).inflate(R.layout.recent_episode, detailsContainer,
-                    false);
-            TextView episodeNameText = (TextView) view.findViewById(R.id.episodeName);
-            WebView episodeDescriptionText = (WebView) view.findViewById(R.id.episodeDescription);
-            episodeNameText.setText(episode.getName());
-            episodeDescriptionText.loadData(episode.getDescription(), "text/html", "UTF-8");
-            episodeDescriptionText.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    view.setBackgroundColor(0x00000000);
-                    if (Build.VERSION.SDK_INT >= 11) {
-                        view.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-                    }
-                }
-            });
-            detailsContainer.addView(view);
-        }
+        episodeList.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        episodeList.setLayoutManager(layoutManager);
+        episodeList.setAdapter(new PodcastEpisodesAdapter(podcastDetails.getEpisodes()));
     }
 }
