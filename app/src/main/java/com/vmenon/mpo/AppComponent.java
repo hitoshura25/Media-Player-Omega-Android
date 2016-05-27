@@ -1,5 +1,6 @@
 package com.vmenon.mpo;
 
+import com.vmenon.mpo.activity.DownloadsActivity;
 import com.vmenon.mpo.activity.PodcastDetailsActivity;
 import com.vmenon.mpo.activity.PodcastSearchResultsActivity;
 import com.vmenon.mpo.core.BackgroundService;
@@ -12,6 +13,7 @@ import dagger.Component;
 @Component(modules = {AppModule.class})
 public interface AppComponent {
     void inject(BackgroundService backgroundService);
+    void inject(DownloadsActivity activity);
     void inject(PodcastDetailsActivity activity);
     void inject(PodcastSearchResultsActivity activity);
 }

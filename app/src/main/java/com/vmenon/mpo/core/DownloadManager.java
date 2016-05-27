@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +43,10 @@ public class DownloadManager {
 
             }
         };
+    }
+
+    public Collection<Download> getDownloads() {
+        return currentDownloads.values();
     }
 
     public void queueDownload(final Download download) {
