@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.core.BackgroundService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,11 +48,13 @@ public class PodcastEpisodesAdapter extends
         }
     }
 
+    private final String showName;
     private List<Episode> episodes;
     private EpisodeSelectedListener listener;
 
-    public PodcastEpisodesAdapter(List<Episode> myDataset) {
-        episodes = myDataset;
+    public PodcastEpisodesAdapter(final String showName, final List<Episode> myDataset) {
+        this.showName = showName;
+        this.episodes = myDataset;
     }
 
     public void setListener(EpisodeSelectedListener listener) {
@@ -80,6 +83,13 @@ public class PodcastEpisodesAdapter extends
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        if (R.id.download_episode == item.getItemId()) {
+                            BackgroundService.startDownload(vh.menuButton.getContext(),
+                                    showName,
+                                    vh.episode.getName(),
+                                    vh.episode.getDownloadUrl());
+                        }
+
                         return false;
                     }
                 });

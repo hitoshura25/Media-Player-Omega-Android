@@ -2,7 +2,6 @@ package com.vmenon.mpo.activity;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,28 +11,29 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.PodcastSearchResultsAdapter;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
-import com.vmenon.mpo.service.ServiceFactory;
 
 import org.parceler.Parcels;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PodcastSearchResultsActivity extends AppCompatActivity implements
+public class PodcastSearchResultsActivity extends BaseActivity implements
         PodcastSearchResultsAdapter.PodcastSelectedListener {
-    private MediaPlayerOmegaService service;
+
+    @Inject
+    protected MediaPlayerOmegaService service;
+
     private RecyclerView podcastList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            service = ServiceFactory.newInstance();
-        }
+        getAppComponent().inject(this);
 
         setContentView(R.layout.activity_podcast_search_results);
 

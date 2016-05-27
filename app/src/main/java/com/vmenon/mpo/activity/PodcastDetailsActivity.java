@@ -2,7 +2,7 @@ package com.vmenon.mpo.activity;
 
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,17 +21,21 @@ import com.vmenon.mpo.adapter.PodcastEpisodesAdapter;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.api.PodcastDetails;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
-import com.vmenon.mpo.service.ServiceFactory;
 
 import org.parceler.Parcels;
+
+import javax.inject.Inject;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PodcastDetailsActivity extends AppCompatActivity implements
+public class PodcastDetailsActivity extends BaseActivity implements
         AppBarLayout.OnOffsetChangedListener {
     public final static String EXTRA_PODCAST = "extraPodcast";
+
+    @Inject
+    protected MediaPlayerOmegaService service;
 
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView descriptionText;
@@ -45,6 +49,8 @@ public class PodcastDetailsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAppComponent().inject(this);
+
         setContentView(R.layout.activity_podcast_details);
 
         descriptionText = (TextView) findViewById(R.id.podcastDescription);
@@ -61,18 +67,7 @@ public class PodcastDetailsActivity extends AppCompatActivity implements
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
-        final View nestedScrollView = findViewById(R.id.nestedScrollView);
-        nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        nestedScrollView.setScrollY(0);
-                        nestedScrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    }
-                });
-
         if (savedInstanceState == null) {
-            MediaPlayerOmegaService service = ServiceFactory.newInstance();
             service.getPodcastDetails(podcast.feedUrl)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -117,6 +112,34 @@ public class PodcastDetailsActivity extends AppCompatActivity implements
         episodeList.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         episodeList.setLayoutManager(layoutManager);
-        episodeList.setAdapter(new PodcastEpisodesAdapter(podcastDetails.getEpisodes()));
+        episodeList.setAdapter(new PodcastEpisodesAdapter(podcast.name, podcastDetails.getEpisodes()));
+
+        final View nestedScrollView = findViewById(R.id.nestedScrollView);
+        nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        nestedScrollView.setScrollY(0);
+                        nestedScrollView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    }
+                });
+
+        final View.OnClickListener undoListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MPO", "User clicked undo");
+            }
+        };
+
+        final View subscribeButton = findViewById(R.id.subscribeButton);
+        subscribeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(detailsContainer, "You have subscibed to this podcast",
+                        Snackbar.LENGTH_LONG)
+                        .setAction("UNDO", undoListener)
+                        .show();
+            }
+        });
     }
 }

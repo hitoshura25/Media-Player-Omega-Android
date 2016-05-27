@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".MPOApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -39,6 +40,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
+
+        <service
+            android:name=".core.BackgroundService"
+            android:exported="false"/>
+
+        <receiver android:name=".core.receiver.AlarmReceiver"></receiver>
+
+        <receiver android:name=".core.receiver.BootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
