@@ -6,13 +6,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.vmenon.mpo.event.DownloadUpdateEvent;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -26,33 +28,48 @@ public class DownloadManager {
     private static final int KEEP_ALIVE_TIME = 1;
     private static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
 
+    private static final int STATE_UPDATE = 1;
+
     private final Handler handler;
     private final BlockingQueue<Runnable> workQueue;
     private final ThreadPoolExecutor threadPoolExecutor;
     private final Context context;
     private final Map<String, Download> currentDownloads = new ConcurrentHashMap<>();
 
-    public DownloadManager(Context context) {
+    protected final EventBus eventBus;
+
+    public DownloadManager(final Context context, final EventBus eventBus) {
         this.context = context;
+        this.eventBus = eventBus;
+
         workQueue = new LinkedBlockingQueue<>();
         threadPoolExecutor = new ThreadPoolExecutor(NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME,
                 KEEP_ALIVE_TIME_UNIT, workQueue);
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-
+                switch (msg.what) {
+                    case STATE_UPDATE:
+                        DownloadUpdateEvent event = (DownloadUpdateEvent) msg.obj;
+                        Log.d("MPO", "got update: " + event.download.getProgress());
+                        eventBus.send(event);
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                }
             }
         };
     }
 
-    public Collection<Download> getDownloads() {
-        return currentDownloads.values();
+    public List<Download> getDownloads() {
+        return new ArrayList<>(currentDownloads.values());
     }
 
     public void queueDownload(final Download download) {
         threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
                 currentDownloads.put(download.getUrl(), download);
 
                 InputStream input = null;
@@ -69,10 +86,21 @@ public class DownloadManager {
 
                     byte data[] = new byte[1024];
                     int count;
+                    long lastPost = 0;
+
                     while ((count = input.read(data)) != -1) {
                         download.addProgress(count);
                         output.write(data, 0, count);
+                        DownloadUpdateEvent downloadUpdateEvent = new DownloadUpdateEvent(download);
                         Log.d("MPO", "Progress: " + download.getProgress() + "/" + download.getTotal());
+
+                        // only post message every so often to avoid too many ui updates
+                        if (System.currentTimeMillis() - lastPost > 3000) {
+                            Message completeMessage =
+                                    handler.obtainMessage(STATE_UPDATE, downloadUpdateEvent);
+                            completeMessage.sendToTarget();
+                            lastPost = System.currentTimeMillis();
+                        }
                     }
 
                     output.flush();
@@ -100,5 +128,4 @@ public class DownloadManager {
             }
         });
     }
-
 }

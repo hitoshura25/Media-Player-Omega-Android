@@ -3,6 +3,7 @@ package com.vmenon.mpo;
 import android.app.Application;
 
 import com.vmenon.mpo.core.DownloadManager;
+import com.vmenon.mpo.core.EventBus;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import javax.inject.Singleton;
@@ -16,9 +17,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class AppModule {
     Application application;
+    EventBus eventBus;
 
     public AppModule(Application application) {
         this.application = application;
+        this.eventBus = new EventBus();
     }
 
     @Provides
@@ -42,6 +45,12 @@ public class AppModule {
     @Provides
     @Singleton
     DownloadManager provideDownloadManager() {
-        return new DownloadManager(application.getApplicationContext());
+        return new DownloadManager(application.getApplicationContext(), eventBus);
+    }
+
+    @Provides
+    @Singleton
+    EventBus provideEventBus() {
+        return eventBus;
     }
 }
