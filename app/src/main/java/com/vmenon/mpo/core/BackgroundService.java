@@ -9,10 +9,14 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.vmenon.mpo.MPOApplication;
+import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.core.receiver.AlarmReceiver;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import org.parceler.Parcels;
+
+import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,6 +35,9 @@ public class BackgroundService extends IntentService {
 
     @Inject
     protected DownloadManager downloadManager;
+
+    @Inject
+    protected SubscriptionDao subscriptionDao;
 
     public static void initialize(final Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, 0);
@@ -82,6 +89,12 @@ public class BackgroundService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (ACTION_UPDATE.equals(intent.getAction())) {
             Log.d("MPO", "Calling update...");
+            List<Podcast> podcasts = subscriptionDao.notUpdatedInLast(1000 * 60 * 5);
+            for (Podcast podcast : podcasts) {
+                Log.d("MPO", "Got saved podcast: " + podcast.name + ", " + podcast.id);
+                podcast.lastUpdate = new Date().getTime();
+                subscriptionDao.save(podcast);
+            }
         } else if (ACTION_DOWNLOAD.equals(intent.getAction())) {
             Log.d("MPO", "Downloading...");
             final Download download = Parcels.unwrap(intent.getParcelableExtra(EXTRA_DOWNLOAD));

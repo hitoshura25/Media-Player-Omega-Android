@@ -12,6 +12,11 @@ public class MPOApplication extends Application {
                 new AppModule((this))).build();
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
+
     public AppComponent getAppComponent() {
         return appComponent;
     }

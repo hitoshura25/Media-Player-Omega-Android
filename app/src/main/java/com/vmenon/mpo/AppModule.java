@@ -2,8 +2,12 @@ package com.vmenon.mpo;
 
 import android.app.Application;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.vmenon.mpo.core.DownloadManager;
 import com.vmenon.mpo.core.EventBus;
+import com.vmenon.mpo.core.SubscriptionDao;
+import com.vmenon.mpo.db.DbHelper;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import javax.inject.Singleton;
@@ -33,9 +37,10 @@ public class AppModule {
     @Provides
     @Singleton
     MediaPlayerOmegaService provideService() {
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         Retrofit retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(Constants.API_URL)
                 .build();
 
@@ -52,5 +57,11 @@ public class AppModule {
     @Singleton
     EventBus provideEventBus() {
         return eventBus;
+    }
+
+    @Provides
+    @Singleton
+    SubscriptionDao provideSubscriptionDao() {
+        return new SubscriptionDao(new DbHelper(application.getApplicationContext()));
     }
 }

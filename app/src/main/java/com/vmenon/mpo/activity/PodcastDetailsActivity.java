@@ -24,6 +24,7 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.PodcastEpisodesAdapter;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.api.PodcastDetails;
+import com.vmenon.mpo.core.SubscriptionDao;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import org.parceler.Parcels;
@@ -40,6 +41,9 @@ public class PodcastDetailsActivity extends BaseActivity implements
 
     @Inject
     protected MediaPlayerOmegaService service;
+
+    @Inject
+    protected SubscriptionDao subscriptionDao;
 
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView descriptionText;
@@ -159,6 +163,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
         subscribeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                subscriptionDao.save(podcast);
                 Snackbar.make(detailsContainer, "You have subscibed to this podcast",
                         Snackbar.LENGTH_LONG)
                         .setAction("UNDO", undoListener)

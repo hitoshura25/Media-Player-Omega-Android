@@ -29,6 +29,13 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/podcastList"
+            android:scrollbars="vertical"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
