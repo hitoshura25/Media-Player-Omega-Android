@@ -43,7 +43,7 @@ public class DownloadsActivity extends BaseActivity {
             public void call(Object event) {
                 if (event instanceof DownloadUpdateEvent) {
                     DownloadUpdateEvent downloadEvent = (DownloadUpdateEvent) event;
-                    adapter.notifyItemChanged(downloads.indexOf(downloadEvent.download));
+                    adapter.notifyItemChanged(downloads.indexOf(downloadEvent.getDownload()));
                 }
             }
         });

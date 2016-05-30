@@ -96,7 +96,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
         }
 
         if (savedInstanceState == null) {
-            service.getPodcastDetails(podcast.feedUrl)
+            service.getPodcastDetails(podcast.feedUrl, 10)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<PodcastDetails>() {

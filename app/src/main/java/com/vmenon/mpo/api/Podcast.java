@@ -35,4 +35,5 @@ public class Podcast {
     public long id = -1L;
     public String lastEpisode;
     public long lastUpdate = -1L;
+    public long lastEpisodePublished = -1L;
 }

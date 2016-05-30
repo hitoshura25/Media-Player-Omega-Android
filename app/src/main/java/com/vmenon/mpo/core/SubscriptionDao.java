@@ -3,6 +3,7 @@ package com.vmenon.mpo.core;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.db.DbHelper;
@@ -54,6 +55,25 @@ public class SubscriptionDao {
         return query(selection, selectionArgs);
     }
 
+    public void updateLastPublishedEpisode(long podcastId, long episodeDate) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED, episodeDate);
+
+        String selection = SubscriptionTable._ID + " = ?" ;
+        String[] selectionArgs = {
+                String.valueOf(podcastId)
+        };
+
+        int count = db.update(
+                SubscriptionTable.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        Log.d("MPO", count + " rows updated with last published episode date: " + episodeDate);
+    }
+
     private String[] getDefaultProject() {
         return new String[] {
                 SubscriptionTable._ID,
@@ -61,7 +81,8 @@ public class SubscriptionDao {
                 SubscriptionTable.COLUMN_FEED_URL,
                 SubscriptionTable.COLUMN_ARTWORK_URL,
                 SubscriptionTable.COLUMN_LAST_EPISODE,
-                SubscriptionTable.COLUMN_LAST_UPDATE
+                SubscriptionTable.COLUMN_LAST_UPDATE,
+                SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED
         };
     }
 
@@ -86,6 +107,8 @@ public class SubscriptionDao {
                     SubscriptionTable.COLUMN_LAST_EPISODE));
             podcast.lastUpdate = cursor.getLong(cursor.getColumnIndexOrThrow(
                     SubscriptionTable.COLUMN_LAST_UPDATE));
+            podcast.lastEpisodePublished = cursor.getLong(cursor.getColumnIndexOrThrow(
+                    SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED));
             podcasts.add(podcast);
             cursor.moveToNext();
         }

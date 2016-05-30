@@ -69,7 +69,11 @@ public class MainActivity extends BaseActivity {
                     });
         }
 
+    }
 
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.podcastList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 

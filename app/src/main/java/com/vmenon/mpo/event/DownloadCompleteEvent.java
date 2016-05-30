@@ -2,10 +2,10 @@ package com.vmenon.mpo.event;
 
 import com.vmenon.mpo.core.Download;
 
-public class DownloadUpdateEvent {
+public class DownloadCompleteEvent {
     private final Download download;
 
-    public DownloadUpdateEvent(final Download download) {
+    public DownloadCompleteEvent(final Download download) {
         this.download = download;
     }
 

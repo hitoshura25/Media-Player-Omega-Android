@@ -1,5 +1,6 @@
 package com.vmenon.mpo.service;
 
+import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.api.PodcastDetails;
 
@@ -14,5 +15,10 @@ public interface MediaPlayerOmegaService {
     Observable<List<Podcast>> searchPodcasts(@Query("keyword") final String keyword);
 
     @GET("podcastdetails")
-    Observable<PodcastDetails> getPodcastDetails(@Query("feedUrl") final String feedUrl);
+    Observable<PodcastDetails> getPodcastDetails(@Query("feedUrl") final String feedUrl,
+                                                 @Query("maxEpisodes") int maxEpisodes);
+
+    @GET("podcastupdate")
+    Observable<Episode> getPodcastUpdate(@Query("feedUrl") final String feedUrl,
+                                         @Query("publishTimestamp") long lastEpisodePublishTime);
 }

@@ -37,10 +37,13 @@ public class DownloadManager {
     private final Map<String, Download> currentDownloads = new ConcurrentHashMap<>();
 
     protected final EventBus eventBus;
+    protected final SubscriptionDao subscriptionDao;
 
-    public DownloadManager(final Context context, final EventBus eventBus) {
+    public DownloadManager(final Context context, final EventBus eventBus,
+                           final SubscriptionDao subscriptionDao) {
         this.context = context;
         this.eventBus = eventBus;
+        this.subscriptionDao = subscriptionDao;
 
         workQueue = new LinkedBlockingQueue<>();
         threadPoolExecutor = new ThreadPoolExecutor(NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME,
@@ -51,7 +54,7 @@ public class DownloadManager {
                 switch (msg.what) {
                     case STATE_UPDATE:
                         DownloadUpdateEvent event = (DownloadUpdateEvent) msg.obj;
-                        Log.d("MPO", "got update: " + event.download.getProgress());
+                        Log.d("MPO", "got update: " + event.getDownload().getProgress());
                         eventBus.send(event);
                         break;
                     default:
@@ -104,6 +107,9 @@ public class DownloadManager {
                     }
 
                     output.flush();
+                    subscriptionDao.updateLastPublishedEpisode(
+                            download.getPodcastId(),
+                            download.getEpisodeDate());
                 } catch (Exception e) {
                     Log.e("MPO", "Error downloading file: " + download.getUrl(), e);
                 } finally {
@@ -127,5 +133,6 @@ public class DownloadManager {
                 currentDownloads.remove(download.getUrl());
             }
         });
+        Log.d("MPO", "Queued download: " + download.getUrl());
     }
 }

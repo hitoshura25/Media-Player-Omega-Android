@@ -146,4 +146,7 @@ public class Episode {
         return artworkUrl;
     }
 
+    public void setArtworkUrl(String artworkUrl) {
+        this.artworkUrl = artworkUrl;
+    }
 }

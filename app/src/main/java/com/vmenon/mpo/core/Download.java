@@ -7,6 +7,8 @@ public class Download {
     private String url;
     private String showName;
     private String episodeName;
+    private long episodeDate;
+    private long podcastId;
     private int total = 0;
     private int progress = 0;
 
@@ -14,10 +16,13 @@ public class Download {
 
     }
 
-    public Download(final String showName, final String episodeName, final String url) {
+    public Download(long podcastId, final String showName, final String episodeName,
+                    long episodeDate, final String url) {
         this.url = url;
         this.showName = showName;
         this.episodeName = episodeName;
+        this.podcastId = podcastId;
+        this.episodeDate = episodeDate;
     }
 
     public String getUrl() {
@@ -30,6 +35,14 @@ public class Download {
 
     public String getEpisodeName() {
         return episodeName;
+    }
+
+    public long getPodcastId() {
+        return podcastId;
+    }
+
+    public long getEpisodeDate() {
+        return episodeDate;
     }
 
     public synchronized int getTotal() {

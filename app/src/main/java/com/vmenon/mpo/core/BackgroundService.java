@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.vmenon.mpo.MPOApplication;
+import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.core.receiver.AlarmReceiver;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
@@ -19,6 +20,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class BackgroundService extends IntentService {
     public static final String ACTION_UPDATE = "com.vmenon.mpo.UPDATE";
@@ -67,7 +72,7 @@ public class BackgroundService extends IntentService {
                                      final String episodeName,
                                      final String url) {
 
-        final Download download = new Download(showName, episodeName, url);
+        final Download download = new Download(-1L, showName, episodeName, -1L, url);
 
         Intent intent = new Intent(context, BackgroundService.class);
         intent.setAction(ACTION_DOWNLOAD);
@@ -91,9 +96,8 @@ public class BackgroundService extends IntentService {
             Log.d("MPO", "Calling update...");
             List<Podcast> podcasts = subscriptionDao.notUpdatedInLast(1000 * 60 * 5);
             for (Podcast podcast : podcasts) {
-                Log.d("MPO", "Got saved podcast: " + podcast.name + ", " + podcast.id);
-                podcast.lastUpdate = new Date().getTime();
-                subscriptionDao.save(podcast);
+                Log.d("MPO", "Got saved podcast: " + podcast.name + ", " + podcast.id + ", " + podcast.lastEpisodePublished);
+                fetchPodcastUpdate(podcast, podcast.lastEpisodePublished);
             }
         } else if (ACTION_DOWNLOAD.equals(intent.getAction())) {
             Log.d("MPO", "Downloading...");
@@ -107,5 +111,35 @@ public class BackgroundService extends IntentService {
             Log.d("MPO", "RequestId: " + requestId);*/
             downloadManager.queueDownload(download);
         }
+    }
+
+    private void fetchPodcastUpdate(final Podcast podcast, Long lastEpisodePublished) {
+        service.getPodcastUpdate(podcast.feedUrl, lastEpisodePublished)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Episode>() {
+                    @Override
+                    public final void onCompleted() {
+
+                    }
+
+                    @Override
+                    public final void onError(Throwable e) {
+                        Log.e("Error getting podcasts", e.getMessage());
+                    }
+
+                    @Override
+                    public final void onNext(Episode episode) {
+                        if (episode != null) {
+                            Download download = new Download(podcast.id, podcast.name,
+                                    episode.getName(), episode.getPublished(),
+                                    episode.getDownloadUrl());
+                            downloadManager.queueDownload(download);
+                        }
+
+                        podcast.lastUpdate = new Date().getTime();
+                        subscriptionDao.save(podcast);
+                    }
+                });
     }
 }
