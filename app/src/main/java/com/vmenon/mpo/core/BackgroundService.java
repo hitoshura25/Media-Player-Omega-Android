@@ -68,11 +68,10 @@ public class BackgroundService extends IntentService {
     }
 
     public static void startDownload(final Context context,
-                                     final String showName,
-                                     final String episodeName,
-                                     final String url) {
+                                     final Podcast podcast,
+                                     final Episode episode) {
 
-        final Download download = new Download(-1L, showName, episodeName, -1L, url);
+        final Download download = new Download(podcast, episode);
 
         Intent intent = new Intent(context, BackgroundService.class);
         intent.setAction(ACTION_DOWNLOAD);
@@ -131,9 +130,7 @@ public class BackgroundService extends IntentService {
                     @Override
                     public final void onNext(Episode episode) {
                         if (episode != null) {
-                            Download download = new Download(podcast.id, podcast.name,
-                                    episode.getName(), episode.getPublished(),
-                                    episode.getDownloadUrl());
+                            Download download = new Download(podcast, episode);
                             downloadManager.queueDownload(download);
                         }
 

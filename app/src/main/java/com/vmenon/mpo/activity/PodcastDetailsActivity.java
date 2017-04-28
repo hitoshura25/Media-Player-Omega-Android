@@ -140,7 +140,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
         episodeList.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         episodeList.setLayoutManager(layoutManager);
-        episodeList.setAdapter(new PodcastEpisodesAdapter(podcast.name, podcastDetails.getEpisodes()));
+        episodeList.setAdapter(new PodcastEpisodesAdapter(podcast, podcastDetails.getEpisodes()));
 
         final View nestedScrollView = findViewById(R.id.nestedScrollView);
         nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(

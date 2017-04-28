@@ -17,6 +17,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -73,18 +74,19 @@ public class DownloadManager {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-                currentDownloads.put(download.getUrl(), download);
+                currentDownloads.put(download.getEpisode().downloadUrl, download);
 
                 InputStream input = null;
                 OutputStream output = null;
+                download.getEpisode().filename = UUID.randomUUID().toString();
 
                 try {
-                    URL url = new URL(download.getUrl());
+                    URL url = new URL(download.getEpisode().downloadUrl);
                     URLConnection connection = url.openConnection();
                     connection.connect();
                     download.setTotal(connection.getContentLength());
                     input = new BufferedInputStream(connection.getInputStream());
-                    output = context.openFileOutput(download.getEpisodeName(),
+                    output = context.openFileOutput(download.getEpisode().filename,
                             Context.MODE_PRIVATE);
 
                     byte data[] = new byte[1024];
@@ -107,11 +109,12 @@ public class DownloadManager {
                     }
 
                     output.flush();
+                    subscriptionDao.save(download.getEpisode());
                     subscriptionDao.updateLastPublishedEpisode(
-                            download.getPodcastId(),
-                            download.getEpisodeDate());
+                            download.getPodcast().id,
+                            download.getEpisode().published);
                 } catch (Exception e) {
-                    Log.e("MPO", "Error downloading file: " + download.getUrl(), e);
+                    Log.e("MPO", "Error downloading file: " + download.getEpisode().downloadUrl, e);
                 } finally {
                     if (output != null) {
                         try {
@@ -130,9 +133,9 @@ public class DownloadManager {
                     }
                 }
 
-                currentDownloads.remove(download.getUrl());
+                currentDownloads.remove(download.getEpisode().downloadUrl);
             }
         });
-        Log.d("MPO", "Queued download: " + download.getUrl());
+        Log.d("MPO", "Queued download: " + download.getEpisode().downloadUrl);
     }
 }

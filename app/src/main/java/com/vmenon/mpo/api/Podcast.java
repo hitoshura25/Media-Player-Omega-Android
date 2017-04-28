@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
-import org.parceler.Transient;
 
 @Parcel
 public class Podcast {
@@ -33,7 +32,6 @@ public class Podcast {
     public String feedUrl;
 
     public long id = -1L;
-    public String lastEpisode;
     public long lastUpdate = -1L;
     public long lastEpisodePublished = -1L;
 }

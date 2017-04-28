@@ -75,11 +75,16 @@ public class MainActivity extends BaseActivity {
     protected void onResumeFragments() {
         super.onResumeFragments();
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.podcastList);
+        recyclerView.setHasFixedSize(true);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        gridLayoutManager.setOrientation(GridLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
         List<Podcast> podcasts = subscriptionDao.all();
         Log.d("MPO", "Got " + podcasts.size() + " podcasts");
-        recyclerView.setAdapter(new SubscriptionGalleryAdapter(podcasts));
+        SubscriptionGalleryAdapter adapter = new SubscriptionGalleryAdapter(podcasts);
+        adapter.setHasStableIds(true);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

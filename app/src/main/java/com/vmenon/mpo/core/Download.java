@@ -1,48 +1,32 @@
 package com.vmenon.mpo.core;
 
+import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.api.Podcast;
+
 import org.parceler.Parcel;
 
 @Parcel
 public class Download {
-    private String url;
-    private String showName;
-    private String episodeName;
-    private long episodeDate;
-    private long podcastId;
-    private int total = 0;
-    private int progress = 0;
+    Podcast podcast;
+    Episode episode;
+    int total = 0;
+    int progress = 0;
 
     public Download() {
 
     }
 
-    public Download(long podcastId, final String showName, final String episodeName,
-                    long episodeDate, final String url) {
-        this.url = url;
-        this.showName = showName;
-        this.episodeName = episodeName;
-        this.podcastId = podcastId;
-        this.episodeDate = episodeDate;
+    public Download(Podcast podcast, Episode episode) {
+        this.podcast = podcast;
+        this.episode = episode;
     }
 
-    public String getUrl() {
-        return url;
+    public Podcast getPodcast() {
+        return podcast;
     }
 
-    public String getShowName() {
-        return showName;
-    }
-
-    public String getEpisodeName() {
-        return episodeName;
-    }
-
-    public long getPodcastId() {
-        return podcastId;
-    }
-
-    public long getEpisodeDate() {
-        return episodeDate;
+    public Episode getEpisode() {
+        return episode;
     }
 
     public synchronized int getTotal() {

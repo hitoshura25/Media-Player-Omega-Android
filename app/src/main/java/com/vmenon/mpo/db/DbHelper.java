@@ -16,7 +16,8 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d("MPO", "Executing: " + SubscriptionTable.SQL_CREATE);
-        db.execSQL(SubscriptionTable.SQL_CREATE);
+        db.execSQL(ShowTable.SQL_CREATE);
+        db.execSQL(EpisodeTable.SQL_CREATE);
     }
 
     @Override

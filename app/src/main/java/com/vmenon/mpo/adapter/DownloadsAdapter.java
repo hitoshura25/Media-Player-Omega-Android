@@ -53,18 +53,19 @@ public class DownloadsAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.download = downloads.get(position);
-        holder.nameText.setText(holder.download.getEpisodeName());
+        final Download download = downloads.get(position);
+        holder.download = download;
+        holder.nameText.setText(download.getEpisode().name);
 
-        double progress = holder.download.getProgress() * 1.0 / holder.download.getTotal();
+        double progress = download.getProgress() * 1.0 / download.getTotal();
         progress *= 100.0;
         holder.progressText.setText(Math.round(progress) + "%");
 
-        /*Glide.with(holder.itemView.getContext())
-                .load(podcast.artworkUrl)
+        Glide.with(holder.itemView.getContext())
+                .load(download.getEpisode().artworkUrl)
                 .centerCrop()
                 .crossFade()
-                .into(holder.imageView);*/
+                .into(holder.imageView);
     }
 
     @Override

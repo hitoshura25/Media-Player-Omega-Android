@@ -5,9 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.db.DbHelper;
-import com.vmenon.mpo.db.SubscriptionTable;
+import com.vmenon.mpo.db.EpisodeTable;
+import com.vmenon.mpo.db.ShowTable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,21 +24,44 @@ public class SubscriptionDao {
     public void save(Podcast podcast) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(SubscriptionTable.COLUMN_SHOW_NAME, podcast.name);
-        values.put(SubscriptionTable.COLUMN_FEED_URL, podcast.feedUrl);
-        values.put(SubscriptionTable.COLUMN_ARTWORK_URL, podcast.artworkUrl);
-        values.put(SubscriptionTable.COLUMN_LAST_EPISODE, podcast.lastEpisode);
-        values.put(SubscriptionTable.COLUMN_LAST_UPDATE, podcast.lastUpdate);
+        values.put(ShowTable.COLUMN_NAME, podcast.name);
+        values.put(ShowTable.COLUMN_FEED_URL, podcast.feedUrl);
+        values.put(ShowTable.COLUMN_ARTWORK_URL, podcast.artworkUrl);
+        values.put(ShowTable.COLUMN_LAST_UPDATE, podcast.lastUpdate);
 
         if (podcast.id == -1L) {
-            final long newRowId = db.insert(SubscriptionTable.TABLE_NAME, null, values);
+            final long newRowId = db.insert(ShowTable.TABLE_NAME, null, values);
             podcast.id = newRowId;
         } else {
-            String selection = SubscriptionTable._ID + " = ?";
+            String selection = ShowTable._ID + " = ?";
             String[] selectionArgs = { String.valueOf(podcast.id) };
 
             db.update(
-                    SubscriptionTable.TABLE_NAME,
+                    ShowTable.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs);
+        }
+    }
+
+    public void save(Episode episode) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(EpisodeTable.COLUMN_NAME, episode.name);
+        values.put(EpisodeTable.COLUMN_ARTWORK_URL, episode.artworkUrl);
+        values.put(EpisodeTable.COLUMN_PUBLISHED, episode.published);
+        values.put(EpisodeTable.COLUMN_SHOW, episode.showId);
+        values.put(EpisodeTable.COLUMN_DOWNLOAD_URL, episode.downloadUrl);
+
+        if (episode.id == -1L) {
+            final long newRowId = db.insert(EpisodeTable.TABLE_NAME, null, values);
+            episode.id = newRowId;
+        } else {
+            String selection = EpisodeTable._ID + " = ?";
+            String[] selectionArgs = { String.valueOf(episode.id) };
+
+            db.update(
+                    EpisodeTable.TABLE_NAME,
                     values,
                     selection,
                     selectionArgs);
@@ -49,7 +74,7 @@ public class SubscriptionDao {
 
     public List<Podcast> notUpdatedInLast(long milliseconds) {
         final long compareTime = new Date().getTime() - milliseconds;
-        String selection = SubscriptionTable.COLUMN_LAST_UPDATE + " < ?";
+        String selection = ShowTable.COLUMN_LAST_UPDATE + " < ?";
         String[] selectionArgs = { String.valueOf(compareTime) };
 
         return query(selection, selectionArgs);
@@ -58,15 +83,15 @@ public class SubscriptionDao {
     public void updateLastPublishedEpisode(long podcastId, long episodeDate) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED, episodeDate);
+        values.put(ShowTable.COLUMN_LAST_EPISODE_PUBLISHED, episodeDate);
 
-        String selection = SubscriptionTable._ID + " = ?" ;
+        String selection = ShowTable._ID + " = ?" ;
         String[] selectionArgs = {
                 String.valueOf(podcastId)
         };
 
         int count = db.update(
-                SubscriptionTable.TABLE_NAME,
+                ShowTable.TABLE_NAME,
                 values,
                 selection,
                 selectionArgs);
@@ -76,13 +101,12 @@ public class SubscriptionDao {
 
     private String[] getDefaultProject() {
         return new String[] {
-                SubscriptionTable._ID,
-                SubscriptionTable.COLUMN_SHOW_NAME,
-                SubscriptionTable.COLUMN_FEED_URL,
-                SubscriptionTable.COLUMN_ARTWORK_URL,
-                SubscriptionTable.COLUMN_LAST_EPISODE,
-                SubscriptionTable.COLUMN_LAST_UPDATE,
-                SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED
+                ShowTable._ID,
+                ShowTable.COLUMN_NAME,
+                ShowTable.COLUMN_FEED_URL,
+                ShowTable.COLUMN_ARTWORK_URL,
+                ShowTable.COLUMN_LAST_UPDATE,
+                ShowTable.COLUMN_LAST_EPISODE_PUBLISHED
         };
     }
 
@@ -90,25 +114,23 @@ public class SubscriptionDao {
         final List<Podcast> podcasts = new ArrayList<>();
         final SQLiteDatabase db = dbHelper.getReadableDatabase();
         final Cursor cursor = db.query(
-                SubscriptionTable.TABLE_NAME, getDefaultProject(), selection, selectionArgs,
+                ShowTable.TABLE_NAME, getDefaultProject(), selection, selectionArgs,
                 null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Podcast podcast = new Podcast();
-            podcast.id = cursor.getLong(cursor.getColumnIndexOrThrow(SubscriptionTable._ID));
+            podcast.id = cursor.getLong(cursor.getColumnIndexOrThrow(ShowTable._ID));
             podcast.name = cursor.getString(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_SHOW_NAME));
+                    ShowTable.COLUMN_NAME));
             podcast.feedUrl = cursor.getString(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_FEED_URL));
+                    ShowTable.COLUMN_FEED_URL));
             podcast.artworkUrl = cursor.getString(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_ARTWORK_URL));
-            podcast.lastEpisode = cursor.getString(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_LAST_EPISODE));
+                    ShowTable.COLUMN_ARTWORK_URL));
             podcast.lastUpdate = cursor.getLong(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_LAST_UPDATE));
+                    ShowTable.COLUMN_LAST_UPDATE));
             podcast.lastEpisodePublished = cursor.getLong(cursor.getColumnIndexOrThrow(
-                    SubscriptionTable.COLUMN_LAST_EPISODE_PUBLISHED));
+                    ShowTable.COLUMN_LAST_EPISODE_PUBLISHED));
             podcasts.add(podcast);
             cursor.moveToNext();
         }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.core.BackgroundService;
 
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ public class PodcastEpisodesAdapter extends
         private ImageView thumbnailImage;
         private ImageButton menuButton;
         private Episode episode;
+        private Podcast podcast;
 
         public ViewHolder(View v) {
             super(v);
@@ -43,17 +45,16 @@ public class PodcastEpisodesAdapter extends
             publishedText = (TextView) v.findViewById(R.id.episodeDate);
             thumbnailImage = (ImageView) v.findViewById(R.id.episodeImage);
             menuButton = (ImageButton) v.findViewById(R.id.episodeMenuButton);
-
             descriptionText.setMovementMethod(new LinkMovementMethod());
         }
     }
 
-    private final String showName;
+    private final Podcast podcast;
     private List<Episode> episodes;
     private EpisodeSelectedListener listener;
 
-    public PodcastEpisodesAdapter(final String showName, final List<Episode> myDataset) {
-        this.showName = showName;
+    public PodcastEpisodesAdapter(final Podcast podcast, final List<Episode> myDataset) {
+        this.podcast = podcast;
         this.episodes = myDataset;
     }
 
@@ -85,9 +86,8 @@ public class PodcastEpisodesAdapter extends
                     public boolean onMenuItemClick(MenuItem item) {
                         if (R.id.download_episode == item.getItemId()) {
                             BackgroundService.startDownload(vh.menuButton.getContext(),
-                                    showName,
-                                    vh.episode.getName(),
-                                    vh.episode.getDownloadUrl());
+                                    vh.podcast,
+                                    vh.episode);
                         }
 
                         return false;
@@ -104,15 +104,16 @@ public class PodcastEpisodesAdapter extends
     public void onBindViewHolder(ViewHolder holder, int position) {
         Episode episode = episodes.get(position);
         holder.episode = episode;
-        holder.nameText.setText(episode.getName());
+        holder.podcast = podcast;
+        holder.nameText.setText(episode.name);
         holder.descriptionText.setText(Html.fromHtml(
-                episode.getDescription().replaceAll("(<(//)img>)|(<img.+?>)", "")));
+                episode.description.replaceAll("(<(//)img>)|(<img.+?>)", "")));
         holder.publishedText.setText(new SimpleDateFormat().format(
-                new Date(episode.getPublished())));
+                new Date(episode.published)));
 
-        if (episode.getArtworkUrl() != null) {
+        if (episode.artworkUrl != null) {
             Glide.with(holder.thumbnailImage.getContext())
-                    .load(episode.getArtworkUrl())
+                    .load(episode.artworkUrl)
                     .fitCenter()
                     .into(holder.thumbnailImage);
             holder.thumbnailImage.setVisibility(View.VISIBLE);

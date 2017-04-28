@@ -64,7 +64,7 @@ public class SubscriptionGalleryAdapter extends
 
         Glide.with(holder.itemView.getContext())
                 .load(podcast.artworkUrl)
-                .centerCrop()
+                .fitCenter()
                 .crossFade()
                 .into(holder.imageView);
     }
