@@ -48,7 +48,6 @@ public class AppModule {
     MediaPlayerOmegaService provideService() {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-
         Retrofit retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(new NullOnEmptyConverterFactory())

@@ -3,6 +3,7 @@ package com.vmenon.mpo.activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class PodcastSearchResultsActivity extends BaseActivity implements
         // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         podcastList.setLayoutManager(layoutManager);
+        podcastList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         handleIntent(getIntent());
     }

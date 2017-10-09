@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/list_item_height"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true">
 
@@ -10,6 +10,7 @@
         android:id="@+id/podcastImage"
         android:layout_width="@dimen/podcastResultImageSize"
         android:layout_height="@dimen/podcastResultImageSize"
+        android:layout_gravity="center_vertical"
         android:clickable="false"/>
 
     <TextView
