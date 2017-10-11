@@ -40,11 +40,11 @@ public class EpisodesAdapter extends
 
         public ViewHolder(View v) {
             super(v);
-            nameText = (TextView) v.findViewById(R.id.episodeName);
-            descriptionText = (TextView) v.findViewById(R.id.episodeDescription);
-            publishedText = (TextView) v.findViewById(R.id.episodeDate);
-            thumbnailImage = (ImageView) v.findViewById(R.id.episodeImage);
-            menuButton = (ImageButton) v.findViewById(R.id.episodeMenuButton);
+            nameText = v.findViewById(R.id.episodeName);
+            descriptionText = v.findViewById(R.id.episodeDescription);
+            publishedText = v.findViewById(R.id.episodeDate);
+            thumbnailImage = v.findViewById(R.id.episodeImage);
+            menuButton = v.findViewById(R.id.episodeMenuButton);
             descriptionText.setMovementMethod(new LinkMovementMethod());
         }
     }

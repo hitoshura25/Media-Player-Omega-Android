@@ -50,4 +50,8 @@ public class MPORepository {
             }
         });
     }
+
+    public LiveData<List<Episode>> getAllEpisodes() {
+        return episodeDao.load();
+    }
 }

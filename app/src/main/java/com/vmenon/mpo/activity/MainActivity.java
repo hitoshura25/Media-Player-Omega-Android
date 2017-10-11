@@ -62,6 +62,9 @@ public class MainActivity extends BaseActivity {
                             if (R.id.nav_downloads == menuItem.getItemId()) {
                                 Intent intent = new Intent(MainActivity.this, DownloadsActivity.class);
                                 startActivity(intent);
+                            } else if (R.id.nav_library == menuItem.getItemId()) {
+                                Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
+                                startActivity(intent);
                             }
 
                             menuItem.setChecked(true);
