@@ -1,12 +1,16 @@
 
 package com.vmenon.mpo.api;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
 @Parcel
+@Entity
 public class Episode {
 
     @SerializedName("name")
@@ -37,7 +41,8 @@ public class Episode {
     @Expose
     public String artworkUrl;
 
-    public long id = -1L;
+    @PrimaryKey(autoGenerate = true)
+    public long id;
     public long showId;
     public String filename;
 }

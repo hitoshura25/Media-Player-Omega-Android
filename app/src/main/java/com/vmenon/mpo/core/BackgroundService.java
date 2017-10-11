@@ -11,6 +11,7 @@ import android.util.Log;
 import com.vmenon.mpo.MPOApplication;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.core.persistence.PodcastRepository;
 import com.vmenon.mpo.core.receiver.AlarmReceiver;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
@@ -21,9 +22,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class BackgroundService extends IntentService {
     public static final String ACTION_UPDATE = "com.vmenon.mpo.UPDATE";
@@ -42,7 +45,7 @@ public class BackgroundService extends IntentService {
     protected DownloadManager downloadManager;
 
     @Inject
-    protected SubscriptionDao subscriptionDao;
+    protected PodcastRepository podcastRepository;
 
     public static void initialize(final Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, 0);
@@ -93,9 +96,10 @@ public class BackgroundService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (ACTION_UPDATE.equals(intent.getAction())) {
             Log.d("MPO", "Calling update...");
-            List<Podcast> podcasts = subscriptionDao.notUpdatedInLast(1000 * 60 * 5);
+            List<Podcast> podcasts = podcastRepository.notUpdatedInLast(1000 * 60 * 5);
             for (Podcast podcast : podcasts) {
-                Log.d("MPO", "Got saved podcast: " + podcast.name + ", " + podcast.id + ", " + podcast.lastEpisodePublished);
+                Log.d("MPO", "Got saved podcast: " + podcast.name +  ", " + podcast.feedUrl + ", "
+                        + podcast.lastEpisodePublished);
                 fetchPodcastUpdate(podcast, podcast.lastEpisodePublished);
             }
         } else if (ACTION_DOWNLOAD.equals(intent.getAction())) {
@@ -114,28 +118,30 @@ public class BackgroundService extends IntentService {
 
     private void fetchPodcastUpdate(final Podcast podcast, Long lastEpisodePublished) {
         service.getPodcastUpdate(podcast.feedUrl, lastEpisodePublished)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Episode>() {
+                .subscribeWith(new Observer<Episode>() {
                     @Override
-                    public final void onCompleted() {
+                    public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public final void onError(Throwable e) {
-                        Log.e("Error getting podcasts", e.getMessage());
-                    }
-
-                    @Override
-                    public final void onNext(Episode episode) {
-                        if (episode != null) {
-                            Download download = new Download(podcast, episode);
-                            downloadManager.queueDownload(download);
-                        }
-
+                    public void onNext(@NonNull Episode episode) {
+                        Download download = new Download(podcast, episode);
+                        downloadManager.queueDownload(download);
                         podcast.lastUpdate = new Date().getTime();
-                        subscriptionDao.save(podcast);
+                        podcastRepository.save(podcast);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.w("MPO", "Error getting podcast update", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

@@ -1,8 +1,10 @@
 package com.vmenon.mpo.activity;
 
 import android.app.SearchManager;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -22,7 +24,7 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.SubscriptionGalleryAdapter;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.core.BackgroundService;
-import com.vmenon.mpo.core.SubscriptionDao;
+import com.vmenon.mpo.core.persistence.PodcastRepository;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ import javax.inject.Inject;
 public class MainActivity extends BaseActivity {
 
     @Inject
-    protected SubscriptionDao subscriptionDao;
+    protected PodcastRepository podcastRepository;
 
     private DrawerLayout mDrawerLayout;
 
@@ -43,15 +45,15 @@ public class MainActivity extends BaseActivity {
         setTitle(R.string.podcasts);
         BackgroundService.setupSchedule(this);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(
                     new NavigationView.OnNavigationItemSelectedListener() {
@@ -74,17 +76,21 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.podcastList);
+        final RecyclerView recyclerView = findViewById(R.id.podcastList);
         recyclerView.setHasFixedSize(true);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         gridLayoutManager.setOrientation(GridLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        List<Podcast> podcasts = subscriptionDao.all();
-        Log.d("MPO", "Got " + podcasts.size() + " podcasts");
-        SubscriptionGalleryAdapter adapter = new SubscriptionGalleryAdapter(podcasts);
-        adapter.setHasStableIds(true);
-        recyclerView.setAdapter(adapter);
+        podcastRepository.getAllPodcasts().observe(this, new Observer<List<Podcast>>() {
+            @Override
+            public void onChanged(@Nullable List<Podcast> podcasts) {
+                Log.d("MPO", "Got " + podcasts.size() + " podcasts");
+                SubscriptionGalleryAdapter adapter = new SubscriptionGalleryAdapter(podcasts);
+                adapter.setHasStableIds(true);
+                recyclerView.setAdapter(adapter);
+            }
+        });
     }
 
     @Override

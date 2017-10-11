@@ -24,16 +24,16 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.PodcastEpisodesAdapter;
 import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.api.PodcastDetails;
-import com.vmenon.mpo.core.SubscriptionDao;
+import com.vmenon.mpo.core.persistence.PodcastRepository;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import org.parceler.Parcels;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class PodcastDetailsActivity extends BaseActivity implements
         AppBarLayout.OnOffsetChangedListener {
@@ -43,7 +43,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
     protected MediaPlayerOmegaService service;
 
     @Inject
-    protected SubscriptionDao subscriptionDao;
+    protected PodcastRepository podcastRepository;
 
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView descriptionText;
@@ -61,22 +61,22 @@ public class PodcastDetailsActivity extends BaseActivity implements
 
         setContentView(R.layout.activity_podcast_details);
 
-        descriptionText = (TextView) findViewById(R.id.podcastDescription);
-        podcastImage = (ImageView) findViewById(R.id.podcastImage);
-        detailsContainer = (ViewGroup) findViewById(R.id.detailsContainer);
+        descriptionText = findViewById(R.id.podcastDescription);
+        podcastImage = findViewById(R.id.podcastImage);
+        detailsContainer = findViewById(R.id.detailsContainer);
         podcast = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_PODCAST));
 
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        final AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(this);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
 
-        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(
                     new NavigationView.OnNavigationItemSelectedListener() {
@@ -97,21 +97,11 @@ public class PodcastDetailsActivity extends BaseActivity implements
 
         if (savedInstanceState == null) {
             service.getPodcastDetails(podcast.feedUrl, 10)
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<PodcastDetails>() {
+                    .subscribe(new Consumer<PodcastDetails>() {
                         @Override
-                        public final void onCompleted() {
-
-                        }
-
-                        @Override
-                        public final void onError(Throwable e) {
-                            Log.e("MPO", "Error getting podcast details", e);
-                        }
-
-                        @Override
-                        public final void onNext(PodcastDetails podcastDetails) {
+                        public void accept(PodcastDetails podcastDetails) throws Exception {
                             displayPodcastDetails(podcastDetails);
                         }
                     });
@@ -135,7 +125,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
     private void displayPodcastDetails(PodcastDetails podcastDetails) {
         descriptionText.setText(Html.fromHtml(podcastDetails.getDescription()));
         Glide.with(this).load(podcastDetails.getImageUrl()).fitCenter().into(podcastImage);
-        RecyclerView episodeList = (RecyclerView) findViewById(R.id.episodesList);
+        RecyclerView episodeList = findViewById(R.id.episodesList);
 
         episodeList.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -163,7 +153,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
         subscribeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                subscriptionDao.save(podcast);
+                podcastRepository.save(podcast);
                 Snackbar.make(detailsContainer, "You have subscibed to this podcast",
                         Snackbar.LENGTH_LONG)
                         .setAction("UNDO", undoListener)

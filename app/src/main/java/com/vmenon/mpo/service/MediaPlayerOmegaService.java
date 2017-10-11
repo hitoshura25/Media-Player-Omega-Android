@@ -6,9 +6,9 @@ import com.vmenon.mpo.api.PodcastDetails;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import rx.Observable;
 
 public interface MediaPlayerOmegaService {
     @GET("podcasts")

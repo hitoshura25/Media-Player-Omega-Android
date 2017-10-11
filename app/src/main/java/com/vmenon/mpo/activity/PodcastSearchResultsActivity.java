@@ -14,14 +14,14 @@ import com.vmenon.mpo.api.Podcast;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import org.parceler.Parcels;
-
 import java.util.List;
-
 import javax.inject.Inject;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class PodcastSearchResultsActivity extends BaseActivity implements
         PodcastSearchResultsAdapter.PodcastSelectedListener {
@@ -38,7 +38,7 @@ public class PodcastSearchResultsActivity extends BaseActivity implements
 
         setContentView(R.layout.activity_podcast_search_results);
 
-        podcastList = (RecyclerView) findViewById(R.id.podcastList);
+        podcastList = findViewById(R.id.podcastList);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -50,11 +50,6 @@ public class PodcastSearchResultsActivity extends BaseActivity implements
         podcastList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         handleIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
     }
 
     @Override
@@ -70,26 +65,32 @@ public class PodcastSearchResultsActivity extends BaseActivity implements
             setTitle(this.getString(R.string.podcast_search_title, query));
 
             service.searchPodcasts(query)
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<List<Podcast>>() {
+                    .subscribeWith(new Observer<List<Podcast>>() {
                         @Override
-                        public final void onCompleted() {
-                            // do nothing
+                        public void onSubscribe(@NonNull Disposable d) {
+
                         }
 
                         @Override
-                        public final void onError(Throwable e) {
-                            Log.e("Error getting podcasts", e.getMessage());
-                        }
-
-                        @Override
-                        public final void onNext(List<Podcast> response) {
-                            PodcastSearchResultsAdapter adapter = new PodcastSearchResultsAdapter(response);
+                        public void onNext(@NonNull List<Podcast> podcasts) {
+                            PodcastSearchResultsAdapter adapter = new PodcastSearchResultsAdapter(podcasts);
                             adapter.setListener(PodcastSearchResultsActivity.this);
                             podcastList.setAdapter(adapter);
                         }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            Log.w("MPO", "Error search for podcasts", e);
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
                     });
+
         }
     }
 

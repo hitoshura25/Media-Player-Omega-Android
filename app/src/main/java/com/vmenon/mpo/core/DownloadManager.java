@@ -6,6 +6,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.core.persistence.PodcastRepository;
 import com.vmenon.mpo.event.DownloadUpdateEvent;
 
 import java.io.BufferedInputStream;
@@ -20,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -37,14 +41,11 @@ public class DownloadManager {
     private final Context context;
     private final Map<String, Download> currentDownloads = new ConcurrentHashMap<>();
 
-    protected final EventBus eventBus;
-    protected final SubscriptionDao subscriptionDao;
+    private final PodcastRepository podcastRepository;
 
-    public DownloadManager(final Context context, final EventBus eventBus,
-                           final SubscriptionDao subscriptionDao) {
+    public DownloadManager(final Context context, final PodcastRepository podcastRepository) {
         this.context = context;
-        this.eventBus = eventBus;
-        this.subscriptionDao = subscriptionDao;
+        this.podcastRepository = podcastRepository;
 
         workQueue = new LinkedBlockingQueue<>();
         threadPoolExecutor = new ThreadPoolExecutor(NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME,
@@ -56,7 +57,6 @@ public class DownloadManager {
                     case STATE_UPDATE:
                         DownloadUpdateEvent event = (DownloadUpdateEvent) msg.obj;
                         Log.d("MPO", "got update: " + event.getDownload().getProgress());
-                        eventBus.send(event);
                         break;
                     default:
                         super.handleMessage(msg);
@@ -70,23 +70,25 @@ public class DownloadManager {
     }
 
     public void queueDownload(final Download download) {
+        final Podcast podcast = download.getPodcast();
+        final Episode episode = download.getEpisode();
         threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-                currentDownloads.put(download.getEpisode().downloadUrl, download);
+                currentDownloads.put(episode.downloadUrl, download);
 
                 InputStream input = null;
                 OutputStream output = null;
-                download.getEpisode().filename = UUID.randomUUID().toString();
+                episode.filename = UUID.randomUUID().toString();
 
                 try {
-                    URL url = new URL(download.getEpisode().downloadUrl);
+                    URL url = new URL(episode.downloadUrl);
                     URLConnection connection = url.openConnection();
                     connection.connect();
                     download.setTotal(connection.getContentLength());
                     input = new BufferedInputStream(connection.getInputStream());
-                    output = context.openFileOutput(download.getEpisode().filename,
+                    output = context.openFileOutput(episode.filename,
                             Context.MODE_PRIVATE);
 
                     byte data[] = new byte[1024];
@@ -109,12 +111,11 @@ public class DownloadManager {
                     }
 
                     output.flush();
-                    subscriptionDao.save(download.getEpisode());
-                    subscriptionDao.updateLastPublishedEpisode(
-                            download.getPodcast().id,
-                            download.getEpisode().published);
+                    podcast.lastEpisodePublished = episode.published;
+                    podcastRepository.save(episode);
+                    podcastRepository.save(podcast);
                 } catch (Exception e) {
-                    Log.e("MPO", "Error downloading file: " + download.getEpisode().downloadUrl, e);
+                    Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e);
                 } finally {
                     if (output != null) {
                         try {
@@ -133,7 +134,7 @@ public class DownloadManager {
                     }
                 }
 
-                currentDownloads.remove(download.getEpisode().downloadUrl);
+                currentDownloads.remove(episode.downloadUrl);
             }
         });
         Log.d("MPO", "Queued download: " + download.getEpisode().downloadUrl);
