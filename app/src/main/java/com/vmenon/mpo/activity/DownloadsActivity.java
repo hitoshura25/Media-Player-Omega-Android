@@ -1,6 +1,8 @@
 package com.vmenon.mpo.activity;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -22,11 +24,15 @@ public class DownloadsActivity extends BaseDrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
-        final List<Download> downloads = downloadManager.getDownloads();
-        final DownloadsAdapter adapter = new DownloadsAdapter(downloads);
-        RecyclerView downloadList = findViewById(R.id.downloadsList);
+        final RecyclerView downloadList = findViewById(R.id.downloadsList);
         downloadList.setLayoutManager(new LinearLayoutManager(this));
-        downloadList.setAdapter(adapter);
+        downloadManager.getDownloads().observe(this, new Observer<List<Download>>() {
+            @Override
+            public void onChanged(@Nullable List<Download> downloads) {
+                final DownloadsAdapter adapter = new DownloadsAdapter(downloads);
+                downloadList.setAdapter(adapter);
+            }
+        });
     }
 
     @Override

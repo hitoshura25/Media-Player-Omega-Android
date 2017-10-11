@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.vmenon.mpo.MPOApplication;
@@ -128,6 +129,9 @@ public class BackgroundService extends IntentService {
 
                     @Override
                     public void onNext(@NonNull Episode episode) {
+                        if (TextUtils.isEmpty(episode.artworkUrl)) {
+                            episode.artworkUrl = show.artworkUrl;
+                        }
                         Download download = new Download(show, episode);
                         downloadManager.queueDownload(download);
                         show.lastUpdate = new Date().getTime();

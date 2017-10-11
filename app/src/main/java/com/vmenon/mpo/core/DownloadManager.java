@@ -1,10 +1,11 @@
 package com.vmenon.mpo.core;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.vmenon.mpo.api.Episode;
@@ -40,6 +41,7 @@ public class DownloadManager {
     private final ThreadPoolExecutor threadPoolExecutor;
     private final Context context;
     private final Map<String, Download> currentDownloads = new ConcurrentHashMap<>();
+    private MutableLiveData<List<Download>> downloadLiveData = new MutableLiveData<>();
 
     private final MPORepository mpoRepository;
 
@@ -57,6 +59,7 @@ public class DownloadManager {
                     case STATE_UPDATE:
                         DownloadUpdateEvent event = (DownloadUpdateEvent) msg.obj;
                         Log.d("MPO", "got update: " + event.getDownload().getProgress());
+                        updateLiveData();
                         break;
                     default:
                         super.handleMessage(msg);
@@ -65,8 +68,8 @@ public class DownloadManager {
         };
     }
 
-    public List<Download> getDownloads() {
-        return new ArrayList<>(currentDownloads.values());
+    public LiveData<List<Download>> getDownloads() {
+        return downloadLiveData;
     }
 
     public void queueDownload(final Download download) {
@@ -113,9 +116,6 @@ public class DownloadManager {
                     output.flush();
                     show.lastEpisodePublished = episode.published;
                     episode.showId = show.id;
-                    if (TextUtils.isEmpty(episode.artworkUrl)) {
-                        episode.artworkUrl = show.artworkUrl;
-                    }
                     mpoRepository.save(episode);
                     mpoRepository.save(show);
                 } catch (Exception e) {
@@ -139,8 +139,13 @@ public class DownloadManager {
                 }
 
                 currentDownloads.remove(episode.downloadUrl);
+                updateLiveData();
             }
         });
         Log.d("MPO", "Queued download: " + download.getEpisode().downloadUrl);
+    }
+
+    private void updateLiveData() {
+        downloadLiveData.postValue(new ArrayList<>(currentDownloads.values()));
     }
 }
