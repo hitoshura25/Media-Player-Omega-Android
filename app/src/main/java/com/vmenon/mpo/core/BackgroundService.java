@@ -10,8 +10,8 @@ import android.util.Log;
 
 import com.vmenon.mpo.MPOApplication;
 import com.vmenon.mpo.api.Episode;
-import com.vmenon.mpo.api.Podcast;
-import com.vmenon.mpo.core.persistence.PodcastRepository;
+import com.vmenon.mpo.api.Show;
+import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.core.receiver.AlarmReceiver;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
@@ -45,7 +45,7 @@ public class BackgroundService extends IntentService {
     protected DownloadManager downloadManager;
 
     @Inject
-    protected PodcastRepository podcastRepository;
+    protected MPORepository mpoRepository;
 
     public static void initialize(final Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, 0);
@@ -71,10 +71,10 @@ public class BackgroundService extends IntentService {
     }
 
     public static void startDownload(final Context context,
-                                     final Podcast podcast,
+                                     final Show show,
                                      final Episode episode) {
 
-        final Download download = new Download(podcast, episode);
+        final Download download = new Download(show, episode);
 
         Intent intent = new Intent(context, BackgroundService.class);
         intent.setAction(ACTION_DOWNLOAD);
@@ -96,11 +96,11 @@ public class BackgroundService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (ACTION_UPDATE.equals(intent.getAction())) {
             Log.d("MPO", "Calling update...");
-            List<Podcast> podcasts = podcastRepository.notUpdatedInLast(1000 * 60 * 5);
-            for (Podcast podcast : podcasts) {
-                Log.d("MPO", "Got saved podcast: " + podcast.name +  ", " + podcast.feedUrl + ", "
-                        + podcast.lastEpisodePublished);
-                fetchPodcastUpdate(podcast, podcast.lastEpisodePublished);
+            List<Show> shows = mpoRepository.notUpdatedInLast(1000 * 60 * 5);
+            for (Show show : shows) {
+                Log.d("MPO", "Got saved show: " + show.name +  ", " + show.feedUrl + ", "
+                        + show.lastEpisodePublished);
+                fetchShowUpdate(show, show.lastEpisodePublished);
             }
         } else if (ACTION_DOWNLOAD.equals(intent.getAction())) {
             Log.d("MPO", "Downloading...");
@@ -116,8 +116,8 @@ public class BackgroundService extends IntentService {
         }
     }
 
-    private void fetchPodcastUpdate(final Podcast podcast, Long lastEpisodePublished) {
-        service.getPodcastUpdate(podcast.feedUrl, lastEpisodePublished)
+    private void fetchShowUpdate(final Show show, Long lastEpisodePublished) {
+        service.getPodcastUpdate(show.feedUrl, lastEpisodePublished)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new Observer<Episode>() {
@@ -128,15 +128,15 @@ public class BackgroundService extends IntentService {
 
                     @Override
                     public void onNext(@NonNull Episode episode) {
-                        Download download = new Download(podcast, episode);
+                        Download download = new Download(show, episode);
                         downloadManager.queueDownload(download);
-                        podcast.lastUpdate = new Date().getTime();
-                        podcastRepository.save(podcast);
+                        show.lastUpdate = new Date().getTime();
+                        mpoRepository.save(show);
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Log.w("MPO", "Error getting podcast update", e);
+                        Log.w("MPO", "Error getting show update", e);
                     }
 
                     @Override

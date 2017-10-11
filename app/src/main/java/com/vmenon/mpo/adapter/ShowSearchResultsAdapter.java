@@ -9,50 +9,50 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 
 import java.util.List;
 
-public class PodcastSearchResultsAdapter extends
-        RecyclerView.Adapter<PodcastSearchResultsAdapter.ViewHolder> {
+public class ShowSearchResultsAdapter extends
+        RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder> {
 
-    public interface PodcastSelectedListener {
-        void onPodcastSelected(Podcast podcast);
+    public interface ShowSelectedListener {
+        void onShowSelected(Show show);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView nameText;
         private ImageView imageView;
-        private Podcast podcast;
+        private Show show;
 
         public ViewHolder(View v) {
             super(v);
-            nameText = (TextView) v.findViewById(R.id.podcastName);
-            imageView = (ImageView) v.findViewById(R.id.podcastImage);
+            nameText = v.findViewById(R.id.showName);
+            imageView = v.findViewById(R.id.showImage);
         }
     }
 
-    private List<Podcast> podcasts;
-    private PodcastSelectedListener listener;
+    private List<Show> shows;
+    private ShowSelectedListener listener;
 
-    public PodcastSearchResultsAdapter(List<Podcast> myDataset) {
-        podcasts = myDataset;
+    public ShowSearchResultsAdapter(List<Show> myDataset) {
+        shows = myDataset;
     }
 
-    public void setListener(PodcastSelectedListener listener) {
+    public void setListener(ShowSelectedListener listener) {
         this.listener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_result, parent,
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.show_result, parent,
                 false);
         final ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null && vh.podcast != null) {
-                    listener.onPodcastSelected(vh.podcast);
+                if (listener != null && vh.show != null) {
+                    listener.onShowSelected(vh.show);
                 }
             }
         });
@@ -62,12 +62,12 @@ public class PodcastSearchResultsAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Podcast podcast = podcasts.get(position);
-        holder.podcast = podcast;
-        holder.nameText.setText(podcast.name);
+        Show show = shows.get(position);
+        holder.show = show;
+        holder.nameText.setText(show.name);
 
         Glide.with(holder.itemView.getContext())
-                .load(podcast.artworkUrl)
+                .load(show.artworkUrl)
                 .centerCrop()
                 .crossFade()
                 .into(holder.imageView);
@@ -75,6 +75,6 @@ public class PodcastSearchResultsAdapter extends
 
     @Override
     public int getItemCount() {
-        return podcasts.size();
+        return shows.size();
     }
 }

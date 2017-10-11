@@ -2,6 +2,8 @@
 package com.vmenon.mpo.api;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -10,7 +12,10 @@ import com.google.gson.annotations.SerializedName;
 import org.parceler.Parcel;
 
 @Parcel
-@Entity
+@Entity(foreignKeys = @ForeignKey(entity = Show.class,
+        parentColumns = "id",
+        childColumns = "showId"),
+        indices = @Index("showId"))
 public class Episode {
 
     @SerializedName("name")
@@ -43,6 +48,8 @@ public class Episode {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
+
     public long showId;
+
     public String filename;
 }

@@ -3,7 +3,7 @@ package com.vmenon.mpo.core.persistence;
 import android.arch.lifecycle.LiveData;
 
 import com.vmenon.mpo.api.Episode;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import java.util.Date;
@@ -11,35 +11,35 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class PodcastRepository {
+public class MPORepository {
     private final MediaPlayerOmegaService service;
-    private final PodcastDao podcastDao;
+    private final ShowDao showDao;
     private final EpisodeDao episodeDao;
     private final Executor discExecutor;
 
-    public PodcastRepository(MediaPlayerOmegaService service, PodcastDao podcastDao, EpisodeDao episodeDao) {
+    public MPORepository(MediaPlayerOmegaService service, ShowDao showDao, EpisodeDao episodeDao) {
         this.service = service;
-        this.podcastDao = podcastDao;
+        this.showDao = showDao;
         this.episodeDao = episodeDao;
         this.discExecutor = Executors.newSingleThreadExecutor();
     }
 
-    public LiveData<List<Podcast>> getAllPodcasts() {
-        return podcastDao.load();
+    public LiveData<List<Show>> getAllShows() {
+        return showDao.load();
     }
 
-    public void save(final Podcast podcast) {
+    public void save(final Show show) {
         discExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                podcastDao.save(podcast);
+                showDao.save(show);
             }
         });
     }
 
-    public List<Podcast> notUpdatedInLast(long interval) {
+    public List<Show> notUpdatedInLast(long interval) {
         final long compareTime = new Date().getTime() - interval;
-        return podcastDao.loadLastUpdatedBefore(compareTime);
+        return showDao.loadLastUpdatedBefore(compareTime);
     }
 
     public void save(final Episode episode) {

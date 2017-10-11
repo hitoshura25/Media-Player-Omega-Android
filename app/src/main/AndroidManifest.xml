@@ -23,10 +23,10 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".activity.PodcastSearchResultsActivity" />
+                android:value=".activity.ShowSearchResultsActivity" />
         </activity>
         <activity
-            android:name=".activity.PodcastSearchResultsActivity"
+            android:name=".activity.ShowSearchResultsActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -34,10 +34,10 @@
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/podcast_searchable" />
+                android:resource="@xml/show_searchable" />
         </activity>
         <activity
-            android:name=".activity.PodcastDetailsActivity"
+            android:name=".activity.ShowDetailsActivity"
             android:label=""
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppThemeNoActionBar">

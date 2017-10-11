@@ -7,7 +7,7 @@
     android:paddingRight="1dp"
     android:paddingTop="1dp">
     <ImageView
-        android:id="@+id/podcastImage"
+        android:id="@+id/showImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"

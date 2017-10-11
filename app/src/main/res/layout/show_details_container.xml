@@ -24,7 +24,7 @@
             app:title="">
 
             <ImageView
-                android:id="@+id/podcastImage"
+                android:id="@+id/showImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -57,7 +57,7 @@
             android:paddingTop="24dp">
 
             <TextView
-                android:id="@+id/podcastDescription"
+                android:id="@+id/showDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/card_margin"

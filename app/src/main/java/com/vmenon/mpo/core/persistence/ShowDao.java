@@ -5,20 +5,20 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
-public interface PodcastDao {
+public interface ShowDao {
     @Insert(onConflict = REPLACE)
-    void save(Podcast podcast);
+    void save(Show show);
 
-    @Query("SELECT * FROM podcast")
-    LiveData<List<Podcast>> load();
+    @Query("SELECT * FROM show")
+    LiveData<List<Show>> load();
 
-    @Query("SELECT * FROM podcast WHERE lastUpdate < :comparisonTime")
-    List<Podcast> loadLastUpdatedBefore(long comparisonTime);
+    @Query("SELECT * FROM show WHERE lastUpdate < :comparisonTime")
+    List<Show> loadLastUpdatedBefore(long comparisonTime);
 }

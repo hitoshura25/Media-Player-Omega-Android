@@ -21,10 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
-import com.vmenon.mpo.adapter.PodcastEpisodesAdapter;
-import com.vmenon.mpo.api.Podcast;
-import com.vmenon.mpo.api.PodcastDetails;
-import com.vmenon.mpo.core.persistence.PodcastRepository;
+import com.vmenon.mpo.adapter.EpisodesAdapter;
+import com.vmenon.mpo.api.Show;
+import com.vmenon.mpo.api.ShowDetails;
+import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import org.parceler.Parcels;
@@ -35,21 +35,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class PodcastDetailsActivity extends BaseActivity implements
+public class ShowDetailsActivity extends BaseActivity implements
         AppBarLayout.OnOffsetChangedListener {
-    public final static String EXTRA_PODCAST = "extraPodcast";
+    public final static String EXTRA_SHOW = "extraShow";
 
     @Inject
     protected MediaPlayerOmegaService service;
 
     @Inject
-    protected PodcastRepository podcastRepository;
+    protected MPORepository mpoRepository;
 
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView descriptionText;
-    private ImageView podcastImage;
+    private ImageView showImage;
     private ViewGroup detailsContainer;
-    private Podcast podcast;
+    private Show show;
 
     private boolean collapsed = false;
     private int scrollRange = -1;
@@ -59,12 +59,12 @@ public class PodcastDetailsActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
 
-        setContentView(R.layout.activity_podcast_details);
+        setContentView(R.layout.activity_show_details);
 
-        descriptionText = findViewById(R.id.podcastDescription);
-        podcastImage = findViewById(R.id.podcastImage);
+        descriptionText = findViewById(R.id.showDescription);
+        showImage = findViewById(R.id.showImage);
         detailsContainer = findViewById(R.id.detailsContainer);
-        podcast = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_PODCAST));
+        show = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_SHOW));
 
         final AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(this);
@@ -83,7 +83,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
                         @Override
                         public boolean onNavigationItemSelected(MenuItem menuItem) {
                             if (R.id.nav_downloads == menuItem.getItemId()) {
-                                Intent intent = new Intent(PodcastDetailsActivity.this,
+                                Intent intent = new Intent(ShowDetailsActivity.this,
                                         DownloadsActivity.class);
                                 startActivity(intent);
                             }
@@ -96,13 +96,13 @@ public class PodcastDetailsActivity extends BaseActivity implements
         }
 
         if (savedInstanceState == null) {
-            service.getPodcastDetails(podcast.feedUrl, 10)
+            service.getPodcastDetails(show.feedUrl, 10)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<PodcastDetails>() {
+                    .subscribe(new Consumer<ShowDetails>() {
                         @Override
-                        public void accept(PodcastDetails podcastDetails) throws Exception {
-                            displayPodcastDetails(podcastDetails);
+                        public void accept(ShowDetails showDetails) throws Exception {
+                            displayDetails(showDetails);
                         }
                     });
         }
@@ -114,7 +114,7 @@ public class PodcastDetailsActivity extends BaseActivity implements
             scrollRange = appBarLayout.getTotalScrollRange();
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.setTitle(podcast.name);
+            collapsingToolbar.setTitle(show.name);
             collapsed = true;
         } else if (collapsed) {
             collapsingToolbar.setTitle("");
@@ -122,15 +122,15 @@ public class PodcastDetailsActivity extends BaseActivity implements
         }
     }
 
-    private void displayPodcastDetails(PodcastDetails podcastDetails) {
-        descriptionText.setText(Html.fromHtml(podcastDetails.getDescription()));
-        Glide.with(this).load(podcastDetails.getImageUrl()).fitCenter().into(podcastImage);
+    private void displayDetails(ShowDetails showDetails) {
+        descriptionText.setText(Html.fromHtml(showDetails.getDescription()));
+        Glide.with(this).load(showDetails.getImageUrl()).fitCenter().into(showImage);
         RecyclerView episodeList = findViewById(R.id.episodesList);
 
         episodeList.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         episodeList.setLayoutManager(layoutManager);
-        episodeList.setAdapter(new PodcastEpisodesAdapter(podcast, podcastDetails.getEpisodes()));
+        episodeList.setAdapter(new EpisodesAdapter(show, showDetails.getEpisodes()));
 
         final View nestedScrollView = findViewById(R.id.nestedScrollView);
         nestedScrollView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -153,8 +153,8 @@ public class PodcastDetailsActivity extends BaseActivity implements
         subscribeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                podcastRepository.save(podcast);
-                Snackbar.make(detailsContainer, "You have subscibed to this podcast",
+                mpoRepository.save(show);
+                Snackbar.make(detailsContainer, "You have subscibed to this show",
                         Snackbar.LENGTH_LONG)
                         .setAction("UNDO", undoListener)
                         .show();

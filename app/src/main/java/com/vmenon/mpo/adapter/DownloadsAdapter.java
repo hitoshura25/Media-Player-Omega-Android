@@ -24,9 +24,9 @@ public class DownloadsAdapter extends
 
         public ViewHolder(View v) {
             super(v);
-            nameText = (TextView) v.findViewById(R.id.episodeName);
-            imageView = (ImageView) v.findViewById(R.id.podcastImage);
-            progressText = (TextView) v.findViewById(R.id.progress);
+            nameText = v.findViewById(R.id.episodeName);
+            imageView = v.findViewById(R.id.showImage);
+            progressText = v.findViewById(R.id.progress);
         }
     }
 

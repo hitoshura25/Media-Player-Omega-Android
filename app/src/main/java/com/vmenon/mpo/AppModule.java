@@ -7,9 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vmenon.mpo.core.DownloadManager;
 import com.vmenon.mpo.core.persistence.EpisodeDao;
-import com.vmenon.mpo.core.persistence.PodcastDao;
-import com.vmenon.mpo.core.persistence.PodcastDatabase;
-import com.vmenon.mpo.core.persistence.PodcastRepository;
+import com.vmenon.mpo.core.persistence.MPORepository;
+import com.vmenon.mpo.core.persistence.ShowDao;
+import com.vmenon.mpo.core.persistence.MPODatabase;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import java.io.IOException;
@@ -70,34 +70,34 @@ public class AppModule {
 
     @Provides
     @Singleton
-    DownloadManager provideDownloadManager(PodcastRepository podcastRepository) {
-        return new DownloadManager(application.getApplicationContext(), podcastRepository);
+    DownloadManager provideDownloadManager(MPORepository MPORepository) {
+        return new DownloadManager(application.getApplicationContext(), MPORepository);
     }
 
     @Provides
     @Singleton
-    PodcastDatabase providePodcastDatabase() {
-        return Room.databaseBuilder(application.getApplicationContext(), PodcastDatabase.class,
-                "podcast-database").build();
+    MPODatabase provideMPODatabase() {
+        return Room.databaseBuilder(application.getApplicationContext(), MPODatabase.class,
+                "mpo-database").build();
     }
 
     @Provides
     @Singleton
-    PodcastDao providePodcastDao(PodcastDatabase podcastDatabase) {
-        return podcastDatabase.podcastDao();
+    ShowDao provideShowDao(MPODatabase MPODatabase) {
+        return MPODatabase.showDao();
     }
 
     @Provides
     @Singleton
-    EpisodeDao provideEpisodeDao(PodcastDatabase podcastDatabase) {
-        return podcastDatabase.episodeDao();
+    EpisodeDao provideEpisodeDao(MPODatabase MPODatabase) {
+        return MPODatabase.episodeDao();
     }
 
     @Provides
     @Singleton
-    PodcastRepository providePodcastRepository(MediaPlayerOmegaService service,
-                                               PodcastDao podcastDao, EpisodeDao episodeDao) {
-        return new PodcastRepository(service, podcastDao, episodeDao);
+    MPORepository provideMPORepository(MediaPlayerOmegaService service,
+                                           ShowDao showDao, EpisodeDao episodeDao) {
+        return new MPORepository(service, showDao, episodeDao);
     }
 
     /**

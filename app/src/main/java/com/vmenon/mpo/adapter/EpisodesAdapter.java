@@ -15,15 +15,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 import com.vmenon.mpo.core.BackgroundService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class PodcastEpisodesAdapter extends
-        RecyclerView.Adapter<PodcastEpisodesAdapter.ViewHolder> {
+public class EpisodesAdapter extends
+        RecyclerView.Adapter<EpisodesAdapter.ViewHolder> {
 
     public interface EpisodeSelectedListener {
         void onEpisodeSelected(Episode episode);
@@ -36,7 +36,7 @@ public class PodcastEpisodesAdapter extends
         private ImageView thumbnailImage;
         private ImageButton menuButton;
         private Episode episode;
-        private Podcast podcast;
+        private Show show;
 
         public ViewHolder(View v) {
             super(v);
@@ -49,12 +49,12 @@ public class PodcastEpisodesAdapter extends
         }
     }
 
-    private final Podcast podcast;
+    private final Show show;
     private List<Episode> episodes;
     private EpisodeSelectedListener listener;
 
-    public PodcastEpisodesAdapter(final Podcast podcast, final List<Episode> myDataset) {
-        this.podcast = podcast;
+    public EpisodesAdapter(final Show show, final List<Episode> myDataset) {
+        this.show = show;
         this.episodes = myDataset;
     }
 
@@ -86,7 +86,7 @@ public class PodcastEpisodesAdapter extends
                     public boolean onMenuItemClick(MenuItem item) {
                         if (R.id.download_episode == item.getItemId()) {
                             BackgroundService.startDownload(vh.menuButton.getContext(),
-                                    vh.podcast,
+                                    vh.show,
                                     vh.episode);
                         }
 
@@ -104,7 +104,7 @@ public class PodcastEpisodesAdapter extends
     public void onBindViewHolder(ViewHolder holder, int position) {
         Episode episode = episodes.get(position);
         holder.episode = episode;
-        holder.podcast = podcast;
+        holder.show = show;
         holder.nameText.setText(episode.name);
         holder.descriptionText.setText(Html.fromHtml(
                 episode.description.replaceAll("(<(//)img>)|(<img.+?>)", "")));

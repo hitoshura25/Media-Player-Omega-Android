@@ -8,35 +8,35 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 
 import java.util.List;
 
 public class SubscriptionGalleryAdapter extends
         RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder> {
 
-    public interface PodcastSelectedListener {
-        void onPodcastSelected(Podcast podcast);
+    public interface ShowSelectedListener {
+        void onShowSelected(Show show);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView;
-        private Podcast podcast;
+        private Show show;
 
         public ViewHolder(View v) {
             super(v);
-            imageView = (ImageView) v.findViewById(R.id.podcastImage);
+            imageView = v.findViewById(R.id.showImage);
         }
     }
 
-    private List<Podcast> podcasts;
-    private PodcastSelectedListener listener;
+    private List<Show> shows;
+    private ShowSelectedListener listener;
 
-    public SubscriptionGalleryAdapter(List<Podcast> myDataset) {
-        podcasts = myDataset;
+    public SubscriptionGalleryAdapter(List<Show> myDataset) {
+        shows = myDataset;
     }
 
-    public void setListener(PodcastSelectedListener listener) {
+    public void setListener(ShowSelectedListener listener) {
         this.listener = listener;
     }
 
@@ -48,8 +48,8 @@ public class SubscriptionGalleryAdapter extends
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null && vh.podcast != null) {
-                    listener.onPodcastSelected(vh.podcast);
+                if (listener != null && vh.show != null) {
+                    listener.onShowSelected(vh.show);
                 }
             }
         });
@@ -59,11 +59,11 @@ public class SubscriptionGalleryAdapter extends
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Podcast podcast = podcasts.get(position);
-        holder.podcast = podcast;
+        Show show = shows.get(position);
+        holder.show = show;
 
         Glide.with(holder.itemView.getContext())
-                .load(podcast.artworkUrl)
+                .load(show.artworkUrl)
                 .fitCenter()
                 .crossFade()
                 .into(holder.imageView);
@@ -71,6 +71,6 @@ public class SubscriptionGalleryAdapter extends
 
     @Override
     public int getItemCount() {
-        return podcasts.size();
+        return shows.size();
     }
 }

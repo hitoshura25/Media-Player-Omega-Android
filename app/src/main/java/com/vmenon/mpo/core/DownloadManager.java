@@ -7,8 +7,8 @@ import android.os.Message;
 import android.util.Log;
 
 import com.vmenon.mpo.api.Episode;
-import com.vmenon.mpo.api.Podcast;
-import com.vmenon.mpo.core.persistence.PodcastRepository;
+import com.vmenon.mpo.api.Show;
+import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.event.DownloadUpdateEvent;
 
 import java.io.BufferedInputStream;
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,11 +40,11 @@ public class DownloadManager {
     private final Context context;
     private final Map<String, Download> currentDownloads = new ConcurrentHashMap<>();
 
-    private final PodcastRepository podcastRepository;
+    private final MPORepository mpoRepository;
 
-    public DownloadManager(final Context context, final PodcastRepository podcastRepository) {
+    public DownloadManager(final Context context, final MPORepository mpoRepository) {
         this.context = context;
-        this.podcastRepository = podcastRepository;
+        this.mpoRepository = mpoRepository;
 
         workQueue = new LinkedBlockingQueue<>();
         threadPoolExecutor = new ThreadPoolExecutor(NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME,
@@ -70,7 +69,7 @@ public class DownloadManager {
     }
 
     public void queueDownload(final Download download) {
-        final Podcast podcast = download.getPodcast();
+        final Show show = download.getShow();
         final Episode episode = download.getEpisode();
         threadPoolExecutor.submit(new Runnable() {
             @Override
@@ -111,9 +110,10 @@ public class DownloadManager {
                     }
 
                     output.flush();
-                    podcast.lastEpisodePublished = episode.published;
-                    podcastRepository.save(episode);
-                    podcastRepository.save(podcast);
+                    show.lastEpisodePublished = episode.published;
+                    episode.showId = show.id;
+                    mpoRepository.save(episode);
+                    mpoRepository.save(show);
                 } catch (Exception e) {
                     Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e);
                 } finally {

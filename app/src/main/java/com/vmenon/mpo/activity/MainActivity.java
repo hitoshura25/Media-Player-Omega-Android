@@ -22,9 +22,9 @@ import android.view.MenuItem;
 
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.SubscriptionGalleryAdapter;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 import com.vmenon.mpo.core.BackgroundService;
-import com.vmenon.mpo.core.persistence.PodcastRepository;
+import com.vmenon.mpo.core.persistence.MPORepository;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import javax.inject.Inject;
 public class MainActivity extends BaseActivity {
 
     @Inject
-    protected PodcastRepository podcastRepository;
+    protected MPORepository mpoRepository;
 
     private DrawerLayout mDrawerLayout;
 
@@ -42,7 +42,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
         setContentView(R.layout.activity_main);
-        setTitle(R.string.podcasts);
+        setTitle(R.string.shows);
         BackgroundService.setupSchedule(this);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -76,17 +76,17 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        final RecyclerView recyclerView = findViewById(R.id.podcastList);
+        final RecyclerView recyclerView = findViewById(R.id.showList);
         recyclerView.setHasFixedSize(true);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         gridLayoutManager.setOrientation(GridLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        podcastRepository.getAllPodcasts().observe(this, new Observer<List<Podcast>>() {
+        mpoRepository.getAllShows().observe(this, new Observer<List<Show>>() {
             @Override
-            public void onChanged(@Nullable List<Podcast> podcasts) {
-                Log.d("MPO", "Got " + podcasts.size() + " podcasts");
-                SubscriptionGalleryAdapter adapter = new SubscriptionGalleryAdapter(podcasts);
+            public void onChanged(@Nullable List<Show> shows) {
+                Log.d("MPO", "Got " + shows.size() + " shows");
+                SubscriptionGalleryAdapter adapter = new SubscriptionGalleryAdapter(shows);
                 adapter.setHasStableIds(true);
                 recyclerView.setAdapter(adapter);
             }

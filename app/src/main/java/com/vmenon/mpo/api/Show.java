@@ -1,6 +1,7 @@
 package com.vmenon.mpo.api;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -12,10 +13,10 @@ import com.google.gson.annotations.SerializedName;
 import org.parceler.Parcel;
 
 @Parcel
-@Entity
-public class Podcast {
+@Entity(indices = {@Index(value = "name", unique = true)})
+public class Show {
 
-    @PrimaryKey @NonNull
+    @NonNull
     @SerializedName("name")
     @Expose
     public String name;
@@ -35,6 +36,9 @@ public class Podcast {
     @SerializedName("feedUrl")
     @Expose
     public String feedUrl;
+
+    @PrimaryKey(autoGenerate = true)
+    public long id;
 
     public long lastUpdate = -1L;
     public long lastEpisodePublished = -1L;

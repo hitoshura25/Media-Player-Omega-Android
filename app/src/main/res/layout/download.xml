@@ -7,9 +7,9 @@
     android:clickable="true">
 
     <ImageView
-        android:id="@+id/podcastImage"
-        android:layout_width="@dimen/podcastResultImageSize"
-        android:layout_height="@dimen/podcastResultImageSize"
+        android:id="@+id/showImage"
+        android:layout_width="@dimen/showResultImageSize"
+        android:layout_height="@dimen/showResultImageSize"
         android:clickable="false"/>
 
     <LinearLayout

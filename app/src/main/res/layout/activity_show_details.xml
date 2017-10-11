@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:fitsSystemWindows="true">
 
-    <include layout="@layout/podcast_details_container" />
+    <include layout="@layout/show_details_container" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

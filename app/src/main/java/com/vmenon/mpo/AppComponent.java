@@ -2,8 +2,8 @@ package com.vmenon.mpo;
 
 import com.vmenon.mpo.activity.DownloadsActivity;
 import com.vmenon.mpo.activity.MainActivity;
-import com.vmenon.mpo.activity.PodcastDetailsActivity;
-import com.vmenon.mpo.activity.PodcastSearchResultsActivity;
+import com.vmenon.mpo.activity.ShowDetailsActivity;
+import com.vmenon.mpo.activity.ShowSearchResultsActivity;
 import com.vmenon.mpo.core.BackgroundService;
 
 import javax.inject.Singleton;
@@ -16,6 +16,6 @@ public interface AppComponent {
     void inject(BackgroundService backgroundService);
     void inject(DownloadsActivity activity);
     void inject(MainActivity activity);
-    void inject(PodcastDetailsActivity activity);
-    void inject(PodcastSearchResultsActivity activity);
+    void inject(ShowDetailsActivity activity);
+    void inject(ShowSearchResultsActivity activity);
 }
