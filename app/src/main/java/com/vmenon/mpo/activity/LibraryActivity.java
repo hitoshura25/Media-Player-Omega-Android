@@ -16,7 +16,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class LibraryActivity extends BaseActivity {
+public class LibraryActivity extends BaseDrawerActivity {
 
     @Inject
     protected MPORepository mpoRepository;
@@ -26,7 +26,6 @@ public class LibraryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
 
-        setContentView(R.layout.activity_library);
         final RecyclerView libraryList = findViewById(R.id.libraryList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         libraryList.setHasFixedSize(true);
@@ -40,5 +39,15 @@ public class LibraryActivity extends BaseActivity {
                 libraryList.setAdapter(adapter);
             }
         });
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_library;
+    }
+
+    @Override
+    protected int getNavMenuId() {
+        return R.id.nav_library;
     }
 }

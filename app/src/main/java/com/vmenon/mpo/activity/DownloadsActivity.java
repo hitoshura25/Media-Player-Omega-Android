@@ -13,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class DownloadsActivity extends BaseActivity {
+public class DownloadsActivity extends BaseDrawerActivity {
 
     @Inject
     protected DownloadManager downloadManager;
@@ -22,13 +22,20 @@ public class DownloadsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
-
-        setContentView(R.layout.activity_downloads);
-
         final List<Download> downloads = downloadManager.getDownloads();
         final DownloadsAdapter adapter = new DownloadsAdapter(downloads);
         RecyclerView downloadList = findViewById(R.id.downloadsList);
         downloadList.setLayoutManager(new LinearLayoutManager(this));
         downloadList.setAdapter(adapter);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_downloads;
+    }
+
+    @Override
+    protected int getNavMenuId() {
+        return R.id.nav_downloads;
     }
 }

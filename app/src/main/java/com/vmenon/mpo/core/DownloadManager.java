@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.vmenon.mpo.api.Episode;
@@ -112,6 +113,9 @@ public class DownloadManager {
                     output.flush();
                     show.lastEpisodePublished = episode.published;
                     episode.showId = show.id;
+                    if (TextUtils.isEmpty(episode.artworkUrl)) {
+                        episode.artworkUrl = show.artworkUrl;
+                    }
                     mpoRepository.save(episode);
                     mpoRepository.save(show);
                 } catch (Exception e) {
