@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;
@@ -14,6 +15,8 @@ import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.event.DownloadUpdateEvent;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +25,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -83,7 +85,11 @@ public class DownloadManager {
 
                 InputStream input = null;
                 OutputStream output = null;
-                episode.filename = UUID.randomUUID().toString();
+                String filename = URLUtil.guessFileName(episode.downloadUrl, null, null);
+                File showDir = new File(context.getFilesDir(), show.name);
+                showDir.mkdir();
+                File episodeFile = new File(showDir, filename);
+                episode.filename = episodeFile.getPath();
 
                 try {
                     URL url = new URL(episode.downloadUrl);
@@ -91,8 +97,7 @@ public class DownloadManager {
                     connection.connect();
                     download.setTotal(connection.getContentLength());
                     input = new BufferedInputStream(connection.getInputStream());
-                    output = context.openFileOutput(episode.filename,
-                            Context.MODE_PRIVATE);
+                    output = new FileOutputStream(episodeFile);
 
                     byte data[] = new byte[1024];
                     int count;

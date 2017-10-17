@@ -21,15 +21,19 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base_drawer);
-        ViewGroup contentView = findViewById(R.id.contentView);
-        getLayoutInflater().inflate(getLayoutResourceId(), contentView, true);
+        setContentView(getRootLayoutResourceId());
+
+        inflateContent();
+
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
+
+        if (isRootActivity()) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+        }
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -71,6 +75,18 @@ public abstract class BaseDrawerActivity extends BaseActivity {
     }
 
     protected abstract int getLayoutResourceId();
-
     protected abstract int getNavMenuId();
+
+    protected int getRootLayoutResourceId() {
+        return R.layout.activity_base_drawer;
+    }
+
+    protected void inflateContent() {
+        ViewGroup contentView = findViewById(R.id.contentView);
+        getLayoutInflater().inflate(getLayoutResourceId(), contentView, true);
+    }
+
+    protected boolean isRootActivity() {
+        return false;
+    }
 }

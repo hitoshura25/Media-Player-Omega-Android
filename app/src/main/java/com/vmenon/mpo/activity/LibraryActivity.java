@@ -1,6 +1,7 @@
 package com.vmenon.mpo.activity;
 
 import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
@@ -8,15 +9,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.vmenon.mpo.R;
+import com.vmenon.mpo.adapter.EpisodesAdapter;
 import com.vmenon.mpo.adapter.LibraryAdapter;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.core.persistence.MPORepository;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class LibraryActivity extends BaseDrawerActivity {
+public class LibraryActivity extends BaseDrawerActivity implements EpisodesAdapter.EpisodeSelectedListener {
 
     @Inject
     protected MPORepository mpoRepository;
@@ -36,9 +40,17 @@ public class LibraryActivity extends BaseDrawerActivity {
             @Override
             public void onChanged(@Nullable List<Episode> episodes) {
                 LibraryAdapter adapter = new LibraryAdapter(episodes);
+                adapter.setListener(LibraryActivity.this);
                 libraryList.setAdapter(adapter);
             }
         });
+    }
+
+    @Override
+    public void onEpisodeSelected(Episode episode) {
+        Intent intent = new Intent(this, EpisodeDetailsActivity.class);
+        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, Parcels.wrap(episode));
+        startActivity(intent);
     }
 
     @Override
@@ -49,5 +61,10 @@ public class LibraryActivity extends BaseDrawerActivity {
     @Override
     protected int getNavMenuId() {
         return R.id.nav_library;
+    }
+
+    @Override
+    protected boolean isRootActivity() {
+        return true;
     }
 }

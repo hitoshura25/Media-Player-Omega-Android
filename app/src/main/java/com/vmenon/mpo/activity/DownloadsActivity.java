@@ -44,4 +44,9 @@ public class DownloadsActivity extends BaseDrawerActivity {
     protected int getNavMenuId() {
         return R.id.nav_downloads;
     }
+
+    @Override
+    protected boolean isRootActivity() {
+        return true;
+    }
 }

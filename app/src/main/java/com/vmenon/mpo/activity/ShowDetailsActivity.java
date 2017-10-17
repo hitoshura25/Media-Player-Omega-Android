@@ -154,7 +154,7 @@ public class ShowDetailsActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 mpoRepository.save(show);
-                Snackbar.make(detailsContainer, "You have subscibed to this show",
+                Snackbar.make(detailsContainer, "You have subscribed to this show",
                         Snackbar.LENGTH_LONG)
                         .setAction("UNDO", undoListener)
                         .show();

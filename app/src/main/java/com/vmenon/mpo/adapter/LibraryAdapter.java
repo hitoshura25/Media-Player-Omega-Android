@@ -14,6 +14,10 @@ import com.vmenon.mpo.api.Episode;
 import java.util.List;
 
 public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHolder> {
+    public interface LibarySelectedListener {
+        void onEpisodeSelected(Episode episode);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView nameText;
         private ImageView imageView;
@@ -27,6 +31,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
     }
 
     private List<Episode> episodes;
+    private EpisodesAdapter.EpisodeSelectedListener listener;
 
     public LibraryAdapter(List<Episode> episodes) {
         this.episodes = episodes;
@@ -40,7 +45,9 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (listener != null) {
+                    listener.onEpisodeSelected(vh.episode);
+                }
             }
         });
 
@@ -63,5 +70,9 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
     @Override
     public int getItemCount() {
         return episodes.size();
+    }
+
+    public void setListener(EpisodesAdapter.EpisodeSelectedListener listener) {
+        this.listener = listener;
     }
 }

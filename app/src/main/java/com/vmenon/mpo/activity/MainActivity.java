@@ -79,4 +79,9 @@ public class MainActivity extends BaseDrawerActivity {
         return R.id.nav_home;
     }
 
+    @Override
+    protected boolean isRootActivity() {
+        return true;
+    }
+
 }
