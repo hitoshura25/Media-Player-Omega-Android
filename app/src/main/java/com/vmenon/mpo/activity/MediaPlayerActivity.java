@@ -40,6 +40,7 @@ public class MediaPlayerActivity extends BaseActivity {
     private Episode episode;
     private MediaBrowserCompat mediaBrowser;
     private PlaybackStateCompat playbackState;
+    private boolean playOnStart = false;
 
     private ImageView actionButton;
     private ImageView artworkImage;
@@ -66,10 +67,11 @@ public class MediaPlayerActivity extends BaseActivity {
                 MediaControllerCompat mediaController = new MediaControllerCompat(
                         MediaPlayerActivity.this, token);
                 MediaControllerCompat.setMediaController(MediaPlayerActivity.this, mediaController);
-                PlaybackStateCompat playbackState = mediaController.getPlaybackState();
                 mediaController.registerCallback(controllerCallback);
+                PlaybackStateCompat playbackState = mediaController.getPlaybackState();
                 updatePlaybackState(playbackState);
                 MediaMetadataCompat metadata = mediaController.getMetadata();
+
                 if (metadata != null) {
                     updateDuration(metadata);
                 }
@@ -78,6 +80,13 @@ public class MediaPlayerActivity extends BaseActivity {
                         playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
                     scheduleSeekbarUpdate();
                 }
+
+                if (playOnStart) {
+                    mediaController.getTransportControls().playFromMediaId(
+                            MPOMediaService.createMediaId(episode), null);
+                    playOnStart = false;
+                }
+
             } catch (RemoteException e) {
                 Log.w("MPO", "Error creating mediaController", e);
             }
@@ -105,29 +114,32 @@ public class MediaPlayerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
         episode = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_EPISODE));
+
+        if (savedInstanceState == null) {
+            playOnStart = true;
+        }
+
         actionButton = findViewById(R.id.actionButton);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(
                         MediaPlayerActivity.this);
+                MediaControllerCompat.TransportControls transportControls = mediaController.getTransportControls();
                 int currentState = mediaController.getPlaybackState().getState();
 
-                if (PlaybackStateCompat.STATE_PLAYING == currentState) {
-                    mediaController.getTransportControls().pause();
-                } else {
-                    String mediaId = MPOMediaService.createMediaId(episode);
-                    if (PlaybackStateCompat.STATE_PAUSED == currentState) {
-                        if (mediaId.equals(mediaController.getMetadata().getString(
-                                MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-                            mediaController.getTransportControls().play();
+                switch (currentState) {
+                    case PlaybackStateCompat.STATE_BUFFERING:
+                    case PlaybackStateCompat.STATE_PLAYING:
+                        transportControls.pause();
+                        stopSeekbarUpdate();
+                        break;
+                    case PlaybackStateCompat.STATE_PAUSED:
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        transportControls.play();
+                        scheduleSeekbarUpdate();
+                        break;
 
-                        } else {
-                            mediaController.getTransportControls().playFromMediaId(mediaId, null);
-                        }
-                    } else {
-                        mediaController.getTransportControls().playFromMediaId(mediaId, null);
-                    }
                 }
             }
         });
@@ -136,6 +148,26 @@ public class MediaPlayerActivity extends BaseActivity {
         Glide.with(this).load(episode.artworkUrl).fitCenter().into(artworkImage);
 
         seekBar = findViewById(R.id.seekBar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                positionText.setText(DateUtils.formatElapsedTime(seekBar.getProgress()));
+                remainingText.setText("-" + DateUtils.formatElapsedTime(episode.length - seekBar.getProgress()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                stopSeekbarUpdate();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls()
+                        .seekTo(seekBar.getProgress() * 1000);
+                scheduleSeekbarUpdate();
+            }
+        });
+
         positionText = findViewById(R.id.position);
         remainingText = findViewById(R.id.remaining);
 
@@ -194,7 +226,6 @@ public class MediaPlayerActivity extends BaseActivity {
             return;
         }
         playbackState = state;
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
@@ -211,7 +242,6 @@ public class MediaPlayerActivity extends BaseActivity {
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-
                 stopSeekbarUpdate();
                 break;
             default:
@@ -234,8 +264,6 @@ public class MediaPlayerActivity extends BaseActivity {
             currentPosition += (int) timeDelta * playbackState.getPlaybackSpeed();
         }
         seekBar.setProgress((int) currentPosition);
-        positionText.setText(DateUtils.formatElapsedTime(currentPosition));
-        remainingText.setText("-" + DateUtils.formatElapsedTime(episode.length - currentPosition));
     }
 
     private void updateDuration(MediaMetadataCompat metadata) {

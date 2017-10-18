@@ -128,7 +128,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         mediaSession = new MediaSessionCompat(this, TAG);
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         stateBuilder = new PlaybackStateCompat.Builder().setActions(
                 PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE);
         mediaSession.setPlaybackState(stateBuilder.build());
@@ -395,7 +395,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         Log.d(TAG, "updatePlaybackState");
         long position = PlaybackState.PLAYBACK_POSITION_UNKNOWN;
         int state = playbackState;
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null) {
             position = mediaPlayer.getCurrentPosition();
         }
 
@@ -541,6 +541,16 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            if (requestedMediaId.equals(mediaId)) {
+                if (playbackState == PlaybackStateCompat.STATE_PLAYING ||
+                        playbackState == PlaybackStateCompat.STATE_BUFFERING) {
+                    updatePlaybackState(null);
+                } else {
+                    handlePlayRequest(null);
+                }
+                return;
+            }
+
             String[] mediaIdParts = mediaId.split(":");
             if (EPISODE_MEDIA_PREFIX.equals(mediaIdParts[0])) {
                 long episodeId = Long.parseLong(mediaIdParts[1]);
@@ -568,6 +578,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             if (mediaPlayer.isPlaying()) {
                 playbackState = PlaybackState.STATE_BUFFERING;
             }
+            updatePlaybackState(null);
         }
     }
 
