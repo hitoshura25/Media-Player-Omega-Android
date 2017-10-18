@@ -1,6 +1,9 @@
 package com.vmenon.mpo.core.persistence;
 
 import android.arch.lifecycle.LiveData;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;
@@ -23,12 +26,14 @@ public class MPORepository {
     private final ShowDao showDao;
     private final EpisodeDao episodeDao;
     private final Executor discExecutor;
+    private final Executor mainThreadExecutor;
 
     public MPORepository(MediaPlayerOmegaService service, ShowDao showDao, EpisodeDao episodeDao) {
         this.service = service;
         this.showDao = showDao;
         this.episodeDao = episodeDao;
         this.discExecutor = Executors.newSingleThreadExecutor();
+        this.mainThreadExecutor = new MainThreadExecutor();
     }
 
     public LiveData<List<Show>> getAllShows() {
@@ -40,7 +45,13 @@ public class MPORepository {
         discExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                dataHandler.onDataReady(showDao.getById(id));
+                final Show show = showDao.getById(id);
+                mainThreadExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataHandler.onDataReady(show);
+                    }
+                });
             }
         });
     }
@@ -59,12 +70,23 @@ public class MPORepository {
         return showDao.loadLastUpdatedBefore(compareTime);
     }
 
+    public LiveData<Episode> getLiveEpisode(long id) {
+        // TODO: Cache
+        return episodeDao.liveById(id);
+    }
+
     public void fetchEpisode(final long id, final DataHandler<Episode> dataHandler) {
         // TODO: Implement cache
         discExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                dataHandler.onDataReady(episodeDao.byId(id));
+                final Episode episode = episodeDao.byId(id);
+                mainThreadExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataHandler.onDataReady(episode);
+                    }
+                });
             }
         });
     }
@@ -80,5 +102,13 @@ public class MPORepository {
 
     public LiveData<List<Episode>> getAllEpisodes() {
         return episodeDao.load();
+    }
+
+    private static class MainThreadExecutor implements Executor {
+        private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+        @Override
+        public void execute(@NonNull Runnable command) {
+            mainThreadHandler.post(command);
+        }
     }
 }

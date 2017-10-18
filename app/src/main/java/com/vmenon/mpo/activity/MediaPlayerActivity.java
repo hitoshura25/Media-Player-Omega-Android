@@ -1,5 +1,6 @@
 package com.vmenon.mpo.activity;
 
+import android.arch.lifecycle.Observer;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.core.MPOMediaService;
+import com.vmenon.mpo.core.persistence.MPORepository;
+import com.vmenon.mpo.util.MediaHelper;
 
 import org.parceler.Parcels;
 
@@ -30,17 +33,24 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 public class MediaPlayerActivity extends BaseActivity {
     public static final String EXTRA_EPISODE = "extraEpisode";
+    public static final String EXTRA_FROM_NOTIFICATION = "extraFromNotification";
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+
+    @Inject
+    protected MPORepository repository;
 
     private final Handler handler = new Handler();
     private Episode episode;
     private MediaBrowserCompat mediaBrowser;
     private PlaybackStateCompat playbackState;
     private boolean playOnStart = false;
+    private boolean fromNotification = false;
 
     private ImageView actionButton;
     private ImageView artworkImage;
@@ -71,19 +81,44 @@ public class MediaPlayerActivity extends BaseActivity {
                 PlaybackStateCompat playbackState = mediaController.getPlaybackState();
                 updatePlaybackState(playbackState);
                 MediaMetadataCompat metadata = mediaController.getMetadata();
+                String mediaId;
 
                 if (metadata != null) {
                     updateDuration(metadata);
                 }
                 updateProgress();
-                if (playbackState != null && (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
-                        playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
+                boolean currentlyPlaying = playbackState != null &&
+                        (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                                playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING);
+
+                if (fromNotification) {
+                    mediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                    MediaHelper.MediaType mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId);
+                    switch (mediaType.getMediaType()) {
+                        case MediaHelper.MEDIA_TYPE_EPISODE:
+                            repository.getLiveEpisode(mediaType.getId()).observe(MediaPlayerActivity.this,
+                                    new Observer<Episode>() {
+                                        @Override
+                                        public void onChanged(@Nullable Episode episode) {
+                                            MediaPlayerActivity.this.episode = episode;
+                                            updateUIFromMedia();
+                                        }
+                                    });
+                            break;
+                    }
+                } else {
+                    mediaId = MediaHelper.createMediaId(episode);
+                }
+
+                if (currentlyPlaying) {
                     scheduleSeekbarUpdate();
+
+                    // Force playing if from notification to trigger callback
+                    playOnStart = playOnStart || fromNotification;
                 }
 
                 if (playOnStart) {
-                    mediaController.getTransportControls().playFromMediaId(
-                            MPOMediaService.createMediaId(episode), null);
+                    mediaController.getTransportControls().playFromMediaId(mediaId, null);
                     playOnStart = false;
                 }
 
@@ -112,12 +147,9 @@ public class MediaPlayerActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAppComponent().inject(this);
         setContentView(R.layout.activity_media_player);
-        episode = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_EPISODE));
-
-        if (savedInstanceState == null) {
-            playOnStart = true;
-        }
+        fromNotification = getIntent().getBooleanExtra(EXTRA_FROM_NOTIFICATION, false);
 
         actionButton = findViewById(R.id.actionButton);
         actionButton.setOnClickListener(new View.OnClickListener() {
@@ -139,20 +171,20 @@ public class MediaPlayerActivity extends BaseActivity {
                         transportControls.play();
                         scheduleSeekbarUpdate();
                         break;
-
+                    case PlaybackStateCompat.STATE_NONE:
+                        transportControls.playFromMediaId(MediaHelper.createMediaId(episode), null);
+                        break;
                 }
             }
         });
 
         artworkImage = findViewById(R.id.artworkImage);
-        Glide.with(this).load(episode.artworkUrl).fitCenter().into(artworkImage);
-
         seekBar = findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 positionText.setText(DateUtils.formatElapsedTime(seekBar.getProgress()));
-                remainingText.setText("-" + DateUtils.formatElapsedTime(episode.length - seekBar.getProgress()));
+                remainingText.setText("-" + DateUtils.formatElapsedTime(seekBar.getMax() - seekBar.getProgress()));
             }
 
             @Override
@@ -176,6 +208,13 @@ public class MediaPlayerActivity extends BaseActivity {
                 connectionCallback,
                 null); // optional Bundle
 
+        if (!fromNotification) {
+            episode = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_EPISODE));
+            if (savedInstanceState == null) {
+                playOnStart = true;
+            }
+            updateUIFromMedia();
+        }
     }
 
     @Override
@@ -200,6 +239,10 @@ public class MediaPlayerActivity extends BaseActivity {
         super.onDestroy();
         stopSeekbarUpdate();
         executorService.shutdown();
+    }
+
+    private void updateUIFromMedia() {
+        Glide.with(this).load(episode.artworkUrl).fitCenter().into(artworkImage);
     }
 
     private void scheduleSeekbarUpdate() {

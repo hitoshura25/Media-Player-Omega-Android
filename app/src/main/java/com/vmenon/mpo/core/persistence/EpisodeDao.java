@@ -21,4 +21,7 @@ public interface EpisodeDao {
 
     @Query("SELECT * from episode WHERE id = :id")
     Episode byId(long id);
+
+    @Query("SELECT * from episode WHERE id = :id")
+    LiveData<Episode> liveById(long id);
 }

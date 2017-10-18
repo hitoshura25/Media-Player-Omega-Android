@@ -1,37 +1,46 @@
 package com.vmenon.mpo.core;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.session.PlaybackState;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.vmenon.mpo.MPOApplication;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.activity.MediaPlayerActivity;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;
 import com.vmenon.mpo.core.persistence.MPORepository;
+import com.vmenon.mpo.util.MediaHelper;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -42,10 +51,6 @@ import javax.inject.Inject;
 
 public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMediaPlayer.MediaPlayerListener,
         AudioManager.OnAudioFocusChangeListener {
-
-    public static String createMediaId(Episode episode) {
-        return EPISODE_MEDIA_PREFIX + ":" + episode.id;
-    }
 
     // The action of the incoming Intent indicating that it contains a command
     // to be executed (see {@link #onStartCommand})
@@ -78,7 +83,14 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private static final String MEDIA_ROOT_ID = "com.vmenon.mpo.media_root_id";
     private static final String EMPTY_MEDIA_ROOT_ID = "com.vmenon.mpo.empty_root_id";
 
-    private static final String EPISODE_MEDIA_PREFIX = "episode";
+    private static final int NOTIFICATION_ID = 414;
+    private static final String NOTIFICATION_CHANNEL_ID = "com.vmenon.mpo.MUSIC_CHANNEL_ID";
+    private static final int NOTIFICATION_REQUEST_CODE = 100;
+    private static final String NOTIFICATION_ACTION_PAUSE = "com.vmenon.mpo.pause";
+    private static final String NOTIFICATION_ACTION_PLAY = "com.vmenon.mpo.play";
+    private static final String NOTIFICATION_ACTION_PREV = "com.vmenon.mpo.prev";
+    private static final String NOTIFICATION_ACTION_NEXT = "com.vmenon.mpo.next";
+    private static final String NOTIFICATION_ACTION_STOP = "com.vmenon.mpo.stop";
 
     @Inject
     protected MPORepository mpoRepository;
@@ -87,16 +99,25 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private PlaybackStateCompat.Builder stateBuilder;
     private MPOMediaPlayer mediaPlayer;
     private AudioManager audioManager;
+    private NotificationManager notificationManager;
 
     private boolean serviceStarted = false;
+    private boolean notificationStarted = false;
     private int audioFocus = AUDIO_NO_FOCUS_NO_DUCK;
     private int playbackState;
     private boolean playOnFocusGain;
     private boolean audioNoisyReceiverRegistered;
     private String requestedMediaId = "";
+    private Bitmap currentMediaBitmap;
+    private Bitmap placeholderMediaBitmap;
+
+    private PendingIntent playIntent;
+    private PendingIntent pauseIntent;
+    private PendingIntent previousIntent;
+    private PendingIntent nextIntent;
+    private PendingIntent stopIntent;
 
     private DelayedStopHandler delayedStopHandler = new DelayedStopHandler(this);
-
     private IntentFilter audioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
@@ -115,6 +136,32 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         }
     };
 
+    private BroadcastReceiver notificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            MediaControllerCompat.TransportControls transportControls = mediaSession.getController()
+                    .getTransportControls();
+            Log.d(TAG, "Received intent with action " + action);
+            switch (action) {
+                case NOTIFICATION_ACTION_PAUSE:
+                    transportControls.pause();
+                    break;
+                case NOTIFICATION_ACTION_PLAY:
+                    transportControls.play();
+                    break;
+                case NOTIFICATION_ACTION_NEXT:
+                    transportControls.skipToNext();
+                    break;
+                case NOTIFICATION_ACTION_PREV:
+                    transportControls.skipToPrevious();
+                    break;
+                default:
+                    Log.w(TAG, "Unknown intent ignored. Action=" + action);
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -122,6 +169,24 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         playbackState = PlaybackStateCompat.STATE_NONE;
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String pkg = getPackageName();
+        pauseIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
+                new Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        playIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
+                new Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        previousIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
+                new Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        nextIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
+                new Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
+        stopIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
+                new Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // Cancel all notifications to handle the case where the Service was killed and
+        // restarted by the system.
+        notificationManager.cancelAll();
+
         // Create the Wifi lock (this does not acquire the lock, this just creates it)
         /*wifiLock = ((WifiManager) service.getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");*/
@@ -169,7 +234,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         Log.d(TAG, "onDestroy");
         // Service is being killed, so make sure we release our resources
         handleStopRequest(null);
-
+        stopNotification();
         delayedStopHandler.removeCallbacksAndMessages(null);
         // Always release the MediaSession to clean up resources
         // and notify associated MediaController(s).
@@ -273,11 +338,6 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             mediaSession.setActive(true);
         }
 
-        /** TODO
-        MediaMetadataCompat mediaMetadata = controller.getMetadata();
-        MediaDescriptionCompat description = mediaMetadata.getDescription();
-         **/
-
         playOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -302,49 +362,40 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         }
     }
 
-    private void startNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(MPOMediaService.this);
+    private void updateNotification() {
+        if (!notificationStarted) {
+            // The notification must be updated after setting started to true
+            Notification notification = createNotification();
+            if (notification != null) {
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(NOTIFICATION_ACTION_NEXT);
+                filter.addAction(NOTIFICATION_ACTION_PAUSE);
+                filter.addAction(NOTIFICATION_ACTION_PLAY);
+                filter.addAction(NOTIFICATION_ACTION_PREV);
+                registerReceiver(notificationReceiver, filter);
 
-        builder
-                // Add the metadata for the currently playing track
-                .setContentTitle("the title")
-                .setContentText("the subtitle")
-                .setSubText("the description")
-                .setLargeIcon(null)
+                startForeground(NOTIFICATION_ID, notification);
+                notificationStarted = true;
+            }
+        } else {
+            Notification notification = createNotification();
+            if (notification != null) {
+                notificationManager.notify(NOTIFICATION_ID, notification);
+            }
+        }
+    }
 
-                // Enable launching the player by clicking the notification
-                .setContentIntent(mediaSession.getController().getSessionActivity())
-
-                // Stop the service when the notification is swiped away
-                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(MPOMediaService.this,
-                        PlaybackStateCompat.ACTION_STOP))
-
-                // Make the transport controls visible on the lockscreen
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
-                // Add an app icon and set its accent color
-                // Be careful about the color
-                .setSmallIcon(R.drawable.ic_headset)
-                .setColor(ContextCompat.getColor(MPOMediaService.this, R.color.colorPrimary))
-
-                // Add a pause button
-                .addAction(new NotificationCompat.Action(
-                        R.drawable.ic_play_arrow_white_48dp, getString(R.string.play),
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(MPOMediaService.this,
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE)))
-
-                // Take advantage of MediaStyle features
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                        .setMediaSession(mediaSession.getSessionToken())
-                        .setShowActionsInCompactView(0)
-
-                        // Add a cancel button
-                        .setShowCancelButton(true)
-                        .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                MPOMediaService.this, PlaybackStateCompat.ACTION_STOP)));
-
-        // Display the notification and place the service in the foreground
-        startForeground(100, builder.build());
+    private void stopNotification() {
+        if (notificationStarted) {
+            notificationStarted = false;
+            try {
+                notificationManager.cancel(NOTIFICATION_ID);
+                unregisterReceiver(notificationReceiver);
+            } catch (IllegalArgumentException ex) {
+                // ignore if the receiver is not registered.
+            }
+            stopForeground(true);
+        }
     }
 
     private void handlePauseRequest() {
@@ -412,8 +463,11 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
         mediaSession.setPlaybackState(stateBuilder.build());
 
-        if (state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_PAUSED) {
-            startNotification();
+        if (playbackState == PlaybackStateCompat.STATE_STOPPED ||
+                playbackState == PlaybackStateCompat.STATE_NONE) {
+            stopNotification();
+        } else {
+            updateNotification();
         }
     }
 
@@ -521,7 +575,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
                     .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, episode.artworkUrl)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.artworkUrl)
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
                     .build();
             handlePlayRequest(mediaFile);
@@ -529,6 +583,151 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         } else {
             Log.w("MPO", "Cannot play incorrect media request: " + mediaId);
             return;
+        }
+    }
+
+    private Notification createNotification() {
+        MediaMetadataCompat mediaMetadata = mediaSession.getController().getMetadata();
+        Log.d(TAG, "updateNotificationMetadata. mMetadata=" +  mediaMetadata);
+        if (mediaMetadata == null) {
+            return null;
+        }
+
+        // Notification channels are only supported on Android O+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
+
+        final NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+
+        final int playPauseButtonPosition = addNotificationActions(notificationBuilder);
+        notificationBuilder
+                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                        // show only play/pause in compact view
+                        .setShowActionsInCompactView(playPauseButtonPosition)
+                        .setShowCancelButton(true)
+                        .setCancelButtonIntent(stopIntent)
+                        .setMediaSession(getSessionToken()))
+                .setDeleteIntent(stopIntent)
+                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                .setSmallIcon(R.drawable.ic_headset)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(createNotificationContentIntent())
+                .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+
+        setNotificationPlaybackState(notificationBuilder);
+
+        String fetchArtUrl = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+
+        if (currentMediaBitmap != null) {
+            notificationBuilder.setLargeIcon(currentMediaBitmap);
+        } else {
+            if (placeholderMediaBitmap == null) {
+                placeholderMediaBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_headset);
+            }
+            notificationBuilder.setLargeIcon(placeholderMediaBitmap);
+            if (fetchArtUrl != null) {
+                Glide.with(this).load(fetchArtUrl).asBitmap().into(new ArtworkTarget(this, fetchArtUrl,
+                        notificationBuilder));
+            }
+        }
+
+        return notificationBuilder.build();
+    }
+
+    private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
+        Log.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + playbackState);
+        if (!notificationStarted) {
+            Log.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
+            stopForeground(true);
+            return;
+        }
+
+        // Make sure that the notification can be dismissed by the user when we are not playing:
+        builder.setOngoing(playbackState == PlaybackStateCompat.STATE_PLAYING);
+    }
+
+    private PendingIntent createNotificationContentIntent() {
+        Intent openUI = new Intent(this, MediaPlayerActivity.class);
+        openUI.putExtra(MediaPlayerActivity.EXTRA_FROM_NOTIFICATION, true);
+        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, openUI,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private int addNotificationActions(final NotificationCompat.Builder notificationBuilder) {
+        Log.d(TAG, "updatePlayPauseAction");
+
+        int playPauseButtonPosition = 0;
+        /* TODO: Previous
+        // If skip to previous action is enabled
+        if ((getAvailableActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
+            notificationBuilder.addAction(R.drawable.ic_skip_previous_white_24dp,
+                    getString(R.string.label_previous), mPreviousIntent);
+
+            // If there is a "skip to previous" button, the play/pause button will
+            // be the second one. We need to keep track of it, because the MediaStyle notification
+            // requires to specify the index of the buttons (actions) that should be visible
+            // when in compact view.
+            playPauseButtonPosition = 1;
+        }
+        */
+
+        // Play or pause button, depending on the current state.
+        final String label;
+        final int icon;
+        final PendingIntent intent;
+        if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
+            label = getString(R.string.pause);
+            icon = R.drawable.ic_pause_circle_filled_white_48dp;
+            intent = pauseIntent;
+        } else {
+            label = getString(R.string.play);
+            icon = R.drawable.ic_play_circle_filled_white_48dp;
+            intent = playIntent;
+        }
+        notificationBuilder.addAction(new NotificationCompat.Action(icon, label, intent));
+
+        /* TODO: Prev/Next
+        // If skip to next action is enabled
+        if ((getAvailableActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
+            notificationBuilder.addAction(R.drawable.ic_skip_next_white_24dp,
+                    mService.getString(R.string.label_next), mNextIntent);
+        }
+        */
+
+        return playPauseButtonPosition;
+    }
+
+    private void handleNotificationArtwork(String artworkUrl, Bitmap bitmap,
+                                           NotificationCompat.Builder notificationBuilder) {
+        MediaMetadataCompat mediaMetadata = mediaSession.getController().getMetadata();
+        String currentArtworkUrl = mediaMetadata != null ?
+                mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI) : null;
+
+        if (currentArtworkUrl != null && currentArtworkUrl.equals(artworkUrl)) {
+            // If the media is still the same, update the notification:
+            Log.d(TAG, "handleNotificationArtwork: set bitmap to " + artworkUrl);
+            currentMediaBitmap =  bitmap;
+            notificationBuilder.setLargeIcon(bitmap);
+            notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        if (notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
+            NotificationChannel notificationChannel =
+                    new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                            getString(R.string.notification_channel),
+                            NotificationManager.IMPORTANCE_LOW);
+
+            notificationChannel.setDescription(
+                    getString(R.string.notification_channel_description));
+
+            notificationManager.createNotificationChannel(notificationChannel);
         }
     }
 
@@ -551,11 +750,12 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
                 return;
             }
 
-            String[] mediaIdParts = mediaId.split(":");
-            if (EPISODE_MEDIA_PREFIX.equals(mediaIdParts[0])) {
-                long episodeId = Long.parseLong(mediaIdParts[1]);
+            MediaHelper.MediaType mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId);
+            if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType.getMediaType()) {
                 requestedMediaId = mediaId;
-                mpoRepository.fetchEpisode(episodeId, new EpisodeDataHandler(MPOMediaService.this, mediaId));
+                currentMediaBitmap = null;
+                mpoRepository.fetchEpisode(mediaType.getId(), new EpisodeDataHandler(
+                        MPOMediaService.this, mediaId));
             } else {
                 Log.w("MPO", "Unable to determine how to play media id: " + mediaId);
                 return;
@@ -638,6 +838,27 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             MPOMediaService service = serviceRef.get();
             if (service != null) {
                 service.playEpisode(mediaId, episode, show);
+            }
+        }
+    }
+
+    private static class ArtworkTarget extends SimpleTarget<Bitmap> {
+        WeakReference<MPOMediaService> serviceRef;
+        NotificationCompat.Builder notificationBuilder;
+        String artworkUrl;
+
+        ArtworkTarget(MPOMediaService service, String artworkUrl, NotificationCompat.Builder builder) {
+            super(500, 500);
+            this.serviceRef = new WeakReference<>(service);
+            this.artworkUrl = artworkUrl;
+            this.notificationBuilder = builder;
+        }
+
+        @Override
+        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+            MPOMediaService service = serviceRef.get();
+            if (service != null) {
+                service.handleNotificationArtwork(artworkUrl, resource, notificationBuilder);
             }
         }
     }
