@@ -1,6 +1,8 @@
 package com.vmenon.mpo.core;
 
 import android.app.PendingIntent;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,22 +19,33 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.vmenon.mpo.MPOApplication;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.activity.MediaPlayerActivity;
+import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.api.Show;
+import com.vmenon.mpo.core.persistence.MPORepository;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMediaPlayer.MediaPlayerListener,
         AudioManager.OnAudioFocusChangeListener {
+
+    public static String createMediaId(Episode episode) {
+        return EPISODE_MEDIA_PREFIX + ":" + episode.id;
+    }
 
     // The action of the incoming Intent indicating that it contains a command
     // to be executed (see {@link #onStartCommand})
@@ -65,6 +78,11 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private static final String MEDIA_ROOT_ID = "com.vmenon.mpo.media_root_id";
     private static final String EMPTY_MEDIA_ROOT_ID = "com.vmenon.mpo.empty_root_id";
 
+    private static final String EPISODE_MEDIA_PREFIX = "episode";
+
+    @Inject
+    protected MPORepository mpoRepository;
+
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
     private MPOMediaPlayer mediaPlayer;
@@ -75,6 +93,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private int playbackState;
     private boolean playOnFocusGain;
     private boolean audioNoisyReceiverRegistered;
+    private String requestedMediaId = "";
 
     private DelayedStopHandler delayedStopHandler = new DelayedStopHandler(this);
 
@@ -99,6 +118,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     @Override
     public void onCreate() {
         super.onCreate();
+        ((MPOApplication) getApplication()).getAppComponent().inject(this);
+
         playbackState = PlaybackStateCompat.STATE_NONE;
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         // Create the Wifi lock (this does not acquire the lock, this just creates it)
@@ -202,6 +223,34 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             playbackState = PlaybackState.STATE_PLAYING;
         }
         updatePlaybackState(null);
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        Log.d(TAG, "onAudioFocusChange. focusChange=" + focusChange);
+        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            // We have gained focus:
+            audioFocus = AUDIO_FOCUSED;
+
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
+                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            // We have lost focus. If we can duck (low playback volume), we can keep playing.
+            // Otherwise, we need to pause the playback.
+            boolean canDuck = focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
+            audioFocus = canDuck ? AUDIO_NO_FOCUS_CAN_DUCK : AUDIO_NO_FOCUS_NO_DUCK;
+
+            // If we are playing, we need to reset media player by calling configMediaPlayerState
+            // with mAudioFocus properly set.
+            if (playbackState == PlaybackState.STATE_PLAYING && !canDuck) {
+                // If we don't have audio focus and can't duck, we save the information that
+                // we were playing, so that we can resume playback once we get the focus back.
+                playOnFocusGain = true;
+            }
+        } else {
+            Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+        }
+        configMediaPlayerState();
     }
 
     private boolean allowBrowsing(@NonNull String clientPackageName, int clientUid) {
@@ -463,32 +512,24 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         }
     }
 
-    @Override
-    public void onAudioFocusChange(int focusChange) {
-        Log.d(TAG, "onAudioFocusChange. focusChange=" + focusChange);
-        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            // We have gained focus:
-            audioFocus = AUDIO_FOCUSED;
-
-        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
-                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
-                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-            // We have lost focus. If we can duck (low playback volume), we can keep playing.
-            // Otherwise, we need to pause the playback.
-            boolean canDuck = focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
-            audioFocus = canDuck ? AUDIO_NO_FOCUS_CAN_DUCK : AUDIO_NO_FOCUS_NO_DUCK;
-
-            // If we are playing, we need to reset media player by calling configMediaPlayerState
-            // with mAudioFocus properly set.
-            if (playbackState == PlaybackState.STATE_PLAYING && !canDuck) {
-                // If we don't have audio focus and can't duck, we save the information that
-                // we were playing, so that we can resume playback once we get the focus back.
-                playOnFocusGain = true;
-            }
+    private void playEpisode(String mediaId, Episode episode, Show show) {
+        if (requestedMediaId.equals(mediaId)) {
+            File mediaFile = new File(episode.filename);
+            MediaMetadataCompat metadata = new MediaMetadataCompat.Builder().putString(
+                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.name)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
+                    .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, episode.artworkUrl)
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
+                    .build();
+            handlePlayRequest(mediaFile);
+            mediaSession.setMetadata(metadata);
         } else {
-            Log.e(TAG, "onAudioFocusChange: Ignoring unsupported focusChange: " + focusChange);
+            Log.w("MPO", "Cannot play incorrect media request: " + mediaId);
+            return;
         }
-        configMediaPlayerState();
     }
 
     private class SessionCallback extends MediaSessionCompat.Callback {
@@ -500,7 +541,15 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            handlePlayRequest(new File(mediaId));
+            String[] mediaIdParts = mediaId.split(":");
+            if (EPISODE_MEDIA_PREFIX.equals(mediaIdParts[0])) {
+                long episodeId = Long.parseLong(mediaIdParts[1]);
+                requestedMediaId = mediaId;
+                mpoRepository.fetchEpisode(episodeId, new EpisodeDataHandler(MPOMediaService.this, mediaId));
+            } else {
+                Log.w("MPO", "Unable to determine how to play media id: " + mediaId);
+                return;
+            }
         }
 
         @Override
@@ -540,6 +589,44 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
                 Log.d(TAG, "Stopping service with delay handler.");
                 service.stopSelf();
                 service.serviceStarted = false;
+            }
+        }
+    }
+
+    private static class EpisodeDataHandler implements MPORepository.DataHandler<Episode> {
+        WeakReference<MPOMediaService> serviceRef;
+        String mediaId;
+
+        EpisodeDataHandler(MPOMediaService service, String mediaId) {
+            serviceRef = new WeakReference<>(service);
+            this.mediaId = mediaId;
+        }
+
+        @Override
+        public void onDataReady(Episode episode) {
+            MPOMediaService service = serviceRef.get();
+            if (service != null) {
+                service.mpoRepository.fetchShow(episode.showId, new ShowDataHandler(service, mediaId, episode));
+            }
+        }
+    }
+
+    private static class ShowDataHandler implements MPORepository.DataHandler<Show> {
+        WeakReference<MPOMediaService> serviceRef;
+        Episode episode;
+        String mediaId;
+
+        ShowDataHandler(MPOMediaService service, String mediaId, Episode episode) {
+            serviceRef = new WeakReference<>(service);
+            this.mediaId = mediaId;
+            this.episode = episode;
+        }
+
+        @Override
+        public void onDataReady(Show show) {
+            MPOMediaService service = serviceRef.get();
+            if (service != null) {
+                service.playEpisode(mediaId, episode, show);
             }
         }
     }

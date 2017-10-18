@@ -6,6 +6,7 @@ import com.vmenon.mpo.activity.MainActivity;
 import com.vmenon.mpo.activity.ShowDetailsActivity;
 import com.vmenon.mpo.activity.ShowSearchResultsActivity;
 import com.vmenon.mpo.core.BackgroundService;
+import com.vmenon.mpo.core.MPOMediaService;
 
 import javax.inject.Singleton;
 
@@ -15,6 +16,7 @@ import dagger.Component;
 @Component(modules = {AppModule.class})
 public interface AppComponent {
     void inject(BackgroundService backgroundService);
+    void inject(MPOMediaService service);
     void inject(DownloadsActivity activity);
     void inject(LibraryActivity activity);
     void inject(MainActivity activity);

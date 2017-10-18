@@ -13,6 +13,10 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ShowDao {
+
+    @Query("SELECT * FROM show where id = :id")
+    Show getById(long id);
+
     @Insert(onConflict = REPLACE)
     void save(Show show);
 

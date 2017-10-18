@@ -18,4 +18,7 @@ public interface EpisodeDao {
 
     @Query("SELECT * FROM episode")
     LiveData<List<Episode>> load();
+
+    @Query("SELECT * from episode WHERE id = :id")
+    Episode byId(long id);
 }

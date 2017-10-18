@@ -109,17 +109,25 @@ public class MediaPlayerActivity extends BaseActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int currentState = MediaControllerCompat.getMediaController(MediaPlayerActivity.this)
-                        .getPlaybackState().getState();
+                MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(
+                        MediaPlayerActivity.this);
+                int currentState = mediaController.getPlaybackState().getState();
+
                 if (PlaybackStateCompat.STATE_PLAYING == currentState) {
-                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this)
-                            .getTransportControls().pause();
-                } else if (PlaybackStateCompat.STATE_PAUSED == currentState) {
-                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this)
-                            .getTransportControls().play();
+                    mediaController.getTransportControls().pause();
                 } else {
-                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this)
-                            .getTransportControls().playFromMediaId(episode.filename, null);
+                    String mediaId = MPOMediaService.createMediaId(episode);
+                    if (PlaybackStateCompat.STATE_PAUSED == currentState) {
+                        if (mediaId.equals(mediaController.getMetadata().getString(
+                                MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                            mediaController.getTransportControls().play();
+
+                        } else {
+                            mediaController.getTransportControls().playFromMediaId(mediaId, null);
+                        }
+                    } else {
+                        mediaController.getTransportControls().playFromMediaId(mediaId, null);
+                    }
                 }
             }
         });
@@ -215,18 +223,19 @@ public class MediaPlayerActivity extends BaseActivity {
         if (playbackState == null) {
             return;
         }
-        long currentPosition = playbackState.getPosition();
+        long currentPosition = playbackState.getPosition() / 1000;
         if (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             // Calculate the elapsed time between the last position update and now and unless
             // paused, we can assume (delta * speed) + current position is approximately the
             // latest position. This ensure that we do not repeatedly call the getPlaybackState()
             // on MediaControllerCompat.
-            long timeDelta = SystemClock.elapsedRealtime() -
-                    playbackState.getLastPositionUpdateTime();
+            long timeDelta = (SystemClock.elapsedRealtime() -
+                    playbackState.getLastPositionUpdateTime()) / 1000;
             currentPosition += (int) timeDelta * playbackState.getPlaybackSpeed();
         }
         seekBar.setProgress((int) currentPosition);
-        positionText.setText(DateUtils.formatElapsedTime(currentPosition/1000));
+        positionText.setText(DateUtils.formatElapsedTime(currentPosition));
+        remainingText.setText("-" + DateUtils.formatElapsedTime(episode.length - currentPosition));
     }
 
     private void updateDuration(MediaMetadataCompat metadata) {
@@ -236,7 +245,6 @@ public class MediaPlayerActivity extends BaseActivity {
         Log.d("MPO", "updateDuration called ");
         int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         seekBar.setMax(duration);
-        remainingText.setText(DateUtils.formatElapsedTime(duration/1000));
+        remainingText.setText(DateUtils.formatElapsedTime(duration));
     }
-
 }

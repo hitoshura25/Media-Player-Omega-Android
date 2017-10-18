@@ -35,48 +35,47 @@
             android:id="@+id/position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:textColor="@android:color/white"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/remaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:textColor="@android:color/white"/>
 
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="center">
 
         <ImageView
             android:id="@+id/replayButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginRight="64dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="32dp"
             android:src="@drawable/ic_replay_10_white_48dp"/>
 
         <ImageView
             android:id="@+id/actionButton"
             android:layout_width="128dp"
             android:layout_height="128dp"
-            android:layout_marginRight="64dp"
+            android:layout_marginRight="32dp"
             android:src="@drawable/ic_play_circle_filled_white_48dp"/>
 
         <ImageView
             android:id="@+id/skipButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:src="@drawable/ic_forward_30_white_48dp"/>
 
     </LinearLayout>

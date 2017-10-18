@@ -12,6 +12,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MPORepository {
+
+    // Listener used to signal data being fetched. Workaround for cases where LiveData cannot be used
+    // i.e., in MediaBrowserService instances as they don't extend LifeCycleService
+    public interface DataHandler<T> {
+        void onDataReady(T data);
+    }
+
     private final MediaPlayerOmegaService service;
     private final ShowDao showDao;
     private final EpisodeDao episodeDao;
@@ -28,6 +35,16 @@ public class MPORepository {
         return showDao.load();
     }
 
+    public void fetchShow(final long id, final DataHandler<Show> dataHandler) {
+        // TODO: Caching
+        discExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                dataHandler.onDataReady(showDao.getById(id));
+            }
+        });
+    }
+
     public void save(final Show show) {
         discExecutor.execute(new Runnable() {
             @Override
@@ -40,6 +57,16 @@ public class MPORepository {
     public List<Show> notUpdatedInLast(long interval) {
         final long compareTime = new Date().getTime() - interval;
         return showDao.loadLastUpdatedBefore(compareTime);
+    }
+
+    public void fetchEpisode(final long id, final DataHandler<Episode> dataHandler) {
+        // TODO: Implement cache
+        discExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                dataHandler.onDataReady(episodeDao.byId(id));
+            }
+        });
     }
 
     public void save(final Episode episode) {
