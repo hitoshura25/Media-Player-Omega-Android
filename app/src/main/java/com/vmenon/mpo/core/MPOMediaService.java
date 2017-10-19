@@ -95,9 +95,11 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     @Inject
     protected MPORepository mpoRepository;
 
+    @Inject
+    protected MPOMediaPlayer mediaPlayer;
+
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
-    private MPOMediaPlayer mediaPlayer;
     private AudioManager audioManager;
     private NotificationManager notificationManager;
 
@@ -199,7 +201,6 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         mediaSession.setPlaybackState(stateBuilder.build());
         mediaSession.setCallback(new SessionCallback());
         setSessionToken(mediaSession.getSessionToken());
-        mediaPlayer = new MPOMediaPlayer();
         mediaPlayer.setListener(this);
 
         Context context = getApplicationContext();
@@ -651,7 +652,9 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
     private PendingIntent createNotificationContentIntent() {
         Intent openUI = new Intent(this, MediaPlayerActivity.class);
-        openUI.putExtra(MediaPlayerActivity.EXTRA_FROM_NOTIFICATION, true);
+        openUI.putExtra(MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
+                mediaSession.getController().getMetadata().getString(
+                        MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, openUI,
                 PendingIntent.FLAG_CANCEL_CURRENT);

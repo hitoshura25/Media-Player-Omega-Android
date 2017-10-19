@@ -14,7 +14,10 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -22,6 +25,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
+import com.vmenon.mpo.api.Show;
+import com.vmenon.mpo.core.MPOMediaPlayer;
 import com.vmenon.mpo.core.MPOMediaService;
 import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.util.MediaHelper;
@@ -35,9 +40,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class MediaPlayerActivity extends BaseActivity {
+public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.Callback {
     public static final String EXTRA_EPISODE = "extraEpisode";
-    public static final String EXTRA_FROM_NOTIFICATION = "extraFromNotification";
+    public static final String EXTRA_NOTIFICATION_MEDIA_ID = "extraNotificationMediaId";
+
+    private static final String EXTRA_MEDIA_ID = "extraMediaId";
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
@@ -45,18 +52,28 @@ public class MediaPlayerActivity extends BaseActivity {
     @Inject
     protected MPORepository repository;
 
+    @Inject
+    protected MPOMediaPlayer mediaPlayer;
+
     private final Handler handler = new Handler();
     private Episode episode;
+    private Show show;
     private MediaBrowserCompat mediaBrowser;
     private PlaybackStateCompat playbackState;
     private boolean playOnStart = false;
     private boolean fromNotification = false;
+    private boolean firstRender = true;
+    private String currentMediaId;
 
     private ImageView actionButton;
     private ImageView artworkImage;
+    private SurfaceView surfaceView;
+    private SurfaceHolder surfaceHolder;
     private SeekBar seekBar;
     private TextView positionText;
     private TextView remainingText;
+    private TextView titleText;
+    private View episodeImageContainer;
 
     private final Runnable updateProgressTask = new Runnable() {
         @Override
@@ -79,20 +96,22 @@ public class MediaPlayerActivity extends BaseActivity {
                 MediaControllerCompat.setMediaController(MediaPlayerActivity.this, mediaController);
                 mediaController.registerCallback(controllerCallback);
                 PlaybackStateCompat playbackState = mediaController.getPlaybackState();
-                updatePlaybackState(playbackState);
-                MediaMetadataCompat metadata = mediaController.getMetadata();
-                String mediaId;
 
+                MediaMetadataCompat metadata = mediaController.getMetadata();
                 if (metadata != null) {
                     updateDuration(metadata);
+                    currentMediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
                 }
+
+                updatePlaybackState(playbackState);
+                String mediaId;
                 updateProgress();
                 boolean currentlyPlaying = playbackState != null &&
                         (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
                                 playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING);
 
                 if (fromNotification) {
-                    mediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                    mediaId = getIntent().getStringExtra(EXTRA_NOTIFICATION_MEDIA_ID);
                     MediaHelper.MediaType mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId);
                     switch (mediaType.getMediaType()) {
                         case MediaHelper.MEDIA_TYPE_EPISODE:
@@ -101,7 +120,15 @@ public class MediaPlayerActivity extends BaseActivity {
                                         @Override
                                         public void onChanged(@Nullable Episode episode) {
                                             MediaPlayerActivity.this.episode = episode;
-                                            updateUIFromMedia();
+                                            repository.getLiveShow(episode.showId).observe(
+                                                    MediaPlayerActivity.this,
+                                                    new Observer<Show>() {
+                                                        @Override
+                                                        public void onChanged(@Nullable Show show) {
+                                                            MediaPlayerActivity.this.show = show;
+                                                            updateUIFromMedia();
+                                                        }
+                                                    });
                                         }
                                     });
                             break;
@@ -149,8 +176,15 @@ public class MediaPlayerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
         setContentView(R.layout.activity_media_player);
-        fromNotification = getIntent().getBooleanExtra(EXTRA_FROM_NOTIFICATION, false);
+        if (getIntent().hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
+            fromNotification = true;
+        }
 
+        if (savedInstanceState != null) {
+            currentMediaId = savedInstanceState.getString(EXTRA_MEDIA_ID);
+        }
+
+        episodeImageContainer = findViewById(R.id.episodeImageContainer);
         actionButton = findViewById(R.id.actionButton);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,6 +213,7 @@ public class MediaPlayerActivity extends BaseActivity {
         });
 
         artworkImage = findViewById(R.id.artworkImage);
+
         seekBar = findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -202,6 +237,11 @@ public class MediaPlayerActivity extends BaseActivity {
 
         positionText = findViewById(R.id.position);
         remainingText = findViewById(R.id.remaining);
+        titleText = findViewById(R.id.title);
+
+        surfaceView = findViewById(R.id.surfaceView);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
 
         mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MPOMediaService.class),
@@ -210,10 +250,15 @@ public class MediaPlayerActivity extends BaseActivity {
 
         if (!fromNotification) {
             episode = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_EPISODE));
-            if (savedInstanceState == null) {
-                playOnStart = true;
-            }
-            updateUIFromMedia();
+            playOnStart = savedInstanceState == null;
+
+            repository.getLiveShow(episode.showId).observe(this, new Observer<Show>() {
+                @Override
+                public void onChanged(@Nullable Show show) {
+                    MediaPlayerActivity.this.show = show;
+                    updateUIFromMedia();
+                }
+            });
         }
     }
 
@@ -241,8 +286,31 @@ public class MediaPlayerActivity extends BaseActivity {
         executorService.shutdown();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_MEDIA_ID, currentMediaId);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        mediaPlayer.setDisplay(holder);
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        mediaPlayer.setDisplay(null);
+        surfaceView.setVisibility(View.GONE);
+    }
+
     private void updateUIFromMedia() {
-        Glide.with(this).load(episode.artworkUrl).fitCenter().into(artworkImage);
+        Glide.with(this).load(show.artworkUrl).fitCenter().into(artworkImage);
+        titleText.setText(episode.name);
     }
 
     private void scheduleSeekbarUpdate() {
@@ -274,10 +342,12 @@ public class MediaPlayerActivity extends BaseActivity {
             case PlaybackStateCompat.STATE_PLAYING:
                 actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp);
                 scheduleSeekbarUpdate();
+                checkAndUpdateMediaDisplay();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp);
                 stopSeekbarUpdate();
+                checkAndUpdateMediaDisplay();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
@@ -317,5 +387,39 @@ public class MediaPlayerActivity extends BaseActivity {
         int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         seekBar.setMax(duration);
         remainingText.setText(DateUtils.formatElapsedTime(duration));
+    }
+
+    private void checkAndUpdateMediaDisplay() {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
+        String mediaId = mediaController.getMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+        if (!mediaId.equals(currentMediaId) || firstRender) {
+            currentMediaId = mediaId;
+            updateMediaDisplay();
+            firstRender = false;
+        }
+    }
+
+    private void updateMediaDisplay() {
+        int videoWidth = mediaPlayer.getVideoWidth();
+        int videoHeight = mediaPlayer.getVideoHeight();
+
+        if (videoWidth == 0) {
+            episodeImageContainer.setVisibility(View.VISIBLE);
+            surfaceView.setVisibility(View.GONE);
+        } else {
+            int surfaceWidth = findViewById(R.id.playerContent).getWidth();
+
+            ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+            // Set the height of the SurfaceView to match the aspect ratio of the video
+            // be sure to cast these as floats otherwise the calculation will likely be 0
+            lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) surfaceWidth);
+
+            Log.d("MPO", "surface view width: " + surfaceWidth);
+            Log.d("MPO", "surface view height: " + lp.height);
+
+            surfaceView.setLayoutParams(lp);
+            surfaceView.setVisibility(View.VISIBLE);
+            episodeImageContainer.setVisibility(View.INVISIBLE);
+        }
     }
 }

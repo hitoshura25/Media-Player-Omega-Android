@@ -65,7 +65,8 @@
                 android:value=".activity.LibraryActivity" />
         </activity>
         
-        <activity android:name=".activity.MediaPlayerActivity"/>
+        <activity android:name=".activity.MediaPlayerActivity"
+                  android:theme="@style/AppThemeNoActionBar"/>
 
         <service
             android:name=".core.BackgroundService"

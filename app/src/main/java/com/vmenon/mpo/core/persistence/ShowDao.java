@@ -17,6 +17,9 @@ public interface ShowDao {
     @Query("SELECT * FROM show where id = :id")
     Show getById(long id);
 
+    @Query("SELECT * FROM show where id = :id")
+    LiveData<Show> getLiveById(long id);
+
     @Insert(onConflict = REPLACE)
     void save(Show show);
 

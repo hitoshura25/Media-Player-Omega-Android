@@ -2,6 +2,7 @@ package com.vmenon.mpo.core;
 
 import android.media.MediaPlayer;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -23,6 +24,7 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
     private MediaPlayer mediaPlayer;
     private long currentPosition;
     private MediaPlayerListener listener;
+    private SurfaceHolder surfaceHolder;
 
     public MPOMediaPlayer() {
 
@@ -103,6 +105,21 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         listener = null;
     }
 
+    public void setDisplay(SurfaceHolder surfaceHolder) {
+        this.surfaceHolder = surfaceHolder;
+        if (mediaPlayer != null) {
+            mediaPlayer.setDisplay(surfaceHolder);
+        }
+    }
+
+    public int getVideoWidth() {
+        return mediaPlayer != null ? mediaPlayer.getVideoWidth() : 0;
+    }
+
+    public int getVideoHeight() {
+        return mediaPlayer != null ? mediaPlayer.getVideoHeight() : 0;
+    }
+
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         if (listener != null) {
@@ -148,6 +165,9 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
             mediaPlayer.setOnCompletionListener(this);
             mediaPlayer.setOnErrorListener(this);
             mediaPlayer.setOnSeekCompleteListener(this);
+            if (surfaceHolder != null) {
+                mediaPlayer.setDisplay(surfaceHolder);
+            }
         } else {
             mediaPlayer.reset();
         }

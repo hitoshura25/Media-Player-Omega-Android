@@ -7,14 +7,11 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.ImageView;
 
 import com.vmenon.mpo.R;
 
 public abstract class BaseDrawerCollapsingToolbarActivity extends BaseDrawerActivity
         implements AppBarLayout.OnOffsetChangedListener {
-
-    protected ImageView appBarImage;
 
     private FloatingActionButton fab;
     private CollapsingToolbarLayout collapsingToolbar;
@@ -24,7 +21,6 @@ public abstract class BaseDrawerCollapsingToolbarActivity extends BaseDrawerActi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        appBarImage = findViewById(R.id.appBarImage);
         fab = findViewById(R.id.fab);
         fab.setImageResource(getFabDrawableResource());
         fab.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +39,7 @@ public abstract class BaseDrawerCollapsingToolbarActivity extends BaseDrawerActi
     protected abstract CharSequence getCollapsedToolbarTitle();
     protected abstract CharSequence getExpandedToolbarTitle();
     protected abstract void onFabClick();
+    protected abstract int getCollapsiblePanelContentLayoutId();
 
     @Override
     protected int getRootLayoutResourceId() {
@@ -54,6 +51,10 @@ public abstract class BaseDrawerCollapsingToolbarActivity extends BaseDrawerActi
         ViewStub viewStub = findViewById(R.id.contentViewStub);
         viewStub.setLayoutResource(getLayoutResourceId());
         viewStub.inflate();
+
+        ViewStub panelViewStub = findViewById(R.id.collapsiblePanelViewStub);
+        panelViewStub.setLayoutResource(getCollapsiblePanelContentLayoutId());
+        panelViewStub.inflate();
     }
 
     @Override

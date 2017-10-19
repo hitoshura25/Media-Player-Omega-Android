@@ -40,6 +40,10 @@ public class MPORepository {
         return showDao.load();
     }
 
+    public LiveData<Show> getLiveShow(long id) {
+        return showDao.getLiveById(id);
+    }
+
     public void fetchShow(final long id, final DataHandler<Show> dataHandler) {
         // TODO: Caching
         discExecutor.execute(new Runnable() {
