@@ -27,7 +27,9 @@
                 android:id="@+id/showImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:scaleType="fitCenter"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax" />
 
