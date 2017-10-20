@@ -11,10 +11,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"
+            android:layout_gravity="top"
             android:orientation="horizontal">
 
             <ImageView
@@ -22,8 +23,8 @@
                 android:layout_width="@dimen/episodeThumbnailSize"
                 android:layout_height="@dimen/episodeThumbnailSize"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:scaleType="centerInside"
-                android:layout_alignParentStart="true"/>
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"/>
 
             <LinearLayout
                 android:id="@+id/episodeInfoContainer"
@@ -31,9 +32,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="top"
                 android:orientation="vertical"
-                android:layout_toRightOf="@id/episodeImage"
-                android:layout_toLeftOf="@+id/episodeMenuButton"
-                android:layout_alignParentTop="true">
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/episodeName"
@@ -50,15 +49,15 @@
             </LinearLayout>
 
             <ImageButton
-                android:id="@id/episodeMenuButton"
+                android:id="@+id/episodeMenuButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_gravity="right"
                 android:src="@drawable/ic_more_vert_black_18dp"
-                android:background="?android:attr/selectableItemBackground"
-                android:layout_alignParentEnd="true"/>
+                android:background="?android:attr/selectableItemBackground"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/episodeDescription"

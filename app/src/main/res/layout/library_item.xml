@@ -7,14 +7,14 @@
     android:clickable="true">
 
     <ImageView
-        android:id="@+id/podcastImage"
-        android:layout_width="@dimen/podcastResultImageSize"
-        android:layout_height="@dimen/podcastResultImageSize"
+        android:id="@+id/episodeImage"
+        android:layout_width="@dimen/showResultImageSize"
+        android:layout_height="@dimen/showResultImageSize"
         android:layout_gravity="center_vertical"
         android:clickable="false"/>
 
     <TextView
-        android:id="@+id/podcastName"
+        android:id="@+id/episodeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"

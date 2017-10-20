@@ -1,6 +1,8 @@
 package com.vmenon.mpo.activity;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -8,44 +10,43 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.adapter.DownloadsAdapter;
 import com.vmenon.mpo.core.Download;
 import com.vmenon.mpo.core.DownloadManager;
-import com.vmenon.mpo.core.EventBus;
-import com.vmenon.mpo.event.DownloadUpdateEvent;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.functions.Action1;
-
-public class DownloadsActivity extends BaseActivity {
+public class DownloadsActivity extends BaseDrawerActivity {
 
     @Inject
     protected DownloadManager downloadManager;
-
-    @Inject
-    protected EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getAppComponent().inject(this);
-
-        setContentView(R.layout.activity_downloads);
-
-        final List<Download> downloads = downloadManager.getDownloads();
-        final DownloadsAdapter adapter = new DownloadsAdapter(downloads);
-        RecyclerView downloadList = (RecyclerView) findViewById(R.id.downloadsList);
+        final RecyclerView downloadList = findViewById(R.id.downloadsList);
         downloadList.setLayoutManager(new LinearLayoutManager(this));
-        downloadList.setAdapter(adapter);
-
-        eventBus.subscribe(new Action1<Object>() {
+        downloadManager.getDownloads().observe(this, new Observer<List<Download>>() {
             @Override
-            public void call(Object event) {
-                if (event instanceof DownloadUpdateEvent) {
-                    DownloadUpdateEvent downloadEvent = (DownloadUpdateEvent) event;
-                    adapter.notifyItemChanged(downloads.indexOf(downloadEvent.getDownload()));
-                }
+            public void onChanged(@Nullable List<Download> downloads) {
+                final DownloadsAdapter adapter = new DownloadsAdapter(downloads);
+                downloadList.setAdapter(adapter);
             }
         });
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_downloads;
+    }
+
+    @Override
+    protected int getNavMenuId() {
+        return R.id.nav_downloads;
+    }
+
+    @Override
+    protected boolean isRootActivity() {
+        return true;
     }
 }

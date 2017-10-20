@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="@dimen/list_item_height"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true">
 
@@ -10,24 +10,13 @@
         android:id="@+id/showImage"
         android:layout_width="@dimen/showResultImageSize"
         android:layout_height="@dimen/showResultImageSize"
+        android:layout_gravity="center_vertical"
         android:clickable="false"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/showName"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/episodeName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
-
-        <TextView
-            android:id="@+id/progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"/>
-    </LinearLayout>
-
+        android:layout_gravity="center_vertical"/>
 </LinearLayout>

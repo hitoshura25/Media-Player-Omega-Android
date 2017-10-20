@@ -14,6 +14,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:theme="@style/AppThemeNoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,10 +24,10 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".activity.PodcastSearchResultsActivity" />
+                android:value=".activity.ShowSearchResultsActivity" />
         </activity>
         <activity
-            android:name=".activity.PodcastSearchResultsActivity"
+            android:name=".activity.ShowSearchResultsActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -34,10 +35,10 @@
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/podcast_searchable" />
+                android:resource="@xml/show_searchable" />
         </activity>
         <activity
-            android:name=".activity.PodcastDetailsActivity"
+            android:name=".activity.ShowDetailsActivity"
             android:label=""
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppThemeNoActionBar">
@@ -45,10 +46,37 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".activity.DownloadsActivity"
+            android:label="@string/downloads"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppThemeNoActionBar" />
+        <activity
+            android:name=".activity.LibraryActivity"
+            android:label="@string/library"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppThemeNoActionBar" />
+        <activity android:name=".activity.EpisodeDetailsActivity"
+                  android:theme="@style/AppThemeNoActionBar"
+                  android:parentActivityName=".activity.LibraryActivity"
+                  android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.LibraryActivity" />
+        </activity>
+        
+        <activity android:name=".activity.MediaPlayerActivity"
+                  android:theme="@style/AppThemeNoActionBar"/>
 
         <service
             android:name=".core.BackgroundService"
             android:exported="false" />
+
+        <service android:name=".core.MPOMediaService">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
 
         <receiver android:name=".core.receiver.AlarmReceiver" />
         <receiver
@@ -59,10 +87,5 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.DownloadsActivity"
-                  android:label="@string/downloads">
-
-        </activity>
     </application>
-
 </manifest>

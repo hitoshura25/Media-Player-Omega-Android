@@ -1,13 +1,13 @@
 package com.vmenon.mpo.core;
 
 import com.vmenon.mpo.api.Episode;
-import com.vmenon.mpo.api.Podcast;
+import com.vmenon.mpo.api.Show;
 
 import org.parceler.Parcel;
 
 @Parcel
 public class Download {
-    Podcast podcast;
+    Show show;
     Episode episode;
     int total = 0;
     int progress = 0;
@@ -16,13 +16,13 @@ public class Download {
 
     }
 
-    public Download(Podcast podcast, Episode episode) {
-        this.podcast = podcast;
+    public Download(Show show, Episode episode) {
+        this.show = show;
         this.episode = episode;
     }
 
-    public Podcast getPodcast() {
-        return podcast;
+    public Show getShow() {
+        return show;
     }
 
     public Episode getEpisode() {

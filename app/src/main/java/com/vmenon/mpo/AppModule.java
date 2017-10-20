@@ -1,40 +1,42 @@
 package com.vmenon.mpo;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vmenon.mpo.core.DownloadManager;
-import com.vmenon.mpo.core.EventBus;
-import com.vmenon.mpo.core.SubscriptionDao;
-import com.vmenon.mpo.db.DbHelper;
+import com.vmenon.mpo.core.MPOExoPlayer;
+import com.vmenon.mpo.core.MPOMediaPlayer;
+import com.vmenon.mpo.core.MPOPlayer;
+import com.vmenon.mpo.core.persistence.EpisodeDao;
+import com.vmenon.mpo.core.persistence.MPORepository;
+import com.vmenon.mpo.core.persistence.ShowDao;
+import com.vmenon.mpo.core.persistence.MPODatabase;
 import com.vmenon.mpo.service.MediaPlayerOmegaService;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class AppModule {
     Application application;
-    EventBus eventBus;
-    SubscriptionDao subscriptionDao;
 
     public AppModule(Application application) {
         this.application = application;
-        this.eventBus = new EventBus();
-        this.subscriptionDao = new SubscriptionDao(
-                new DbHelper(application.getApplicationContext()));
     }
 
     @Provides
@@ -45,14 +47,25 @@ public class AppModule {
 
     @Provides
     @Singleton
-    MediaPlayerOmegaService provideService() {
+    OkHttpClient provideHttpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    MediaPlayerOmegaService provideService(OkHttpClient httpClient) {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(new NullOnEmptyConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(Constants.API_URL)
+                .client(httpClient)
                 .build();
 
         return retrofit.create(MediaPlayerOmegaService.class);
@@ -60,22 +73,46 @@ public class AppModule {
 
     @Provides
     @Singleton
-    DownloadManager provideDownloadManager() {
-        return new DownloadManager(application.getApplicationContext(), eventBus, subscriptionDao);
+    DownloadManager provideDownloadManager(MPORepository MPORepository) {
+        return new DownloadManager(application.getApplicationContext(), MPORepository);
     }
 
     @Provides
     @Singleton
-    EventBus provideEventBus() {
-        return eventBus;
+    MPODatabase provideMPODatabase() {
+        return Room.databaseBuilder(application.getApplicationContext(), MPODatabase.class,
+                "mpo-database").build();
     }
 
     @Provides
     @Singleton
-    SubscriptionDao provideSubscriptionDao() {
-        return new SubscriptionDao(new DbHelper(application.getApplicationContext()));
+    ShowDao provideShowDao(MPODatabase MPODatabase) {
+        return MPODatabase.showDao();
     }
 
+    @Provides
+    @Singleton
+    EpisodeDao provideEpisodeDao(MPODatabase MPODatabase) {
+        return MPODatabase.episodeDao();
+    }
+
+    @Provides
+    @Singleton
+    MPORepository provideMPORepository(MediaPlayerOmegaService service,
+                                           ShowDao showDao, EpisodeDao episodeDao) {
+        return new MPORepository(service, showDao, episodeDao);
+    }
+
+    @Provides
+    @Singleton
+    MPOPlayer providePlayer() {
+        return new MPOExoPlayer(application);
+    }
+
+    /**
+     * TODO: Make sure MPO API doesn't return 0 byte responses for results...change
+     * to just have an empty array, etc.
+     **/
     class NullOnEmptyConverterFactory extends Converter.Factory {
         @Override
         public Converter<ResponseBody, ?> responseBodyConverter(
