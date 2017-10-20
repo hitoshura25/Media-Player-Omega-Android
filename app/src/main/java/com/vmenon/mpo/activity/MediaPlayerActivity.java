@@ -24,6 +24,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.vmenon.mpo.Constants;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;
@@ -75,6 +76,8 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
     private TextView remainingText;
     private TextView titleText;
     private View episodeImageContainer;
+    private View skipButton;
+    private View replayButton;
 
     private final Runnable updateProgressTask = new Runnable() {
         @Override
@@ -236,6 +239,23 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
                 MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls()
                         .seekTo(seekBar.getProgress() * 1000);
                 scheduleSeekbarUpdate();
+            }
+        });
+
+        replayButton = findViewById(R.id.replayButton);
+        skipButton = findViewById(R.id.skipButton);
+
+        replayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSkipOrReplay(Constants.REPLAY_DURATION);
+            }
+        });
+
+        skipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSkipOrReplay(Constants.SKIP_DURATION);
             }
         });
 
@@ -431,6 +451,38 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
             surfaceView.setLayoutParams(lp);
             surfaceView.setVisibility(View.VISIBLE);
             episodeImageContainer.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void handleSkipOrReplay(int interval) {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
+        if (mediaController != null) {
+            PlaybackStateCompat playbackState = mediaController.getPlaybackState();
+            MediaMetadataCompat metadata = mediaController.getMetadata();
+            if (playbackState != null && metadata != null) {
+                int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+                switch (playbackState.getState()) {
+                    case PlaybackStateCompat.STATE_PLAYING:
+                    case PlaybackStateCompat.STATE_PAUSED:
+                    case PlaybackStateCompat.STATE_BUFFERING:
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        int currentPosition = seekBar.getProgress();
+                        int newPosition = currentPosition + interval;
+
+                        if (newPosition < 0) {
+                            newPosition = 0;
+                        } else if (newPosition > duration) {
+                            // Grace period for too much skipping?
+                            if (currentPosition > duration - Constants.MEDIA_SKIP_GRACE_PERIOD) {
+                                return;
+                            }
+                            newPosition = duration - Constants.MEDIA_SKIP_GRACE_PERIOD;
+                        }
+                        mediaController.getTransportControls().seekTo(newPosition * 1000);
+                        break;
+
+                }
+            }
         }
     }
 }
