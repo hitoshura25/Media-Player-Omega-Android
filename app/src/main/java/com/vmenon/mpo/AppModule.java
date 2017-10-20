@@ -6,7 +6,9 @@ import android.arch.persistence.room.Room;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vmenon.mpo.core.DownloadManager;
+import com.vmenon.mpo.core.MPOExoPlayer;
 import com.vmenon.mpo.core.MPOMediaPlayer;
+import com.vmenon.mpo.core.MPOPlayer;
 import com.vmenon.mpo.core.persistence.EpisodeDao;
 import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.core.persistence.ShowDao;
@@ -103,8 +105,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    MPOMediaPlayer provideMediaPlayer() {
-        return new MPOMediaPlayer();
+    MPOPlayer providePlayer() {
+        return new MPOExoPlayer(application);
     }
 
     /**

@@ -96,7 +96,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     protected MPORepository mpoRepository;
 
     @Inject
-    protected MPOMediaPlayer mediaPlayer;
+    protected MPOPlayer player;
 
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
@@ -128,7 +128,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                 Log.d(TAG, "Headphones disconnected.");
-                if (playOnFocusGain && mediaPlayer.isPlaying()) {
+                if (playOnFocusGain && player.isPlaying()) {
                     Intent i = new Intent(context, MPOMediaService.class);
                     i.setAction(MPOMediaService.ACTION_CMD);
                     i.putExtra(MPOMediaService.CMD_NAME, MPOMediaService.CMD_PAUSE);
@@ -201,7 +201,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         mediaSession.setPlaybackState(stateBuilder.build());
         mediaSession.setCallback(new SessionCallback());
         setSessionToken(mediaSession.getSessionToken());
-        mediaPlayer.setListener(this);
+        player.setListener(this);
 
         Context context = getApplicationContext();
         Intent intent = new Intent(context, MediaPlayerActivity.class);
@@ -218,7 +218,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             String command = intent.getStringExtra(CMD_NAME);
             if (ACTION_CMD.equals(action)) {
                 if (CMD_PAUSE.equals(command)) {
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    if (player != null && player.isPlaying()) {
                         handlePauseRequest();
                     }
                 }
@@ -240,6 +240,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         // Always release the MediaSession to clean up resources
         // and notify associated MediaController(s).
         mediaSession.release();
+        player.setListener(null);
     }
 
     @Nullable
@@ -344,15 +345,18 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         registerAudioNoisyReceiver();
         boolean mediaHasChanged = mediaFile != null;
 
-        if (playbackState == PlaybackState.STATE_PAUSED && !mediaHasChanged && mediaPlayer != null) {
+        if (playbackState == PlaybackState.STATE_PAUSED && !mediaHasChanged && player != null) {
             configMediaPlayerState();
-        } else if (mediaFile != null) {
+        } else {
             playbackState = PlaybackState.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
 
-            playbackState = PlaybackState.STATE_BUFFERING;
-
-            mediaPlayer.prepareForPlayback(mediaFile);
+            if (mediaFile != null) {
+                playbackState = PlaybackState.STATE_BUFFERING;
+                player.prepareForPlayback(mediaFile);
+            } else {
+                configMediaPlayerState();
+            }
 
             // If we are streaming from the internet, we want to hold a
             // Wifi lock, which prevents the Wifi radio from going to
@@ -403,8 +407,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         Log.d(TAG, "handlePauseRequest: mState=" + playbackState);
         if (playbackState == PlaybackState.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
+            if (player != null && player.isPlaying()) {
+                player.pause();
             }
             // while paused, retain the MediaPlayer but give up audio focus
             relaxResources(false);
@@ -420,7 +424,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
     private void handleStopRequest(String withError) {
         Log.d(TAG, "handleStopRequest: mState=" + playbackState + " error=" + withError);
-        mediaPlayer.stop();
+        player.stop();
         playbackState = PlaybackState.STATE_STOPPED;
         // Give up Audio focus
         giveUpAudioFocus();
@@ -447,8 +451,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         Log.d(TAG, "updatePlaybackState");
         long position = PlaybackState.PLAYBACK_POSITION_UNKNOWN;
         int state = playbackState;
-        if (mediaPlayer != null) {
-            position = mediaPlayer.getCurrentPosition();
+        if (player != null) {
+            position = player.getCurrentPosition();
         }
 
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
@@ -475,7 +479,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private long getAvailableActions() {
         long actions = PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
                 PlaybackState.ACTION_PLAY_FROM_SEARCH;
-        if (mediaPlayer.isPlaying()) {
+        if (player.isPlaying()) {
             actions |= PlaybackState.ACTION_PAUSE;
         }
 
@@ -491,23 +495,23 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             }
         } else {  // we have audio focus:
             if (audioFocus == MPOMediaService.AUDIO_NO_FOCUS_CAN_DUCK) {
-                mediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK); // we'll be relatively quiet
+                player.setVolume(VOLUME_DUCK); // we'll be relatively quiet
             } else {
-                if (mediaPlayer != null) {
-                    mediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL); // we can be loud again
+                if (player != null) {
+                    player.setVolume(VOLUME_NORMAL); // we can be loud again
                 } // else do something for remote client.
             }
             // If we were playing when we lost focus, we need to resume playing.
             if (playOnFocusGain) {
-                if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-                    long currentPosition = mediaPlayer.getCurrentPosition();
+                if (player != null && !player.isPlaying()) {
+                    long currentPosition = player.getCurrentPosition();
                     Log.d("MPO","configMediaPlayerState startMediaPlayer. seeking to " +
                             currentPosition);
-                    if (currentPosition == mediaPlayer.getCurrentPosition()) {
-                        mediaPlayer.play();
+                    if (currentPosition == player.getCurrentPosition()) {
+                        player.play();
                         playbackState = PlaybackState.STATE_PLAYING;
                     } else {
-                        mediaPlayer.seekTo(currentPosition);
+                        player.seekTo(currentPosition);
                         playbackState = PlaybackState.STATE_BUFFERING;
                     }
                 }
@@ -543,8 +547,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         stopForeground(true);
 
         // stop and release the Media Player, if it's available
-        if (releaseMediaPlayer && mediaPlayer != null) {
-            mediaPlayer.cleanup();
+        if (releaseMediaPlayer && player != null) {
+            player.cleanup();
         }
 
         // we can also release the Wifi lock, if we're holding it
@@ -743,13 +747,9 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            if (requestedMediaId.equals(mediaId)) {
-                if (playbackState == PlaybackStateCompat.STATE_PLAYING ||
-                        playbackState == PlaybackStateCompat.STATE_BUFFERING) {
-                    updatePlaybackState(null);
-                } else {
-                    handlePlayRequest(null);
-                }
+            if (requestedMediaId.equals(mediaId) && (playbackState == PlaybackStateCompat.STATE_PLAYING ||
+                    playbackState == PlaybackStateCompat.STATE_BUFFERING)) {
+                updatePlaybackState(null);
                 return;
             }
 
@@ -777,8 +777,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         @Override
         public void onSeekTo(long pos) {
-            mediaPlayer.seekTo(pos);
-            if (mediaPlayer.isPlaying()) {
+            player.seekTo(pos);
+            if (player.isPlaying()) {
                 playbackState = PlaybackState.STATE_BUFFERING;
             }
             updatePlaybackState(null);
@@ -795,8 +795,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         @Override
         public void handleMessage(Message msg) {
             MPOMediaService service = weakRefService.get();
-            if (service != null && service.mediaPlayer != null) {
-                if (service.mediaPlayer.isPlaying()) {
+            if (service != null && service.player != null) {
+                if (service.player.isPlaying()) {
                     Log.d(TAG, "Ignoring delayed stop since the media player is in use.");
                     return;
                 }

@@ -12,29 +12,20 @@ import java.io.IOException;
 /**
  * Wrapper around actual media player mechanism (i.e. {@link android.media.MediaPlayer})
  */
-public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
+public class MPOMediaPlayer extends MPOPlayer implements MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
-
-    public interface MediaPlayerListener {
-        void onMediaPrepared();
-        void onMediaFinished();
-        void onMediaSeekFinished();
-    }
 
     private MediaPlayer mediaPlayer;
     private long currentPosition;
-    private MediaPlayerListener listener;
     private SurfaceHolder surfaceHolder;
 
     public MPOMediaPlayer() {
 
     }
 
-    public void setListener(MediaPlayerListener listener) {
-        this.listener = listener;
-    }
-
-    public void prepareForPlayback(File file) {
+    @Override
+    protected void doPrepareForPlayback(File file) {
         createMediaPlayerIfNeeded();
         FileInputStream fis = null;
         try {
@@ -54,10 +45,12 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         }
     }
 
+    @Override
     public void play() {
         mediaPlayer.start();
     }
 
+    @Override
     public void pause() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
@@ -65,6 +58,7 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         }
     }
 
+    @Override
     public void stop() {
         if (mediaPlayer != null) {
             currentPosition = getCurrentPosition();
@@ -72,14 +66,17 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         }
     }
 
+    @Override
     public long getCurrentPosition() {
         return mediaPlayer != null ? mediaPlayer.getCurrentPosition() : currentPosition;
     }
 
+    @Override
     public boolean isPlaying() {
         return mediaPlayer != null && mediaPlayer.isPlaying();
     }
 
+    @Override
     public void seekTo(long position) {
         Log.d("MPO", "seekTo called with " + position);
 
@@ -91,20 +88,12 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         }
     }
 
-    public void setVolume(float leftVolume, float rightVolume) {
-        mediaPlayer.setVolume(leftVolume, rightVolume);
+    @Override
+    public void setVolume(float volume) {
+        mediaPlayer.setVolume(volume, volume);
     }
 
-    public void cleanup() {
-        if (mediaPlayer != null) {
-            mediaPlayer.reset();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-        listener = null;
-    }
-
+    @Override
     public void setDisplay(SurfaceHolder surfaceHolder) {
         this.surfaceHolder = surfaceHolder;
         if (mediaPlayer != null) {
@@ -112,12 +101,13 @@ public class MPOMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlay
         }
     }
 
-    public int getVideoWidth() {
-        return mediaPlayer != null ? mediaPlayer.getVideoWidth() : 0;
-    }
-
-    public int getVideoHeight() {
-        return mediaPlayer != null ? mediaPlayer.getVideoHeight() : 0;
+    @Override
+    protected void doCleanUp() {
+        if (mediaPlayer != null) {
+            mediaPlayer.reset();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     @Override

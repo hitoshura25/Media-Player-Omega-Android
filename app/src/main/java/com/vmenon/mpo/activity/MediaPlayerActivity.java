@@ -2,6 +2,7 @@ package com.vmenon.mpo.activity;
 
 import android.arch.lifecycle.Observer;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -26,8 +27,8 @@ import com.bumptech.glide.Glide;
 import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;
-import com.vmenon.mpo.core.MPOMediaPlayer;
 import com.vmenon.mpo.core.MPOMediaService;
+import com.vmenon.mpo.core.MPOPlayer;
 import com.vmenon.mpo.core.persistence.MPORepository;
 import com.vmenon.mpo.util.MediaHelper;
 
@@ -40,7 +41,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.Callback {
+public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.Callback,
+        MPOPlayer.VideoSizeListener {
     public static final String EXTRA_EPISODE = "extraEpisode";
     public static final String EXTRA_NOTIFICATION_MEDIA_ID = "extraNotificationMediaId";
 
@@ -53,7 +55,7 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
     protected MPORepository repository;
 
     @Inject
-    protected MPOMediaPlayer mediaPlayer;
+    protected MPOPlayer player;
 
     private final Handler handler = new Handler();
     private Episode episode;
@@ -62,8 +64,7 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
     private PlaybackStateCompat playbackState;
     private boolean playOnStart = false;
     private boolean fromNotification = false;
-    private boolean firstRender = true;
-    private String currentMediaId;
+    private String requestedMediaId;
 
     private ImageView actionButton;
     private ImageView artworkImage;
@@ -85,34 +86,45 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> scheduleFuture;
 
-    private final MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
+    private final MediaBrowserCompat.ConnectionCallback connectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
         @Override
         public void onConnected() {
             super.onConnected();
             MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
             try {
+                String currentlyPlayingMediaId = "";
                 MediaControllerCompat mediaController = new MediaControllerCompat(
                         MediaPlayerActivity.this, token);
                 MediaControllerCompat.setMediaController(MediaPlayerActivity.this, mediaController);
                 mediaController.registerCallback(controllerCallback);
                 PlaybackStateCompat playbackState = mediaController.getPlaybackState();
-
-                MediaMetadataCompat metadata = mediaController.getMetadata();
-                if (metadata != null) {
-                    updateDuration(metadata);
-                    currentMediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                }
-
-                updatePlaybackState(playbackState);
-                String mediaId;
-                updateProgress();
                 boolean currentlyPlaying = playbackState != null &&
                         (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING ||
                                 playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING);
 
+                MediaMetadataCompat metadata = mediaController.getMetadata();
+                if (metadata != null) {
+                    currentlyPlayingMediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+                    if (requestedMediaId.equals(currentlyPlayingMediaId)) {
+                        updateDuration(metadata);
+                    }
+                }
+
+                if (requestedMediaId.equals(currentlyPlayingMediaId)) {
+                    updateMediaDisplay();
+                    updatePlaybackState(playbackState);
+                    updateProgress();
+                    if (currentlyPlaying) {
+                        scheduleSeekbarUpdate();
+
+                        // Force playing if from notification to trigger callback
+                        playOnStart = playOnStart || fromNotification;
+                    }
+                }
+
                 if (fromNotification) {
-                    mediaId = getIntent().getStringExtra(EXTRA_NOTIFICATION_MEDIA_ID);
-                    MediaHelper.MediaType mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId);
+                    MediaHelper.MediaType mediaType = MediaHelper.getMediaTypeFromMediaId(requestedMediaId);
                     switch (mediaType.getMediaType()) {
                         case MediaHelper.MEDIA_TYPE_EPISODE:
                             repository.getLiveEpisode(mediaType.getId()).observe(MediaPlayerActivity.this,
@@ -133,19 +145,10 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
                                     });
                             break;
                     }
-                } else {
-                    mediaId = MediaHelper.createMediaId(episode);
-                }
-
-                if (currentlyPlaying) {
-                    scheduleSeekbarUpdate();
-
-                    // Force playing if from notification to trigger callback
-                    playOnStart = playOnStart || fromNotification;
                 }
 
                 if (playOnStart) {
-                    mediaController.getTransportControls().playFromMediaId(mediaId, null);
+                    mediaController.getTransportControls().playFromMediaId(requestedMediaId, null);
                     playOnStart = false;
                 }
 
@@ -178,10 +181,11 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
         setContentView(R.layout.activity_media_player);
         if (getIntent().hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true;
+            requestedMediaId = getIntent().getStringExtra(EXTRA_NOTIFICATION_MEDIA_ID);
         }
 
         if (savedInstanceState != null) {
-            currentMediaId = savedInstanceState.getString(EXTRA_MEDIA_ID);
+            requestedMediaId = savedInstanceState.getString(EXTRA_MEDIA_ID);
         }
 
         episodeImageContainer = findViewById(R.id.episodeImageContainer);
@@ -201,12 +205,12 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
                         stopSeekbarUpdate();
                         break;
                     case PlaybackStateCompat.STATE_PAUSED:
-                    case PlaybackStateCompat.STATE_STOPPED:
                         transportControls.play();
                         scheduleSeekbarUpdate();
                         break;
+                    case PlaybackStateCompat.STATE_STOPPED:
                     case PlaybackStateCompat.STATE_NONE:
-                        transportControls.playFromMediaId(MediaHelper.createMediaId(episode), null);
+                        transportControls.playFromMediaId(requestedMediaId, null);
                         break;
                 }
             }
@@ -250,6 +254,7 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
 
         if (!fromNotification) {
             episode = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_EPISODE));
+            requestedMediaId = MediaHelper.createMediaId(episode);
             playOnStart = savedInstanceState == null;
 
             repository.getLiveShow(episode.showId).observe(this, new Observer<Show>() {
@@ -260,6 +265,8 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
                 }
             });
         }
+
+        player.setVideoSizeListener(MediaPlayerActivity.this);
     }
 
     @Override
@@ -284,17 +291,28 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
         super.onDestroy();
         stopSeekbarUpdate();
         executorService.shutdown();
+        player.setVideoSizeListener(null);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
+            fromNotification = true;
+            requestedMediaId = intent.getStringExtra(EXTRA_NOTIFICATION_MEDIA_ID);
+            intent.removeExtra(EXTRA_NOTIFICATION_MEDIA_ID);
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_MEDIA_ID, currentMediaId);
+        outState.putString(EXTRA_MEDIA_ID, requestedMediaId);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mediaPlayer.setDisplay(holder);
+        player.setDisplay(holder);
     }
 
     @Override
@@ -304,8 +322,13 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mediaPlayer.setDisplay(null);
+        player.setDisplay(null);
         surfaceView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onMediaVideoSizeDetermined(int width, int height) {
+        updateMediaDisplay();
     }
 
     private void updateUIFromMedia() {
@@ -342,12 +365,10 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
             case PlaybackStateCompat.STATE_PLAYING:
                 actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp);
                 scheduleSeekbarUpdate();
-                checkAndUpdateMediaDisplay();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp);
                 stopSeekbarUpdate();
-                checkAndUpdateMediaDisplay();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
@@ -389,19 +410,9 @@ public class MediaPlayerActivity extends BaseActivity implements SurfaceHolder.C
         remainingText.setText(DateUtils.formatElapsedTime(duration));
     }
 
-    private void checkAndUpdateMediaDisplay() {
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
-        String mediaId = mediaController.getMetadata().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-        if (!mediaId.equals(currentMediaId) || firstRender) {
-            currentMediaId = mediaId;
-            updateMediaDisplay();
-            firstRender = false;
-        }
-    }
-
     private void updateMediaDisplay() {
-        int videoWidth = mediaPlayer.getVideoWidth();
-        int videoHeight = mediaPlayer.getVideoHeight();
+        int videoWidth = player.getVideoWidth();
+        int videoHeight = player.getVideoHeight();
 
         if (videoWidth == 0) {
             episodeImageContainer.setVisibility(View.VISIBLE);
