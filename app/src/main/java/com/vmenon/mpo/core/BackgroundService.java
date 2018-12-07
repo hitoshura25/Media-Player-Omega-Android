@@ -2,10 +2,15 @@ package com.vmenon.mpo.core;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -23,6 +28,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.core.app.NotificationBuilderWithBuilderAccessor;
+import androidx.core.app.NotificationCompat;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -38,6 +45,10 @@ public class BackgroundService extends IntentService {
     private static final long EXEC_INTERVAL = 2 * 60 * 1000;
     private static final String PREFS_NAME = "MPOBackgroundService";
     private static final String INITIALIZED_KEY = "Initialized";
+
+    private static final int NOTIFICATION_ID = 514;
+    private static final String NOTIFICATION_CHANNEL_ID = "com.vmenon.mpo.BACKGROUND_CHANNEL_ID";
+
 
     @Inject
     protected MediaPlayerOmegaService service;
@@ -91,6 +102,20 @@ public class BackgroundService extends IntentService {
     public void onCreate() {
         super.onCreate();
         ((MPOApplication) getApplication()).getAppComponent().inject(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelName = "My Background Service";
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                    channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            assert manager != null;
+            manager.createNotificationChannel(chan);
+
+            startForeground(NOTIFICATION_ID, new NotificationCompat.Builder(this,
+                    NOTIFICATION_CHANNEL_ID).build());
+        }
     }
 
     @Override
