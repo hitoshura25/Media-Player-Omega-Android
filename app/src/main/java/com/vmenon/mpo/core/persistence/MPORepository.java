@@ -1,9 +1,9 @@
 package com.vmenon.mpo.core.persistence;
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;

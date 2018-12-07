@@ -1,25 +1,20 @@
-ext.supportLibraryVersion = '26.1.0'
-ext.retrofitVersion = '2.3.0'
-ext.roomVersion = '1.0.0-beta2'
-ext.lifecycleVersion = '1.0.0-beta2'
+
 
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.vmenon.mpo"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation":
-                                     "$projectDir/schemas".toString()]
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
     }
@@ -36,43 +31,45 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile "com.android.support:design:$supportLibraryVersion"
-    compile "com.android.support:cardview-v7:$supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.cardview:cardview:$cardViewVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    implementation "androidx.media:media:$mediaVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
-    compile "android.arch.lifecycle:extensions:$lifecycleVersion"
-    compile "android.arch.persistence.room:runtime:$roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
-    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycleVersion"
 
-    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-rxjava2:$roomVersion"
+    testImplementation "androidx.room:room-testing:$roomVersion"
 
-    compile "android.arch.persistence.room:rxjava2:$roomVersion"
-    compile "android.arch.persistence.room:runtime:$roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
-    testCompile "android.arch.persistence.room:testing:$roomVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation 'org.parceler:parceler-api:1.1.4'
+    annotationProcessor 'org.parceler:parceler:1.1.4'
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    testImplementation "com.google.code.gson:gson:$gsonVersion"
 
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.
-    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 
-    compile 'com.google.android.exoplayer:exoplayer-core:r2.5.3'
+    implementation 'com.google.android.exoplayer:exoplayer-core:r2.5.3'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'javax.annotation:jsr250-api:1.0'
 
-    compile 'org.parceler:parceler-api:1.1.4'
-    compile 'com.google.dagger:dagger:2.11'
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.google.code.gson:gson:2.8.2'
-    annotationProcessor 'org.parceler:parceler:1.1.4'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-    provided 'javax.annotation:jsr250-api:1.0'
+    testImplementation 'junit:junit:4.12'
 }

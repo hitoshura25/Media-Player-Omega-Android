@@ -1,6 +1,5 @@
 package com.vmenon.mpo.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,8 @@ import com.vmenon.mpo.R;
 import com.vmenon.mpo.api.Show;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class SubscriptionGalleryAdapter extends
         RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder> {
