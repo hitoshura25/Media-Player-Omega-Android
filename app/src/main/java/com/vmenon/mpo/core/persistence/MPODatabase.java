@@ -1,6 +1,6 @@
 package com.vmenon.mpo.core.persistence;
 
-import android.arch.persistence.room.*;
+import androidx.room.*;
 
 import com.vmenon.mpo.api.Episode;
 import com.vmenon.mpo.api.Show;

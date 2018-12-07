@@ -1,13 +1,12 @@
 package com.vmenon.mpo;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vmenon.mpo.core.DownloadManager;
 import com.vmenon.mpo.core.MPOExoPlayer;
-import com.vmenon.mpo.core.MPOMediaPlayer;
 import com.vmenon.mpo.core.MPOPlayer;
 import com.vmenon.mpo.core.persistence.EpisodeDao;
 import com.vmenon.mpo.core.persistence.MPORepository;

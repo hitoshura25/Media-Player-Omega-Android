@@ -1,13 +1,13 @@
 package com.vmenon.mpo.activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.ViewStub;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vmenon.mpo.R;
 
 public abstract class BaseDrawerCollapsingToolbarActivity extends BaseDrawerActivity

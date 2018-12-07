@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,13 +18,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.media.MediaBrowserServiceCompat;
+
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -286,8 +288,8 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
     @Override
     public void onMediaSeekFinished() {
-        if (playbackState == PlaybackState.STATE_BUFFERING) {
-            playbackState = PlaybackState.STATE_PLAYING;
+        if (playbackState == PlaybackStateCompat.STATE_BUFFERING) {
+            playbackState = PlaybackStateCompat.STATE_PLAYING;
         }
         updatePlaybackState(null);
     }
@@ -309,7 +311,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
             // If we are playing, we need to reset media player by calling configMediaPlayerState
             // with mAudioFocus properly set.
-            if (playbackState == PlaybackState.STATE_PLAYING && !canDuck) {
+            if (playbackState == PlaybackStateCompat.STATE_PLAYING && !canDuck) {
                 // If we don't have audio focus and can't duck, we save the information that
                 // we were playing, so that we can resume playback once we get the focus back.
                 playOnFocusGain = true;
@@ -345,14 +347,14 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         registerAudioNoisyReceiver();
         boolean mediaHasChanged = mediaFile != null;
 
-        if (playbackState == PlaybackState.STATE_PAUSED && !mediaHasChanged && player != null) {
+        if (playbackState == PlaybackStateCompat.STATE_PAUSED && !mediaHasChanged && player != null) {
             configMediaPlayerState();
         } else {
-            playbackState = PlaybackState.STATE_STOPPED;
+            playbackState = PlaybackStateCompat.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
 
             if (mediaFile != null) {
-                playbackState = PlaybackState.STATE_BUFFERING;
+                playbackState = PlaybackStateCompat.STATE_BUFFERING;
                 player.prepareForPlayback(mediaFile);
             } else {
                 configMediaPlayerState();
@@ -405,7 +407,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
     private void handlePauseRequest() {
         Log.d(TAG, "handlePauseRequest: mState=" + playbackState);
-        if (playbackState == PlaybackState.STATE_PLAYING) {
+        if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
             if (player != null && player.isPlaying()) {
                 player.pause();
@@ -414,7 +416,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             relaxResources(false);
             giveUpAudioFocus();
         }
-        playbackState = PlaybackState.STATE_PAUSED;
+        playbackState = PlaybackStateCompat.STATE_PAUSED;
         updatePlaybackState(null);
         unregisterAudioNoisyReceiver();
         // reset the delayed stop handler.
@@ -425,7 +427,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     private void handleStopRequest(String withError) {
         Log.d(TAG, "handleStopRequest: mState=" + playbackState + " error=" + withError);
         player.stop();
-        playbackState = PlaybackState.STATE_STOPPED;
+        playbackState = PlaybackStateCompat.STATE_STOPPED;
         // Give up Audio focus
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
@@ -449,7 +451,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
     private void updatePlaybackState(String error) {
         Log.d(TAG, "updatePlaybackState");
-        long position = PlaybackState.PLAYBACK_POSITION_UNKNOWN;
+        long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         int state = playbackState;
         if (player != null) {
             position = player.getCurrentPosition();
@@ -463,7 +465,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
             // Error states are really only supposed to be used for errors that cause playback to
             // stop unexpectedly and persist until the user takes action to fix it.
             stateBuilder.setErrorMessage(error);
-            state = PlaybackState.STATE_ERROR;
+            state = PlaybackStateCompat.STATE_ERROR;
         }
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
         mediaSession.setPlaybackState(stateBuilder.build());
@@ -477,10 +479,10 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
     }
 
     private long getAvailableActions() {
-        long actions = PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PLAY_FROM_MEDIA_ID |
-                PlaybackState.ACTION_PLAY_FROM_SEARCH;
+        long actions = PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
+                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH;
         if (player.isPlaying()) {
-            actions |= PlaybackState.ACTION_PAUSE;
+            actions |= PlaybackStateCompat.ACTION_PAUSE;
         }
 
         return actions;
@@ -490,7 +492,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         Log.d("MPO", "configMediaPlayerState. mAudioFocus=" + audioFocus);
         if (audioFocus == MPOMediaService.AUDIO_NO_FOCUS_NO_DUCK) {
             // If we don't have audio focus and can't duck, we have to pause,
-            if (playbackState == PlaybackState.STATE_PLAYING) {
+            if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
                 handlePauseRequest();
             }
         } else {  // we have audio focus:
@@ -509,10 +511,10 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
                             currentPosition);
                     if (currentPosition == player.getCurrentPosition()) {
                         player.play();
-                        playbackState = PlaybackState.STATE_PLAYING;
+                        playbackState = PlaybackStateCompat.STATE_PLAYING;
                     } else {
                         player.seekTo(currentPosition);
-                        playbackState = PlaybackState.STATE_BUFFERING;
+                        playbackState = PlaybackStateCompat.STATE_BUFFERING;
                     }
                 }
                 playOnFocusGain = false;
@@ -608,7 +610,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
 
         final int playPauseButtonPosition = addNotificationActions(notificationBuilder);
         notificationBuilder
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         // show only play/pause in compact view
                         .setShowActionsInCompactView(playPauseButtonPosition)
                         .setShowCancelButton(true)
@@ -779,7 +781,7 @@ public class MPOMediaService extends MediaBrowserServiceCompat implements MPOMed
         public void onSeekTo(long pos) {
             player.seekTo(pos);
             if (player.isPlaying()) {
-                playbackState = PlaybackState.STATE_BUFFERING;
+                playbackState = PlaybackStateCompat.STATE_BUFFERING;
             }
             updatePlaybackState(null);
         }
