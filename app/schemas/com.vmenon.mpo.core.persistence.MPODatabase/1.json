@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b6db9c2fb7bac248eb34921b9304d890",
+    "identityHash": "0b59c83a08e561296a47f3971389bd78",
     "entities": [
       {
         "tableName": "Show",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `artworkUrl` TEXT, `genres` TEXT, `author` TEXT, `feedUrl` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `artworkUrl` TEXT, `genres` TEXT NOT NULL, `author` TEXT, `feedUrl` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "name",
@@ -24,7 +24,7 @@
             "fieldPath": "genres",
             "columnName": "genres",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "author",
@@ -70,20 +70,20 @@
             "columnNames": [
               "name"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_Show_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Show_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": []
       },
       {
         "tableName": "Episode",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT, `downloadUrl` TEXT, `length` INTEGER NOT NULL, `artworkUrl` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `Show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT, `downloadUrl` TEXT, `length` INTEGER NOT NULL, `artworkUrl` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `Show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "description",
@@ -153,7 +153,7 @@
             "columnNames": [
               "showId"
             ],
-            "createSql": "CREATE  INDEX `index_Episode_showId` ON `${TABLE_NAME}` (`showId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Episode_showId` ON `${TABLE_NAME}` (`showId`)"
           }
         ],
         "foreignKeys": [
@@ -171,9 +171,10 @@
         ]
       }
     ],
+    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b6db9c2fb7bac248eb34921b9304d890\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0b59c83a08e561296a47f3971389bd78')"
     ]
   }
 }
