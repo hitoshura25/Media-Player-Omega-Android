@@ -66,7 +66,7 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
                     override fun onNext(@NonNull shows: List<Show>) {
                         val adapter = ShowSearchResultsAdapter(shows)
                         adapter.setListener(this@ShowSearchResultsActivity)
-                        showList!!.adapter = adapter
+                        showList.adapter = adapter
                     }
 
                     override fun onError(@NonNull e: Throwable) {

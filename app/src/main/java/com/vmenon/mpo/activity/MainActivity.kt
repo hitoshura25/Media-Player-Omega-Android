@@ -43,7 +43,7 @@ class MainActivity : BaseDrawerActivity() {
         showList.layoutManager = GridLayoutManager(this, 3)
 
         mpoRepository.allShows.observe(this, Observer { shows ->
-            Log.d("MPO", "Got " + shows!!.size + " shows")
+            Log.d("MPO", "Got " + shows.size + " shows")
             val adapter = SubscriptionGalleryAdapter(shows)
             adapter.setHasStableIds(true)
             showList.adapter = adapter

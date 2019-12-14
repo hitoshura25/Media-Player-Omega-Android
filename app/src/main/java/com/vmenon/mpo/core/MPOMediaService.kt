@@ -546,10 +546,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     }
 
     private fun createNotification(): Notification? {
-        val mediaMetadata = mediaSession.controller.metadata
-        if (mediaMetadata == null) {
-            return null
-        }
+        val mediaMetadata = mediaSession.controller.metadata ?: return null
         Log.d(TAG, "updateNotificationMetadata. mMetadata=$mediaMetadata")
 
         // Notification channels are only supported on Android O+.
@@ -618,7 +615,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         val openUI = Intent(this, MediaPlayerActivity::class.java)
         openUI.putExtra(
             MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
-            mediaSession.controller.metadata.getString(
+            mediaSession.controller.metadata?.getString(
                 MediaMetadataCompat.METADATA_KEY_MEDIA_ID
             )
         )
@@ -717,19 +714,22 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                 return
             }
 
-            val mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId!!)
-            if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType!!.mediaType) {
-                requestedMediaId = mediaId
-                currentMediaBitmap = null
-                mpoRepository.fetchEpisode(
-                    mediaType.id, EpisodeDataHandler(
-                        this@MPOMediaService, mediaId
+            mediaId?.let {
+                val mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId)
+                if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType?.mediaType) {
+                    requestedMediaId = mediaId
+                    currentMediaBitmap = null
+                    mpoRepository.fetchEpisode(
+                        mediaType.id, EpisodeDataHandler(
+                            this@MPOMediaService, mediaId
+                        )
                     )
-                )
-            } else {
-                Log.w("MPO", "Unable to determine how to play media id: $mediaId")
-                return
+                } else {
+                    Log.w("MPO", "Unable to determine how to play media id: $mediaId")
+                    return
+                }
             }
+
         }
 
         override fun onPause() {

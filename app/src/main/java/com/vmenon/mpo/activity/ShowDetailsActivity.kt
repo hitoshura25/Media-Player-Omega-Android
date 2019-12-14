@@ -38,8 +38,8 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     @Inject
     lateinit var mpoRepository: MPORepository
 
-    private var collapsingToolbar: CollapsingToolbarLayout? = null
-    private var show: Show? = null
+    private lateinit var collapsingToolbar: CollapsingToolbarLayout
+    private lateinit var show: Show
 
     private var collapsed = false
     private var scrollRange = -1
@@ -75,7 +75,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         }
 
         if (savedInstanceState == null) {
-            service.getPodcastDetails(show!!.feedUrl!!, 10)
+            service.getPodcastDetails(show.feedUrl!!, 10)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { showDetails -> displayDetails(showDetails) }
@@ -87,10 +87,10 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar!!.title = show!!.name
+            collapsingToolbar.title = show.name
             collapsed = true
         } else if (collapsed) {
-            collapsingToolbar!!.title = ""
+            collapsingToolbar.title = ""
             collapsed = false
         }
     }
@@ -103,7 +103,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(this)
         episodesList.layoutManager = layoutManager
-        episodesList.adapter = EpisodesAdapter(show!!, showDetails.episodes)
+        episodesList.adapter = EpisodesAdapter(show, showDetails.episodes)
 
         nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
             object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -117,9 +117,9 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
 
         subscribeButton.setOnClickListener {
-            mpoRepository.save(show!!)
+            mpoRepository.save(show)
             Snackbar.make(
-                detailsContainer!!, "You have subscribed to this show",
+                detailsContainer, "You have subscribed to this show",
                 Snackbar.LENGTH_LONG
             )
                 .setAction("UNDO", undoListener)

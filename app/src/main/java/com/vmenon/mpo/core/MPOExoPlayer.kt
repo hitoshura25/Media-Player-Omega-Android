@@ -71,22 +71,18 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
             currentPos = position
         } else {
             seekRequested = true
-            exoPlayer!!.seekTo(position)
+            exoPlayer?.seekTo(position)
         }
     }
 
     override fun setVolume(volume: Float) {
-        if (exoPlayer != null) {
-            exoPlayer!!.volume = volume
-        }
+        exoPlayer?.volume = volume
     }
 
     override fun setDisplay(surfaceHolder: SurfaceHolder?) {
         this.surfaceHolder = surfaceHolder
 
-        if (exoPlayer != null) {
-            exoPlayer!!.setVideoSurfaceHolder(surfaceHolder)
-        }
+        exoPlayer?.setVideoSurfaceHolder(surfaceHolder)
     }
 
     override fun doPrepareForPlayback(file: File) {
@@ -99,30 +95,28 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
         val extractorsFactory = DefaultExtractorsFactory()
         val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory)
             .createMediaSource(Uri.fromFile(file))
-        exoPlayer!!.playWhenReady = false
+        exoPlayer?.playWhenReady = false
         mediaMetadataRetriever.setDataSource(file.path)
         prepareRequested = true
-        exoPlayer!!.prepare(videoSource)
+        exoPlayer?.prepare(videoSource)
     }
 
     override fun doCleanUp() {
-        if (exoPlayer != null) {
-            exoPlayer!!.release()
-            exoPlayer!!.removeListener(eventListener)
-            exoPlayer = null
-        }
+        exoPlayer?.release()
+        exoPlayer?.removeListener(eventListener)
+        exoPlayer = null
     }
 
     private fun createMediaPlayerIfNeeded() {
         Log.d("MPO", "createMediaPlayerIfNeeded. needed? " + (exoPlayer == null))
         if (exoPlayer == null) {
             exoPlayer = SimpleExoPlayer.Builder(appContext).build()
-            exoPlayer!!.addListener(ExoPlayerEventListener())
+            exoPlayer?.addListener(ExoPlayerEventListener())
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(CONTENT_TYPE_SPEECH)
                 .setUsage(USAGE_MEDIA)
                 .build()
-            exoPlayer!!.audioAttributes = audioAttributes
+            exoPlayer?.audioAttributes = audioAttributes
 
             /** TODO
              * // Make sure the media player will acquire a wake-lock while
@@ -132,7 +126,7 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
              * PowerManager.PARTIAL_WAKE_LOCK); */
 
             if (surfaceHolder != null) {
-                exoPlayer!!.setVideoSurfaceHolder(surfaceHolder)
+                exoPlayer?.setVideoSurfaceHolder(surfaceHolder)
             }
 
         }
@@ -161,7 +155,7 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
                     if (prepareRequested) {
                         prepareRequested = false
 
-                        Log.d("MPO", "Prepared, currentPosition: " + exoPlayer!!.currentPosition)
+                        Log.d("MPO", "Prepared, currentPosition: " + exoPlayer?.currentPosition)
 
                         mListener?.onMediaPrepared()
                     }

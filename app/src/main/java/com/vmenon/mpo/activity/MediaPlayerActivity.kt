@@ -11,11 +11,8 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateUtils
 import android.util.Log
 import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.view.View
-import android.widget.ImageView
 import android.widget.SeekBar
-import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.Constants
@@ -45,9 +42,9 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var player: MPOPlayer
 
     private val handler = Handler()
-    private var episode: Episode? = null
+    private lateinit var episode: Episode
     private var show: Show? = null
-    private var mediaBrowser: MediaBrowserCompat? = null
+    private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
     private var fromNotification = false
@@ -62,7 +59,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     private val connectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             super.onConnected()
-            val token = mediaBrowser!!.sessionToken
+            val token = mediaBrowser.sessionToken
             try {
                 var currentlyPlayingMediaId = ""
                 val mediaController = MediaControllerCompat(
@@ -96,19 +93,21 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                 }
 
                 if (fromNotification) {
-                    val mediaType = MediaHelper.getMediaTypeFromMediaId(requestedMediaId!!)
-                    when (mediaType!!.mediaType) {
-                        MediaHelper.MEDIA_TYPE_EPISODE -> repository.getLiveEpisode(mediaType.id).observe(
-                            this@MediaPlayerActivity,
-                            Observer { episode ->
-                                this@MediaPlayerActivity.episode = episode
-                                repository.getLiveShow(episode!!.showId).observe(
-                                    this@MediaPlayerActivity,
-                                    Observer { show ->
-                                        this@MediaPlayerActivity.show = show
-                                        updateUIFromMedia()
-                                    })
-                            })
+                    requestedMediaId?.let {
+                        val mediaType = MediaHelper.getMediaTypeFromMediaId(it)
+                        when (mediaType?.mediaType) {
+                            MediaHelper.MEDIA_TYPE_EPISODE -> repository.getLiveEpisode(mediaType.id).observe(
+                                this@MediaPlayerActivity,
+                                Observer { episode ->
+                                    this@MediaPlayerActivity.episode = episode
+                                    repository.getLiveShow(episode!!.showId).observe(
+                                        this@MediaPlayerActivity,
+                                        Observer { show ->
+                                            this@MediaPlayerActivity.show = show
+                                            updateUIFromMedia()
+                                        })
+                                })
+                        }
                     }
                 }
 
@@ -203,10 +202,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
         if (!fromNotification) {
             episode = Parcels.unwrap<Episode>(intent.getParcelableExtra<Parcelable>(EXTRA_EPISODE))
-            requestedMediaId = MediaHelper.createMediaId(episode!!)
+            requestedMediaId = MediaHelper.createMediaId(episode)
             playOnStart = savedInstanceState == null
 
-            repository.getLiveShow(episode!!.showId).observe(this, Observer { show ->
+            repository.getLiveShow(episode.showId).observe(this, Observer { show ->
                 this@MediaPlayerActivity.show = show
                 updateUIFromMedia()
             })
@@ -217,7 +216,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     override fun onStart() {
         super.onStart()
-        mediaBrowser!!.connect()
+        mediaBrowser.connect()
     }
 
     override fun onStop() {
@@ -227,7 +226,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                 .unregisterCallback(controllerCallback)
         }
 
-        mediaBrowser!!.disconnect()
+        mediaBrowser.disconnect()
     }
 
     override fun onDestroy() {
@@ -270,7 +269,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     private fun updateUIFromMedia() {
         Glide.with(this).load(show!!.artworkUrl).fitCenter().into(artworkImage!!)
-        mediaTitle.text = episode!!.name
+        mediaTitle.text = episode.name
     }
 
     private fun scheduleSeekbarUpdate() {
@@ -314,20 +313,19 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     }
 
     private fun updateProgress() {
-        if (playbackState == null) {
-            return
+        playbackState?.let {
+            var currentPosition = it.position / 1000
+            if (it.state == PlaybackStateCompat.STATE_PLAYING) {
+                // Calculate the elapsed time between the last position update and now and unless
+                // paused, we can assume (delta * speed) + current position is approximately the
+                // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+                // on MediaControllerCompat.
+                val timeDelta =
+                    (SystemClock.elapsedRealtime() - it.lastPositionUpdateTime) / 1000
+                currentPosition += (timeDelta.toInt() * it.playbackSpeed).toLong()
+            }
+            seekBar.progress = currentPosition.toInt()
         }
-        var currentPosition = playbackState!!.position / 1000
-        if (playbackState!!.state == PlaybackStateCompat.STATE_PLAYING) {
-            // Calculate the elapsed time between the last position update and now and unless
-            // paused, we can assume (delta * speed) + current position is approximately the
-            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
-            // on MediaControllerCompat.
-            val timeDelta =
-                (SystemClock.elapsedRealtime() - playbackState!!.lastPositionUpdateTime) / 1000
-            currentPosition += (timeDelta.toInt() * playbackState!!.playbackSpeed).toLong()
-        }
-        seekBar.progress = currentPosition.toInt()
     }
 
     private fun updateDuration(metadata: MediaMetadataCompat?) {

@@ -38,8 +38,8 @@ class SubscriptionGalleryAdapter(private val shows: List<Show>) :
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (listener != null && vh.show != null) {
-                listener!!.onShowSelected(vh.show)
+            if (vh.show != null) {
+                listener?.onShowSelected(vh.show)
             }
         }
 

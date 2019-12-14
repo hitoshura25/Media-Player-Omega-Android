@@ -51,8 +51,8 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (listener != null && vh.episode != null) {
-                listener!!.onEpisodeSelected(vh.episode)
+            if (vh.episode != null) {
+                listener?.onEpisodeSelected(vh.episode)
             }
         }
 
@@ -83,7 +83,7 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.description!!.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+            episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
             Date(episode.published)

@@ -28,7 +28,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
-class AppModule(internal var application: Application) {
+class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
@@ -108,12 +108,12 @@ class AppModule(internal var application: Application) {
      * TODO: Make sure MPO API doesn't return 0 byte responses for results...change
      * to just have an empty array, etc.
      */
-    internal inner class NullOnEmptyConverterFactory : Converter.Factory() {
+    private class NullOnEmptyConverterFactory : Converter.Factory() {
         override fun responseBodyConverter(
-            type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?
+            type: Type, annotations: Array<Annotation>, retrofit: Retrofit
         ): Converter<ResponseBody, *>? {
-            val delegate = retrofit!!.nextResponseBodyConverter<Any>(
-                this, type!!, annotations!!
+            val delegate = retrofit.nextResponseBodyConverter<Any>(
+                this, type, annotations
             )
             return Converter<ResponseBody, Any> { body ->
                 if (body.contentLength() == 0L) {

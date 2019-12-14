@@ -34,9 +34,7 @@ class LibraryAdapter(private val episodes: List<Episode>) :
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (listener != null) {
-                listener!!.onEpisodeSelected(vh.episode)
-            }
+            listener?.onEpisodeSelected(vh.episode)
         }
 
         return vh
