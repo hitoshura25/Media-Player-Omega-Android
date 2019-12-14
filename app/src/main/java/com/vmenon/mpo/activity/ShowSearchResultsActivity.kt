@@ -56,27 +56,27 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
             title = this.getString(R.string.show_search_title, query)
 
             service.searchPodcasts(query)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith<Observer<List<Show>>>(object : Observer<List<Show>> {
-                        override fun onSubscribe(@NonNull d: Disposable) {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith<Observer<List<Show>>>(object : Observer<List<Show>> {
+                    override fun onSubscribe(@NonNull d: Disposable) {
 
-                        }
+                    }
 
-                        override fun onNext(@NonNull shows: List<Show>) {
-                            val adapter = ShowSearchResultsAdapter(shows)
-                            adapter.setListener(this@ShowSearchResultsActivity)
-                            showList!!.adapter = adapter
-                        }
+                    override fun onNext(@NonNull shows: List<Show>) {
+                        val adapter = ShowSearchResultsAdapter(shows)
+                        adapter.setListener(this@ShowSearchResultsActivity)
+                        showList!!.adapter = adapter
+                    }
 
-                        override fun onError(@NonNull e: Throwable) {
-                            Log.w("MPO", "Error search for shows", e)
-                        }
+                    override fun onError(@NonNull e: Throwable) {
+                        Log.w("MPO", "Error search for shows", e)
+                    }
 
-                        override fun onComplete() {
+                    override fun onComplete() {
 
-                        }
-                    })
+                    }
+                })
 
         }
     }

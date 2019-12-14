@@ -40,8 +40,10 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
     init {
 
         workQueue = LinkedBlockingQueue()
-        threadPoolExecutor = ThreadPoolExecutor(NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME.toLong(),
-                KEEP_ALIVE_TIME_UNIT, workQueue)
+        threadPoolExecutor = ThreadPoolExecutor(
+            NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME.toLong(),
+            KEEP_ALIVE_TIME_UNIT, workQueue
+        )
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
@@ -92,7 +94,8 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
 
                         // only post message every so often to avoid too many ui updates
                         if (System.currentTimeMillis() - lastPost > 3000) {
-                            val completeMessage = handler.obtainMessage(STATE_UPDATE, downloadUpdateEvent)
+                            val completeMessage =
+                                handler.obtainMessage(STATE_UPDATE, downloadUpdateEvent)
                             completeMessage.sendToTarget()
                             lastPost = System.currentTimeMillis()
                         }

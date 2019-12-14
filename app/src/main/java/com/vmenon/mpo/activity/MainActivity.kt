@@ -59,7 +59,8 @@ class MainActivity : BaseDrawerActivity() {
         val menuItem = menu.findItem(R.id.search)
         val searchView = menuItem.actionView as SearchView
         searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(componentName))
+            searchManager.getSearchableInfo(componentName)
+        )
 
         return true
     }

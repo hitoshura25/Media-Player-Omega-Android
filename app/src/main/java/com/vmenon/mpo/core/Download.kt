@@ -18,9 +18,7 @@ class Download {
     var progress = 0
         internal set
 
-    constructor() {
-
-    }
+    constructor()
 
     constructor(show: Show, episode: Episode) {
         this.show = show

@@ -81,16 +81,21 @@ abstract class MPOPlayer {
 
     protected abstract fun doPrepareForPlayback(file: File)
 
-    private inner class MediaMetadataRetrieverTask internal constructor(private val filePath: String, listener: VideoSizeListener?) : Runnable {
+    private inner class MediaMetadataRetrieverTask internal constructor(
+        private val filePath: String,
+        listener: VideoSizeListener?
+    ) : Runnable {
         private val listenerRef = if (listener != null) WeakReference(listener) else null
 
         override fun run() {
             val retriever = MediaMetadataRetriever()
             retriever.setDataSource(filePath)
             val widthStr = retriever.extractMetadata(
-                    MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
+            )
             val heightStr = retriever.extractMetadata(
-                    MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT
+            )
 
             videoWidth = if (widthStr != null) Integer.valueOf(widthStr) else 0
             videoHeight = if (heightStr != null) Integer.valueOf(heightStr) else 0

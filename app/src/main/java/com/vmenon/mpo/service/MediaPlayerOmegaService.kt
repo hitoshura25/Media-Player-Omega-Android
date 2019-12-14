@@ -14,10 +14,14 @@ interface MediaPlayerOmegaService {
     fun searchPodcasts(@Query("keyword") keyword: String): Observable<List<Show>>
 
     @GET("podcastdetails")
-    fun getPodcastDetails(@Query("feedUrl") feedUrl: String,
-                          @Query("maxEpisodes") maxEpisodes: Int): Observable<ShowDetails>
+    fun getPodcastDetails(
+        @Query("feedUrl") feedUrl: String,
+        @Query("maxEpisodes") maxEpisodes: Int
+    ): Observable<ShowDetails>
 
     @GET("podcastupdate")
-    fun getPodcastUpdate(@Query("feedUrl") feedUrl: String,
-                         @Query("publishTimestamp") lastEpisodePublishTime: Long): Observable<Episode>
+    fun getPodcastUpdate(
+        @Query("feedUrl") feedUrl: String,
+        @Query("publishTimestamp") lastEpisodePublishTime: Long
+    ): Observable<Episode>
 }

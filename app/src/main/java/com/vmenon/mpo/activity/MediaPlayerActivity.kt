@@ -66,15 +66,18 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
             try {
                 var currentlyPlayingMediaId = ""
                 val mediaController = MediaControllerCompat(
-                        this@MediaPlayerActivity, token)
+                    this@MediaPlayerActivity, token
+                )
                 MediaControllerCompat.setMediaController(this@MediaPlayerActivity, mediaController)
                 mediaController.registerCallback(controllerCallback)
                 val playbackState = mediaController.playbackState
-                val currentlyPlaying = playbackState != null && (playbackState.state == PlaybackStateCompat.STATE_PLAYING || playbackState.state == PlaybackStateCompat.STATE_BUFFERING)
+                val currentlyPlaying =
+                    playbackState != null && (playbackState.state == PlaybackStateCompat.STATE_PLAYING || playbackState.state == PlaybackStateCompat.STATE_BUFFERING)
 
                 val metadata = mediaController.metadata
                 if (metadata != null) {
-                    currentlyPlayingMediaId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+                    currentlyPlayingMediaId =
+                        metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
                     if (requestedMediaId == currentlyPlayingMediaId) {
                         updateDuration(metadata)
                     }
@@ -95,16 +98,17 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                 if (fromNotification) {
                     val mediaType = MediaHelper.getMediaTypeFromMediaId(requestedMediaId!!)
                     when (mediaType!!.mediaType) {
-                        MediaHelper.MEDIA_TYPE_EPISODE -> repository.getLiveEpisode(mediaType.id).observe(this@MediaPlayerActivity,
-                                Observer { episode ->
-                                    this@MediaPlayerActivity.episode = episode
-                                    repository.getLiveShow(episode!!.showId).observe(
-                                            this@MediaPlayerActivity,
-                                            Observer { show ->
-                                                this@MediaPlayerActivity.show = show
-                                                updateUIFromMedia()
-                                            })
-                                })
+                        MediaHelper.MEDIA_TYPE_EPISODE -> repository.getLiveEpisode(mediaType.id).observe(
+                            this@MediaPlayerActivity,
+                            Observer { episode ->
+                                this@MediaPlayerActivity.episode = episode
+                                repository.getLiveShow(episode!!.showId).observe(
+                                    this@MediaPlayerActivity,
+                                    Observer { show ->
+                                        this@MediaPlayerActivity.show = show
+                                        updateUIFromMedia()
+                                    })
+                            })
                     }
                 }
 
@@ -148,7 +152,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
         actionButton.setOnClickListener {
             val mediaController = MediaControllerCompat.getMediaController(
-                    this@MediaPlayerActivity)
+                this@MediaPlayerActivity
+            )
             val transportControls = mediaController.transportControls
             when (mediaController.playbackState.state) {
                 PlaybackStateCompat.STATE_BUFFERING, PlaybackStateCompat.STATE_PLAYING -> {
@@ -159,7 +164,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                     transportControls.play()
                     scheduleSeekbarUpdate()
                 }
-                PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.STATE_NONE -> transportControls.playFromMediaId(requestedMediaId, null)
+                PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.STATE_NONE -> transportControls.playFromMediaId(
+                    requestedMediaId,
+                    null
+                )
             }
         }
 
@@ -167,7 +175,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 position.text = DateUtils.formatElapsedTime(seekBar.progress.toLong())
-                remaining.text = "-" + DateUtils.formatElapsedTime((seekBar.max - seekBar.progress).toLong())
+                remaining.text =
+                    "-" + DateUtils.formatElapsedTime((seekBar.max - seekBar.progress).toLong())
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -176,7 +185,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 MediaControllerCompat.getMediaController(this@MediaPlayerActivity).transportControls
-                        .seekTo((seekBar.progress * 1000).toLong())
+                    .seekTo((seekBar.progress * 1000).toLong())
                 scheduleSeekbarUpdate()
             }
         })
@@ -186,9 +195,11 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
         surfaceView.holder.addCallback(this)
 
-        mediaBrowser = MediaBrowserCompat(this,
-                ComponentName(this, MPOMediaService::class.java),
-                connectionCallback, null) // optional Bundle
+        mediaBrowser = MediaBrowserCompat(
+            this,
+            ComponentName(this, MPOMediaService::class.java),
+            connectionCallback, null
+        ) // optional Bundle
 
         if (!fromNotification) {
             episode = Parcels.unwrap<Episode>(intent.getParcelableExtra<Parcelable>(EXTRA_EPISODE))
@@ -213,7 +224,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         super.onStop()
         if (MediaControllerCompat.getMediaController(this@MediaPlayerActivity) != null) {
             MediaControllerCompat.getMediaController(this@MediaPlayerActivity)
-                    .unregisterCallback(controllerCallback)
+                .unregisterCallback(controllerCallback)
         }
 
         mediaBrowser!!.disconnect()
@@ -266,7 +277,11 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         stopSeekbarUpdate()
         if (!executorService.isShutdown) {
             scheduleFuture = executorService.scheduleAtFixedRate(
-                    { handler.post(updateProgressTask) }, PROGRESS_UPDATE_INITIAL_INTERVAL, PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS)
+                { handler.post(updateProgressTask) },
+                PROGRESS_UPDATE_INITIAL_INTERVAL,
+                PROGRESS_UPDATE_INTERNAL,
+                TimeUnit.MILLISECONDS
+            )
         }
     }
 
@@ -308,7 +323,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
             // paused, we can assume (delta * speed) + current position is approximately the
             // latest position. This ensure that we do not repeatedly call the getPlaybackState()
             // on MediaControllerCompat.
-            val timeDelta = (SystemClock.elapsedRealtime() - playbackState!!.lastPositionUpdateTime) / 1000
+            val timeDelta =
+                (SystemClock.elapsedRealtime() - playbackState!!.lastPositionUpdateTime) / 1000
             currentPosition += (timeDelta.toInt() * playbackState!!.playbackSpeed).toLong()
         }
         seekBar.progress = currentPosition.toInt()
@@ -337,7 +353,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
             val lp = surfaceView.layoutParams
             // Set the height of the SurfaceView to match the aspect ratio of the video
             // be sure to cast these as floats otherwise the calculation will likely be 0
-            lp.height = (videoHeight.toFloat() / videoWidth.toFloat() * surfaceWidth.toFloat()).toInt()
+            lp.height =
+                (videoHeight.toFloat() / videoWidth.toFloat() * surfaceWidth.toFloat()).toInt()
 
             Log.d("MPO", "surface view width: $surfaceWidth")
             Log.d("MPO", "surface view height: " + lp.height)

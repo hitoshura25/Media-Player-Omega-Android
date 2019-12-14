@@ -12,7 +12,11 @@ import java.util.Date
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class MPORepository(private val service: MediaPlayerOmegaService, private val showDao: ShowDao, private val episodeDao: EpisodeDao) {
+class MPORepository(
+    private val service: MediaPlayerOmegaService,
+    private val showDao: ShowDao,
+    private val episodeDao: EpisodeDao
+) {
     private val discExecutor: Executor
     private val mainThreadExecutor: Executor
 

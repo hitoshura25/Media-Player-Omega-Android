@@ -22,7 +22,8 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class EpisodesAdapter(private val show: Show, private val episodes: List<Episode>) : RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
+class EpisodesAdapter(private val show: Show, private val episodes: List<Episode>) :
+    RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
@@ -44,8 +45,10 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.recent_episode, parent,
-                false)
+        val v = LayoutInflater.from(parent.context).inflate(
+            R.layout.recent_episode, parent,
+            false
+        )
         val vh = ViewHolder(v)
         v.setOnClickListener {
             if (listener != null && vh.episode != null) {
@@ -58,9 +61,11 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
             popupMenu.inflate(R.menu.episode_menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 if (R.id.download_episode == item.itemId) {
-                    BackgroundService.startDownload(vh.menuButton.context,
-                            vh.show!!,
-                            vh.episode!!)
+                    BackgroundService.startDownload(
+                        vh.menuButton.context,
+                        vh.show!!,
+                        vh.episode!!
+                    )
                 }
 
                 false
@@ -78,15 +83,17 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-                episode.description!!.replace("(<(//)img>)|(<img.+?>)".toRegex(), ""))
+            episode.description!!.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+        )
         holder.publishedText.text = DateFormat.getDateInstance().format(
-                Date(episode.published))
+            Date(episode.published)
+        )
 
         if (episode.artworkUrl != null) {
             Glide.with(holder.thumbnailImage.context)
-                    .load(episode.artworkUrl)
-                    .fitCenter()
-                    .into(holder.thumbnailImage)
+                .load(episode.artworkUrl)
+                .fitCenter()
+                .into(holder.thumbnailImage)
             holder.thumbnailImage.visibility = View.VISIBLE
         } else {
             holder.thumbnailImage.visibility = View.GONE

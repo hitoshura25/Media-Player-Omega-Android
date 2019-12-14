@@ -62,8 +62,10 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
         nav_view.setNavigationItemSelectedListener { menuItem ->
             if (R.id.nav_downloads == menuItem.itemId) {
-                val intent = Intent(this@ShowDetailsActivity,
-                        DownloadsActivity::class.java)
+                val intent = Intent(
+                    this@ShowDetailsActivity,
+                    DownloadsActivity::class.java
+                )
                 startActivity(intent)
             }
 
@@ -74,9 +76,9 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
         if (savedInstanceState == null) {
             service.getPodcastDetails(show!!.feedUrl!!, 10)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { showDetails -> displayDetails(showDetails) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { showDetails -> displayDetails(showDetails) }
         }
     }
 
@@ -104,22 +106,24 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         episodesList.adapter = EpisodesAdapter(show!!, showDetails.episodes)
 
         nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        nestedScrollView.scrollY = 0
-                        @Suppress("DEPRECATION")
-                        nestedScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                    }
-                })
+            object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    nestedScrollView.scrollY = 0
+                    @Suppress("DEPRECATION")
+                    nestedScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
+                }
+            })
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
 
         subscribeButton.setOnClickListener {
             mpoRepository.save(show!!)
-            Snackbar.make(detailsContainer!!, "You have subscribed to this show",
-                    Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", undoListener)
-                    .show()
+            Snackbar.make(
+                detailsContainer!!, "You have subscribed to this show",
+                Snackbar.LENGTH_LONG
+            )
+                .setAction("UNDO", undoListener)
+                .show()
         }
     }
 

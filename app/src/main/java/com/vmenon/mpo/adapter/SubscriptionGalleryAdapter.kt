@@ -11,7 +11,8 @@ import com.vmenon.mpo.api.Show
 
 import androidx.recyclerview.widget.RecyclerView
 
-class SubscriptionGalleryAdapter(private val shows: List<Show>) : RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder>() {
+class SubscriptionGalleryAdapter(private val shows: List<Show>) :
+    RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
 
     interface ShowSelectedListener {
@@ -33,7 +34,8 @@ class SubscriptionGalleryAdapter(private val shows: List<Show>) : RecyclerView.A
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(
-                R.layout.subscription_gallery_item, parent, false)
+            R.layout.subscription_gallery_item, parent, false
+        )
         val vh = ViewHolder(v)
         v.setOnClickListener {
             if (listener != null && vh.show != null) {
@@ -49,10 +51,10 @@ class SubscriptionGalleryAdapter(private val shows: List<Show>) : RecyclerView.A
         holder.show = show
 
         Glide.with(holder.itemView.context)
-                .load(show.artworkUrl)
-                .fitCenter()
-                .crossFade()
-                .into(holder.imageView)
+            .load(show.artworkUrl)
+            .fitCenter()
+            .crossFade()
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int {

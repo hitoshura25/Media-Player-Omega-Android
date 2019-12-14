@@ -13,7 +13,8 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.api.Show
 import kotlinx.android.synthetic.main.show_result.view.*
 
-class ShowSearchResultsAdapter(private val shows: List<Show>) : RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
+class ShowSearchResultsAdapter(private val shows: List<Show>) :
+    RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
 
     interface ShowSelectedListener {
@@ -31,8 +32,10 @@ class ShowSearchResultsAdapter(private val shows: List<Show>) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.show_result, parent,
-                false)
+        val v = LayoutInflater.from(parent.context).inflate(
+            R.layout.show_result, parent,
+            false
+        )
         val vh = ViewHolder(v)
         v.setOnClickListener {
             if (listener != null && vh.show != null) {
@@ -49,10 +52,10 @@ class ShowSearchResultsAdapter(private val shows: List<Show>) : RecyclerView.Ada
         holder.nameText.text = show.name
 
         Glide.with(holder.itemView.context)
-                .load(show.artworkUrl)
-                .centerCrop()
-                .crossFade()
-                .into(holder.imageView)
+            .load(show.artworkUrl)
+            .centerCrop()
+            .crossFade()
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int {

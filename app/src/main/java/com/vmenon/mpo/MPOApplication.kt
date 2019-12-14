@@ -8,7 +8,8 @@ class MPOApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         this.appComponent = DaggerAppComponent.builder().appModule(
-                AppModule(this)).build()
+            AppModule(this)
+        ).build()
     }
 
 }

@@ -42,7 +42,8 @@ import java.util.ArrayList
 
 import javax.inject.Inject
 
-class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListener, AudioManager.OnAudioFocusChangeListener {
+class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListener,
+    AudioManager.OnAudioFocusChangeListener {
 
     @Inject
     lateinit var mpoRepository: MPORepository
@@ -92,7 +93,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
             val transportControls = mediaSession.controller
-                    .transportControls
+                .transportControls
             Log.d(TAG, "Received intent with action " + action)
             when (action) {
                 NOTIFICATION_ACTION_PAUSE -> transportControls.pause()
@@ -106,8 +107,9 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     private val availableActions: Long
         get() {
-            var actions = PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
-                    PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
+            var actions =
+                PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
+                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
             if (player.isPlaying) {
                 actions = actions or PlaybackStateCompat.ACTION_PAUSE
             }
@@ -124,16 +126,26 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val pkg = packageName
-        pauseIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
-                Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT)
-        playIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
-                Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT)
-        previousIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
-                Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT)
-        nextIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
-                Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT)
-        stopIntent = PendingIntent.getBroadcast(this, NOTIFICATION_REQUEST_CODE,
-                Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT)
+        pauseIntent = PendingIntent.getBroadcast(
+            this, NOTIFICATION_REQUEST_CODE,
+            Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        playIntent = PendingIntent.getBroadcast(
+            this, NOTIFICATION_REQUEST_CODE,
+            Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        previousIntent = PendingIntent.getBroadcast(
+            this, NOTIFICATION_REQUEST_CODE,
+            Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        nextIntent = PendingIntent.getBroadcast(
+            this, NOTIFICATION_REQUEST_CODE,
+            Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        stopIntent = PendingIntent.getBroadcast(
+            this, NOTIFICATION_REQUEST_CODE,
+            Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+        )
 
         // Cancel all notifications to handle the case where the Service was killed and
         // restarted by the system.
@@ -145,7 +157,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
         mediaSession = MediaSessionCompat(this, TAG)
         stateBuilder = PlaybackStateCompat.Builder().setActions(
-                PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_PAUSE)
+            PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_PAUSE
+        )
         mediaSession.setPlaybackState(stateBuilder.build())
         mediaSession.setCallback(SessionCallback())
         sessionToken = mediaSession.sessionToken
@@ -153,8 +166,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
         val context = applicationContext
         val intent = Intent(context, MediaPlayerActivity::class.java)
-        val pi = PendingIntent.getActivity(context, 99 /*request code*/,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pi = PendingIntent.getActivity(
+            context, 99 /*request code*/,
+            intent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
         mediaSession.setSessionActivity(pi)
         updatePlaybackState(null)
     }
@@ -189,7 +204,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         player.setListener(null)
     }
 
-    override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
+    override fun onGetRoot(
+        clientPackageName: String,
+        clientUid: Int,
+        rootHints: Bundle?
+    ): BrowserRoot? {
         return if (allowBrowsing(clientPackageName, clientUid)) {
             BrowserRoot(MEDIA_ROOT_ID, null)
         } else {
@@ -197,7 +216,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    override fun onLoadChildren(parentId: String, result: Result<List<MediaBrowserCompat.MediaItem>>) {
+    override fun onLoadChildren(
+        parentId: String,
+        result: Result<List<MediaBrowserCompat.MediaItem>>
+    ) {
         if (TextUtils.equals(EMPTY_MEDIA_ROOT_ID, parentId)) {
             result.sendResult(null)
             return
@@ -239,8 +261,9 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             audioFocus = AUDIO_FOCUSED
 
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
-                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
-                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
+        ) {
             // We have lost focus. If we can duck (low playback volume), we can keep playing.
             // Otherwise, we need to pause the playback.
             val canDuck = focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
@@ -393,7 +416,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         val position = player.getCurrentPosition()
         var state = playbackState
         val stateBuilder = PlaybackStateCompat.Builder()
-                .setActions(availableActions)
+            .setActions(availableActions)
 
         // If there is an error message, send it to the playback state:
         if (error != null) {
@@ -429,7 +452,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             if (playOnFocusGain) {
                 if (!player.isPlaying) {
                     val currentPosition = player.getCurrentPosition()
-                    Log.d("MPO", "configMediaPlayerState startMediaPlayer. seeking to $currentPosition")
+                    Log.d(
+                        "MPO",
+                        "configMediaPlayerState startMediaPlayer. seeking to $currentPosition"
+                    )
                     playbackState = if (currentPosition == player.getCurrentPosition()) {
                         player.play()
                         PlaybackStateCompat.STATE_PLAYING
@@ -448,8 +474,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         Log.d(TAG, "tryToGetAudioFocus")
         if (audioFocus != AUDIO_FOCUSED) {
             @Suppress("DEPRECATION")
-            val result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN)
+            val result = audioManager.requestAudioFocus(
+                this, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+            )
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 audioFocus = AUDIO_FOCUSED
             }
@@ -500,14 +528,15 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         if (requestedMediaId == mediaId) {
             val mediaFile = File(episode.filename!!)
             val metadata = MediaMetadataCompat.Builder().putString(
-                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.name)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
-                    .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.artworkUrl)
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
-                    .build()
+                MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
+            )
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.name)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.artworkUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
+                .build()
             handlePlayRequest(mediaFile)
             mediaSession.setMetadata(metadata)
         } else {
@@ -532,19 +561,21 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
         val playPauseButtonPosition = addNotificationActions(notificationBuilder)
         notificationBuilder
-                .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
-                        // show only play/pause in compact view
-                        .setShowActionsInCompactView(playPauseButtonPosition)
-                        .setShowCancelButton(true)
-                        .setCancelButtonIntent(stopIntent)
-                        .setMediaSession(sessionToken))
-                .setDeleteIntent(stopIntent)
-                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                .setSmallIcon(R.drawable.ic_headset)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(createNotificationContentIntent())
-                .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle()
+                    // show only play/pause in compact view
+                    .setShowActionsInCompactView(playPauseButtonPosition)
+                    .setShowCancelButton(true)
+                    .setCancelButtonIntent(stopIntent)
+                    .setMediaSession(sessionToken)
+            )
+            .setDeleteIntent(stopIntent)
+            .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            .setSmallIcon(R.drawable.ic_headset)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(createNotificationContentIntent())
+            .setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
 
         setNotificationPlaybackState(notificationBuilder)
 
@@ -554,12 +585,17 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             notificationBuilder.setLargeIcon(currentMediaBitmap)
         } else {
             if (placeholderMediaBitmap == null) {
-                placeholderMediaBitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_headset)
+                placeholderMediaBitmap =
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_headset)
             }
             notificationBuilder.setLargeIcon(placeholderMediaBitmap)
             if (fetchArtUrl != null) {
-                Glide.with(this).load(fetchArtUrl).asBitmap().into(ArtworkTarget(this, fetchArtUrl,
-                        notificationBuilder))
+                Glide.with(this).load(fetchArtUrl).asBitmap().into(
+                    ArtworkTarget(
+                        this, fetchArtUrl,
+                        notificationBuilder
+                    )
+                )
             }
         }
 
@@ -580,12 +616,17 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     private fun createNotificationContentIntent(): PendingIntent {
         val openUI = Intent(this, MediaPlayerActivity::class.java)
-        openUI.putExtra(MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
-                mediaSession.controller.metadata.getString(
-                        MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
+        openUI.putExtra(
+            MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
+            mediaSession.controller.metadata.getString(
+                MediaMetadataCompat.METADATA_KEY_MEDIA_ID
+            )
+        )
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        return PendingIntent.getActivity(this, NOTIFICATION_REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT)
+        return PendingIntent.getActivity(
+            this, NOTIFICATION_REQUEST_CODE, openUI,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
     }
 
     private fun addNotificationActions(notificationBuilder: NotificationCompat.Builder): Int {
@@ -632,10 +673,13 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         return playPauseButtonPosition
     }
 
-    private fun handleNotificationArtwork(artworkUrl: String, bitmap: Bitmap,
-                                          notificationBuilder: NotificationCompat.Builder) {
+    private fun handleNotificationArtwork(
+        artworkUrl: String, bitmap: Bitmap,
+        notificationBuilder: NotificationCompat.Builder
+    ) {
         val mediaMetadata = mediaSession.controller.metadata
-        val currentArtworkUrl = mediaMetadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
+        val currentArtworkUrl =
+            mediaMetadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
 
         if (currentArtworkUrl != null && currentArtworkUrl == artworkUrl) {
             // If the media is still the same, update the notification:
@@ -649,9 +693,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
         if (notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
-            val notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                    getString(R.string.notification_channel),
-                    NotificationManager.IMPORTANCE_LOW)
+            val notificationChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.notification_channel),
+                NotificationManager.IMPORTANCE_LOW
+            )
 
             notificationChannel.description = getString(R.string.notification_channel_description)
 
@@ -675,8 +721,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType!!.mediaType) {
                 requestedMediaId = mediaId
                 currentMediaBitmap = null
-                mpoRepository.fetchEpisode(mediaType.id, EpisodeDataHandler(
-                        this@MPOMediaService, mediaId))
+                mpoRepository.fetchEpisode(
+                    mediaType.id, EpisodeDataHandler(
+                        this@MPOMediaService, mediaId
+                    )
+                )
             } else {
                 Log.w("MPO", "Unable to determine how to play media id: $mediaId")
                 return
@@ -717,7 +766,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private class EpisodeDataHandler internal constructor(service: MPOMediaService, internal var mediaId: String) : MPORepository.DataHandler<Episode> {
+    private class EpisodeDataHandler internal constructor(
+        service: MPOMediaService,
+        internal var mediaId: String
+    ) : MPORepository.DataHandler<Episode> {
         internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
         override fun onDataReady(data: Episode) {
@@ -726,7 +778,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private class ShowDataHandler internal constructor(service: MPOMediaService, internal var mediaId: String, internal var episode: Episode) : MPORepository.DataHandler<Show> {
+    private class ShowDataHandler internal constructor(
+        service: MPOMediaService,
+        internal var mediaId: String,
+        internal var episode: Episode
+    ) : MPORepository.DataHandler<Show> {
         internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
         override fun onDataReady(data: Show) {
@@ -735,7 +791,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private class ArtworkTarget internal constructor(service: MPOMediaService, internal var artworkUrl: String, internal var notificationBuilder: NotificationCompat.Builder) : SimpleTarget<Bitmap>(500, 500) {
+    private class ArtworkTarget internal constructor(
+        service: MPOMediaService,
+        internal var artworkUrl: String,
+        internal var notificationBuilder: NotificationCompat.Builder
+    ) : SimpleTarget<Bitmap>(500, 500) {
         internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
         override fun onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation<in Bitmap>) {

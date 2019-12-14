@@ -40,10 +40,10 @@ class AppModule(internal var application: Application) {
     @Singleton
     internal fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
 
     @Provides
@@ -52,12 +52,12 @@ class AppModule(internal var application: Application) {
         val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
 
         val retrofit = Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(NullOnEmptyConverterFactory())
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .baseUrl(Constants.API_URL)
-                .client(httpClient)
-                .build()
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(NullOnEmptyConverterFactory())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(Constants.API_URL)
+            .client(httpClient)
+            .build()
 
         return retrofit.create(MediaPlayerOmegaService::class.java)
     }
@@ -71,8 +71,10 @@ class AppModule(internal var application: Application) {
     @Provides
     @Singleton
     internal fun provideMPODatabase(): MPODatabase {
-        return Room.databaseBuilder(application.applicationContext, MPODatabase::class.java,
-                "mpo-database").build()
+        return Room.databaseBuilder(
+            application.applicationContext, MPODatabase::class.java,
+            "mpo-database"
+        ).build()
     }
 
     @Provides
@@ -89,8 +91,10 @@ class AppModule(internal var application: Application) {
 
     @Provides
     @Singleton
-    internal fun provideMPORepository(service: MediaPlayerOmegaService,
-                                      showDao: ShowDao, episodeDao: EpisodeDao): MPORepository {
+    internal fun provideMPORepository(
+        service: MediaPlayerOmegaService,
+        showDao: ShowDao, episodeDao: EpisodeDao
+    ): MPORepository {
         return MPORepository(service, showDao, episodeDao)
     }
 
@@ -106,9 +110,11 @@ class AppModule(internal var application: Application) {
      */
     internal inner class NullOnEmptyConverterFactory : Converter.Factory() {
         override fun responseBodyConverter(
-                type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
+            type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?
+        ): Converter<ResponseBody, *>? {
             val delegate = retrofit!!.nextResponseBodyConverter<Any>(
-                    this, type!!, annotations!!)
+                this, type!!, annotations!!
+            )
             return Converter<ResponseBody, Any> { body ->
                 if (body.contentLength() == 0L) {
                     null

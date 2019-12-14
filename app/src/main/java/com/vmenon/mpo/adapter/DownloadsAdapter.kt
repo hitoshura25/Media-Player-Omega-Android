@@ -14,7 +14,8 @@ import com.vmenon.mpo.core.Download
 import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong
 
-class DownloadsAdapter(private val downloads: List<Download>) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
+class DownloadsAdapter(private val downloads: List<Download>) :
+    RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
@@ -24,8 +25,10 @@ class DownloadsAdapter(private val downloads: List<Download>) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.download, parent,
-                false)
+        val v = LayoutInflater.from(parent.context).inflate(
+            R.layout.download, parent,
+            false
+        )
         val vh = ViewHolder(v)
         v.setOnClickListener { }
 
@@ -43,10 +46,10 @@ class DownloadsAdapter(private val downloads: List<Download>) : RecyclerView.Ada
 
         download.episode?.artworkUrl?.let {
             Glide.with(holder.itemView.context)
-                    .load(it)
-                    .centerCrop()
-                    .crossFade()
-                    .into(holder.imageView)
+                .load(it)
+                .centerCrop()
+                .crossFade()
+                .into(holder.imageView)
         }
 
     }

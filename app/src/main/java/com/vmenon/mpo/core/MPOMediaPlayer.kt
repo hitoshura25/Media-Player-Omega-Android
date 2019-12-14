@@ -11,7 +11,8 @@ import java.io.IOException
 /**
  * Wrapper around actual media player mechanism (i.e. [android.media.MediaPlayer])
  */
-class MPOMediaPlayer : MPOPlayer(), MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
+class MPOMediaPlayer : MPOPlayer(), MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
+    MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
 
     private var mediaPlayer: MediaPlayer? = null
     private var currentPosition: Long = 0

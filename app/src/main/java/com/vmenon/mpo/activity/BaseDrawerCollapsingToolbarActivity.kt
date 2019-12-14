@@ -8,7 +8,8 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.vmenon.mpo.R
 
-abstract class BaseDrawerCollapsingToolbarActivity : BaseDrawerActivity(), AppBarLayout.OnOffsetChangedListener {
+abstract class BaseDrawerCollapsingToolbarActivity : BaseDrawerActivity(),
+    AppBarLayout.OnOffsetChangedListener {
 
     private lateinit var fab: FloatingActionButton
     private lateinit var collapsingToolbar: CollapsingToolbarLayout

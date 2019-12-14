@@ -25,7 +25,8 @@ object MediaHelper {
     }
 
     fun getMediaTypeFromMediaId(mediaId: String): MediaType? {
-        val mediaIdParts = mediaId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val mediaIdParts =
+            mediaId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (EPISODE_MEDIA_PREFIX == mediaIdParts[0]) {
             val episodeId = java.lang.Long.parseLong(mediaIdParts[1])
             return MediaType(MEDIA_TYPE_EPISODE, episodeId)

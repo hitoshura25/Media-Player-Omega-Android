@@ -11,7 +11,13 @@ import com.google.gson.annotations.SerializedName
 import org.parceler.Parcel
 
 @Parcel
-@Entity(foreignKeys = [ForeignKey(entity = Show::class, parentColumns = arrayOf("id"), childColumns = arrayOf("showId"))], indices = [Index("showId")])
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = Show::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("showId")
+    )], indices = [Index("showId")]
+)
 data class Episode(
 
     @SerializedName("name")

@@ -92,10 +92,13 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
     override fun doPrepareForPlayback(file: File) {
         createMediaPlayerIfNeeded()
         val bandwidthMeter = DefaultBandwidthMeter.Builder(appContext).build()
-        val dataSourceFactory = DefaultDataSourceFactory(appContext,
-                Util.getUserAgent(appContext, "MPO"), bandwidthMeter)
+        val dataSourceFactory = DefaultDataSourceFactory(
+            appContext,
+            Util.getUserAgent(appContext, "MPO"), bandwidthMeter
+        )
         val extractorsFactory = DefaultExtractorsFactory()
-        val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory).createMediaSource(Uri.fromFile(file))
+        val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory)
+            .createMediaSource(Uri.fromFile(file))
         exoPlayer!!.playWhenReady = false
         mediaMetadataRetriever.setDataSource(file.path)
         prepareRequested = true
@@ -116,9 +119,9 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
             exoPlayer = SimpleExoPlayer.Builder(appContext).build()
             exoPlayer!!.addListener(ExoPlayerEventListener())
             val audioAttributes = AudioAttributes.Builder()
-                    .setContentType(CONTENT_TYPE_SPEECH)
-                    .setUsage(USAGE_MEDIA)
-                    .build()
+                .setContentType(CONTENT_TYPE_SPEECH)
+                .setUsage(USAGE_MEDIA)
+                .build()
             exoPlayer!!.audioAttributes = audioAttributes
 
             /** TODO
@@ -136,7 +139,10 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
     }
 
     private inner class ExoPlayerEventListener : Player.EventListener {
-        override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
+        override fun onTracksChanged(
+            trackGroups: TrackGroupArray,
+            trackSelections: TrackSelectionArray
+        ) {
 
         }
 
@@ -161,7 +167,8 @@ class MPOExoPlayer(context: Context) : MPOPlayer() {
                     }
                 }
                 Player.STATE_ENDED -> mListener?.onMediaFinished()
-                else -> {}
+                else -> {
+                }
             }
         }
 

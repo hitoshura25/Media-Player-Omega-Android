@@ -58,21 +58,22 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         episodeName.text = episode.name
         @Suppress("DEPRECATION")
         episodeDescription.text = Html.fromHtml(
-                episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
+            episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
         )
         episodeDate.text = DateFormat.getDateInstance().format(
-                Date(episode.published)
+            Date(episode.published)
         )
         repository.getLiveShow(episode.showId).observe(this, Observer { show ->
             this@EpisodeDetailsActivity.show = show
             Glide.with(this@EpisodeDetailsActivity).load(show!!.artworkUrl)
-                    .into(appBarImage)
+                .into(appBarImage)
 
             episodeImage.visibility = View.GONE
-            episode.artworkUrl?.let {artworkUrl ->
+            episode.artworkUrl?.let { artworkUrl ->
                 if (artworkUrl != show.artworkUrl) {
                     episodeImage.visibility = View.VISIBLE
-                    Glide.with(this@EpisodeDetailsActivity).load(artworkUrl).fitCenter().into(episodeImage)
+                    Glide.with(this@EpisodeDetailsActivity).load(artworkUrl).fitCenter()
+                        .into(episodeImage)
                 }
             }
         })

@@ -52,15 +52,21 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelName = "My Background Service"
-            val chan = NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                    channelName, NotificationManager.IMPORTANCE_NONE)
+            val chan = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                channelName, NotificationManager.IMPORTANCE_NONE
+            )
             chan.lightColor = Color.BLUE
             chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(chan)
 
-            startForeground(NOTIFICATION_ID, NotificationCompat.Builder(this,
-                    NOTIFICATION_CHANNEL_ID).build())
+            startForeground(
+                NOTIFICATION_ID, NotificationCompat.Builder(
+                    this,
+                    NOTIFICATION_CHANNEL_ID
+                ).build()
+            )
         }
     }
 
@@ -69,13 +75,16 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             Log.d("MPO", "Calling update...")
             val shows = mpoRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
             for (show in shows) {
-                Log.d("MPO", "Got saved show: " + show.name + ", " + show.feedUrl + ", "
-                        + show.lastEpisodePublished)
+                Log.d(
+                    "MPO", "Got saved show: " + show.name + ", " + show.feedUrl + ", "
+                            + show.lastEpisodePublished
+                )
                 fetchShowUpdate(show, show.lastEpisodePublished)
             }
         } else if (ACTION_DOWNLOAD == intent.action) {
             Log.d("MPO", "Downloading...")
-            val download = Parcels.unwrap<Download>(intent.getParcelableExtra<Parcelable>(EXTRA_DOWNLOAD))
+            val download =
+                Parcels.unwrap<Download>(intent.getParcelableExtra<Parcelable>(EXTRA_DOWNLOAD))
             /*
             DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(
@@ -89,31 +98,31 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     private fun fetchShowUpdate(show: Show, lastEpisodePublished: Long?) {
         service.getPodcastUpdate(show.feedUrl!!, lastEpisodePublished!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith<Observer<Episode>>(object : Observer<Episode> {
-                    override fun onSubscribe(@NonNull d: Disposable) {
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith<Observer<Episode>>(object : Observer<Episode> {
+                override fun onSubscribe(@NonNull d: Disposable) {
 
+                }
+
+                override fun onNext(@NonNull episode: Episode) {
+                    if (TextUtils.isEmpty(episode.artworkUrl)) {
+                        episode.artworkUrl = show.artworkUrl
                     }
+                    val download = Download(show, episode)
+                    downloadManager.queueDownload(download)
+                    show.lastUpdate = Date().time
+                    mpoRepository.save(show)
+                }
 
-                    override fun onNext(@NonNull episode: Episode) {
-                        if (TextUtils.isEmpty(episode.artworkUrl)) {
-                            episode.artworkUrl = show.artworkUrl
-                        }
-                        val download = Download(show, episode)
-                        downloadManager.queueDownload(download)
-                        show.lastUpdate = Date().time
-                        mpoRepository.save(show)
-                    }
+                override fun onError(@NonNull e: Throwable) {
+                    Log.w("MPO", "Error getting show update", e)
+                }
 
-                    override fun onError(@NonNull e: Throwable) {
-                        Log.w("MPO", "Error getting show update", e)
-                    }
+                override fun onComplete() {
 
-                    override fun onComplete() {
-
-                    }
-                })
+                }
+            })
     }
 
     companion object {
@@ -146,15 +155,18 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0)
 
             val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, EXEC_INTERVAL,
-                    EXEC_INTERVAL, pendingIntent)
+            manager.setInexactRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP, EXEC_INTERVAL,
+                EXEC_INTERVAL, pendingIntent
+            )
 
             Log.d("MPO", "Initialized service")
         }
 
-        fun startDownload(context: Context,
-                          show: Show,
-                          episode: Episode
+        fun startDownload(
+            context: Context,
+            show: Show,
+            episode: Episode
         ) {
 
             val download = Download(show, episode)

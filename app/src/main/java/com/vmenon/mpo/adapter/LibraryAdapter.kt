@@ -13,7 +13,8 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.api.Episode
 import kotlinx.android.synthetic.main.library_item.view.*
 
-class LibraryAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
+class LibraryAdapter(private val episodes: List<Episode>) :
+    RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
     private var listener: EpisodesAdapter.EpisodeSelectedListener? = null
 
     interface LibarySelectedListener {
@@ -27,8 +28,10 @@ class LibraryAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.library_item, parent,
-                false)
+        val v = LayoutInflater.from(parent.context).inflate(
+            R.layout.library_item, parent,
+            false
+        )
         val vh = ViewHolder(v)
         v.setOnClickListener {
             if (listener != null) {
@@ -45,10 +48,10 @@ class LibraryAdapter(private val episodes: List<Episode>) : RecyclerView.Adapter
         holder.nameText.text = episode.name
 
         Glide.with(holder.itemView.context)
-                .load(episode.artworkUrl)
-                .centerCrop()
-                .crossFade()
-                .into(holder.imageView)
+            .load(episode.artworkUrl)
+            .centerCrop()
+            .crossFade()
+            .into(holder.imageView)
     }
 
     override fun getItemCount(): Int {
