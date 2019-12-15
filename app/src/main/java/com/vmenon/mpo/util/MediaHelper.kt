@@ -1,6 +1,6 @@
 package com.vmenon.mpo.util
 
-import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.model.EpisodeModel
 
 object MediaHelper {
 
@@ -20,7 +20,7 @@ object MediaHelper {
         }
     }
 
-    fun createMediaId(episode: Episode): String {
+    fun createMediaId(episode: EpisodeModel): String {
         return EPISODE_MEDIA_PREFIX + ":" + episode.id
     }
 

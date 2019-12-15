@@ -10,21 +10,21 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.api.Show
+import com.vmenon.mpo.model.ShowSearchResultsModel
 import kotlinx.android.synthetic.main.show_result.view.*
 
-class ShowSearchResultsAdapter(private val shows: List<Show>) :
+class ShowSearchResultsAdapter(private val shows: List<ShowSearchResultsModel>) :
     RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
 
     interface ShowSelectedListener {
-        fun onShowSelected(show: Show?)
+        fun onShowSelected(show: ShowSearchResultsModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.showName
         val imageView: ImageView = v.showImage
-        var show: Show? = null
+        var show: ShowSearchResultsModel? = null
     }
 
     fun setListener(listener: ShowSelectedListener) {
@@ -38,8 +38,8 @@ class ShowSearchResultsAdapter(private val shows: List<Show>) :
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (vh.show != null) {
-                listener?.onShowSelected(vh.show)
+            vh.show?.let {
+                listener?.onShowSelected(it)
             }
         }
 
@@ -49,10 +49,10 @@ class ShowSearchResultsAdapter(private val shows: List<Show>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val show = shows[position]
         holder.show = show
-        holder.nameText.text = show.name
+        holder.nameText.text = show.show.name
 
         Glide.with(holder.itemView.context)
-            .load(show.artworkUrl)
+            .load(show.show.artworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

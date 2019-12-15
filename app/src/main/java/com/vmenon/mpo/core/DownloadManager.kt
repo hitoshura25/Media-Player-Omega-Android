@@ -11,6 +11,7 @@ import android.webkit.URLUtil
 
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.event.DownloadUpdateEvent
+import com.vmenon.mpo.model.DownloadModel
 
 import java.io.BufferedInputStream
 import java.io.File
@@ -31,10 +32,10 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
     private val handler: Handler
     private val workQueue: BlockingQueue<Runnable>
     private val threadPoolExecutor: ThreadPoolExecutor
-    private val currentDownloads = ConcurrentHashMap<String, Download>()
-    private val downloadLiveData = MutableLiveData<List<Download>>()
+    private val currentDownloads = ConcurrentHashMap<String, DownloadModel>()
+    private val downloadLiveData = MutableLiveData<List<DownloadModel>>()
 
-    val downloads: LiveData<List<Download>>
+    val downloads: LiveData<List<DownloadModel>>
         get() = downloadLiveData
 
     init {
@@ -58,17 +59,17 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
         }
     }
 
-    fun queueDownload(download: Download) {
+    fun queueDownload(download: DownloadModel) {
         val show = download.show
         val episode = download.episode
         threadPoolExecutor.submit {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
-            currentDownloads[episode!!.downloadUrl!!] = download
+            currentDownloads[episode.downloadUrl] = download
 
             var input: InputStream? = null
             var output: OutputStream? = null
             val filename = URLUtil.guessFileName(episode.downloadUrl, null, null)
-            val showDir = File(context.filesDir, show!!.name)
+            val showDir = File(context.filesDir, show.show.name)
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             episode.filename = episodeFile.path
@@ -108,7 +109,7 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
                 mpoRepository.save(episode)
                 mpoRepository.save(show)
             } catch (e: Exception) {
-                Log.e("MPO", "Error downloading file: " + episode.downloadUrl!!, e)
+                Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e)
             } finally {
                 if (output != null) {
                     try {
@@ -132,7 +133,7 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
             currentDownloads.remove(episode.downloadUrl)
             updateLiveData()
         }
-        Log.d("MPO", "Queued download: " + download.episode!!.downloadUrl!!)
+        Log.d("MPO", "Queued download: " + download.episode.downloadUrl)
     }
 
     private fun updateLiveData() {

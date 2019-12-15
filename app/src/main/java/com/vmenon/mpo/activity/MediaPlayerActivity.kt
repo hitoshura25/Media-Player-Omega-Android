@@ -17,15 +17,13 @@ import android.widget.SeekBar
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
-import com.vmenon.mpo.api.Episode
-import com.vmenon.mpo.api.Show
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.MPOPlayer
 import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.SubscribedShowModel
 import com.vmenon.mpo.util.MediaHelper
 import kotlinx.android.synthetic.main.activity_media_player.*
-
-import org.parceler.Parcels
 
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -42,8 +40,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var player: MPOPlayer
 
     private val handler = Handler()
-    private lateinit var episode: Episode
-    private var show: Show? = null
+    private lateinit var episode: EpisodeModel
+    private var show: SubscribedShowModel? = null
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -201,14 +199,22 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         ) // optional Bundle
 
         if (!fromNotification) {
-            episode = Parcels.unwrap<Episode>(intent.getParcelableExtra<Parcelable>(EXTRA_EPISODE))
-            requestedMediaId = MediaHelper.createMediaId(episode)
-            playOnStart = savedInstanceState == null
+            val episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
+            repository.fetchEpisode(episodeId, object : MPORepository.DataHandler<EpisodeModel> {
+                override fun onDataReady(data: EpisodeModel) {
+                    episode = data
+                    requestedMediaId = MediaHelper.createMediaId(episode)
+                    playOnStart = savedInstanceState == null
 
-            repository.getLiveShow(episode.showId).observe(this, Observer { show ->
-                this@MediaPlayerActivity.show = show
-                updateUIFromMedia()
+                    repository.getLiveShow(episode.showId)
+                        .observe(this@MediaPlayerActivity, Observer { show ->
+                            this@MediaPlayerActivity.show = show
+                            updateUIFromMedia()
+                        })
+                }
+
             })
+
         }
 
         player.setVideoSizeListener(this@MediaPlayerActivity)
@@ -268,7 +274,9 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     }
 
     private fun updateUIFromMedia() {
-        Glide.with(this).load(show!!.artworkUrl).fitCenter().into(artworkImage!!)
+        show?.let {
+            Glide.with(this).load(it.show.artworkUrl).fitCenter().into(artworkImage!!)
+        }
         mediaTitle.text = episode.name
     }
 

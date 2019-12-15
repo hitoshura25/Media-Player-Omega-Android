@@ -12,22 +12,21 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
-import com.vmenon.mpo.api.Episode
-import com.vmenon.mpo.api.Show
-import com.vmenon.mpo.core.BackgroundService
+import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.ShowModel
 import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat
 
-import java.text.SimpleDateFormat
 import java.util.Date
 
-class EpisodesAdapter(private val show: Show, private val episodes: List<Episode>) :
+class EpisodesAdapter(private val show: ShowModel, private val episodes: List<EpisodeModel>) :
     RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onEpisodeSelected(episode: Episode?)
+        fun onEpisodeSelected(episode: EpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -36,8 +35,8 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         val publishedText: TextView = v.episodeDate
         val thumbnailImage: ImageView = v.episodeImage
         val menuButton: ImageButton = v.episodeMenuButton
-        var episode: Episode? = null
-        var show: Show? = null
+        lateinit var episode: EpisodeModel
+        lateinit var show: ShowModel
     }
 
     fun setListener(listener: EpisodeSelectedListener) {
@@ -51,9 +50,7 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (vh.episode != null) {
-                listener?.onEpisodeSelected(vh.episode)
-            }
+            listener?.onEpisodeSelected(vh.episode)
         }
 
         vh.menuButton.setOnClickListener {
@@ -61,11 +58,18 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
             popupMenu.inflate(R.menu.episode_menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 if (R.id.download_episode == item.itemId) {
-                    BackgroundService.startDownload(
-                        vh.menuButton.context,
-                        vh.show!!,
-                        vh.episode!!
+                    // TODO: Add support for downloading an episode with subscribing to the show?
+                    Snackbar.make(
+                        v,
+                        "Downloading episode not yet supported",
+                        Snackbar.LENGTH_LONG
                     )
+                        .show()
+                    /*BackgroundService.startDownload(
+                        vh.menuButton.context,
+                        vh.show,
+                        vh.episode
+                    )*/
                 }
 
                 false
@@ -83,21 +87,17 @@ class EpisodesAdapter(private val show: Show, private val episodes: List<Episode
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
+            episode.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
             Date(episode.published)
         )
 
-        if (episode.artworkUrl != null) {
-            Glide.with(holder.thumbnailImage.context)
-                .load(episode.artworkUrl)
-                .fitCenter()
-                .into(holder.thumbnailImage)
-            holder.thumbnailImage.visibility = View.VISIBLE
-        } else {
-            holder.thumbnailImage.visibility = View.GONE
-        }
+        Glide.with(holder.thumbnailImage.context)
+            .load(episode.artworkUrl)
+            .fitCenter()
+            .into(holder.thumbnailImage)
+        holder.thumbnailImage.visibility = View.VISIBLE
     }
 
     override fun getItemCount(): Int {

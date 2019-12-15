@@ -7,25 +7,28 @@ import android.util.Log
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.adapter.ShowSearchResultsAdapter
-import com.vmenon.mpo.api.Show
-import com.vmenon.mpo.service.MediaPlayerOmegaService
 
-import org.parceler.Parcels
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.core.persistence.ShowSearchRepository
+import com.vmenon.mpo.model.ShowSearchResultsModel
+import io.reactivex.FlowableSubscriber
 import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subscribers.ResourceSubscriber
 import kotlinx.android.synthetic.main.activity_show_search_results.*
+import org.reactivestreams.Subscription
 
 class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
 
     @Inject
-    lateinit var service: MediaPlayerOmegaService
+    lateinit var showSearchRepository: ShowSearchRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +47,9 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
         handleIntent(intent)
     }
 
-    override fun onShowSelected(show: Show?) {
+    override fun onShowSelected(show: ShowSearchResultsModel) {
         val intent = Intent(this, ShowDetailsActivity::class.java)
-        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, Parcels.wrap<Show>(show))
+        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, show.id)
         startActivity(intent)
     }
 
@@ -55,26 +58,22 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
             val query = intent.getStringExtra(SearchManager.QUERY)
             title = this.getString(R.string.show_search_title, query)
 
-            service.searchPodcasts(query)
+            showSearchRepository.searchShows(query)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith<Observer<List<Show>>>(object : Observer<List<Show>> {
-                    override fun onSubscribe(@NonNull d: Disposable) {
-
-                    }
-
-                    override fun onNext(@NonNull shows: List<Show>) {
-                        val adapter = ShowSearchResultsAdapter(shows)
-                        adapter.setListener(this@ShowSearchResultsActivity)
-                        showList.adapter = adapter
-                    }
-
-                    override fun onError(@NonNull e: Throwable) {
-                        Log.w("MPO", "Error search for shows", e)
+                .subscribeWith(object : ResourceSubscriber<List<ShowSearchResultsModel>>() {
+                    override fun onNext(shows: List<ShowSearchResultsModel>?) {
+                        shows?.let {
+                            val adapter = ShowSearchResultsAdapter(shows)
+                            adapter.setListener(this@ShowSearchResultsActivity)
+                            showList.adapter = adapter
+                        }
                     }
 
                     override fun onComplete() {
+                    }
 
+                    override fun onError(t: Throwable?) {
                     }
                 })
 

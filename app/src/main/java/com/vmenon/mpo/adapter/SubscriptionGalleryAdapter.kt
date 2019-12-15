@@ -7,25 +7,22 @@ import android.widget.ImageView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.api.Show
+import com.vmenon.mpo.model.SubscribedShowModel
 
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
-class SubscriptionGalleryAdapter(private val shows: List<Show>) :
+class SubscriptionGalleryAdapter(private val shows: List<SubscribedShowModel>) :
     RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
 
     interface ShowSelectedListener {
-        fun onShowSelected(show: Show?)
+        fun onShowSelected(show: SubscribedShowModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val imageView: ImageView
-        var show: Show? = null
-
-        init {
-            imageView = v.findViewById(R.id.showImage)
-        }
+        val imageView: ImageView = v.showImage
+        var show: SubscribedShowModel? = null
     }
 
     fun setListener(listener: ShowSelectedListener) {
@@ -38,8 +35,8 @@ class SubscriptionGalleryAdapter(private val shows: List<Show>) :
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            if (vh.show != null) {
-                listener?.onShowSelected(vh.show)
+            vh.show?.let {
+                listener?.onShowSelected(it)
             }
         }
 
@@ -51,7 +48,7 @@ class SubscriptionGalleryAdapter(private val shows: List<Show>) :
         holder.show = show
 
         Glide.with(holder.itemView.context)
-            .load(show.artworkUrl)
+            .load(show.show.artworkUrl)
             .fitCenter()
             .crossFade()
             .into(holder.imageView)

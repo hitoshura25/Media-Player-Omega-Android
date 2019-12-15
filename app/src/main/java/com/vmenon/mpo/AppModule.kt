@@ -7,10 +7,7 @@ import com.google.gson.GsonBuilder
 import com.vmenon.mpo.core.DownloadManager
 import com.vmenon.mpo.core.MPOExoPlayer
 import com.vmenon.mpo.core.MPOPlayer
-import com.vmenon.mpo.core.persistence.EpisodeDao
-import com.vmenon.mpo.core.persistence.MPORepository
-import com.vmenon.mpo.core.persistence.ShowDao
-import com.vmenon.mpo.core.persistence.MPODatabase
+import com.vmenon.mpo.core.persistence.*
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
 import java.lang.reflect.Type
@@ -49,8 +46,7 @@ class AppModule(private val application: Application) {
     @Provides
     @Singleton
     internal fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaService {
-        val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-
+        val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(NullOnEmptyConverterFactory())
@@ -91,6 +87,12 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
+    internal fun provideShowSearchResultsDao(MPODatabase: MPODatabase): ShowSearchResultDao {
+        return MPODatabase.showSearchResultsDao()
+    }
+
+    @Provides
+    @Singleton
     internal fun provideMPORepository(
         service: MediaPlayerOmegaService,
         showDao: ShowDao, episodeDao: EpisodeDao
@@ -102,6 +104,15 @@ class AppModule(private val application: Application) {
     @Singleton
     internal fun providePlayer(): MPOPlayer {
         return MPOExoPlayer(application)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideShowSearchRepository(
+        service: MediaPlayerOmegaService,
+        showSearchResultDao: ShowSearchResultDao
+    ): ShowSearchRepository {
+        return ShowSearchRepository(service, showSearchResultDao)
     }
 
     /**

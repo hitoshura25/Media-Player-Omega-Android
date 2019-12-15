@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
-import com.vmenon.mpo.api.Show
+import com.vmenon.mpo.model.SubscribedShowModel
 
 import androidx.room.OnConflictStrategy.REPLACE
 
@@ -13,17 +13,17 @@ import androidx.room.OnConflictStrategy.REPLACE
 interface ShowDao {
 
     @Query("SELECT * FROM show where id = :id")
-    fun getById(id: Long): Show
+    fun getById(id: Long): SubscribedShowModel
 
     @Query("SELECT * FROM show where id = :id")
-    fun getLiveById(id: Long): LiveData<Show>
+    fun getLiveById(id: Long): LiveData<SubscribedShowModel>
 
     @Insert(onConflict = REPLACE)
-    fun save(show: Show)
+    fun save(show: SubscribedShowModel)
 
     @Query("SELECT * FROM show")
-    fun load(): LiveData<List<Show>>
+    fun load(): LiveData<List<SubscribedShowModel>>
 
     @Query("SELECT * FROM show WHERE lastUpdate < :comparisonTime")
-    fun loadLastUpdatedBefore(comparisonTime: Long): List<Show>
+    fun loadLastUpdatedBefore(comparisonTime: Long): List<SubscribedShowModel>
 }
