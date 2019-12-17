@@ -7,6 +7,7 @@ import android.os.Looper
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.SubscribedShowModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService
+import io.reactivex.Single
 
 import java.util.Date
 import java.util.concurrent.Executor
@@ -66,8 +67,15 @@ class MPORepository(
         }
     }
 
-    fun save(episode: EpisodeModel) {
-        discExecutor.execute { episodeDao.save(episode) }
+    fun save(episode: EpisodeModel): Single<EpisodeModel> = Single.create { emitter ->
+        emitter.onSuccess(
+            if (episode.id == 0L) {
+                episode.copy(id = episodeDao.insert(episode))
+            } else {
+                episodeDao.update(episode)
+                episode
+            }
+        )
     }
 
     private class MainThreadExecutor : Executor {

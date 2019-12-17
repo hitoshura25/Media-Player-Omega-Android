@@ -48,11 +48,28 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
     override val navMenuId: Int
         get() = R.id.nav_library
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            displayEpisode(it)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.inject(this)
-        episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
+        displayEpisode(intent)
+        appBarImage = findViewById(R.id.appBarImage)
+    }
 
+    override fun onFabClick() {
+        val intent = Intent(this, MediaPlayerActivity::class.java)
+        intent.putExtra(MediaPlayerActivity.EXTRA_EPISODE, episodeId)
+        startActivity(intent)
+    }
+
+    private fun displayEpisode(intent: Intent) {
+        episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
         repository.fetchEpisode(episodeId, object: MPORepository.DataHandler<EpisodeModel> {
             override fun onDataReady(data: EpisodeModel) {
                 episodeName.text = data.name
@@ -75,16 +92,6 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
             }
 
         })
-
-
-
-        appBarImage = findViewById(R.id.appBarImage)
-    }
-
-    override fun onFabClick() {
-        val intent = Intent(this, MediaPlayerActivity::class.java)
-        intent.putExtra(MediaPlayerActivity.EXTRA_EPISODE, episodeId)
-        startActivity(intent)
     }
 
     companion object {

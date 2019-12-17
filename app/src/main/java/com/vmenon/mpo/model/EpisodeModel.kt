@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey
         entity = SubscribedShowModel::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("showId")
-    )], indices = [Index("showId")],
+    )],
+    indices = [Index("showId")],
     tableName = "episode"
 )
 data class EpisodeModel(
@@ -20,8 +21,8 @@ data class EpisodeModel(
     val type: String,
     val downloadUrl: String,
     val length: Long,
-    var artworkUrl: String,
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    var showId: Long,
+    val artworkUrl: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val showId: Long,
     var filename: String
 )

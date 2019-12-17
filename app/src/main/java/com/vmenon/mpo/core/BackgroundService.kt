@@ -28,11 +28,8 @@ import androidx.core.app.NotificationCompat
 import com.vmenon.mpo.api.Episode
 import com.vmenon.mpo.model.DownloadModel
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowModel
-import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.annotations.NonNull
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.parceler.Parcels
 
@@ -47,6 +44,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     @Inject
     lateinit var mpoRepository: MPORepository
+
+    private val subscriptions = CompositeDisposable()
 
     override fun onCreate() {
         super.onCreate()
@@ -70,6 +69,11 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
                 ).build()
             )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //subscriptions.clear()
     }
 
     override fun onHandleIntent(intent: Intent) {
@@ -99,46 +103,56 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
     }
 
     private fun fetchShowUpdate(show: SubscribedShowModel, lastEpisodePublished: Long) {
-        service.getPodcastUpdate(show.show.feedUrl, lastEpisodePublished)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith<Observer<Episode>>(object : Observer<Episode> {
-                override fun onSubscribe(@NonNull d: Disposable) {
-
-                }
-
-                override fun onNext(@NonNull episode: Episode) {
-                    if (TextUtils.isEmpty(episode.artworkUrl)) {
-                        episode.artworkUrl = show.show.artworkUrl
+        subscriptions.add(
+            service.getPodcastUpdate(show.show.feedUrl, lastEpisodePublished)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { episode ->
+                        saveEpisodeAndQueueDownload(show, episode)
+                    },
+                    { error ->
+                        Log.w("MPO", "Error getting show update", error)
                     }
+                )
+        )
+    }
+
+    private fun saveEpisodeAndQueueDownload(show: SubscribedShowModel, episode: Episode) {
+        if (TextUtils.isEmpty(episode.artworkUrl)) {
+            episode.artworkUrl = show.show.artworkUrl
+        }
+
+        subscriptions.add(mpoRepository.save(
+            EpisodeModel(
+                name = episode.name,
+                artworkUrl = episode.artworkUrl,
+                description = episode.description,
+                downloadUrl = episode.downloadUrl,
+                filename = "",
+                length = episode.length,
+                published = episode.published,
+                showId = show.id,
+                type = episode.type
+            )
+        ).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { savedEpisode ->
                     val download = DownloadModel(
-                        show,
-                        EpisodeModel(
-                            name = episode.name,
-                            artworkUrl = episode.artworkUrl,
-                            description = episode.description,
-                            downloadUrl = episode.downloadUrl,
-                            filename = "",
-                            id = -1L,
-                            length = episode.length,
-                            published = episode.published,
-                            showId = -1L,
-                            type = episode.type
-                        )
+                        showId = show.id,
+                        episodeId = savedEpisode.id
                     )
                     downloadManager.queueDownload(download)
                     show.lastUpdate = Date().time
+                    show.lastEpisodePublished = episode.published
                     mpoRepository.save(show)
+                },
+                { error ->
+                    error.printStackTrace()
                 }
-
-                override fun onError(@NonNull e: Throwable) {
-                    Log.w("MPO", "Error getting show update", e)
-                }
-
-                override fun onComplete() {
-
-                }
-            })
+            )
+        )
     }
 
     companion object {
@@ -179,6 +193,7 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             Log.d("MPO", "Initialized service")
         }
 
+        /* TODO: Support on demand initiation of download
         fun startDownload(
             context: Context,
             show: SubscribedShowModel,
@@ -189,6 +204,6 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             intent.action = ACTION_DOWNLOAD
             intent.putExtra(EXTRA_DOWNLOAD, Parcels.wrap(DownloadModel::class.java, download))
             context.startService(intent)
-        }
+        }*/
     }
 }

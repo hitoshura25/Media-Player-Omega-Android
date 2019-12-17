@@ -8,10 +8,17 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.webkit.URLUtil
+import com.vmenon.mpo.core.persistence.DownloadRepository
 
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.event.DownloadUpdateEvent
+import com.vmenon.mpo.model.DownloadListItem
 import com.vmenon.mpo.model.DownloadModel
+import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.SubscribedShowModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 import java.io.BufferedInputStream
 import java.io.File
@@ -21,25 +28,27 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.URL
 import java.util.ArrayList
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
-class DownloadManager(private val context: Context, private val mpoRepository: MPORepository) {
+class DownloadManager(
+    private val context: Context,
+    private val mpoRepository: MPORepository,
+    private val downloadRepository: DownloadRepository
+) {
 
     private val handler: Handler
     private val workQueue: BlockingQueue<Runnable>
     private val threadPoolExecutor: ThreadPoolExecutor
-    private val currentDownloads = ConcurrentHashMap<String, DownloadModel>()
-    private val downloadLiveData = MutableLiveData<List<DownloadModel>>()
+    private val discExecutor = Executors.newSingleThreadExecutor()
+    private val currentDownloads = ConcurrentHashMap<String, DownloadListItem>()
+    private val downloadLiveData = MutableLiveData<List<DownloadListItem>>()
 
-    val downloads: LiveData<List<DownloadModel>>
+    val downloads: LiveData<List<DownloadListItem>>
         get() = downloadLiveData
 
-    init {
+    private val subscriptions = CompositeDisposable()
 
+    init {
         workQueue = LinkedBlockingQueue()
         threadPoolExecutor = ThreadPoolExecutor(
             NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME.toLong(),
@@ -60,11 +69,39 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
     }
 
     fun queueDownload(download: DownloadModel) {
-        val show = download.show
-        val episode = download.episode
+        subscriptions.add(downloadRepository.save(download)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { downloadId ->
+
+            }
+        )
+        mpoRepository.fetchShow(
+            download.showId,
+            object : MPORepository.DataHandler<SubscribedShowModel> {
+                override fun onDataReady(data: SubscribedShowModel) {
+                    val show = data
+                    mpoRepository.fetchEpisode(
+                        download.episodeId,
+                        object : MPORepository.DataHandler<EpisodeModel> {
+                            override fun onDataReady(data: EpisodeModel) {
+                                val episode = data
+                                startDownload(show, episode, download)
+                                Log.d("MPO", "Queued download: " + episode.downloadUrl)
+                            }
+                        })
+                }
+            })
+    }
+
+    private fun startDownload(
+        show: SubscribedShowModel,
+        episode: EpisodeModel,
+        download: DownloadModel
+    ) {
         threadPoolExecutor.submit {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
-            currentDownloads[episode.downloadUrl] = download
+            currentDownloads[episode.downloadUrl] = DownloadListItem(download, episode)
 
             var input: InputStream? = null
             var output: OutputStream? = null
@@ -73,6 +110,8 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             episode.filename = episodeFile.path
+            mpoRepository.save(episode).blockingGet()
+
             try {
                 val url = URL(episode.downloadUrl)
                 val connection = url.openConnection()
@@ -104,10 +143,6 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
                 } while (count != -1)
 
                 output.flush()
-                show.lastEpisodePublished = episode.published
-                episode.showId = show.id
-                mpoRepository.save(episode)
-                mpoRepository.save(show)
             } catch (e: Exception) {
                 Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e)
             } finally {
@@ -133,7 +168,6 @@ class DownloadManager(private val context: Context, private val mpoRepository: M
             currentDownloads.remove(episode.downloadUrl)
             updateLiveData()
         }
-        Log.d("MPO", "Queued download: " + download.episode.downloadUrl)
     }
 
     private fun updateLiveData() {

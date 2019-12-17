@@ -60,8 +60,11 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    internal fun provideDownloadManager(MPORepository: MPORepository): DownloadManager {
-        return DownloadManager(application.applicationContext, MPORepository)
+    internal fun provideDownloadManager(
+        mpoRepository: MPORepository,
+        downloadRepository: DownloadRepository
+    ): DownloadManager {
+        return DownloadManager(application.applicationContext, mpoRepository, downloadRepository)
     }
 
     @Provides
@@ -75,20 +78,26 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    internal fun provideShowDao(MPODatabase: MPODatabase): ShowDao {
-        return MPODatabase.showDao()
+    internal fun provideShowDao(mpDatabase: MPODatabase): ShowDao {
+        return mpDatabase.showDao()
     }
 
     @Provides
     @Singleton
-    internal fun provideEpisodeDao(MPODatabase: MPODatabase): EpisodeDao {
-        return MPODatabase.episodeDao()
+    internal fun provideEpisodeDao(mpDatabase: MPODatabase): EpisodeDao {
+        return mpDatabase.episodeDao()
     }
 
     @Provides
     @Singleton
-    internal fun provideShowSearchResultsDao(MPODatabase: MPODatabase): ShowSearchResultDao {
-        return MPODatabase.showSearchResultsDao()
+    internal fun provideDownloadDao(mpDatabase: MPODatabase): DownloadDao {
+        return mpDatabase.downloadDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideShowSearchResultsDao(mpDatabase: MPODatabase): ShowSearchResultDao {
+        return mpDatabase.showSearchResultsDao()
     }
 
     @Provides
@@ -114,6 +123,11 @@ class AppModule(private val application: Application) {
     ): ShowSearchRepository {
         return ShowSearchRepository(service, showSearchResultDao)
     }
+
+    @Provides
+    @Singleton
+    internal fun provideDownloadRepository(downloadDao: DownloadDao) =
+        DownloadRepository(downloadDao)
 
     /**
      * TODO: Make sure MPO API doesn't return 0 byte responses for results...change

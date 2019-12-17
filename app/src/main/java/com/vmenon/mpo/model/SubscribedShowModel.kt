@@ -11,7 +11,7 @@ data class SubscribedShowModel(
     val show: ShowModel,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long = 0L,
     var lastUpdate: Long = -1L,
     var lastEpisodePublished: Long = -1L
 )

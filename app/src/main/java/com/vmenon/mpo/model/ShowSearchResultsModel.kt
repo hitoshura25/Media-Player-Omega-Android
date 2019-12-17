@@ -10,5 +10,5 @@ data class ShowSearchResultsModel(
     @Embedded
     val show: ShowModel,
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L
+    val id: Long = 0L
 )

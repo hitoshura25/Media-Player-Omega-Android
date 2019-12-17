@@ -8,11 +8,15 @@ import androidx.room.Query
 import com.vmenon.mpo.model.EpisodeModel
 
 import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.Update
 
 @Dao
 interface EpisodeDao {
-    @Insert(onConflict = REPLACE)
-    fun save(episode: EpisodeModel)
+    @Insert
+    fun insert(episode: EpisodeModel): Long
+
+    @Update(onConflict = REPLACE)
+    fun update(episode: EpisodeModel)
 
     @Query("SELECT * FROM episode")
     fun load(): LiveData<List<EpisodeModel>>

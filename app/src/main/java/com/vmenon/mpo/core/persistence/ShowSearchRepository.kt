@@ -23,9 +23,8 @@ class ShowSearchRepository(
 
     fun searchShows(keyword: String): Flowable<List<ShowSearchResultsModel>> {
         discExecutor.submit {
-            // TODO: Clear out old results?
+            showSearchResultDao.deleteAll()
             val shows = service.searchPodcasts(keyword).blockingFirst()
-            val searchResults: ArrayList<ShowSearchResultsModel> = arrayListOf()
             shows.forEach { show ->
                 show.feedUrl?.let {
                     val searchResult = ShowSearchResultsModel(
@@ -39,7 +38,6 @@ class ShowSearchRepository(
                         id = 0L
                     )
                     showSearchResultDao.save(searchResult)
-                    searchResults.add(searchResult)
                 } ?: Log.e("ShowSearchRepository", "FeedUrl null!")
             }
         }

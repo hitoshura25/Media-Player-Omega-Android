@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "79831fdb0e0f120182f2c3a1fc8b33d1",
+    "identityHash": "c71686120d67b07703028c19e1d9efde",
     "entities": [
       {
         "tableName": "show",
@@ -228,12 +228,96 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "downloads",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeId` INTEGER NOT NULL, `total` INTEGER NOT NULL, `progress` INTEGER NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`episodeId`) REFERENCES `episode`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showId",
+            "columnName": "showId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "episodeId",
+            "columnName": "episodeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "total",
+            "columnName": "total",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_downloads_showId",
+            "unique": false,
+            "columnNames": [
+              "showId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_showId` ON `${TABLE_NAME}` (`showId`)"
+          },
+          {
+            "name": "index_downloads_episodeId",
+            "unique": false,
+            "columnNames": [
+              "episodeId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_episodeId` ON `${TABLE_NAME}` (`episodeId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "show",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "showId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "episode",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "episodeId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79831fdb0e0f120182f2c3a1fc8b33d1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c71686120d67b07703028c19e1d9efde')"
     ]
   }
 }
