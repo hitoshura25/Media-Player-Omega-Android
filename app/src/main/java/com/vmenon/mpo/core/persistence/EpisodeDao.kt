@@ -5,21 +5,25 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
-import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.model.EpisodeModel
 
 import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.Update
 
 @Dao
 interface EpisodeDao {
-    @Insert(onConflict = REPLACE)
-    fun save(episode: Episode)
+    @Insert
+    fun insert(episode: EpisodeModel): Long
+
+    @Update(onConflict = REPLACE)
+    fun update(episode: EpisodeModel)
 
     @Query("SELECT * FROM episode")
-    fun load(): LiveData<List<Episode>>
+    fun load(): LiveData<List<EpisodeModel>>
 
     @Query("SELECT * from episode WHERE id = :id")
-    fun byId(id: Long): Episode
+    fun byId(id: Long): EpisodeModel
 
     @Query("SELECT * from episode WHERE id = :id")
-    fun liveById(id: Long): LiveData<Episode>
+    fun liveById(id: Long): LiveData<EpisodeModel>
 }

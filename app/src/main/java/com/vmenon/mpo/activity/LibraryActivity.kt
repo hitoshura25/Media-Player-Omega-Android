@@ -7,17 +7,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.EpisodesAdapter
 import com.vmenon.mpo.adapter.LibraryAdapter
-import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.core.persistence.MPORepository
 import kotlinx.android.synthetic.main.activity_library.*
 
-import org.parceler.Parcels
-
 import javax.inject.Inject
 
-class LibraryActivity : BaseDrawerActivity(), EpisodesAdapter.EpisodeSelectedListener {
+class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedListener {
 
     @Inject
     lateinit var mpoRepository: MPORepository
@@ -47,9 +44,10 @@ class LibraryActivity : BaseDrawerActivity(), EpisodesAdapter.EpisodeSelectedLis
         })
     }
 
-    override fun onEpisodeSelected(episode: Episode?) {
+    override fun onEpisodeSelected(episode: EpisodeModel) {
         val intent = Intent(this, EpisodeDetailsActivity::class.java)
-        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, Parcels.wrap<Episode>(episode))
+        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episode.id)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 }

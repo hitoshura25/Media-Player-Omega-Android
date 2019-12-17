@@ -10,21 +10,21 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.model.EpisodeModel
 import kotlinx.android.synthetic.main.library_item.view.*
 
-class LibraryAdapter(private val episodes: List<Episode>) :
+class LibraryAdapter(private val episodes: List<EpisodeModel>) :
     RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
-    private var listener: EpisodesAdapter.EpisodeSelectedListener? = null
+    private var listener: LibrarySelectedListener? = null
 
-    interface LibarySelectedListener {
-        fun onEpisodeSelected(episode: Episode)
+    interface LibrarySelectedListener {
+        fun onEpisodeSelected(episode: EpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
         val imageView: ImageView = v.episodeImage
-        var episode: Episode? = null
+        var episode: EpisodeModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,7 +34,9 @@ class LibraryAdapter(private val episodes: List<Episode>) :
         )
         val vh = ViewHolder(v)
         v.setOnClickListener {
-            listener?.onEpisodeSelected(vh.episode)
+            vh.episode?.let {
+                listener?.onEpisodeSelected(it)
+            }
         }
 
         return vh
@@ -56,7 +58,7 @@ class LibraryAdapter(private val episodes: List<Episode>) :
         return episodes.size
     }
 
-    fun setListener(listener: EpisodesAdapter.EpisodeSelectedListener) {
+    fun setListener(listener: LibrarySelectedListener) {
         this.listener = listener
     }
 }

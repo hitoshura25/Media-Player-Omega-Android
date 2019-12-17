@@ -2,7 +2,6 @@ package com.vmenon.mpo.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.appcompat.widget.Toolbar
 import android.text.Html
 import android.util.Log
@@ -15,22 +14,28 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
 import com.vmenon.mpo.adapter.EpisodesAdapter
-import com.vmenon.mpo.api.Show
 import com.vmenon.mpo.api.ShowDetails
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
-import org.parceler.Parcels
-
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.core.DownloadManager
+import com.vmenon.mpo.core.persistence.ShowSearchRepository
+import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowSearchResultsModel
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.annotations.NonNull
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_show_details.*
 import kotlinx.android.synthetic.main.show_details_container.*
 
-class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener {
+class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener,
+    EpisodesAdapter.EpisodeSelectedListener {
 
     @Inject
     lateinit var service: MediaPlayerOmegaService
@@ -38,8 +43,14 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     @Inject
     lateinit var mpoRepository: MPORepository
 
+    @Inject
+    lateinit var searchRepository: ShowSearchRepository
+
+    @Inject
+    lateinit var downloadManager: DownloadManager
+
     private lateinit var collapsingToolbar: CollapsingToolbarLayout
-    private lateinit var show: Show
+    private var show: ShowSearchResultsModel? = null
 
     private var collapsed = false
     private var scrollRange = -1
@@ -49,9 +60,6 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         appComponent.inject(this)
 
         setContentView(R.layout.activity_show_details)
-
-        show = Parcels.unwrap<Show>(intent.getParcelableExtra<Parcelable>(EXTRA_SHOW))
-
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         appBarLayout.addOnOffsetChangedListener(this)
 
@@ -75,10 +83,28 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         }
 
         if (savedInstanceState == null) {
-            service.getPodcastDetails(show.feedUrl!!, 10)
+            val showId = intent.getLongExtra(EXTRA_SHOW, -1)
+            searchRepository.getSearchResultById(showId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { showDetails -> displayDetails(showDetails) }
+                .subscribeWith<SingleObserver<ShowSearchResultsModel>>(object :
+                    SingleObserver<ShowSearchResultsModel> {
+                    override fun onSubscribe(@NonNull d: Disposable) {
+
+                    }
+
+                    override fun onSuccess(@NonNull show: ShowSearchResultsModel) {
+                        this@ShowDetailsActivity.show = show
+                        service.getPodcastDetails(show.showDetails.feedUrl, 10)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe { showDetails -> displayDetails(showDetails) }
+                    }
+
+                    override fun onError(@NonNull e: Throwable) {
+                        Log.w("MPO", "Error search for shows", e)
+                    }
+                })
         }
     }
 
@@ -87,7 +113,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show.name
+            collapsingToolbar.title = show?.showDetails?.name
             collapsed = true
         } else if (collapsed) {
             collapsingToolbar.title = ""
@@ -96,38 +122,85 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     }
 
     private fun displayDetails(showDetails: ShowDetails) {
-        @Suppress("DEPRECATION")
-        showDescription.text = Html.fromHtml(showDetails.description)
-        Glide.with(this).load(showDetails.imageUrl).fitCenter().into(showImage)
+        show?.let { showSearchResultsMode ->
+            @Suppress("DEPRECATION")
+            showDescription.text = Html.fromHtml(showDetails.description)
+            Glide.with(this).load(showDetails.imageUrl).fitCenter().into(showImage)
 
-        episodesList.setHasFixedSize(true)
-        val layoutManager = LinearLayoutManager(this)
-        episodesList.layoutManager = layoutManager
-        episodesList.adapter = EpisodesAdapter(show, showDetails.episodes)
-
-        nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
-            object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    nestedScrollView.scrollY = 0
-                    @Suppress("DEPRECATION")
-                    nestedScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
+            episodesList.setHasFixedSize(true)
+            val layoutManager = LinearLayoutManager(this)
+            episodesList.layoutManager = layoutManager
+            episodesList.adapter = EpisodesAdapter(
+                showSearchResultsMode.showDetails,
+                showDetails.episodes.map {
+                    EpisodeModel(
+                        name = it.name,
+                        description = it.description,
+                        published = it.published,
+                        type = it.type,
+                        downloadUrl = it.downloadUrl,
+                        length = it.length,
+                        artworkUrl = it.artworkUrl,
+                        showId = 0L,
+                        filename = ""
+                    )
                 }
-            })
+            ).apply {setListener(this@ShowDetailsActivity) }
 
-        val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
+            nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
+                object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        nestedScrollView.scrollY = 0
+                        @Suppress("DEPRECATION")
+                        nestedScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
+                    }
+                })
 
-        subscribeButton.setOnClickListener {
-            mpoRepository.save(show)
-            Snackbar.make(
-                detailsContainer, "You have subscribed to this show",
-                Snackbar.LENGTH_LONG
-            )
-                .setAction("UNDO", undoListener)
-                .show()
+            val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
+
+            subscribeButton.setOnClickListener {
+                mpoRepository.save(
+                    ShowModel(
+                        showDetails = showSearchResultsMode.showDetails,
+                        lastEpisodePublished = 0L,
+                        lastUpdate = 0L,
+                        isSubscribed = true
+                    )
+                ).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object: SingleObserver<ShowModel> {
+                    override fun onSuccess(t: ShowModel) {
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                    }
+
+                    override fun onError(e: Throwable) {
+                    }
+
+                })
+                Snackbar.make(
+                    detailsContainer, "You have subscribed to this show",
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction("UNDO", undoListener)
+                    .show()
+            }
         }
+
     }
 
     companion object {
         const val EXTRA_SHOW = "extraShow"
+    }
+
+    override fun onEpisodeSelected(episode: EpisodeModel) {
+
+    }
+
+    override fun onDownloadEpisode(episode: EpisodeModel) {
+        show?.let {
+            downloadManager.queueDownload(it.showDetails, episode)
+        }
     }
 }

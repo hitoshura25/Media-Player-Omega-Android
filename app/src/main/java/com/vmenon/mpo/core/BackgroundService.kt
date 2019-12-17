@@ -10,28 +10,24 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.os.Parcelable
 import android.text.TextUtils
 import android.util.Log
 
 import com.vmenon.mpo.MPOApplication
-import com.vmenon.mpo.api.Episode
-import com.vmenon.mpo.api.Show
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.core.receiver.AlarmReceiver
 import com.vmenon.mpo.service.MediaPlayerOmegaService
-
-import org.parceler.Parcels
 
 import java.util.Date
 
 import javax.inject.Inject
 
 import androidx.core.app.NotificationCompat
-import io.reactivex.Observer
+import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.model.EpisodeModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.annotations.NonNull
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class BackgroundService : IntentService(BackgroundService::class.java.name) {
@@ -45,6 +41,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     @Inject
     lateinit var mpoRepository: MPORepository
+
+    private val subscriptions = CompositeDisposable()
 
     override fun onCreate() {
         super.onCreate()
@@ -70,66 +68,84 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        //subscriptions.clear()
+    }
+
     override fun onHandleIntent(intent: Intent) {
         if (ACTION_UPDATE == intent.action) {
             Log.d("MPO", "Calling update...")
             val shows = mpoRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
             for (show in shows) {
                 Log.d(
-                    "MPO", "Got saved show: " + show.name + ", " + show.feedUrl + ", "
+                    "MPO", "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
                             + show.lastEpisodePublished
                 )
                 fetchShowUpdate(show, show.lastEpisodePublished)
             }
-        } else if (ACTION_DOWNLOAD == intent.action) {
-            Log.d("MPO", "Downloading...")
-            val download =
-                Parcels.unwrap<Download>(intent.getParcelableExtra<Parcelable>(EXTRA_DOWNLOAD))
-            /*
-            DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(
-                    Uri.parse(downloadUrl));
-            request.setVisibleInDownloadsUi(false);
-            long requestId = downloadManager.enqueue(request);
-            Log.d("MPO", "RequestId: " + requestId);*/
-            downloadManager.queueDownload(download)
         }
     }
 
-    private fun fetchShowUpdate(show: Show, lastEpisodePublished: Long?) {
-        service.getPodcastUpdate(show.feedUrl!!, lastEpisodePublished!!)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith<Observer<Episode>>(object : Observer<Episode> {
-                override fun onSubscribe(@NonNull d: Disposable) {
-
-                }
-
-                override fun onNext(@NonNull episode: Episode) {
-                    if (TextUtils.isEmpty(episode.artworkUrl)) {
-                        episode.artworkUrl = show.artworkUrl
+    private fun fetchShowUpdate(show: ShowModel, lastEpisodePublished: Long) {
+        subscriptions.add(
+            service.getPodcastUpdate(show.showDetails.feedUrl, lastEpisodePublished)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { episode ->
+                        saveEpisodeAndQueueDownload(show, episode)
+                    },
+                    { error ->
+                        Log.w("MPO", "Error getting show update", error)
                     }
-                    val download = Download(show, episode)
-                    downloadManager.queueDownload(download)
+                )
+        )
+    }
+
+    private fun saveEpisodeAndQueueDownload(show: ShowModel, episode: Episode) {
+        if (TextUtils.isEmpty(episode.artworkUrl)) {
+            episode.artworkUrl = show.showDetails.artworkUrl
+        }
+
+        subscriptions.add(mpoRepository.save(
+            EpisodeModel(
+                name = episode.name,
+                artworkUrl = episode.artworkUrl,
+                description = episode.description,
+                downloadUrl = episode.downloadUrl,
+                filename = "",
+                length = episode.length,
+                published = episode.published,
+                showId = show.id,
+                type = episode.type
+            )
+        ).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { savedEpisode ->
+                    downloadManager.queueDownload(show, savedEpisode)
                     show.lastUpdate = Date().time
-                    mpoRepository.save(show)
-                }
+                    show.lastEpisodePublished = episode.published
 
-                override fun onError(@NonNull e: Throwable) {
-                    Log.w("MPO", "Error getting show update", e)
-                }
+                    subscriptions.add(mpoRepository.save(show)
+                        .ignoreElement()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe {
 
-                override fun onComplete() {
-
+                        }
+                    )
+                },
+                { error ->
+                    error.printStackTrace()
                 }
-            })
+            )
+        )
     }
 
     companion object {
         const val ACTION_UPDATE = "com.vmenon.mpo.UPDATE"
-        const val ACTION_DOWNLOAD = "com.vmenon.mpo.DOWNLOAD"
-
-        const val EXTRA_DOWNLOAD = "EXTRA_DOWNLOAD"
 
         private const val EXEC_INTERVAL = (2 * 60 * 1000).toLong()
         private const val PREFS_NAME = "MPOBackgroundService"
@@ -161,20 +177,6 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             )
 
             Log.d("MPO", "Initialized service")
-        }
-
-        fun startDownload(
-            context: Context,
-            show: Show,
-            episode: Episode
-        ) {
-
-            val download = Download(show, episode)
-
-            val intent = Intent(context, BackgroundService::class.java)
-            intent.action = ACTION_DOWNLOAD
-            intent.putExtra(EXTRA_DOWNLOAD, Parcels.wrap(Download::class.java, download))
-            context.startService(intent)
         }
     }
 }

@@ -59,10 +59,8 @@ class MPOMediaPlayer : MPOPlayer(), MediaPlayer.OnPreparedListener, MediaPlayer.
     }
 
     override fun stop() {
-        mediaPlayer?.let { player ->
-            currentPosition = getCurrentPosition()
-            mediaPlayer?.stop()
-        }
+        currentPosition = getCurrentPosition()
+        mediaPlayer?.stop()
     }
 
     override fun getCurrentPosition(): Long {

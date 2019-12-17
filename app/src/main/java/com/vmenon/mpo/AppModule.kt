@@ -7,10 +7,7 @@ import com.google.gson.GsonBuilder
 import com.vmenon.mpo.core.DownloadManager
 import com.vmenon.mpo.core.MPOExoPlayer
 import com.vmenon.mpo.core.MPOPlayer
-import com.vmenon.mpo.core.persistence.EpisodeDao
-import com.vmenon.mpo.core.persistence.MPORepository
-import com.vmenon.mpo.core.persistence.ShowDao
-import com.vmenon.mpo.core.persistence.MPODatabase
+import com.vmenon.mpo.core.persistence.*
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
 import java.lang.reflect.Type
@@ -49,8 +46,7 @@ class AppModule(private val application: Application) {
     @Provides
     @Singleton
     internal fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaService {
-        val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-
+        val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(NullOnEmptyConverterFactory())
@@ -64,8 +60,11 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    internal fun provideDownloadManager(MPORepository: MPORepository): DownloadManager {
-        return DownloadManager(application.applicationContext, MPORepository)
+    internal fun provideDownloadManager(
+        mpoRepository: MPORepository,
+        downloadRepository: DownloadRepository
+    ): DownloadManager {
+        return DownloadManager(application.applicationContext, mpoRepository, downloadRepository)
     }
 
     @Provides
@@ -79,14 +78,26 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    internal fun provideShowDao(MPODatabase: MPODatabase): ShowDao {
-        return MPODatabase.showDao()
+    internal fun provideShowDao(mpDatabase: MPODatabase): ShowDao {
+        return mpDatabase.showDao()
     }
 
     @Provides
     @Singleton
-    internal fun provideEpisodeDao(MPODatabase: MPODatabase): EpisodeDao {
-        return MPODatabase.episodeDao()
+    internal fun provideEpisodeDao(mpDatabase: MPODatabase): EpisodeDao {
+        return mpDatabase.episodeDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideDownloadDao(mpDatabase: MPODatabase): DownloadDao {
+        return mpDatabase.downloadDao()
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideShowSearchResultsDao(mpDatabase: MPODatabase): ShowSearchResultDao {
+        return mpDatabase.showSearchResultsDao()
     }
 
     @Provides
@@ -103,6 +114,20 @@ class AppModule(private val application: Application) {
     internal fun providePlayer(): MPOPlayer {
         return MPOExoPlayer(application)
     }
+
+    @Provides
+    @Singleton
+    internal fun provideShowSearchRepository(
+        service: MediaPlayerOmegaService,
+        showSearchResultDao: ShowSearchResultDao
+    ): ShowSearchRepository {
+        return ShowSearchRepository(service, showSearchResultDao)
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideDownloadRepository(downloadDao: DownloadDao) =
+        DownloadRepository(downloadDao)
 
     /**
      * TODO: Make sure MPO API doesn't return 0 byte responses for results...change

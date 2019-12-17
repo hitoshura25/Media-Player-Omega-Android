@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import android.os.Handler
 import android.os.Looper
 
-import com.vmenon.mpo.api.Episode
-import com.vmenon.mpo.api.Show
+import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService
+import io.reactivex.Flowable
+import io.reactivex.Single
 
 import java.util.Date
 import java.util.concurrent.Executor
@@ -17,13 +19,13 @@ class MPORepository(
     private val showDao: ShowDao,
     private val episodeDao: EpisodeDao
 ) {
-    private val discExecutor: Executor
-    private val mainThreadExecutor: Executor
+    private val discExecutor = Executors.newSingleThreadExecutor()
+    private val mainThreadExecutor = MainThreadExecutor()
 
-    val allShows: LiveData<List<Show>>
-        get() = showDao.load()
+    val allSubscribedShows: LiveData<List<ShowModel>>
+        get() = showDao.loadAllSubscribed()
 
-    val allEpisodes: LiveData<List<Episode>>
+    val allEpisodes: LiveData<List<EpisodeModel>>
         get() = episodeDao.load()
 
     // Listener used to signal data being fetched. Workaround for cases where LiveData cannot be used
@@ -32,16 +34,11 @@ class MPORepository(
         fun onDataReady(data: T)
     }
 
-    init {
-        this.discExecutor = Executors.newSingleThreadExecutor()
-        this.mainThreadExecutor = MainThreadExecutor()
-    }
-
-    fun getLiveShow(id: Long): LiveData<Show> {
+    fun getLiveShow(id: Long): LiveData<ShowModel> {
         return showDao.getLiveById(id)
     }
 
-    fun fetchShow(id: Long, dataHandler: DataHandler<Show>) {
+    fun fetchShow(id: Long, dataHandler: DataHandler<ShowModel>) {
         // TODO: Caching
         discExecutor.execute {
             val show = showDao.getById(id)
@@ -49,21 +46,35 @@ class MPORepository(
         }
     }
 
-    fun save(show: Show) {
-        discExecutor.execute { showDao.save(show) }
+    fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
+        emitter.onSuccess(
+            if (show.id == 0L) {
+                val existingShow = showDao.getByName(show.showDetails.name)
+                if (existingShow != null) {
+                    existingShow.isSubscribed = show.isSubscribed
+                    showDao.update(existingShow)
+                    existingShow
+                } else {
+                    show.copy(id = showDao.insert(show))
+                }
+            } else {
+                showDao.update(show)
+                show
+            }
+        )
     }
 
-    fun notUpdatedInLast(interval: Long): List<Show> {
+    fun notUpdatedInLast(interval: Long): List<ShowModel> {
         val compareTime = Date().time - interval
-        return showDao.loadLastUpdatedBefore(compareTime)
+        return showDao.loadSubscribedLastUpdatedBefore(compareTime)
     }
 
-    fun getLiveEpisode(id: Long): LiveData<Episode> {
+    fun getLiveEpisode(id: Long): LiveData<EpisodeModel> {
         // TODO: Cache
         return episodeDao.liveById(id)
     }
 
-    fun fetchEpisode(id: Long, dataHandler: DataHandler<Episode>) {
+    fun fetchEpisode(id: Long, dataHandler: DataHandler<EpisodeModel>) {
         // TODO: Implement cache
         discExecutor.execute {
             val episode = episodeDao.byId(id)
@@ -71,8 +82,15 @@ class MPORepository(
         }
     }
 
-    fun save(episode: Episode) {
-        discExecutor.execute { episodeDao.save(episode) }
+    fun save(episode: EpisodeModel): Single<EpisodeModel> = Single.create { emitter ->
+        emitter.onSuccess(
+            if (episode.id == 0L) {
+                episode.copy(id = episodeDao.insert(episode))
+            } else {
+                episodeDao.update(episode)
+                episode
+            }
+        )
     }
 
     private class MainThreadExecutor : Executor {
