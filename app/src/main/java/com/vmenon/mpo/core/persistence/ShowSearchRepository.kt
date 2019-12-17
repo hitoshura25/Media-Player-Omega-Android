@@ -1,14 +1,11 @@
 package com.vmenon.mpo.core.persistence
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 import io.reactivex.Flowable
 import io.reactivex.Single
-import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 class ShowSearchRepository(
@@ -28,7 +25,7 @@ class ShowSearchRepository(
             shows.forEach { show ->
                 show.feedUrl?.let {
                     val searchResult = ShowSearchResultsModel(
-                        show = ShowModel(
+                        showDetails = ShowDetailsModel(
                             name = show.name,
                             artworkUrl = show.artworkUrl,
                             author = show.author,
@@ -42,12 +39,5 @@ class ShowSearchRepository(
             }
         }
         return showSearchResultDao.load()
-    }
-
-    private class MainThreadExecutor : Executor {
-        private val mainThreadHandler = Handler(Looper.getMainLooper())
-        override fun execute(command: Runnable) {
-            mainThreadHandler.post(command)
-        }
     }
 }

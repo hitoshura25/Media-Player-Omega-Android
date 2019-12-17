@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.EpisodesAdapter
 import com.vmenon.mpo.adapter.LibraryAdapter
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.core.persistence.MPORepository
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_library.*
 
 import javax.inject.Inject
 
-class LibraryActivity : BaseDrawerActivity(), EpisodesAdapter.EpisodeSelectedListener {
+class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedListener {
 
     @Inject
     lateinit var mpoRepository: MPORepository

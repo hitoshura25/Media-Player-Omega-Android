@@ -1,9 +1,18 @@
 package com.vmenon.mpo.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
+
+@Entity(indices = [Index(value = ["name"], unique = true)], tableName = "show")
 data class ShowModel(
-    val name: String,
-    val artworkUrl: String,
-    val genres: List<String>,
-    val author: String,
-    val feedUrl: String
+    @Embedded
+    val showDetails: ShowDetailsModel,
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0L,
+    var lastUpdate: Long = -1L,
+    var lastEpisodePublished: Long = -1L,
+    var isSubscribed: Boolean = false
 )

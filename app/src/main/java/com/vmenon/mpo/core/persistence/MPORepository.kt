@@ -5,8 +5,9 @@ import android.os.Handler
 import android.os.Looper
 
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 import java.util.Date
@@ -21,8 +22,8 @@ class MPORepository(
     private val discExecutor = Executors.newSingleThreadExecutor()
     private val mainThreadExecutor = MainThreadExecutor()
 
-    val allShows: LiveData<List<SubscribedShowModel>>
-        get() = showDao.load()
+    val allSubscribedShows: LiveData<List<ShowModel>>
+        get() = showDao.loadAllSubscribed()
 
     val allEpisodes: LiveData<List<EpisodeModel>>
         get() = episodeDao.load()
@@ -33,11 +34,11 @@ class MPORepository(
         fun onDataReady(data: T)
     }
 
-    fun getLiveShow(id: Long): LiveData<SubscribedShowModel> {
+    fun getLiveShow(id: Long): LiveData<ShowModel> {
         return showDao.getLiveById(id)
     }
 
-    fun fetchShow(id: Long, dataHandler: DataHandler<SubscribedShowModel>) {
+    fun fetchShow(id: Long, dataHandler: DataHandler<ShowModel>) {
         // TODO: Caching
         discExecutor.execute {
             val show = showDao.getById(id)
@@ -45,13 +46,27 @@ class MPORepository(
         }
     }
 
-    fun save(show: SubscribedShowModel) {
-        discExecutor.execute { showDao.save(show) }
+    fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
+        emitter.onSuccess(
+            if (show.id == 0L) {
+                val existingShow = showDao.getByName(show.showDetails.name)
+                if (existingShow != null) {
+                    existingShow.isSubscribed = show.isSubscribed
+                    showDao.update(existingShow)
+                    existingShow
+                } else {
+                    show.copy(id = showDao.insert(show))
+                }
+            } else {
+                showDao.update(show)
+                show
+            }
+        )
     }
 
-    fun notUpdatedInLast(interval: Long): List<SubscribedShowModel> {
+    fun notUpdatedInLast(interval: Long): List<ShowModel> {
         val compareTime = Date().time - interval
-        return showDao.loadLastUpdatedBefore(compareTime)
+        return showDao.loadSubscribedLastUpdatedBefore(compareTime)
     }
 
     fun getLiveEpisode(id: Long): LiveData<EpisodeModel> {

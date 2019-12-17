@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(indices = [Index(value = ["name"], unique = true)], tableName = "showSearchResults")
 data class ShowSearchResultsModel(
     @Embedded
-    val show: ShowModel,
+    val showDetails: ShowDetailsModel,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L
 )

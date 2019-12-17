@@ -10,12 +10,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.os.Parcelable
 import android.text.TextUtils
 import android.util.Log
 
 import com.vmenon.mpo.MPOApplication
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.core.receiver.AlarmReceiver
 import com.vmenon.mpo.service.MediaPlayerOmegaService
@@ -26,12 +25,10 @@ import javax.inject.Inject
 
 import androidx.core.app.NotificationCompat
 import com.vmenon.mpo.api.Episode
-import com.vmenon.mpo.model.DownloadModel
 import com.vmenon.mpo.model.EpisodeModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.parceler.Parcels
 
 class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
@@ -82,29 +79,17 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             val shows = mpoRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
             for (show in shows) {
                 Log.d(
-                    "MPO", "Got saved show: " + show.show.name + ", " + show.show.feedUrl + ", "
+                    "MPO", "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
                             + show.lastEpisodePublished
                 )
                 fetchShowUpdate(show, show.lastEpisodePublished)
             }
-        } else if (ACTION_DOWNLOAD == intent.action) {
-            Log.d("MPO", "Downloading...")
-            val download =
-                Parcels.unwrap<DownloadModel>(intent.getParcelableExtra<Parcelable>(EXTRA_DOWNLOAD))
-            /*
-            DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(
-                    Uri.parse(downloadUrl));
-            request.setVisibleInDownloadsUi(false);
-            long requestId = downloadManager.enqueue(request);
-            Log.d("MPO", "RequestId: " + requestId);*/
-            downloadManager.queueDownload(download)
         }
     }
 
-    private fun fetchShowUpdate(show: SubscribedShowModel, lastEpisodePublished: Long) {
+    private fun fetchShowUpdate(show: ShowModel, lastEpisodePublished: Long) {
         subscriptions.add(
-            service.getPodcastUpdate(show.show.feedUrl, lastEpisodePublished)
+            service.getPodcastUpdate(show.showDetails.feedUrl, lastEpisodePublished)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -118,9 +103,9 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
         )
     }
 
-    private fun saveEpisodeAndQueueDownload(show: SubscribedShowModel, episode: Episode) {
+    private fun saveEpisodeAndQueueDownload(show: ShowModel, episode: Episode) {
         if (TextUtils.isEmpty(episode.artworkUrl)) {
-            episode.artworkUrl = show.show.artworkUrl
+            episode.artworkUrl = show.showDetails.artworkUrl
         }
 
         subscriptions.add(mpoRepository.save(
@@ -139,14 +124,18 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { savedEpisode ->
-                    val download = DownloadModel(
-                        showId = show.id,
-                        episodeId = savedEpisode.id
-                    )
-                    downloadManager.queueDownload(download)
+                    downloadManager.queueDownload(show, savedEpisode)
                     show.lastUpdate = Date().time
                     show.lastEpisodePublished = episode.published
-                    mpoRepository.save(show)
+
+                    subscriptions.add(mpoRepository.save(show)
+                        .ignoreElement()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe {
+
+                        }
+                    )
                 },
                 { error ->
                     error.printStackTrace()
@@ -157,9 +146,6 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     companion object {
         const val ACTION_UPDATE = "com.vmenon.mpo.UPDATE"
-        const val ACTION_DOWNLOAD = "com.vmenon.mpo.DOWNLOAD"
-
-        const val EXTRA_DOWNLOAD = "EXTRA_DOWNLOAD"
 
         private const val EXEC_INTERVAL = (2 * 60 * 1000).toLong()
         private const val PREFS_NAME = "MPOBackgroundService"
@@ -192,18 +178,5 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
             Log.d("MPO", "Initialized service")
         }
-
-        /* TODO: Support on demand initiation of download
-        fun startDownload(
-            context: Context,
-            show: SubscribedShowModel,
-            episode: EpisodeModel
-        ) {
-            val download = DownloadModel(show, episode)
-            val intent = Intent(context, BackgroundService::class.java)
-            intent.action = ACTION_DOWNLOAD
-            intent.putExtra(EXTRA_DOWNLOAD, Parcels.wrap(DownloadModel::class.java, download))
-            context.startService(intent)
-        }*/
     }
 }

@@ -7,22 +7,22 @@ import android.widget.ImageView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
-class SubscriptionGalleryAdapter(private val shows: List<SubscribedShowModel>) :
+class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
     RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
 
     interface ShowSelectedListener {
-        fun onShowSelected(show: SubscribedShowModel)
+        fun onShowSelected(show: ShowModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val imageView: ImageView = v.showImage
-        var show: SubscribedShowModel? = null
+        var show: ShowModel? = null
     }
 
     fun setListener(listener: ShowSelectedListener) {
@@ -48,7 +48,7 @@ class SubscriptionGalleryAdapter(private val shows: List<SubscribedShowModel>) :
         holder.show = show
 
         Glide.with(holder.itemView.context)
-            .load(show.show.artworkUrl)
+            .load(show.showDetails.artworkUrl)
             .fitCenter()
             .crossFade()
             .into(holder.imageView)

@@ -5,25 +5,32 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 
 import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.Update
 
 @Dao
 interface ShowDao {
 
     @Query("SELECT * FROM show where id = :id")
-    fun getById(id: Long): SubscribedShowModel
+    fun getById(id: Long): ShowModel
 
     @Query("SELECT * FROM show where id = :id")
-    fun getLiveById(id: Long): LiveData<SubscribedShowModel>
+    fun getLiveById(id: Long): LiveData<ShowModel>
 
-    @Insert(onConflict = REPLACE)
-    fun save(show: SubscribedShowModel)
+    @Query("SELECT * FROM show where name = :name")
+    fun getByName(name: String): ShowModel?
 
-    @Query("SELECT * FROM show")
-    fun load(): LiveData<List<SubscribedShowModel>>
+    @Insert
+    fun insert(show: ShowModel): Long
 
-    @Query("SELECT * FROM show WHERE lastUpdate < :comparisonTime")
-    fun loadLastUpdatedBefore(comparisonTime: Long): List<SubscribedShowModel>
+    @Update(onConflict = REPLACE)
+    fun update(show: ShowModel)
+
+    @Query("SELECT * FROM show WHERE isSubscribed")
+    fun loadAllSubscribed(): LiveData<List<ShowModel>>
+
+    @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
+    fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): List<ShowModel>
 }

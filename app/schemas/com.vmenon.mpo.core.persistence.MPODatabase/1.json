@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c71686120d67b07703028c19e1d9efde",
+    "identityHash": "46e7d7fd53eade31e286e4acd0def902",
     "entities": [
       {
         "tableName": "show",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -23,6 +23,12 @@
           {
             "fieldPath": "lastEpisodePublished",
             "columnName": "lastEpisodePublished",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSubscribed",
+            "columnName": "isSubscribed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -317,7 +323,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c71686120d67b07703028c19e1d9efde')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '46e7d7fd53eade31e286e4acd0def902')"
     ]
   }
 }

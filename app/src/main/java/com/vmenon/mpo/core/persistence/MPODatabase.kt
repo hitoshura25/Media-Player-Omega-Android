@@ -4,12 +4,12 @@ import androidx.room.*
 import com.vmenon.mpo.model.DownloadModel
 
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
 
 @Database(
     entities = [
-        SubscribedShowModel::class,
+        ShowModel::class,
         EpisodeModel::class,
         ShowSearchResultsModel::class,
         DownloadModel::class

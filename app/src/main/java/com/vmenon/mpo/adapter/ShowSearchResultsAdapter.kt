@@ -49,10 +49,10 @@ class ShowSearchResultsAdapter(private val shows: List<ShowSearchResultsModel>) 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val show = shows[position]
         holder.show = show
-        holder.nameText.text = show.show.name
+        holder.nameText.text = show.showDetails.name
 
         Glide.with(holder.itemView.context)
-            .load(show.show.artworkUrl)
+            .load(show.showDetails.artworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

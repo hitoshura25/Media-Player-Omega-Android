@@ -12,21 +12,21 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowDetailsModel
 import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat
 
 import java.util.Date
 
-class EpisodesAdapter(private val show: ShowModel, private val episodes: List<EpisodeModel>) :
+class EpisodesAdapter(private val showDetails: ShowDetailsModel, private val episodes: List<EpisodeModel>) :
     RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
         fun onEpisodeSelected(episode: EpisodeModel)
+        fun onDownloadEpisode(episode: EpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -36,7 +36,7 @@ class EpisodesAdapter(private val show: ShowModel, private val episodes: List<Ep
         val thumbnailImage: ImageView = v.episodeImage
         val menuButton: ImageButton = v.episodeMenuButton
         lateinit var episode: EpisodeModel
-        lateinit var show: ShowModel
+        lateinit var showDetails: ShowDetailsModel
     }
 
     fun setListener(listener: EpisodeSelectedListener) {
@@ -58,18 +58,7 @@ class EpisodesAdapter(private val show: ShowModel, private val episodes: List<Ep
             popupMenu.inflate(R.menu.episode_menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 if (R.id.download_episode == item.itemId) {
-                    // TODO: Add support for downloading an episode with subscribing to the show?
-                    Snackbar.make(
-                        v,
-                        "Downloading episode not yet supported",
-                        Snackbar.LENGTH_LONG
-                    )
-                        .show()
-                    /*BackgroundService.startDownload(
-                        vh.menuButton.context,
-                        vh.show,
-                        vh.episode
-                    )*/
+                    listener?.onDownloadEpisode(vh.episode)
                 }
 
                 false
@@ -83,7 +72,7 @@ class EpisodesAdapter(private val show: ShowModel, private val episodes: List<Ep
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episode = episodes[position]
         holder.episode = episode
-        holder.show = show
+        holder.showDetails = showDetails
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(

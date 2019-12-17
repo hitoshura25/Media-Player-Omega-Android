@@ -21,7 +21,7 @@ import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.MPOPlayer
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
 import kotlinx.android.synthetic.main.activity_media_player.*
 
@@ -41,7 +41,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     private val handler = Handler()
     private lateinit var episode: EpisodeModel
-    private var show: SubscribedShowModel? = null
+    private var show: ShowModel? = null
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -275,7 +275,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     private fun updateUIFromMedia() {
         show?.let {
-            Glide.with(this).load(it.show.artworkUrl).fitCenter().into(artworkImage!!)
+            Glide.with(this).load(it.showDetails.artworkUrl).fitCenter().into(artworkImage!!)
         }
         mediaTitle.text = episode.name
     }

@@ -9,7 +9,7 @@ import android.widget.ImageView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.model.EpisodeModel
 import kotlinx.android.synthetic.main.activity_episode_details.*
@@ -26,7 +26,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
     lateinit var repository: MPORepository
 
     private var episodeId: Long = -1
-    private var show: SubscribedShowModel? = null
+    private var show: ShowModel? = null
 
     private lateinit var appBarImage: ImageView
 
@@ -34,7 +34,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.drawable.ic_play_arrow_white_48dp
 
     override val collapsedToolbarTitle: CharSequence
-        get() = show?.show?.name ?: ""
+        get() = show?.showDetails?.name ?: ""
 
     override val expandedToolbarTitle: CharSequence
         get() = ""
@@ -82,11 +82,11 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
                 )
                 repository.getLiveShow(data.showId).observe(this@EpisodeDetailsActivity, Observer { show ->
                     this@EpisodeDetailsActivity.show = show
-                    Glide.with(this@EpisodeDetailsActivity).load(show.show.artworkUrl)
+                    Glide.with(this@EpisodeDetailsActivity).load(show.showDetails.artworkUrl)
                         .into(appBarImage)
 
                     episodeImage.visibility = View.VISIBLE
-                    Glide.with(this@EpisodeDetailsActivity).load(show.show.artworkUrl).fitCenter()
+                    Glide.with(this@EpisodeDetailsActivity).load(show.showDetails.artworkUrl).fitCenter()
                         .into(episodeImage)
                 })
             }

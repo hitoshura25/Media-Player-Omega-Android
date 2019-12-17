@@ -15,9 +15,9 @@ import kotlinx.android.synthetic.main.library_item.view.*
 
 class LibraryAdapter(private val episodes: List<EpisodeModel>) :
     RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
-    private var listener: EpisodesAdapter.EpisodeSelectedListener? = null
+    private var listener: LibrarySelectedListener? = null
 
-    interface LibarySelectedListener {
+    interface LibrarySelectedListener {
         fun onEpisodeSelected(episode: EpisodeModel)
     }
 
@@ -58,7 +58,7 @@ class LibraryAdapter(private val episodes: List<EpisodeModel>) :
         return episodes.size
     }
 
-    fun setListener(listener: EpisodesAdapter.EpisodeSelectedListener) {
+    fun setListener(listener: LibrarySelectedListener) {
         this.listener = listener
     }
 }

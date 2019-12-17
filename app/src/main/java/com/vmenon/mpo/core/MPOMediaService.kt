@@ -33,7 +33,7 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.activity.MediaPlayerActivity
 import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.SubscribedShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
 
 import java.io.File
@@ -524,17 +524,17 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: SubscribedShowModel) {
+    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: ShowModel) {
         if (requestedMediaId == mediaId) {
             val mediaFile = File(episode.filename)
             val metadata = MediaMetadataCompat.Builder().putString(
                 MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
             )
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.show.name)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.show.author)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showDetails.name)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.showDetails.author)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
-                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.show.genres))
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.show.artworkUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.showDetails.genres))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showDetails.artworkUrl)
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
                 .build()
             handlePlayRequest(mediaFile)
@@ -782,10 +782,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         service: MPOMediaService,
         internal var mediaId: String,
         internal var episode: EpisodeModel
-    ) : MPORepository.DataHandler<SubscribedShowModel> {
+    ) : MPORepository.DataHandler<ShowModel> {
         internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
-        override fun onDataReady(data: SubscribedShowModel) {
+        override fun onDataReady(data: ShowModel) {
             val service = serviceRef.get()
             service?.playEpisode(mediaId, episode, data)
         }

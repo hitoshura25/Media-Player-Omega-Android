@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = SubscribedShowModel::class,
+            entity = ShowModel::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("showId")
         ),
