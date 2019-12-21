@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "46e7d7fd53eade31e286e4acd0def902",
+    "identityHash": "b2b70472f2a2b92807d5ce629539c1d4",
     "entities": [
       {
         "tableName": "show",
@@ -33,31 +33,31 @@
             "notNull": true
           },
           {
-            "fieldPath": "show.name",
+            "fieldPath": "showDetails.name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.artworkUrl",
+            "fieldPath": "showDetails.artworkUrl",
             "columnName": "artworkUrl",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.genres",
+            "fieldPath": "showDetails.genres",
             "columnName": "genres",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.author",
+            "fieldPath": "showDetails.author",
             "columnName": "author",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.feedUrl",
+            "fieldPath": "showDetails.feedUrl",
             "columnName": "feedUrl",
             "affinity": "TEXT",
             "notNull": true
@@ -177,8 +177,8 @@
         ]
       },
       {
-        "tableName": "showSearchResults",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL)",
+        "tableName": "showSearch",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `searchTerm` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -187,31 +187,72 @@
             "notNull": true
           },
           {
-            "fieldPath": "show.name",
+            "fieldPath": "searchTerm",
+            "columnName": "searchTerm",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_showSearch_searchTerm",
+            "unique": true,
+            "columnNames": [
+              "searchTerm"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_showSearch_searchTerm` ON `${TABLE_NAME}` (`searchTerm`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "showSearchResults",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showSearchId` INTEGER NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, FOREIGN KEY(`showSearchId`) REFERENCES `showSearch`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showSearchId",
+            "columnName": "showSearchId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showDetails.name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.artworkUrl",
+            "fieldPath": "showDetails.artworkUrl",
             "columnName": "artworkUrl",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.genres",
+            "fieldPath": "showDetails.genres",
             "columnName": "genres",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.author",
+            "fieldPath": "showDetails.author",
             "columnName": "author",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "show.feedUrl",
+            "fieldPath": "showDetails.feedUrl",
             "columnName": "feedUrl",
             "affinity": "TEXT",
             "notNull": true
@@ -231,9 +272,29 @@
               "name"
             ],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_showSearchResults_name` ON `${TABLE_NAME}` (`name`)"
+          },
+          {
+            "name": "index_showSearchResults_showSearchId",
+            "unique": false,
+            "columnNames": [
+              "showSearchId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_showSearchId` ON `${TABLE_NAME}` (`showSearchId`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "showSearch",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "showSearchId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "downloads",
@@ -323,7 +384,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '46e7d7fd53eade31e286e4acd0def902')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b2b70472f2a2b92807d5ce629539c1d4')"
     ]
   }
 }

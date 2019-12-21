@@ -1,16 +1,13 @@
 package com.vmenon.mpo.core.persistence
 
 import androidx.room.*
-import com.vmenon.mpo.model.DownloadModel
-
-import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.model.ShowSearchResultsModel
+import com.vmenon.mpo.model.*
 
 @Database(
     entities = [
         ShowModel::class,
         EpisodeModel::class,
+        ShowSearchModel::class,
         ShowSearchResultsModel::class,
         DownloadModel::class
     ],

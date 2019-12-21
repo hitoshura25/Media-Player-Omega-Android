@@ -28,7 +28,7 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".activity.ShowSearchResultsActivity" />
+                android:value=".view.activity.ShowSearchResultsActivity" />
         </activity>
         <activity
             android:name="com.vmenon.mpo.view.activity.ShowSearchResultsActivity"
