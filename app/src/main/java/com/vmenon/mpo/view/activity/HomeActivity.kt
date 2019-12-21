@@ -1,7 +1,6 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import android.app.SearchManager
-import androidx.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.widget.SearchView
@@ -9,19 +8,25 @@ import androidx.recyclerview.widget.GridLayoutManager
 
 import android.util.Log
 import android.view.Menu
+import androidx.lifecycle.ViewModelProviders
 
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.SubscriptionGalleryAdapter
+import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.core.BackgroundService
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.di.AppComponent
+import com.vmenon.mpo.viewmodel.HomeViewModel
+import com.vmenon.mpo.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 import javax.inject.Inject
 
-class MainActivity : BaseDrawerActivity() {
+class HomeActivity : BaseDrawerActivity() {
 
     @Inject
     lateinit var mpoRepository: MPORepository
+
+    lateinit var viewModel: HomeViewModel
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main
@@ -32,22 +37,19 @@ class MainActivity : BaseDrawerActivity() {
     override val isRootActivity: Boolean
         get() = true
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[HomeViewModel::class.java]
         setTitle(R.string.shows)
         BackgroundService.setupSchedule(this)
         showList.setHasFixedSize(true)
         val gridLayoutManager = GridLayoutManager(this, 3)
         gridLayoutManager.orientation = GridLayoutManager.HORIZONTAL
         showList.layoutManager = GridLayoutManager(this, 3)
-
-        mpoRepository.allSubscribedShows.observe(this, Observer { shows ->
-            Log.d("MPO", "Got " + shows.size + " shows")
-            val adapter = SubscriptionGalleryAdapter(shows)
-            adapter.setHasStableIds(true)
-            showList.adapter = adapter
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -65,4 +67,21 @@ class MainActivity : BaseDrawerActivity() {
         return true
     }
 
+    override fun onStart() {
+        super.onStart()
+        subscriptions.add(
+            viewModel.subscribedShows()
+                .subscribe(
+                    { shows ->
+                        Log.d("MPO", "Got " + shows.size + " shows")
+                        val adapter = SubscriptionGalleryAdapter(shows)
+                        adapter.setHasStableIds(true)
+                        showList.adapter = adapter
+                    },
+                    { error ->
+
+                    }
+                )
+        )
+    }
 }

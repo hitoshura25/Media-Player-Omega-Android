@@ -8,9 +8,9 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.webkit.URLUtil
-import com.vmenon.mpo.core.persistence.DownloadRepository
+import com.vmenon.mpo.core.repository.DownloadRepository
 
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.event.DownloadUpdateEvent
 import com.vmenon.mpo.model.*
 import io.reactivex.Single

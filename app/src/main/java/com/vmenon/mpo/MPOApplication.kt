@@ -1,6 +1,9 @@
 package com.vmenon.mpo
 
 import android.app.Application
+import com.vmenon.mpo.di.AppComponent
+import com.vmenon.mpo.di.AppModule
+import com.vmenon.mpo.di.DaggerAppComponent
 
 class MPOApplication : Application() {
     lateinit var appComponent: AppComponent
@@ -11,5 +14,4 @@ class MPOApplication : Application() {
             AppModule(this)
         ).build()
     }
-
 }

@@ -1,6 +1,7 @@
-package com.vmenon.mpo.core.persistence
+package com.vmenon.mpo.core.repository
 
 import android.util.Log
+import com.vmenon.mpo.core.persistence.ShowSearchResultDao
 import com.vmenon.mpo.model.ShowDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService

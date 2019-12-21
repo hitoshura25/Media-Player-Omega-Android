@@ -30,8 +30,9 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
-import com.vmenon.mpo.activity.MediaPlayerActivity
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper

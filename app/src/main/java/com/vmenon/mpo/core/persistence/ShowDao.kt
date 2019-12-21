@@ -9,6 +9,7 @@ import com.vmenon.mpo.model.ShowModel
 
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Update
+import io.reactivex.Flowable
 
 @Dao
 interface ShowDao {
@@ -29,7 +30,7 @@ interface ShowDao {
     fun update(show: ShowModel)
 
     @Query("SELECT * FROM show WHERE isSubscribed")
-    fun loadAllSubscribed(): LiveData<List<ShowModel>>
+    fun loadAllSubscribed(): Flowable<List<ShowModel>>
 
     @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
     fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): List<ShowModel>

@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import androidx.lifecycle.Observer
 import android.content.Intent
@@ -7,9 +7,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.LibraryAdapter
+import com.vmenon.mpo.view.adapter.LibraryAdapter
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.di.AppComponent
 import kotlinx.android.synthetic.main.activity_library.*
 
 import javax.inject.Inject
@@ -28,9 +29,12 @@ class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedList
     override val isRootActivity: Boolean
         get() = true
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
 
         val layoutManager = LinearLayoutManager(this)
         libraryList.setHasFixedSize(true)

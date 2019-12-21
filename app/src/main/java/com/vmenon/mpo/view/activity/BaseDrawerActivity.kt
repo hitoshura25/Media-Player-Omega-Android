@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -54,7 +54,7 @@ abstract class BaseDrawerActivity : BaseActivity() {
                     startActivity(intent)
                 }
                 R.id.nav_home == menuItem.itemId -> {
-                    val intent = Intent(this@BaseDrawerActivity, MainActivity::class.java)
+                    val intent = Intent(this@BaseDrawerActivity, HomeActivity::class.java)
                     startActivity(intent)
                 }
             }

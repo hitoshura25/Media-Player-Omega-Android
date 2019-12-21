@@ -1,4 +1,4 @@
-package com.vmenon.mpo.adapter
+package com.vmenon.mpo.view.adapter
 
 import android.view.LayoutInflater
 import android.view.View

@@ -1,38 +1,35 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.ShowSearchResultsAdapter
+import com.vmenon.mpo.view.adapter.ShowSearchResultsAdapter
 
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.core.persistence.ShowSearchRepository
+import com.vmenon.mpo.core.repository.ShowSearchRepository
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.ShowSearchResultsModel
-import io.reactivex.FlowableSubscriber
-import io.reactivex.Observer
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.annotations.NonNull
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.ResourceSubscriber
 import kotlinx.android.synthetic.main.activity_show_search_results.*
-import org.reactivestreams.Subscription
 
 class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
 
     @Inject
     lateinit var showSearchRepository: ShowSearchRepository
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
 
         setContentView(R.layout.activity_show_search_results)
         // use this setting to improve performance if you know that changes

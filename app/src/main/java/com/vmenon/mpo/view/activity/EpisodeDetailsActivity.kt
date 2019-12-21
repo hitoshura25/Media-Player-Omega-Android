@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import androidx.lifecycle.Observer
 import android.content.Intent
@@ -10,7 +10,8 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import kotlinx.android.synthetic.main.activity_episode_details.*
 
@@ -48,6 +49,10 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
     override val navMenuId: Int
         get() = R.id.nav_library
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.let {
@@ -57,7 +62,6 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
         displayEpisode(intent)
         appBarImage = findViewById(R.id.appBarImage)
     }

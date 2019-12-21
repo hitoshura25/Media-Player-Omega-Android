@@ -1,4 +1,4 @@
-package com.vmenon.mpo.adapter
+package com.vmenon.mpo.view.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 

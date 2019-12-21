@@ -1,4 +1,4 @@
-package com.vmenon.mpo.core
+package com.vmenon.mpo.core.player
 
 import android.content.Context
 import android.media.MediaMetadataRetriever

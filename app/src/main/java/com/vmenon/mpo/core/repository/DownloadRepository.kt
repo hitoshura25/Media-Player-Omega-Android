@@ -1,5 +1,6 @@
-package com.vmenon.mpo.core.persistence
+package com.vmenon.mpo.core.repository
 
+import com.vmenon.mpo.core.persistence.DownloadDao
 import com.vmenon.mpo.model.DownloadModel
 import io.reactivex.Flowable
 import io.reactivex.Single

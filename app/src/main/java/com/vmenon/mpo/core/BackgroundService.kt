@@ -15,7 +15,7 @@ import android.util.Log
 
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.core.receiver.AlarmReceiver
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 

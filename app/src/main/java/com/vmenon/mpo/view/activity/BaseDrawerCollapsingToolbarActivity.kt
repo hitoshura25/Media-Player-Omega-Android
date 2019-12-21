@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import android.os.Bundle
 import android.view.ViewStub

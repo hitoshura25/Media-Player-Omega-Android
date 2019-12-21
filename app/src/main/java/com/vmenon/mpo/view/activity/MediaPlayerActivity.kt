@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import androidx.lifecycle.Observer
 import android.content.ComponentName
@@ -18,8 +18,9 @@ import com.bumptech.glide.Glide
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
-import com.vmenon.mpo.core.MPOPlayer
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
@@ -133,10 +134,12 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         }
     }
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true

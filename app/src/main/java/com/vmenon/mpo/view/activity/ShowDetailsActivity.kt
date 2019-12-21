@@ -1,4 +1,4 @@
-package com.vmenon.mpo.activity
+package com.vmenon.mpo.view.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,16 +13,17 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
-import com.vmenon.mpo.adapter.EpisodesAdapter
+import com.vmenon.mpo.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.api.ShowDetails
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.core.DownloadManager
-import com.vmenon.mpo.core.persistence.ShowSearchRepository
+import com.vmenon.mpo.core.repository.ShowSearchRepository
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
@@ -55,9 +56,12 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     private var collapsed = false
     private var scrollRange = -1
 
+    override fun inject(appComponent: AppComponent) {
+        appComponent.inject(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.inject(this)
 
         setContentView(R.layout.activity_show_details)
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)

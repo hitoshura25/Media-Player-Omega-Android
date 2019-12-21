@@ -1,8 +1,10 @@
-package com.vmenon.mpo.core.persistence
+package com.vmenon.mpo.core.repository
 
 import androidx.lifecycle.LiveData
 import android.os.Handler
 import android.os.Looper
+import com.vmenon.mpo.core.persistence.EpisodeDao
+import com.vmenon.mpo.core.persistence.ShowDao
 
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
@@ -20,10 +22,8 @@ class MPORepository(
     private val episodeDao: EpisodeDao
 ) {
     private val discExecutor = Executors.newSingleThreadExecutor()
-    private val mainThreadExecutor = MainThreadExecutor()
-
-    val allSubscribedShows: LiveData<List<ShowModel>>
-        get() = showDao.loadAllSubscribed()
+    private val mainThreadExecutor =
+        MainThreadExecutor()
 
     val allEpisodes: LiveData<List<EpisodeModel>>
         get() = episodeDao.load()
@@ -33,6 +33,8 @@ class MPORepository(
     interface DataHandler<T> {
         fun onDataReady(data: T)
     }
+
+    fun getAllSubscribedShows(): Flowable<List<ShowModel>> = showDao.loadAllSubscribed()
 
     fun getLiveShow(id: Long): LiveData<ShowModel> {
         return showDao.getLiveById(id)
