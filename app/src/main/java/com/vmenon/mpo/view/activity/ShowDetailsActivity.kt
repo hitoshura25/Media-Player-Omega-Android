@@ -15,13 +15,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.api.ShowDetails
-import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.core.DownloadManager
+import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.core.repository.ShowSearchRepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
@@ -42,7 +42,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     lateinit var service: MediaPlayerOmegaService
 
     @Inject
-    lateinit var mpoRepository: MPORepository
+    lateinit var showRepository: ShowRepository
 
     @Inject
     lateinit var searchRepository: ShowSearchRepository
@@ -163,7 +163,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
 
             subscribeButton.setOnClickListener {
-                mpoRepository.save(
+                showRepository.save(
                     ShowModel(
                         showDetails = showSearchResultsMode.showDetails,
                         lastEpisodePublished = 0L,
@@ -174,12 +174,14 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object: SingleObserver<ShowModel> {
                     override fun onSuccess(t: ShowModel) {
+
                     }
 
                     override fun onSubscribe(d: Disposable) {
                     }
 
                     override fun onError(e: Throwable) {
+                        e.printStackTrace()
                     }
 
                 })

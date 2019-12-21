@@ -1,6 +1,5 @@
 package com.vmenon.mpo.view.activity
 
-import androidx.lifecycle.Observer
 import android.content.ComponentName
 import android.content.Intent
 import android.os.*
@@ -13,18 +12,18 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
 import android.widget.SeekBar
+import androidx.lifecycle.ViewModelProviders
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.player.MPOPlayer
-import com.vmenon.mpo.core.repository.EpisodeRepository
-import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
+import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
 
 import java.util.concurrent.Executors
@@ -34,15 +33,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.VideoSizeListener {
-
-    @Inject
-    lateinit var repository: MPORepository
-
-    @Inject
-    lateinit var episodeRepository: EpisodeRepository
-
     @Inject
     lateinit var player: MPOPlayer
+
+    private lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
     private lateinit var episode: EpisodeModel
@@ -100,16 +94,17 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                         val mediaType = MediaHelper.getMediaTypeFromMediaId(it)
                         when (mediaType?.mediaType) {
                             MediaHelper.MEDIA_TYPE_EPISODE -> {
-                                episodeRepository.getEpisode(mediaType.id)
-                                    .firstElement()
-                                    .subscribe {
-                                        repository.getLiveShow(episode.showId).observe(
-                                            this@MediaPlayerActivity,
-                                            Observer { show ->
-                                                this@MediaPlayerActivity.show = show
+                                subscriptions.add(
+                                    viewModel.getEpisodeDetails(mediaType.id)
+                                        .firstElement()
+                                        .subscribe(
+                                            { episode ->
+                                                this@MediaPlayerActivity.show = episode.show
                                                 updateUIFromMedia()
-                                            })
-                                    }
+                                            },
+                                            { error -> }
+                                        )
+                                )
                             }
                             else -> {
                             }
@@ -147,6 +142,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(
+            this,
+            viewModelFactory
+        )[EpisodeDetailsViewModel::class.java]
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true
@@ -156,6 +155,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         if (savedInstanceState != null) {
             requestedMediaId = savedInstanceState.getString(EXTRA_MEDIA_ID)
         }
+
+        playOnStart = savedInstanceState == null
 
         actionButton.setOnClickListener {
             val mediaController = MediaControllerCompat.getMediaController(
@@ -205,27 +206,11 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         mediaBrowser = MediaBrowserCompat(
             this,
             ComponentName(this, MPOMediaService::class.java),
-            connectionCallback, null
+            connectionCallback,
+            null
         ) // optional Bundle
 
-        if (!fromNotification) {
-            val episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
-            repository.fetchEpisode(episodeId, object : MPORepository.DataHandler<EpisodeModel> {
-                override fun onDataReady(data: EpisodeModel) {
-                    episode = data
-                    requestedMediaId = MediaHelper.createMediaId(episode)
-                    playOnStart = savedInstanceState == null
 
-                    repository.getLiveShow(episode.showId)
-                        .observe(this@MediaPlayerActivity, Observer { show ->
-                            this@MediaPlayerActivity.show = show
-                            updateUIFromMedia()
-                        })
-                }
-
-            })
-
-        }
 
         player.setVideoSizeListener(this@MediaPlayerActivity)
     }
@@ -233,6 +218,24 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     override fun onStart() {
         super.onStart()
         mediaBrowser.connect()
+        if (!fromNotification) {
+            val episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
+            subscriptions.add(
+                viewModel.getEpisodeDetails(episodeId)
+                    .firstElement()
+                    .subscribe(
+                        { episode ->
+                            this@MediaPlayerActivity.episode = episode.episode
+                            requestedMediaId = MediaHelper.createMediaId(episode.episode)
+                            this@MediaPlayerActivity.show = episode.show
+                            updateUIFromMedia()
+                        },
+                        { error ->
+
+                        }
+                    )
+            )
+        }
     }
 
     override fun onStop() {

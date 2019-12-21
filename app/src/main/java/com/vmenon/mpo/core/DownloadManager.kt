@@ -11,7 +11,7 @@ import android.webkit.URLUtil
 import com.vmenon.mpo.core.repository.DownloadRepository
 import com.vmenon.mpo.core.repository.EpisodeRepository
 
-import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.event.DownloadUpdateEvent
 import com.vmenon.mpo.model.*
 import io.reactivex.Single
@@ -31,9 +31,9 @@ import java.util.concurrent.*
 
 class DownloadManager(
     private val context: Context,
-    private val mpoRepository: MPORepository,
     private val downloadRepository: DownloadRepository,
-    private val episodeRepository: EpisodeRepository
+    private val episodeRepository: EpisodeRepository,
+    private val showRepository: ShowRepository
 ) {
 
     private val handler: Handler
@@ -70,7 +70,7 @@ class DownloadManager(
     fun queueDownload(showDetails: ShowDetailsModel, episode: EpisodeModel) {
         subscriptions.add(
             Single.create<Pair<ShowModel, EpisodeModel>> { emitter ->
-                val savedShow =  mpoRepository.save(
+                val savedShow =  showRepository.save(
                     ShowModel(
                         showDetails = showDetails,
                         lastEpisodePublished = 0L,

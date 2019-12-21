@@ -8,7 +8,7 @@ import com.vmenon.mpo.core.player.MPOExoPlayer
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.core.repository.DownloadRepository
 import com.vmenon.mpo.core.repository.EpisodeRepository
-import com.vmenon.mpo.core.repository.MPORepository
+import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.viewmodel.ViewModelFactory
 
 import javax.inject.Singleton
@@ -26,15 +26,15 @@ class AppModule(private val application: Application) {
     @Provides
     @Singleton
     fun provideDownloadManager(
-        mpoRepository: MPORepository,
         downloadRepository: DownloadRepository,
-        episodeRepository: EpisodeRepository
+        episodeRepository: EpisodeRepository,
+        showRepository: ShowRepository
     ): DownloadManager {
         return DownloadManager(
             application.applicationContext,
-            mpoRepository,
             downloadRepository,
-            episodeRepository
+            episodeRepository,
+            showRepository
         )
     }
 

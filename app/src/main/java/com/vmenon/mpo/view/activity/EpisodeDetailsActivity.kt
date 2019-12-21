@@ -1,18 +1,18 @@
 package com.vmenon.mpo.view.activity
 
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.widget.ImageView
+import androidx.lifecycle.ViewModelProviders
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
+import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_episode_details.*
 
 import java.text.DateFormat
@@ -24,7 +24,9 @@ import javax.inject.Inject
 class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     @Inject
-    lateinit var repository: MPORepository
+    lateinit var episodeRepository: EpisodeRepository
+
+    private lateinit var viewModel: EpisodeDetailsViewModel
 
     private var episodeId: Long = -1
     private var show: ShowModel? = null
@@ -53,17 +55,18 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         appComponent.inject(this)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let {
-            displayEpisode(it)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        displayEpisode(intent)
         appBarImage = findViewById(R.id.appBarImage)
+        viewModel = ViewModelProviders.of(
+            this,
+            viewModelFactory
+        )[EpisodeDetailsViewModel::class.java]
+    }
+
+    override fun onStart() {
+        super.onStart()
+        displayEpisode(intent)
     }
 
     override fun onFabClick() {
@@ -74,28 +77,35 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     private fun displayEpisode(intent: Intent) {
         episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
-        repository.fetchEpisode(episodeId, object: MPORepository.DataHandler<EpisodeModel> {
-            override fun onDataReady(data: EpisodeModel) {
-                episodeName.text = data.name
-                @Suppress("DEPRECATION")
-                episodeDescription.text = Html.fromHtml(
-                    data.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
-                )
-                episodeDate.text = DateFormat.getDateInstance().format(
-                    Date(data.published)
-                )
-                repository.getLiveShow(data.showId).observe(this@EpisodeDetailsActivity, Observer { show ->
-                    this@EpisodeDetailsActivity.show = show
-                    Glide.with(this@EpisodeDetailsActivity).load(show.showDetails.artworkUrl)
-                        .into(appBarImage)
+        subscriptions.add(
+            viewModel.getEpisodeDetails(episodeId)
+                .subscribe(
+                    { episodeDetails ->
+                        episodeName.text = episodeDetails.episode.name
+                        @Suppress("DEPRECATION")
+                        episodeDescription.text = Html.fromHtml(
+                            episodeDetails.episode.description.replace(
+                                "(<(//)img>)|(<img.+?>)".toRegex(),
+                                ""
+                            )
+                        )
+                        episodeDate.text = DateFormat.getDateInstance().format(
+                            Date(episodeDetails.episode.published)
+                        )
+                        Glide.with(this@EpisodeDetailsActivity)
+                            .load(episodeDetails.show.showDetails.artworkUrl)
+                            .into(appBarImage)
 
-                    episodeImage.visibility = View.VISIBLE
-                    Glide.with(this@EpisodeDetailsActivity).load(show.showDetails.artworkUrl).fitCenter()
-                        .into(episodeImage)
-                })
-            }
+                        episodeImage.visibility = View.VISIBLE
+                        Glide.with(this@EpisodeDetailsActivity)
+                            .load(episodeDetails.show.showDetails.artworkUrl).fitCenter()
+                            .into(episodeImage)
+                    },
+                    { error ->
 
-        })
+                    }
+                )
+        )
     }
 
     companion object {

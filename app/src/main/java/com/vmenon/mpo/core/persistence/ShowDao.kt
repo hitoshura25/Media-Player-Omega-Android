@@ -1,6 +1,5 @@
 package com.vmenon.mpo.core.persistence
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -15,13 +14,10 @@ import io.reactivex.Flowable
 interface ShowDao {
 
     @Query("SELECT * FROM show where id = :id")
-    fun getById(id: Long): ShowModel
-
-    @Query("SELECT * FROM show where id = :id")
-    fun getLiveById(id: Long): LiveData<ShowModel>
+    fun getById(id: Long): Flowable<ShowModel>
 
     @Query("SELECT * FROM show where name = :name")
-    fun getByName(name: String): ShowModel?
+    fun getByName(name: String): Flowable<ShowModel>
 
     @Insert
     fun insert(show: ShowModel): Long
@@ -33,5 +29,5 @@ interface ShowDao {
     fun loadAllSubscribed(): Flowable<List<ShowModel>>
 
     @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
-    fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): List<ShowModel>
+    fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): Flowable<List<ShowModel>>
 }

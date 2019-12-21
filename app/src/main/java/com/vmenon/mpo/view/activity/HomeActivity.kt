@@ -13,17 +13,11 @@ import androidx.lifecycle.ViewModelProviders
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.core.BackgroundService
-import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-import javax.inject.Inject
-
 class HomeActivity : BaseDrawerActivity() {
-
-    @Inject
-    lateinit var mpoRepository: MPORepository
 
     lateinit var viewModel: HomeViewModel
 

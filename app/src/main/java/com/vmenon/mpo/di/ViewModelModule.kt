@@ -1,6 +1,7 @@
 package com.vmenon.mpo.di
 
 import androidx.lifecycle.ViewModel
+import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import com.vmenon.mpo.viewmodel.LibraryViewModel
 import dagger.Binds
@@ -18,4 +19,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LibraryViewModel::class)
     abstract fun bindLibraryViewModel(libraryViewModel: LibraryViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EpisodeDetailsViewModel::class)
+    abstract fun bindEpisodeDetailsViewModel(
+        episodeDetailsViewModel: EpisodeDetailsViewModel
+    ): ViewModel
 }
