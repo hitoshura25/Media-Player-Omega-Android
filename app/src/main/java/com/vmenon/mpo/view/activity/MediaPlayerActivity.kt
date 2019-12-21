@@ -19,6 +19,7 @@ import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
@@ -36,6 +37,9 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     @Inject
     lateinit var repository: MPORepository
+
+    @Inject
+    lateinit var episodeRepository: EpisodeRepository
 
     @Inject
     lateinit var player: MPOPlayer
@@ -95,17 +99,20 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                     requestedMediaId?.let {
                         val mediaType = MediaHelper.getMediaTypeFromMediaId(it)
                         when (mediaType?.mediaType) {
-                            MediaHelper.MEDIA_TYPE_EPISODE -> repository.getLiveEpisode(mediaType.id).observe(
-                                this@MediaPlayerActivity,
-                                Observer { episode ->
-                                    this@MediaPlayerActivity.episode = episode
-                                    repository.getLiveShow(episode!!.showId).observe(
-                                        this@MediaPlayerActivity,
-                                        Observer { show ->
-                                            this@MediaPlayerActivity.show = show
-                                            updateUIFromMedia()
-                                        })
-                                })
+                            MediaHelper.MEDIA_TYPE_EPISODE -> {
+                                episodeRepository.getEpisode(mediaType.id)
+                                    .firstElement()
+                                    .subscribe {
+                                        repository.getLiveShow(episode.showId).observe(
+                                            this@MediaPlayerActivity,
+                                            Observer { show ->
+                                                this@MediaPlayerActivity.show = show
+                                                updateUIFromMedia()
+                                            })
+                                    }
+                            }
+                            else -> {
+                            }
                         }
                     }
                 }

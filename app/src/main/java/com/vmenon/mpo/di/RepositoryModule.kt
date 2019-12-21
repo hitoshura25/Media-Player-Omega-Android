@@ -5,6 +5,7 @@ import com.vmenon.mpo.core.persistence.EpisodeDao
 import com.vmenon.mpo.core.persistence.ShowDao
 import com.vmenon.mpo.core.persistence.ShowSearchResultDao
 import com.vmenon.mpo.core.repository.DownloadRepository
+import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.core.repository.ShowSearchRepository
 import com.vmenon.mpo.service.MediaPlayerOmegaService
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Provides
     @Singleton
-    internal fun provideMPORepository(
+    fun provideMPORepository(
         service: MediaPlayerOmegaService,
         showDao: ShowDao, episodeDao: EpisodeDao
     ): MPORepository {
@@ -29,7 +30,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    internal fun provideShowSearchRepository(
+    fun provideShowSearchRepository(
         service: MediaPlayerOmegaService,
         showSearchResultDao: ShowSearchResultDao
     ): ShowSearchRepository {
@@ -41,6 +42,11 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    internal fun provideDownloadRepository(downloadDao: DownloadDao) =
+    fun provideDownloadRepository(downloadDao: DownloadDao) =
         DownloadRepository(downloadDao)
+
+    @Provides
+    @Singleton
+    fun provideEpisodeRepository(episodeDao: EpisodeDao) =
+        EpisodeRepository(episodeDao)
 }

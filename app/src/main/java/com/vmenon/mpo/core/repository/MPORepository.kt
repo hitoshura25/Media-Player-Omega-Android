@@ -25,9 +25,6 @@ class MPORepository(
     private val mainThreadExecutor =
         MainThreadExecutor()
 
-    val allEpisodes: LiveData<List<EpisodeModel>>
-        get() = episodeDao.load()
-
     // Listener used to signal data being fetched. Workaround for cases where LiveData cannot be used
     // i.e., in MediaBrowserService instances as they don't extend LifeCycleService
     interface DataHandler<T> {
@@ -71,28 +68,12 @@ class MPORepository(
         return showDao.loadSubscribedLastUpdatedBefore(compareTime)
     }
 
-    fun getLiveEpisode(id: Long): LiveData<EpisodeModel> {
-        // TODO: Cache
-        return episodeDao.liveById(id)
-    }
-
     fun fetchEpisode(id: Long, dataHandler: DataHandler<EpisodeModel>) {
         // TODO: Implement cache
         discExecutor.execute {
-            val episode = episodeDao.byId(id)
+            val episode = episodeDao.byId(id).firstElement().blockingGet()
             mainThreadExecutor.execute { dataHandler.onDataReady(episode) }
         }
-    }
-
-    fun save(episode: EpisodeModel): Single<EpisodeModel> = Single.create { emitter ->
-        emitter.onSuccess(
-            if (episode.id == 0L) {
-                episode.copy(id = episodeDao.insert(episode))
-            } else {
-                episodeDao.update(episode)
-                episode
-            }
-        )
     }
 
     private class MainThreadExecutor : Executor {

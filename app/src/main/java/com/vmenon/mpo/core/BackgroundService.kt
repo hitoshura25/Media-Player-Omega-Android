@@ -25,6 +25,7 @@ import javax.inject.Inject
 
 import androidx.core.app.NotificationCompat
 import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.model.EpisodeModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -41,6 +42,9 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     @Inject
     lateinit var mpoRepository: MPORepository
+
+    @Inject
+    lateinit var episodeRepository: EpisodeRepository
 
     private val subscriptions = CompositeDisposable()
 
@@ -108,7 +112,7 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             episode.artworkUrl = show.showDetails.artworkUrl
         }
 
-        subscriptions.add(mpoRepository.save(
+        subscriptions.add(episodeRepository.save(
             EpisodeModel(
                 name = episode.name,
                 artworkUrl = episode.artworkUrl,

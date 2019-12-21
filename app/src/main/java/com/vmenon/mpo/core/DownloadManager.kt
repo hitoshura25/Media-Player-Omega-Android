@@ -9,6 +9,7 @@ import android.os.Message
 import android.util.Log
 import android.webkit.URLUtil
 import com.vmenon.mpo.core.repository.DownloadRepository
+import com.vmenon.mpo.core.repository.EpisodeRepository
 
 import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.event.DownloadUpdateEvent
@@ -31,7 +32,8 @@ import java.util.concurrent.*
 class DownloadManager(
     private val context: Context,
     private val mpoRepository: MPORepository,
-    private val downloadRepository: DownloadRepository
+    private val downloadRepository: DownloadRepository,
+    private val episodeRepository: EpisodeRepository
 ) {
 
     private val handler: Handler
@@ -76,7 +78,7 @@ class DownloadManager(
                     )
                 ).blockingGet()
 
-                val savedEpisode = mpoRepository.save(
+                val savedEpisode = episodeRepository.save(
                     EpisodeModel(
                         name = episode.name,
                         artworkUrl = episode.artworkUrl,
@@ -129,7 +131,7 @@ class DownloadManager(
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             episode.filename = episodeFile.path
-            mpoRepository.save(episode).blockingGet()
+            episodeRepository.save(episode).blockingGet()
 
             try {
                 val url = URL(episode.downloadUrl)

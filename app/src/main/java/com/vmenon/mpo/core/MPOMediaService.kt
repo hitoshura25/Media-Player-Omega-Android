@@ -720,6 +720,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                 if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType?.mediaType) {
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
+
                     mpoRepository.fetchEpisode(
                         mediaType.id, EpisodeDataHandler(
                             this@MPOMediaService, mediaId

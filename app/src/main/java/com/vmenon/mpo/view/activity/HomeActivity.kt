@@ -16,7 +16,6 @@ import com.vmenon.mpo.core.BackgroundService
 import com.vmenon.mpo.core.repository.MPORepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.HomeViewModel
-import com.vmenon.mpo.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 import javax.inject.Inject
