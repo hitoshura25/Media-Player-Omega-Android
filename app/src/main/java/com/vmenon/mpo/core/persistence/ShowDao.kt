@@ -9,6 +9,7 @@ import com.vmenon.mpo.model.ShowModel
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Update
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 
 @Dao
 interface ShowDao {
@@ -17,7 +18,7 @@ interface ShowDao {
     fun getById(id: Long): Flowable<ShowModel>
 
     @Query("SELECT * FROM show where name = :name")
-    fun getByName(name: String): Flowable<ShowModel>
+    fun getByName(name: String): Maybe<ShowModel>
 
     @Insert
     fun insert(show: ShowModel): Long
