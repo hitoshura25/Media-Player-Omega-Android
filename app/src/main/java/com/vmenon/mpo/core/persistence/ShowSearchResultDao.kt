@@ -4,6 +4,7 @@ import androidx.room.*
 import com.vmenon.mpo.model.ShowSearchModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 
 @Dao
 interface ShowSearchResultDao {
@@ -24,10 +25,10 @@ interface ShowSearchResultDao {
     fun saveSearchResults(searchResults: List<ShowSearchResultsModel>): List<Long>
 
     @Query("SELECT * FROM showSearch WHERE searchTerm=:searchTerm")
-    fun getSearchForTerm(searchTerm: String): ShowSearchModel?
+    fun getSearchForTerm(searchTerm: String): Maybe<ShowSearchModel>
 
     @Query("SELECT * FROM showSearchResults WHERE id = :id")
-    fun getSearchResultById(id: Long): ShowSearchResultsModel
+    fun getSearchResultById(id: Long): Flowable<ShowSearchResultsModel>
 
     @Query("DELETE FROM showSearch WHERE id = :id")
     fun deleteShowSearch(id: Long)

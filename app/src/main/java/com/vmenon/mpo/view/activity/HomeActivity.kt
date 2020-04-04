@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class HomeActivity : BaseDrawerActivity() {
 
-    lateinit var viewModel: HomeViewModel
+    private lateinit var viewModel: HomeViewModel
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main

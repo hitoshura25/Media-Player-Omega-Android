@@ -7,7 +7,6 @@ import com.vmenon.mpo.model.ShowSearchModel
 import com.vmenon.mpo.model.ShowSearchResultsModel
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 import io.reactivex.Flowable
-import io.reactivex.Single
 import java.util.concurrent.Executors
 
 class ShowSearchRepository(
@@ -16,14 +15,13 @@ class ShowSearchRepository(
 ) {
     private val discExecutor = Executors.newSingleThreadExecutor()
 
-    fun getSearchResultById(id: Long): Single<ShowSearchResultsModel> = Single.create { emitter ->
-        emitter.onSuccess(showSearchResultDao.getSearchResultById(id))
-    }
+    fun getSearchResultById(id: Long): Flowable<ShowSearchResultsModel> =
+        showSearchResultDao.getSearchResultById(id)
 
     fun searchShows(keyword: String): Flowable<List<ShowSearchResultsModel>> {
         discExecutor.submit {
             val shows = service.searchPodcasts(keyword).blockingFirst()
-            val showSearch = showSearchResultDao.getSearchForTerm(keyword)
+            val showSearch = showSearchResultDao.getSearchForTerm(keyword).blockingGet()
             val showSearchId: Long
             if (showSearch != null) {
                 showSearchId = showSearch.id

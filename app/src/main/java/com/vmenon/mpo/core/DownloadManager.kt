@@ -105,11 +105,11 @@ class DownloadManager(
             showId = show.id,
             episodeId = episode.id
         )
-        subscriptions.add(downloadRepository.save(download).ignoreElement()
+        subscriptions.add(downloadRepository.save(download)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                startDownload(show, episode, download)
+            .subscribe { savedDownload ->
+                startDownload(show, episode, savedDownload)
                 Log.d("MPO", "Queued download: " + episode.downloadUrl)
             }
         )
@@ -165,6 +165,7 @@ class DownloadManager(
                 } while (count != -1)
 
                 output.flush()
+                downloadRepository.deleteDownload(download.id).blockingAwait()
             } catch (e: Exception) {
                 Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e)
             } finally {

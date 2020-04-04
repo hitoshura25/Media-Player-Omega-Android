@@ -47,7 +47,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     private var fromNotification = false
     private var requestedMediaId: String? = null
 
-
     private val updateProgressTask = Runnable { updateProgress() }
 
     private val executorService = Executors.newSingleThreadScheduledExecutor()

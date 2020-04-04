@@ -1,9 +1,7 @@
 package com.vmenon.mpo.di
 
 import androidx.lifecycle.ViewModel
-import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
-import com.vmenon.mpo.viewmodel.HomeViewModel
-import com.vmenon.mpo.viewmodel.LibraryViewModel
+import com.vmenon.mpo.viewmodel.*
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -26,4 +24,14 @@ abstract class ViewModelModule {
     abstract fun bindEpisodeDetailsViewModel(
         episodeDetailsViewModel: EpisodeDetailsViewModel
     ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ShowDetailsViewModel::class)
+    abstract fun bindShowDetailsViewModel(showDetailsViewModel: ShowDetailsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DownloadsViewModel::class)
+    abstract fun bindDownloadsViewModel(downloadsViewModel: DownloadsViewModel): ViewModel
 }

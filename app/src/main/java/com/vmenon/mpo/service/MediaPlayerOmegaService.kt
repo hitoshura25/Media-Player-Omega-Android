@@ -3,6 +3,7 @@ package com.vmenon.mpo.service
 import com.vmenon.mpo.api.Episode
 import com.vmenon.mpo.api.Show
 import com.vmenon.mpo.api.ShowDetails
+import io.reactivex.Flowable
 
 import io.reactivex.Observable
 import retrofit2.http.GET
@@ -17,7 +18,7 @@ interface MediaPlayerOmegaService {
     fun getPodcastDetails(
         @Query("feedUrl") feedUrl: String,
         @Query("maxEpisodes") maxEpisodes: Int
-    ): Observable<ShowDetails>
+    ): Flowable<ShowDetails>
 
     @GET("podcastupdate")
     fun getPodcastUpdate(
