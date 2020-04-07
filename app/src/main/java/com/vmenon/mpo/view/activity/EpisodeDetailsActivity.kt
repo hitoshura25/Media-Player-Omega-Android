@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.widget.ImageView
-import androidx.lifecycle.ViewModelProviders
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
@@ -17,10 +16,12 @@ import kotlinx.android.synthetic.main.activity_episode_details.*
 import java.text.DateFormat
 
 import java.util.Date
+import javax.inject.Inject
 
 class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
-    private lateinit var viewModel: EpisodeDetailsViewModel
+    @Inject
+    lateinit var viewModel: EpisodeDetailsViewModel
 
     private var episodeId: Long = -1
     private var show: ShowModel? = null
@@ -52,10 +53,6 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appBarImage = findViewById(R.id.appBarImage)
-        viewModel = ViewModelProviders.of(
-            this,
-            viewModelFactory
-        )[EpisodeDetailsViewModel::class.java]
     }
 
     override fun onStart() {

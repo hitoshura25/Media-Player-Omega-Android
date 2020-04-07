@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
 import android.widget.SeekBar
-import androidx.lifecycle.ViewModelProviders
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.Constants
@@ -36,7 +35,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     @Inject
     lateinit var player: MPOPlayer
 
-    private lateinit var viewModel: EpisodeDetailsViewModel
+    @Inject
+    lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
     private lateinit var episode: EpisodeModel
@@ -141,10 +141,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(
-            this,
-            viewModelFactory
-        )[EpisodeDetailsViewModel::class.java]
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true

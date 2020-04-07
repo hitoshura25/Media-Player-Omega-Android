@@ -74,8 +74,6 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             drawer_layout.closeDrawers()
             true
         }
-
-
     }
 
     override fun onStart() {

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 
 import android.util.Log
 import android.view.Menu
-import androidx.lifecycle.ViewModelProviders
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
@@ -16,10 +15,12 @@ import com.vmenon.mpo.core.BackgroundService
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class HomeActivity : BaseDrawerActivity() {
 
-    private lateinit var viewModel: HomeViewModel
+    @Inject
+    lateinit var viewModel: HomeViewModel
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main
@@ -36,7 +37,6 @@ class HomeActivity : BaseDrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, viewModelFactory)[HomeViewModel::class.java]
         setTitle(R.string.shows)
         BackgroundService.setupSchedule(this)
         showList.setHasFixedSize(true)

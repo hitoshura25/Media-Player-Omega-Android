@@ -38,8 +38,6 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
         val layoutManager = LinearLayoutManager(this)
         showList.layoutManager = layoutManager
         showList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-
-        //handleIntent(intent)
     }
 
     override fun onStart() {
