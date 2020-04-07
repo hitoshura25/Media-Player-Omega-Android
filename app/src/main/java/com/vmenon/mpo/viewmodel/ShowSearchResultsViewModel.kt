@@ -1,0 +1,18 @@
+package com.vmenon.mpo.viewmodel
+
+import androidx.lifecycle.ViewModel
+import com.vmenon.mpo.core.SchedulerProvider
+import com.vmenon.mpo.core.repository.ShowSearchRepository
+import com.vmenon.mpo.model.ShowSearchResultsModel
+import io.reactivex.Flowable
+import javax.inject.Inject
+
+class ShowSearchResultsViewModel @Inject constructor(
+    private val showSearchRepository: ShowSearchRepository,
+    private val schedulerProvider: SchedulerProvider
+) : ViewModel() {
+    fun searchShows(keyword: String): Flowable<List<ShowSearchResultsModel>> =
+        showSearchRepository.searchShows(keyword)
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.main())
+}

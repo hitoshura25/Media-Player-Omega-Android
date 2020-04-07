@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProviders
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
@@ -19,12 +18,7 @@ import java.text.DateFormat
 
 import java.util.Date
 
-import javax.inject.Inject
-
 class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
-
-    @Inject
-    lateinit var episodeRepository: EpisodeRepository
 
     private lateinit var viewModel: EpisodeDetailsViewModel
 

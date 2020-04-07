@@ -3,6 +3,7 @@ package com.vmenon.mpo.view.activity
 import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.ShowSearchResultsAdapter
@@ -11,18 +12,15 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.core.repository.ShowSearchRepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.ShowSearchResultsModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subscribers.ResourceSubscriber
+import com.vmenon.mpo.viewmodel.ShowSearchResultsViewModel
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
 class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
 
     @Inject
-    lateinit var showSearchRepository: ShowSearchRepository
+    lateinit var showSearchResultsViewModel: ShowSearchResultsViewModel
 
     override fun inject(appComponent: AppComponent) {
         appComponent.inject(this)
@@ -41,6 +39,11 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
         showList.layoutManager = layoutManager
         showList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
+        //handleIntent(intent)
+    }
+
+    override fun onStart() {
+        super.onStart()
         handleIntent(intent)
     }
 
@@ -55,27 +58,17 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
             val query = intent.getStringExtra(SearchManager.QUERY)
             title = this.getString(R.string.show_search_title, query)
 
-            showSearchRepository.searchShows(query)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : ResourceSubscriber<List<ShowSearchResultsModel>>() {
-                    override fun onNext(shows: List<ShowSearchResultsModel>?) {
-                        shows?.let {
-                            val adapter = ShowSearchResultsAdapter(shows)
-                            adapter.setListener(this@ShowSearchResultsActivity)
-                            showList.adapter = adapter
-                        }
-                    }
-
-                    override fun onComplete() {
-                    }
-
-                    override fun onError(t: Throwable?) {
-                    }
-                })
+            subscriptions.add(
+                showSearchResultsViewModel.searchShows(query).subscribe(
+                    { shows ->
+                        val adapter = ShowSearchResultsAdapter(shows)
+                        adapter.setListener(this@ShowSearchResultsActivity)
+                        showList.adapter = adapter
+                    },
+                    { error -> Log.w("MPO", "Error search for shows", error) }
+                )
+            )
 
         }
     }
-
-
 }

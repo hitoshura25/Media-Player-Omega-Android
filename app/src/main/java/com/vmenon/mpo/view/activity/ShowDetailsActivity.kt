@@ -20,8 +20,6 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.core.DownloadManager
-import com.vmenon.mpo.core.repository.ShowRepository
-import com.vmenon.mpo.core.repository.ShowSearchRepository
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowDetailsAndEpisodesModel
@@ -34,12 +32,6 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     @Inject
     lateinit var service: MediaPlayerOmegaService
-
-    @Inject
-    lateinit var showRepository: ShowRepository
-
-    @Inject
-    lateinit var searchRepository: ShowSearchRepository
 
     @Inject
     lateinit var downloadManager: DownloadManager
