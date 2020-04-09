@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
-    tools:context=".activity.ShowSearchResultsActivity">
+    tools:context=".view.activity.ShowSearchResultsActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/showList"

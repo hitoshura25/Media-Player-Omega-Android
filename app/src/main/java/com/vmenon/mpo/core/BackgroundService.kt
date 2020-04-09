@@ -15,7 +15,6 @@ import android.util.Log
 
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.core.persistence.MPORepository
 import com.vmenon.mpo.core.receiver.AlarmReceiver
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 
@@ -25,6 +24,8 @@ import javax.inject.Inject
 
 import androidx.core.app.NotificationCompat
 import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.core.repository.EpisodeRepository
+import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -40,7 +41,13 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
     lateinit var downloadManager: DownloadManager
 
     @Inject
-    lateinit var mpoRepository: MPORepository
+    lateinit var episodeRepository: EpisodeRepository
+
+    @Inject
+    lateinit var showRepository: ShowRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     private val subscriptions = CompositeDisposable()
 
@@ -76,14 +83,25 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
     override fun onHandleIntent(intent: Intent) {
         if (ACTION_UPDATE == intent.action) {
             Log.d("MPO", "Calling update...")
-            val shows = mpoRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
-            for (show in shows) {
-                Log.d(
-                    "MPO", "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
-                            + show.lastEpisodePublished
+            subscriptions.add(showRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.main())
+                .subscribe(
+                    { shows ->
+                        for (show in shows) {
+                            Log.d(
+                                "MPO",
+                                "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
+                                        + show.lastEpisodePublished
+                            )
+                            fetchShowUpdate(show, show.lastEpisodePublished)
+                        }
+                    },
+                    { error ->
+
+                    }
                 )
-                fetchShowUpdate(show, show.lastEpisodePublished)
-            }
+            )
         }
     }
 
@@ -108,7 +126,7 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             episode.artworkUrl = show.showDetails.artworkUrl
         }
 
-        subscriptions.add(mpoRepository.save(
+        subscriptions.add(episodeRepository.save(
             EpisodeModel(
                 name = episode.name,
                 artworkUrl = episode.artworkUrl,
@@ -128,7 +146,7 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
                     show.lastUpdate = Date().time
                     show.lastEpisodePublished = episode.published
 
-                    subscriptions.add(mpoRepository.save(show)
+                    subscriptions.add(showRepository.save(show)
                         .ignoreElement()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())

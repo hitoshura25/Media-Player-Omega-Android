@@ -21,7 +21,7 @@ data class EpisodeModel(
     val type: String,
     val downloadUrl: String,
     val length: Long,
-    val artworkUrl: String,
+    val artworkUrl: String?,
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val showId: Long,
     var filename: String

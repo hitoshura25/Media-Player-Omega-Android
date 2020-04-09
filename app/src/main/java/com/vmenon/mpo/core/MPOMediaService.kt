@@ -30,11 +30,14 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
-import com.vmenon.mpo.activity.MediaPlayerActivity
-import com.vmenon.mpo.core.persistence.MPORepository
+import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.core.repository.EpisodeRepository
+import com.vmenon.mpo.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
+import io.reactivex.disposables.CompositeDisposable
 
 import java.io.File
 import java.lang.ref.WeakReference
@@ -46,10 +49,18 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     AudioManager.OnAudioFocusChangeListener {
 
     @Inject
-    lateinit var mpoRepository: MPORepository
+    lateinit var episodeRepository: EpisodeRepository
+
+    @Inject
+    lateinit var showRepository: ShowRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     @Inject
     lateinit var player: MPOPlayer
+
+    private val subscriptions = CompositeDisposable()
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
@@ -719,10 +730,26 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                 if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType?.mediaType) {
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
-                    mpoRepository.fetchEpisode(
-                        mediaType.id, EpisodeDataHandler(
-                            this@MPOMediaService, mediaId
-                        )
+
+                    subscriptions.add(episodeRepository.getEpisode(mediaType.id).firstElement()
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.main())
+                        .subscribe { episode ->
+                            subscriptions.add(
+                                showRepository.getShow(episode.showId).firstElement()
+                                    .subscribeOn(schedulerProvider.io())
+                                    .observeOn(schedulerProvider.main())
+                                    .subscribe(
+                                        { show ->
+                                            playEpisode(mediaId, episode, show)
+                                        },
+                                        { error ->
+
+                                        }
+                                    )
+                            )
+                        }
+
                     )
                 } else {
                     Log.w("MPO", "Unable to determine how to play media id: $mediaId")
@@ -766,30 +793,6 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private class EpisodeDataHandler internal constructor(
-        service: MPOMediaService,
-        internal var mediaId: String
-    ) : MPORepository.DataHandler<EpisodeModel> {
-        internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
-
-        override fun onDataReady(data: EpisodeModel) {
-            val service = serviceRef.get()
-            service?.mpoRepository?.fetchShow(data.showId, ShowDataHandler(service, mediaId, data))
-        }
-    }
-
-    private class ShowDataHandler internal constructor(
-        service: MPOMediaService,
-        internal var mediaId: String,
-        internal var episode: EpisodeModel
-    ) : MPORepository.DataHandler<ShowModel> {
-        internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
-
-        override fun onDataReady(data: ShowModel) {
-            val service = serviceRef.get()
-            service?.playEpisode(mediaId, episode, data)
-        }
-    }
 
     private class ArtworkTarget internal constructor(
         service: MPOMediaService,

@@ -1,14 +1,23 @@
 package com.vmenon.mpo.model
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
-@Entity(indices = [Index(value = ["name"], unique = true)], tableName = "showSearchResults")
+@Entity(
+    indices = [
+        Index(value = ["name"], unique = true),
+        Index("showSearchId")
+    ],
+    tableName = "showSearchResults",
+    foreignKeys = [ForeignKey(
+        entity = ShowSearchModel::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("showSearchId")
+    )]
+)
 data class ShowSearchResultsModel(
     @Embedded
     val showDetails: ShowDetailsModel,
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L
+    val id: Long = 0L,
+    val showSearchId: Long
 )
