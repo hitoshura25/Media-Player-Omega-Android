@@ -40,7 +40,10 @@ class DownloadsAdapter(private val downloads: List<DownloadListItem>) :
         holder.download = download
         holder.nameText.text = download.episode.name
 
-        var progress = download.download.progress * 1.0 / download.download.total
+        var progress: Double =
+            if (download.download.total == 0) 0.0
+            else download.download.progress * 1.0 / download.download.total
+
         progress *= 100.0
         holder.progressText.text = "${progress.roundToLong()}%"
 

@@ -57,14 +57,27 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
             title = this.getString(R.string.show_search_title, query)
 
             subscriptions.add(
-                showSearchResultsViewModel.searchShows(query).subscribe(
-                    { shows ->
-                        val adapter = ShowSearchResultsAdapter(shows)
-                        adapter.setListener(this@ShowSearchResultsActivity)
-                        showList.adapter = adapter
-                    },
-                    { error -> Log.w("MPO", "Error search for shows", error) }
-                )
+                showSearchResultsViewModel.searchShows(query)
+                    .subscribe(
+                        {
+
+                        },
+                        {
+
+                        }
+                    )
+            )
+
+            subscriptions.add(
+                showSearchResultsViewModel.getShowSearchResultsForTerm(query)
+                    .subscribe(
+                        { shows ->
+                            val adapter = ShowSearchResultsAdapter(shows)
+                            adapter.setListener(this@ShowSearchResultsActivity)
+                            showList.adapter = adapter
+                        },
+                        { error -> Log.w("MPO", "Error search for shows", error) }
+                    )
             )
 
         }

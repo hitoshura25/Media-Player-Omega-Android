@@ -30,8 +30,8 @@ abstract class BaseActivity : AppCompatActivity() {
         subscriptions = CompositeDisposable()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         subscriptions.clear()
     }
 }

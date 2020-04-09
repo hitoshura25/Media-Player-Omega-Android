@@ -14,12 +14,10 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.EpisodesAdapter
-import com.vmenon.mpo.service.MediaPlayerOmegaService
 
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.core.DownloadManager
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowDetailsAndEpisodesModel
@@ -29,12 +27,6 @@ import kotlinx.android.synthetic.main.show_details_container.*
 
 class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
-
-    @Inject
-    lateinit var service: MediaPlayerOmegaService
-
-    @Inject
-    lateinit var downloadManager: DownloadManager
 
     @Inject
     lateinit var showDetailsViewModel: ShowDetailsViewModel
@@ -169,7 +161,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     override fun onDownloadEpisode(episode: EpisodeModel) {
         show?.let {
-            downloadManager.queueDownload(it.showDetails, episode)
+            showDetailsViewModel.queueDownload(it.showDetails, episode)
         }
     }
 }
