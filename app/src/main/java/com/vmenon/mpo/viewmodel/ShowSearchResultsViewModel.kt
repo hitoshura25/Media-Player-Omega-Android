@@ -25,8 +25,11 @@ class ShowSearchResultsViewModel @Inject constructor(
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
-    fun getDiff(callback: DiffUtil.Callback) : Single<DiffUtil.DiffResult> =
-        Single.just(DiffUtil.calculateDiff(callback))
+    fun getDiff(
+        newSearchResults: List<ShowSearchResultsModel>,
+        callback: DiffUtil.Callback
+    ): Single<Pair<List<ShowSearchResultsModel>, DiffUtil.DiffResult>> =
+        Single.just(Pair(newSearchResults, DiffUtil.calculateDiff(callback)))
             .subscribeOn(schedulerProvider.computation())
             .observeOn(schedulerProvider.main())
 }

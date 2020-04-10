@@ -78,24 +78,18 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
             subscriptions.add(
                 showSearchResultsViewModel.getShowSearchResultsForTerm(query)
+                    .flatMapSingle { showSearchResultsViewModel.getDiff(
+                        it,
+                        ShowSearchResultsDiff(searchResults, it)
+                    )}
                     .subscribe(
-                        { shows ->
-                            getDiffAndUpdateAdapter(shows)
+                        { showsAndDiff ->
+                            this.searchResults = showsAndDiff.first
+                            adapter.update(this.searchResults, showsAndDiff.second)
                         },
                         { error -> Log.w("MPO", "Error search for shows", error) }
                     )
             )
         }
-    }
-
-    private fun getDiffAndUpdateAdapter(newSearchResults: List<ShowSearchResultsModel>) {
-        subscriptions.add(
-            showSearchResultsViewModel.getDiff(
-                ShowSearchResultsDiff(searchResults, newSearchResults)
-            ).subscribe { diffResult ->
-                this.searchResults = newSearchResults
-                adapter.update(newSearchResults, diffResult)
-            }
-        )
     }
 }
