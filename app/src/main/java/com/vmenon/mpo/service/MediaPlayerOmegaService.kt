@@ -3,6 +3,7 @@ package com.vmenon.mpo.service
 import com.vmenon.mpo.api.Episode
 import com.vmenon.mpo.api.Show
 import com.vmenon.mpo.api.ShowDetails
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 import retrofit2.http.GET
@@ -23,5 +24,5 @@ interface MediaPlayerOmegaService {
     fun getPodcastUpdate(
         @Query("feedUrl") feedUrl: String,
         @Query("publishTimestamp") lastEpisodePublishTime: Long
-    ): Single<Episode>
+    ): Maybe<Episode>
 }

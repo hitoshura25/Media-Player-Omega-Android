@@ -27,7 +27,6 @@ import com.vmenon.mpo.api.Episode
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
-import io.reactivex.disposables.CompositeDisposable
 
 class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
@@ -45,8 +44,6 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
-
-    private val subscriptions = CompositeDisposable()
 
     override fun onCreate() {
         super.onCreate()
@@ -72,50 +69,28 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        //subscriptions.clear()
-    }
-
     override fun onHandleIntent(intent: Intent) {
         if (ACTION_UPDATE == intent.action) {
             Log.d("MPO", "Calling update...")
-            subscriptions.add(showRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.main())
-                .subscribe(
-                    { shows ->
-                        for (show in shows) {
-                            Log.d(
-                                "MPO",
-                                "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
-                                        + show.lastEpisodePublished
-                            )
-                            fetchShowUpdate(show, show.lastEpisodePublished)
-                        }
-                    },
-                    { error ->
-
-                    }
-                )
-            )
+            showRepository.notUpdatedInLast((1000 * 60 * 5).toLong()).blockingGet()
+                ?.forEach { show ->
+                    Log.d(
+                        "MPO",
+                        "Got saved show: " + show.showDetails.name + ", " + show.showDetails.feedUrl + ", "
+                                + show.lastEpisodePublished
+                    )
+                    fetchShowUpdate(show, show.lastEpisodePublished)
+                }
         }
     }
 
     private fun fetchShowUpdate(show: ShowModel, lastEpisodePublished: Long) {
-        subscriptions.add(
-            service.getPodcastUpdate(show.showDetails.feedUrl, lastEpisodePublished)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.main())
-                .subscribe(
-                    { episode ->
-                        saveEpisodeAndQueueDownload(show, episode)
-                    },
-                    { error ->
-                        Log.w("MPO", "Error getting show update", error)
-                    }
-                )
-        )
+        service.getPodcastUpdate(
+            show.showDetails.feedUrl,
+            lastEpisodePublished
+        ).blockingGet()?.let { episode ->
+            saveEpisodeAndQueueDownload(show, episode)
+        }
     }
 
     private fun saveEpisodeAndQueueDownload(show: ShowModel, episode: Episode) {
@@ -123,7 +98,7 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
             episode.artworkUrl = show.showDetails.artworkUrl
         }
 
-        subscriptions.add(episodeRepository.save(
+        episodeRepository.save(
             EpisodeModel(
                 name = episode.name,
                 artworkUrl = episode.artworkUrl,
@@ -135,28 +110,12 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
                 showId = show.id,
                 type = episode.type
             )
-        ).subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
-            .subscribe(
-                { savedEpisode ->
-                    downloadManager.queueDownload(show, savedEpisode)
-                    show.lastUpdate = Date().time
-                    show.lastEpisodePublished = episode.published
-
-                    subscriptions.add(showRepository.save(show)
-                        .ignoreElement()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.main())
-                        .subscribe {
-
-                        }
-                    )
-                },
-                { error ->
-                    error.printStackTrace()
-                }
-            )
-        )
+        ).blockingGet().let { savedEpisode ->
+            downloadManager.queueDownload(show, savedEpisode)
+            show.lastUpdate = Date().time
+            show.lastEpisodePublished = episode.published
+            showRepository.save(show).ignoreElement().blockingAwait()
+        }
     }
 
     companion object {
