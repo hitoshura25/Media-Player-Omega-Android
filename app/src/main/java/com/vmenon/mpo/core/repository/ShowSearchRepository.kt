@@ -95,6 +95,7 @@ class ShowSearchRepository(
 
     class SearchResultsProcessorCache :
         LruCache<String, PublishProcessor<List<ShowSearchResultsModel>>>(5) {
-        override fun create(key: String?): PublishProcessor<List<ShowSearchResultsModel>> = PublishProcessor.create()
+        override fun create(key: String?): PublishProcessor<List<ShowSearchResultsModel>> =
+            PublishProcessor.create()
     }
 }
