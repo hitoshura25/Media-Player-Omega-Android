@@ -3,6 +3,7 @@ package com.vmenon.mpo.core.repository
 import com.vmenon.mpo.core.persistence.ShowDao
 import com.vmenon.mpo.model.ShowModel
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import java.util.*
 
@@ -29,7 +30,7 @@ class ShowRepository(private val showDao: ShowDao) {
         )
     }
 
-    fun notUpdatedInLast(interval: Long): Flowable<List<ShowModel>> {
+    fun notUpdatedInLast(interval: Long): Maybe<List<ShowModel>> {
         val compareTime = Date().time - interval
         return showDao.loadSubscribedLastUpdatedBefore(compareTime)
     }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1f41fedb90a818f67af5d845d46a6b59",
+    "identityHash": "183d2e37f0971c92a466c48a9abad9b5",
     "entities": [
       {
         "tableName": "show",
@@ -267,11 +267,11 @@
         "indices": [
           {
             "name": "index_showSearchResults_name",
-            "unique": true,
+            "unique": false,
             "columnNames": [
               "name"
             ],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_showSearchResults_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_name` ON `${TABLE_NAME}` (`name`)"
           },
           {
             "name": "index_showSearchResults_showSearchId",
@@ -384,7 +384,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f41fedb90a818f67af5d845d46a6b59')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '183d2e37f0971c92a466c48a9abad9b5')"
     ]
   }
 }

@@ -14,6 +14,7 @@ interface ShowSearchResultDao {
         FROM showSearchResults 
         INNER JOIN showSearch ON showSearchId = showSearch.id 
         WHERE showSearch.searchTerm = :searchTerm
+        ORDER BY showSearchResults.name
         """
     )
     fun loadSearchResults(searchTerm: String): Flowable<List<ShowSearchResultsModel>>

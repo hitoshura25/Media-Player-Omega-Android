@@ -110,7 +110,7 @@ class DownloadManager(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { savedDownload ->
                 startDownload(show, episode, savedDownload)
-                Log.d("MPO", "Queued download: " + episode.downloadUrl)
+                Log.d("MPO", "Queued download: $download, ${episode.downloadUrl}")
             }
         )
     }

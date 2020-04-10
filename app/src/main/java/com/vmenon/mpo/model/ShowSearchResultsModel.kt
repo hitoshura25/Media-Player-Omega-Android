@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Entity(
     indices = [
-        Index(value = ["name"], unique = true),
+        Index(value = ["name"]),
         Index("showSearchId")
     ],
     tableName = "showSearchResults",

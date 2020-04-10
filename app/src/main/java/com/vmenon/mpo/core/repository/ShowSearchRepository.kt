@@ -1,18 +1,25 @@
 package com.vmenon.mpo.core.repository
 
 import android.util.Log
+import android.util.LruCache
 import com.vmenon.mpo.core.persistence.ShowSearchResultDao
 import com.vmenon.mpo.model.*
 import com.vmenon.mpo.service.MediaPlayerOmegaService
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.processors.PublishProcessor
 
 class ShowSearchRepository(
     private val service: MediaPlayerOmegaService,
     private val showSearchResultDao: ShowSearchResultDao
 ) {
-    fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultsModel>> =
-        showSearchResultDao.loadSearchResults(term)
+    private val showSearchResultsProcessors = SearchResultsProcessorCache()
+
+    fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultsModel>> {
+        return showSearchResultsProcessors[term].startWith(
+            showSearchResultDao.loadSearchResults(term).firstElement().toFlowable()
+        )
+    }
 
     fun getShowDetails(showSearchResultId: Long): Flowable<ShowDetailsAndEpisodesModel> =
         showSearchResultDao.getSearchResultById(
@@ -34,7 +41,8 @@ class ShowSearchRepository(
                     showSearchId = showSearchResultDao.saveSearch(newSearch)
                 }
                 val searchResults = ArrayList<ShowSearchResultsModel>()
-                shows.forEach { show ->
+                // TODO try sorting on server...
+                shows.sortedBy { it.name }.forEach { show ->
                     show.feedUrl?.let {
                         searchResults.add(
                             ShowSearchResultsModel(
@@ -49,9 +57,12 @@ class ShowSearchRepository(
                                 showSearchId = showSearchId
                             )
                         )
-                    } ?: Log.e("ShowSearchRepository", "FeedUrl null!")
+                    } ?: Log.e("ShowSearchRepository", "FeedUrl null! $show")
                 }
-                showSearchResultDao.saveSearchResults(searchResults)
+                showSearchResultDao.saveSearchResults(searchResults).forEachIndexed { index, id ->
+                    searchResults[index] = searchResults[index].copy(id = id)
+                }
+                showSearchResultsProcessors[keyword].offer(searchResults)
             }
         }
 
@@ -81,4 +92,9 @@ class ShowSearchRepository(
                     })
             )
         }
+
+    class SearchResultsProcessorCache :
+        LruCache<String, PublishProcessor<List<ShowSearchResultsModel>>>(5) {
+        override fun create(key: String?): PublishProcessor<List<ShowSearchResultsModel>> = PublishProcessor.create()
+    }
 }

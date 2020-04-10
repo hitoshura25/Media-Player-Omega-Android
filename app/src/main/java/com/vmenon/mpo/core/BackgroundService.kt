@@ -27,12 +27,9 @@ import com.vmenon.mpo.api.Episode
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
 class BackgroundService : IntentService(BackgroundService::class.java.name) {
-
 
     @Inject
     lateinit var service: MediaPlayerOmegaService
@@ -108,8 +105,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
     private fun fetchShowUpdate(show: ShowModel, lastEpisodePublished: Long) {
         subscriptions.add(
             service.getPodcastUpdate(show.showDetails.feedUrl, lastEpisodePublished)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.main())
                 .subscribe(
                     { episode ->
                         saveEpisodeAndQueueDownload(show, episode)
@@ -138,8 +135,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
                 showId = show.id,
                 type = episode.type
             )
-        ).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        ).subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.main())
             .subscribe(
                 { savedEpisode ->
                     downloadManager.queueDownload(show, savedEpisode)
@@ -148,8 +145,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
 
                     subscriptions.add(showRepository.save(show)
                         .ignoreElement()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.main())
                         .subscribe {
 
                         }

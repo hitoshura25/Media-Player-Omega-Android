@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.model.ShowSearchResultsModel
+import com.vmenon.mpo.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.viewmodel.ShowSearchResultsViewModel
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
@@ -21,6 +22,10 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     @Inject
     lateinit var showSearchResultsViewModel: ShowSearchResultsViewModel
+
+    lateinit var adapter: ShowSearchResultsAdapter
+
+    var searchResults: List<ShowSearchResultsModel> = emptyList()
 
     override fun inject(appComponent: AppComponent) {
         appComponent.inject(this)
@@ -38,6 +43,9 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
         val layoutManager = LinearLayoutManager(this)
         showList.layoutManager = layoutManager
         showList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        adapter = ShowSearchResultsAdapter()
+        adapter.setListener(this@ShowSearchResultsActivity)
+        showList.adapter = adapter
     }
 
     override fun onStart() {
@@ -72,14 +80,22 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
                 showSearchResultsViewModel.getShowSearchResultsForTerm(query)
                     .subscribe(
                         { shows ->
-                            val adapter = ShowSearchResultsAdapter(shows)
-                            adapter.setListener(this@ShowSearchResultsActivity)
-                            showList.adapter = adapter
+                            getDiffAndUpdateAdapter(shows)
                         },
                         { error -> Log.w("MPO", "Error search for shows", error) }
                     )
             )
-
         }
+    }
+
+    private fun getDiffAndUpdateAdapter(newSearchResults: List<ShowSearchResultsModel>) {
+        subscriptions.add(
+            showSearchResultsViewModel.getDiff(
+                ShowSearchResultsDiff(searchResults, newSearchResults)
+            ).subscribe { diffResult ->
+                this.searchResults = newSearchResults
+                adapter.update(newSearchResults, diffResult)
+            }
+        )
     }
 }
