@@ -69,8 +69,8 @@ class BackgroundService : IntentService(BackgroundService::class.java.name) {
         }
     }
 
-    override fun onHandleIntent(intent: Intent) {
-        if (ACTION_UPDATE == intent.action) {
+    override fun onHandleIntent(intent: Intent?) {
+        if (ACTION_UPDATE == intent?.action) {
             Log.d("MPO", "Calling update...")
             showRepository.notUpdatedInLast((1000 * 60 * 5).toLong()).blockingGet()
                 ?.forEach { show ->

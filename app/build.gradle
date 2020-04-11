@@ -4,18 +4,22 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.vmenon.mpo"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments = [
+                        "room.schemaLocation": "$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                ]
             }
         }
     }
@@ -48,19 +52,30 @@ dependencies {
     implementation "androidx.media:media:$mediaVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycleVersion"
-    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycleVersion"
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+
+    // alternately - if using Java8, use the following instead of lifecycle-compiler
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
+
+    // optional - helpers for implementing LifecycleOwner in a Service
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycleVersion"
+
+    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+
+    // optional - ReactiveStreams support for LiveData
+    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycleVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
-    annotationProcessor "androidx.room:room-compiler:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 
     implementation "androidx.room:room-rxjava2:$roomVersion"
     testImplementation "androidx.room:room-testing:$roomVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
@@ -83,7 +98,9 @@ dependencies {
     implementation 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.12'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    implementation 'com.android.support:multidex:1.0.3'
 }
 repositories {
     mavenCentral()
