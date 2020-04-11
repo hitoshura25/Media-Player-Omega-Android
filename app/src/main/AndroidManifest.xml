@@ -72,24 +72,10 @@
         <activity android:name="com.vmenon.mpo.view.activity.MediaPlayerActivity"
                   android:theme="@style/AppThemeNoActionBar"/>
 
-        <service
-            android:name=".core.BackgroundService"
-            android:exported="false" />
-
         <service android:name=".core.MPOMediaService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-
-        <receiver android:name=".core.receiver.AlarmReceiver" />
-        <receiver
-            android:name=".core.receiver.BootReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
     </application>
 </manifest>
