@@ -9,6 +9,7 @@ import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.core.repository.DownloadRepository
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.ShowRepository
+import com.vmenon.mpo.service.MediaPlayerOmegaService
 import com.vmenon.mpo.viewmodel.ViewModelFactory
 
 import javax.inject.Singleton
@@ -52,4 +53,18 @@ class AppModule(private val application: Application) {
     @Singleton
     @Provides
     fun provideSchedulerProvider(): SchedulerProvider = DefaultSchedulerProvider()
+
+    @Singleton
+    @Provides
+    fun provideShowUpdateManager(
+        service: MediaPlayerOmegaService,
+        episodeRepository: EpisodeRepository,
+        showRepository: ShowRepository,
+        downloadManager: DownloadManager
+    ): ShowUpdateManager = ShowUpdateManager(
+        service,
+        showRepository,
+        episodeRepository,
+        downloadManager
+    )
 }

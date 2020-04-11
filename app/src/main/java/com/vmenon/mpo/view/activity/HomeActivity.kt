@@ -11,7 +11,6 @@ import android.view.Menu
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
-import com.vmenon.mpo.core.BackgroundService
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +37,6 @@ class HomeActivity : BaseDrawerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.shows)
-        BackgroundService.setupSchedule(this)
         showList.setHasFixedSize(true)
         val gridLayoutManager = GridLayoutManager(this, 3)
         gridLayoutManager.orientation = GridLayoutManager.HORIZONTAL
