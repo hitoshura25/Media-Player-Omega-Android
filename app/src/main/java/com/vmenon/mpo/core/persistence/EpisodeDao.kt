@@ -8,6 +8,7 @@ import com.vmenon.mpo.model.EpisodeModel
 
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Update
+import com.vmenon.mpo.model.EpisodeAndShowModel
 import io.reactivex.Flowable
 
 @Dao
@@ -18,9 +19,20 @@ interface EpisodeDao {
     @Update(onConflict = REPLACE)
     fun update(episode: EpisodeModel)
 
-    @Query("SELECT * FROM episode")
-    fun load(): Flowable<List<EpisodeModel>>
+    @Query(
+        """
+        SELECT * from episode 
+        INNER JOIN show on episode.episodeShowId = show.showId
+        """
+    )
+    fun load(): Flowable<List<EpisodeAndShowModel>>
 
-    @Query("SELECT * from episode WHERE episodeId = :id")
-    fun byId(id: Long): Flowable<EpisodeModel>
+    @Query(
+        """
+        SELECT * from episode 
+        INNER JOIN show on episode.episodeShowId = show.showId
+        WHERE episodeId = :id
+        """
+    )
+    fun byIdWithShow(id: Long): Flowable<EpisodeAndShowModel>
 }

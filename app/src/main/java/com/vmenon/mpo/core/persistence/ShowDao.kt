@@ -13,10 +13,6 @@ import io.reactivex.Maybe
 
 @Dao
 interface ShowDao {
-
-    @Query("SELECT * FROM show where showId = :id")
-    fun getById(id: Long): Flowable<ShowModel>
-
     @Query("SELECT * FROM show where showName = :name")
     fun getByName(name: String): Maybe<ShowModel>
 

@@ -19,7 +19,7 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeDetailsModel
+import com.vmenon.mpo.model.EpisodeAndShowModel
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
@@ -38,7 +38,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
-    private lateinit var episode: EpisodeDetailsModel
+    private lateinit var episode: EpisodeAndShowModel
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false

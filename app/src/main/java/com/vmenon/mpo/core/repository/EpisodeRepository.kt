@@ -1,6 +1,7 @@
 package com.vmenon.mpo.core.repository
 
 import com.vmenon.mpo.core.persistence.EpisodeDao
+import com.vmenon.mpo.model.EpisodeAndShowModel
 import com.vmenon.mpo.model.EpisodeModel
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -17,7 +18,7 @@ class EpisodeRepository(private val episodeDao: EpisodeDao) {
         )
     }
 
-    fun getEpisode(id: Long): Flowable<EpisodeModel> = episodeDao.byId(id)
+    fun getAllEpisodes(): Flowable<List<EpisodeAndShowModel>> = episodeDao.load()
 
-    fun getAllEpisodes(): Flowable<List<EpisodeModel>> = episodeDao.load()
+    fun getEpisodeWithShow(id: Long): Flowable<EpisodeAndShowModel> = episodeDao.byIdWithShow(id)
 }

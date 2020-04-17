@@ -13,9 +13,6 @@ interface DownloadDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun update(download: DownloadModel)
 
-    @Query("SELECT * FROM downloads")
-    fun load(): Flowable<List<DownloadModel>>
-
     @Query(
         """
         SELECT * from downloads 

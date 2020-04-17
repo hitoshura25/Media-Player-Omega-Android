@@ -33,7 +33,6 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
-import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
@@ -50,9 +49,6 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     @Inject
     lateinit var episodeRepository: EpisodeRepository
-
-    @Inject
-    lateinit var showRepository: ShowRepository
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -105,7 +101,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             val action = intent.action
             val transportControls = mediaSession.controller
                 .transportControls
-            Log.d(TAG, "Received intent with action " + action)
+            Log.d(TAG, "Received intent with action $action")
             when (action) {
                 NOTIFICATION_ACTION_PAUSE -> transportControls.pause()
                 NOTIFICATION_ACTION_PLAY -> transportControls.play()
@@ -731,23 +727,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
 
-                    subscriptions.add(episodeRepository.getEpisode(mediaType.id).firstElement()
+                    subscriptions.add(episodeRepository.getEpisodeWithShow(mediaType.id).firstElement()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.main())
                         .subscribe { episode ->
-                            subscriptions.add(
-                                showRepository.getShow(episode.episodeShowId).firstElement()
-                                    .subscribeOn(schedulerProvider.io())
-                                    .observeOn(schedulerProvider.main())
-                                    .subscribe(
-                                        { show ->
-                                            playEpisode(mediaId, episode, show)
-                                        },
-                                        { error ->
-
-                                        }
-                                    )
-                            )
+                            playEpisode(mediaId, episode.episode, episode.show)
                         }
 
                     )

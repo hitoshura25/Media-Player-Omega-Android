@@ -31,9 +31,6 @@ interface ShowSearchResultDao {
     @Query("SELECT * FROM showSearchResults WHERE showSearchResultsId = :id")
     fun getSearchResultById(id: Long): Flowable<ShowSearchResultsModel>
 
-    @Query("DELETE FROM showSearch WHERE showSearchId = :id")
-    fun deleteShowSearch(id: Long)
-
     @Query("DELETE FROM showSearchResults where showSearchResultsSearchId=:searchId")
     fun deleteResultsForSearch(searchId: Long)
 }

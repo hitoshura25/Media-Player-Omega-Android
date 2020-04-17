@@ -37,7 +37,6 @@ class DownloadManager(
         val downloadManagerId = downloadManager.enqueue(
             DownloadManager.Request(Uri.parse(episode.downloadUrl))
                 .setTitle(episode.episodeName)
-                .setDescription(episode.description)
         )
 
         val download = DownloadModel(

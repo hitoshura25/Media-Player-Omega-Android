@@ -10,8 +10,6 @@ import java.util.*
 class ShowRepository(private val showDao: ShowDao) {
     fun getAllSubscribedShows(): Flowable<List<ShowModel>> = showDao.loadAllSubscribed()
 
-    fun getShow(id: Long): Flowable<ShowModel> = showDao.getById(id)
-
     fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
         emitter.onSuccess(
             if (show.showId == 0L) {

@@ -10,21 +10,21 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeAndShowModel
 import kotlinx.android.synthetic.main.library_item.view.*
 
-class LibraryAdapter(private val episodes: List<EpisodeModel>) :
+class LibraryAdapter(private val episodes: List<EpisodeAndShowModel>) :
     RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
     private var listener: LibrarySelectedListener? = null
 
     interface LibrarySelectedListener {
-        fun onEpisodeSelected(episode: EpisodeModel)
+        fun onEpisodeSelected(episode: EpisodeAndShowModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
         val imageView: ImageView = v.episodeImage
-        var episode: EpisodeModel? = null
+        var episode: EpisodeAndShowModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -45,10 +45,10 @@ class LibraryAdapter(private val episodes: List<EpisodeModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episode = episodes[position]
         holder.episode = episode
-        holder.nameText.text = episode.episodeName
+        holder.nameText.text = episode.episode.episodeName
 
         Glide.with(holder.itemView.context)
-            .load(episode.episodeArtworkUrl)
+            .load(episode.episode.episodeArtworkUrl ?: episode.show.showDetails.showArtworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)
