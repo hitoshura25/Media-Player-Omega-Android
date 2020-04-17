@@ -48,7 +48,7 @@ class DownloadsAdapter(private val downloads: List<DownloadListItem>) :
         holder.progressText.text = "${progress.roundToLong()}%"
 
         Glide.with(holder.itemView.context)
-            .load(download.episode.episodeArtworkUrl)
+            .load(download.episode.episodeArtworkUrl ?: download.show.showDetails.showArtworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)
