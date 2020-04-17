@@ -10,18 +10,18 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.DownloadListItem
+import com.vmenon.mpo.model.QueuedDownloadModel
 import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong
 
-class DownloadsAdapter(private val downloads: List<DownloadListItem>) :
+class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
     RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
         val progressText: TextView = v.progress
         val imageView: ImageView = v.showImage
-        var download: DownloadListItem? = null
+        var download: QueuedDownloadModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

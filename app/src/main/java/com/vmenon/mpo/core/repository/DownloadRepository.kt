@@ -4,7 +4,7 @@ import android.app.DownloadManager
 import android.app.DownloadManager.*
 import android.content.Context
 import com.vmenon.mpo.core.persistence.DownloadDao
-import com.vmenon.mpo.model.DownloadListItem
+import com.vmenon.mpo.model.QueuedDownloadModel
 import com.vmenon.mpo.model.DownloadModel
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -18,9 +18,9 @@ class DownloadRepository(
         Context.DOWNLOAD_SERVICE
     ) as DownloadManager
 
-    fun getAllDownloads(): Flowable<List<DownloadListItem>> =
+    fun getAllDownloads(): Flowable<List<QueuedDownloadModel>> =
         downloadDao.loadDownloadsWithShowAndEpisode().map { savedDownloads ->
-            val downloadListItems = ArrayList<DownloadListItem>()
+            val downloadListItems = ArrayList<QueuedDownloadModel>()
             val savedDownloadMap = savedDownloads.map { it.download.downloadManagerId to it}.toMap()
             val downloadManagerIds = savedDownloadMap.keys
 
@@ -35,7 +35,7 @@ class DownloadRepository(
                 )
                 savedDownloadMap[id]?.let { savedDownload ->
                     downloadListItems.add(
-                        DownloadListItem(
+                        QueuedDownloadModel(
                             download = savedDownload.download,
                             show = savedDownload.show,
                             episode = savedDownload.episode,
