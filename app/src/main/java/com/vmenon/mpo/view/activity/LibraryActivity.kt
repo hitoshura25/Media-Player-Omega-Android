@@ -55,7 +55,7 @@ class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedList
 
     override fun onEpisodeSelected(episode: EpisodeModel) {
         val intent = Intent(this, EpisodeDetailsActivity::class.java)
-        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episode.id)
+        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episode.episodeId)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }

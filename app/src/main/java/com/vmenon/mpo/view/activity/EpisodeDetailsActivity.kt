@@ -32,7 +32,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.drawable.ic_play_arrow_white_48dp
 
     override val collapsedToolbarTitle: CharSequence
-        get() = show?.showDetails?.name ?: ""
+        get() = show?.showDetails?.showName ?: ""
 
     override val expandedToolbarTitle: CharSequence
         get() = ""
@@ -72,7 +72,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
                     { episodeDetails ->
-                        episodeName.text = episodeDetails.episode.name
+                        episodeName.text = episodeDetails.episode.episodeName
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
                             episodeDetails.episode.description.replace(
@@ -84,12 +84,12 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
                             Date(episodeDetails.episode.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.artworkUrl)
+                            .load(episodeDetails.show.showDetails.showArtworkUrl)
                             .into(appBarImage)
 
                         episodeImage.visibility = View.VISIBLE
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.artworkUrl).fitCenter()
+                            .load(episodeDetails.show.showDetails.showArtworkUrl).fitCenter()
                             .into(episodeImage)
                     },
                     { error ->

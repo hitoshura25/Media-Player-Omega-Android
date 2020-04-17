@@ -21,17 +21,13 @@ class ShowUpdateManager(
         showRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
             .flatMapCompletable(this::fetchShowUpdatesAndQueueDownloads)
 
-    fun updateShow(showId: Long): Completable = showRepository.getShow(showId)
-        .firstElement()
-        .flatMapCompletable(this::updateShow)
-
     fun updateShow(show: ShowModel): Completable = fetchShowUpdate(show, show.lastEpisodePublished)
 
     private fun fetchShowUpdatesAndQueueDownloads(shows: List<ShowModel>) = Completable.fromAction {
         shows.forEach { show ->
             Log.d(
                 "UpdateWorker",
-                "Got saved show: ${show.showDetails.name} , ${show.showDetails.feedUrl}, ${show.lastEpisodePublished}"
+                "Got saved show: ${show.showDetails.showName} , ${show.showDetails.feedUrl}, ${show.lastEpisodePublished}"
             )
             fetchShowUpdate(show, show.lastEpisodePublished).blockingAwait()
         }
@@ -48,25 +44,25 @@ class ShowUpdateManager(
     private fun saveEpisodeAndQueueDownload(show: ShowModel, episode: Episode): Completable =
         Completable.fromAction {
             if (TextUtils.isEmpty(episode.artworkUrl)) {
-                episode.artworkUrl = show.showDetails.artworkUrl
+                episode.artworkUrl = show.showDetails.showArtworkUrl
             }
         }.andThen(episodeRepository.save(
             EpisodeModel(
-                name = episode.name,
-                artworkUrl = episode.artworkUrl,
+                episodeName = episode.name,
+                episodeArtworkUrl = episode.artworkUrl,
                 description = episode.description,
                 downloadUrl = episode.downloadUrl,
                 filename = "",
                 length = episode.length,
                 published = episode.published,
-                showId = show.id,
+                episodeShowId = show.showId,
                 type = episode.type
             )
-        ).flatMapCompletable { savedEpisode ->
+        ).flatMap { savedEpisode ->
             downloadManager.queueDownload(show, savedEpisode)
+        }).flatMapCompletable {
             show.lastUpdate = Date().time
             show.lastEpisodePublished = episode.published
             showRepository.save(show).ignoreElement()
-        })
-
+        }
 }

@@ -1,33 +1,20 @@
 package com.vmenon.mpo.core
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.app.DownloadManager
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.net.Uri
 import android.util.Log
 import android.webkit.URLUtil
 import com.vmenon.mpo.core.repository.DownloadRepository
 import com.vmenon.mpo.core.repository.EpisodeRepository
 
 import com.vmenon.mpo.core.repository.ShowRepository
-import com.vmenon.mpo.event.DownloadUpdateEvent
 import com.vmenon.mpo.model.*
+import com.vmenon.mpo.util.writeToFile
+import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
-import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.URL
-import java.util.ArrayList
-import java.util.concurrent.*
 
 class DownloadManager(
     private val context: Context,
@@ -35,172 +22,76 @@ class DownloadManager(
     private val episodeRepository: EpisodeRepository,
     private val showRepository: ShowRepository
 ) {
+    private val downloadManager: DownloadManager = context.getSystemService(
+        Context.DOWNLOAD_SERVICE
+    ) as DownloadManager
 
-    private val handler: Handler
-    private val workQueue: BlockingQueue<Runnable>
-    private val threadPoolExecutor: ThreadPoolExecutor
-    private val currentDownloads = ConcurrentHashMap<String, DownloadListItem>()
-    private val downloadLiveData = MutableLiveData<List<DownloadListItem>>()
-
-    val downloads: LiveData<List<DownloadListItem>>
-        get() = downloadLiveData
-
-    private val subscriptions = CompositeDisposable()
-
-    init {
-        workQueue = LinkedBlockingQueue()
-        threadPoolExecutor = ThreadPoolExecutor(
-            NUMBER_CORES, NUMBER_CORES, KEEP_ALIVE_TIME.toLong(),
-            KEEP_ALIVE_TIME_UNIT, workQueue
-        )
-        handler = object : Handler(Looper.getMainLooper()) {
-            override fun handleMessage(msg: Message) {
-                when (msg.what) {
-                    STATE_UPDATE -> {
-                        val event = msg.obj as DownloadUpdateEvent
-                        Log.d("MPO", "got update: " + event.download.progress)
-                        updateLiveData()
-                    }
-                    else -> super.handleMessage(msg)
-                }
-            }
-        }
+    fun queueDownload(
+        showDetails: ShowDetailsModel,
+        episode: EpisodeModel
+    ) = createShowAndEpisodeForDownload(showDetails, episode).flatMap { showAndEpisode ->
+        queueDownload(showAndEpisode.first, showAndEpisode.second)
     }
 
-    fun queueDownload(showDetails: ShowDetailsModel, episode: EpisodeModel) {
-        subscriptions.add(
-            Single.create<Pair<ShowModel, EpisodeModel>> { emitter ->
-                val savedShow =  showRepository.save(
-                    ShowModel(
-                        showDetails = showDetails,
-                        lastEpisodePublished = 0L,
-                        lastUpdate = 0L
-                    )
-                ).blockingGet()
-
-                val savedEpisode = episodeRepository.save(
-                    EpisodeModel(
-                        name = episode.name,
-                        artworkUrl = episode.artworkUrl,
-                        description = episode.description,
-                        downloadUrl = episode.downloadUrl,
-                        filename = "",
-                        length = episode.length,
-                        published = episode.published,
-                        showId = savedShow.id,
-                        type = episode.type
-                    )
-                ).blockingGet()
-                emitter.onSuccess(Pair(savedShow, savedEpisode))
-            }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { showAndEpisode ->
-                    queueDownload(showAndEpisode.first, showAndEpisode.second)
-                }
+    fun queueDownload(show: ShowModel, episode: EpisodeModel) = Single.fromCallable {
+        val downloadManagerId = downloadManager.enqueue(
+            DownloadManager.Request(Uri.parse(episode.downloadUrl))
+                .setTitle(episode.episodeName)
+                .setDescription(episode.description)
         )
-    }
 
-    fun queueDownload(show: ShowModel, episode: EpisodeModel) {
         val download = DownloadModel(
-            showId = show.id,
-            episodeId = episode.id
+            downloadShowId = show.showId,
+            downloadEpisodeId = episode.episodeId,
+            downloadManagerId = downloadManagerId
         )
-        subscriptions.add(downloadRepository.save(download)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { savedDownload ->
-                startDownload(show, episode, savedDownload)
-                Log.d("MPO", "Queued download: $download, ${episode.downloadUrl}")
-            }
-        )
+        val savedDownload = downloadRepository.save(download).blockingGet()
+        Log.d("MPO", "Queued download: $download, ${episode.downloadUrl}")
+        savedDownload
     }
 
-    private fun startDownload(
-        show: ShowModel,
-        episode: EpisodeModel,
-        download: DownloadModel
-    ) {
-        threadPoolExecutor.submit {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND)
-            currentDownloads[episode.downloadUrl] = DownloadListItem(download, episode)
+    fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
+        val download = downloadRepository.byDownloadManagerId(
+            downloadManagerId
+        ).firstElement().blockingGet()
 
-            var input: InputStream? = null
-            var output: OutputStream? = null
-            val filename = URLUtil.guessFileName(episode.downloadUrl, null, null)
-            val showDir = File(context.filesDir, show.showDetails.name)
+        if (download != null) {
+            val filename = URLUtil.guessFileName(download.episode.downloadUrl, null, null)
+            val showDir = File(context.filesDir, download.show.showDetails.showName)
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
-            episode.filename = episodeFile.path
-            episodeRepository.save(episode).blockingGet()
-
-            try {
-                val url = URL(episode.downloadUrl)
-                val connection = url.openConnection()
-                connection.connect()
-                download.total = connection.contentLength
-                input = BufferedInputStream(connection.getInputStream())
-                output = FileOutputStream(episodeFile)
-
-                val data = ByteArray(1024)
-                var count: Int
-                var lastPost: Long = 0
-
-                do {
-                    count = input.read(data)
-                    if (count != -1) {
-                        download.addProgress(count)
-                        downloadRepository.save(download).ignoreElement().blockingAwait()
-                        output.write(data, 0, count)
-                        val downloadUpdateEvent = DownloadUpdateEvent(download)
-                        Log.d("MPO", "Progress: " + download.progress + "/" + download.total)
-
-                        // only post message every so often to avoid too many ui updates
-                        if (System.currentTimeMillis() - lastPost > 3000) {
-                            val completeMessage =
-                                handler.obtainMessage(STATE_UPDATE, downloadUpdateEvent)
-                            completeMessage.sendToTarget()
-                            lastPost = System.currentTimeMillis()
-                        }
-                    }
-                } while (count != -1)
-
-                output.flush()
-                downloadRepository.deleteDownload(download.id).blockingAwait()
-            } catch (e: Exception) {
-                Log.e("MPO", "Error downloading file: " + episode.downloadUrl, e)
-            } finally {
-                if (output != null) {
-                    try {
-                        output.close()
-                    } catch (e: IOException) {
-                        Log.w("MPO", "Error closing output", e)
-                    }
-
-                }
-
-                if (input != null) {
-                    try {
-                        input.close()
-                    } catch (e: IOException) {
-                        Log.w("MPO", "Error closing input", e)
-                    }
-
-                }
-            }
-
-            currentDownloads.remove(episode.downloadUrl)
-            updateLiveData()
+            downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
+            download.episode.filename = episodeFile.path
+            episodeRepository.save(download.episode).ignoreElement().blockingAwait()
+            downloadRepository.deleteDownload(download.download.downloadId).blockingAwait()
         }
     }
 
-    private fun updateLiveData() {
-        downloadLiveData.postValue(ArrayList(currentDownloads.values))
-    }
+    private fun createShowAndEpisodeForDownload(
+        showDetails: ShowDetailsModel,
+        episode: EpisodeModel
+    ) = Single.fromCallable<Pair<ShowModel, EpisodeModel>> {
+        val savedShow = showRepository.save(
+            ShowModel(
+                showDetails = showDetails,
+                lastEpisodePublished = 0L,
+                lastUpdate = 0L
+            )
+        ).blockingGet()
 
-    companion object {
-        private val NUMBER_CORES = Runtime.getRuntime().availableProcessors()
-        private const val KEEP_ALIVE_TIME = 1
-        private val KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS
-        private const val STATE_UPDATE = 1
+        val savedEpisode = episodeRepository.save(
+            EpisodeModel(
+                episodeName = episode.episodeName,
+                episodeArtworkUrl = episode.episodeArtworkUrl,
+                description = episode.description,
+                downloadUrl = episode.downloadUrl,
+                filename = "",
+                length = episode.length,
+                published = episode.published,
+                episodeShowId = savedShow.showId,
+                type = episode.type
+            )
+        ).blockingGet()
+        Pair(savedShow, savedEpisode)
     }
 }

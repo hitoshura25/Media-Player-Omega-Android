@@ -8,8 +8,8 @@ class ShowSearchResultsDiff(
     private val newSearchResults: List<ShowSearchResultsModel>
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-        oldSearchResults[oldItemPosition].showDetails.name ==
-                newSearchResults[oldItemPosition].showDetails.name
+        oldSearchResults[oldItemPosition].showDetails.showName ==
+                newSearchResults[oldItemPosition].showDetails.showName
 
     override fun getOldListSize(): Int = oldSearchResults.size
 

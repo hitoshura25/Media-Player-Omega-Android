@@ -86,7 +86,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show?.showDetails?.name
+            collapsingToolbar.title = show?.showDetails?.showName
             collapsed = true
         } else if (collapsed) {
             collapsingToolbar.title = ""
@@ -98,7 +98,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         show = showDetails
         @Suppress("DEPRECATION")
         showDescription.text = Html.fromHtml(showDetails.showDescription)
-        Glide.with(this).load(showDetails.showDetails.artworkUrl).fitCenter().into(showImage)
+        Glide.with(this).load(showDetails.showDetails.showArtworkUrl).fitCenter().into(showImage)
 
         episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(this)
@@ -107,14 +107,14 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             showDetails.showDetails,
             showDetails.episodes.map {
                 EpisodeModel(
-                    name = it.name,
+                    episodeName = it.episodeName,
                     description = it.description,
                     published = it.published,
                     type = it.type,
                     downloadUrl = it.downloadUrl,
                     length = it.length,
-                    artworkUrl = it.artworkUrl,
-                    showId = 0L,
+                    episodeArtworkUrl = it.episodeArtworkUrl,
+                    episodeShowId = 0L,
                     filename = ""
                 )
             }
@@ -161,7 +161,11 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     override fun onDownloadEpisode(episode: EpisodeModel) {
         show?.let {
-            showDetailsViewModel.queueDownload(it.showDetails, episode)
+            subscriptions.add(
+                showDetailsViewModel.queueDownload(it.showDetails, episode)
+                    .ignoreElement()
+                    .subscribe {}
+            )
         }
     }
 }

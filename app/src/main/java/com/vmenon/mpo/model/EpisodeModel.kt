@@ -8,21 +8,21 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [ForeignKey(
         entity = ShowModel::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("showId")
+        parentColumns = arrayOf("showId"),
+        childColumns = arrayOf("episodeShowId")
     )],
-    indices = [Index("showId")],
+    indices = [Index("episodeShowId")],
     tableName = "episode"
 )
 data class EpisodeModel(
-    val name: String,
+    val episodeName: String,
     val description: String,
     val published: Long,
     val type: String,
     val downloadUrl: String,
     val length: Long,
-    val artworkUrl: String?,
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
-    val showId: Long,
+    val episodeArtworkUrl: String?,
+    @PrimaryKey(autoGenerate = true) val episodeId: Long = 0L,
+    val episodeShowId: Long,
     var filename: String
 )

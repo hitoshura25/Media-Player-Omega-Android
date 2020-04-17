@@ -8,8 +8,8 @@ import io.reactivex.Single
 class EpisodeRepository(private val episodeDao: EpisodeDao) {
     fun save(episode: EpisodeModel): Single<EpisodeModel> = Single.create { emitter ->
         emitter.onSuccess(
-            if (episode.id == 0L) {
-                episode.copy(id = episodeDao.insert(episode))
+            if (episode.episodeId == 0L) {
+                episode.copy(episodeId = episodeDao.insert(episode))
             } else {
                 episodeDao.update(episode)
                 episode

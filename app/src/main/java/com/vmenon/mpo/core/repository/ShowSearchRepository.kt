@@ -34,8 +34,8 @@ class ShowSearchRepository(
                 val showSearch = showSearchResultDao.getSearchForTerm(keyword).blockingGet()
                 val showSearchId: Long
                 if (showSearch != null) {
-                    showSearchId = showSearch.id
-                    showSearchResultDao.deleteResultsForSearch(showSearch.id)
+                    showSearchId = showSearch.showSearchId
+                    showSearchResultDao.deleteResultsForSearch(showSearch.showSearchId)
                 } else {
                     val newSearch = ShowSearchModel(searchTerm = keyword)
                     showSearchId = showSearchResultDao.saveSearch(newSearch)
@@ -47,20 +47,20 @@ class ShowSearchRepository(
                         searchResults.add(
                             ShowSearchResultsModel(
                                 showDetails = ShowDetailsModel(
-                                    name = show.name,
-                                    artworkUrl = show.artworkUrl,
+                                    showName = show.name,
+                                    showArtworkUrl = show.artworkUrl,
                                     author = show.author,
                                     feedUrl = it,
                                     genres = show.genres
                                 ),
-                                id = 0L,
-                                showSearchId = showSearchId
+                                showSearchResultsId = 0L,
+                                showSearchResultsSearchId = showSearchId
                             )
                         )
                     } ?: Log.e("ShowSearchRepository", "FeedUrl null! $show")
                 }
                 showSearchResultDao.saveSearchResults(searchResults).forEachIndexed { index, id ->
-                    searchResults[index] = searchResults[index].copy(id = id)
+                    searchResults[index] = searchResults[index].copy(showSearchResultsId = id)
                 }
                 showSearchResultsProcessors[keyword].offer(searchResults)
             }
@@ -79,14 +79,14 @@ class ShowSearchRepository(
                     showDescription = showDetails.description,
                     episodes = showDetails.episodes.map { episode ->
                         EpisodeModel(
-                            name = episode.name,
-                            artworkUrl = episode.artworkUrl,
+                            episodeName = episode.name,
+                            episodeArtworkUrl = episode.artworkUrl,
                             description = episode.description,
                             downloadUrl = episode.downloadUrl,
                             length = episode.length,
                             published = episode.published,
                             type = episode.type,
-                            showId = 0L,
+                            episodeShowId = 0L,
                             filename = ""
                         )
                     })

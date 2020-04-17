@@ -45,10 +45,10 @@ class LibraryAdapter(private val episodes: List<EpisodeModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episode = episodes[position]
         holder.episode = episode
-        holder.nameText.text = episode.name
+        holder.nameText.text = episode.episodeName
 
         Glide.with(holder.itemView.context)
-            .load(episode.artworkUrl)
+            .load(episode.episodeArtworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

@@ -21,6 +21,6 @@ interface EpisodeDao {
     @Query("SELECT * FROM episode")
     fun load(): Flowable<List<EpisodeModel>>
 
-    @Query("SELECT * from episode WHERE id = :id")
+    @Query("SELECT * from episode WHERE episodeId = :id")
     fun byId(id: Long): Flowable<EpisodeModel>
 }

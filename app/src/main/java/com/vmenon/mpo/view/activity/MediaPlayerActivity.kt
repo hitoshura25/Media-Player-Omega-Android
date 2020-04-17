@@ -279,8 +279,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     }
 
     private fun updateUIFromMedia() {
-        Glide.with(this).load(episode.show.showDetails.artworkUrl).fitCenter().into(artworkImage!!)
-        mediaTitle.text = episode.episode.name
+        Glide.with(this).load(episode.show.showDetails.showArtworkUrl).fitCenter().into(artworkImage!!)
+        mediaTitle.text = episode.episode.episodeName
     }
 
     private fun scheduleSeekbarUpdate() {

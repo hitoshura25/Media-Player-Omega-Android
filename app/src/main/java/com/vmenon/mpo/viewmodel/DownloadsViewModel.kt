@@ -3,24 +3,20 @@ package com.vmenon.mpo.viewmodel
 import androidx.lifecycle.ViewModel
 import com.vmenon.mpo.core.SchedulerProvider
 import com.vmenon.mpo.core.repository.DownloadRepository
-import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.model.DownloadListItem
 import io.reactivex.Flowable
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DownloadsViewModel @Inject constructor(
     downloadRepository: DownloadRepository,
-    episodeRepository: EpisodeRepository,
     schedulerProvider: SchedulerProvider
 ) : ViewModel() {
     val downloads: Flowable<List<DownloadListItem>> =
-        downloadRepository.getAllDownloads().map { downloads ->
-            downloads.map { download ->
-                DownloadListItem(
-                    download,
-                    episodeRepository.getEpisode(download.episodeId).blockingFirst()
-                )
+        Flowable.interval(0L, 2L, TimeUnit.SECONDS)
+            .flatMap {
+                downloadRepository.getAllDownloads()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.main())
             }
-        }.subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
 }

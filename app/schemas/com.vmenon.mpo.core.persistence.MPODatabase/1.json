@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "183d2e37f0971c92a466c48a9abad9b5",
+    "identityHash": "c79f81de600a39b45a2d685fe152a6b2",
     "entities": [
       {
         "tableName": "show",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "showId",
+            "columnName": "showId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -33,14 +33,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "showDetails.name",
-            "columnName": "name",
+            "fieldPath": "showDetails.showName",
+            "columnName": "showName",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "showDetails.artworkUrl",
-            "columnName": "artworkUrl",
+            "fieldPath": "showDetails.showArtworkUrl",
+            "columnName": "showArtworkUrl",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -65,29 +65,29 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "showId"
           ],
           "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_show_name",
+            "name": "index_show_showName",
             "unique": true,
             "columnNames": [
-              "name"
+              "showName"
             ],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_show_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_show_showName` ON `${TABLE_NAME}` (`showName`)"
           }
         ],
         "foreignKeys": []
       },
       {
         "tableName": "episode",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `description` TEXT NOT NULL, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `artworkUrl` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `filename` TEXT NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeName` TEXT NOT NULL, `description` TEXT NOT NULL, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `episodeShowId` INTEGER NOT NULL, `filename` TEXT NOT NULL, FOREIGN KEY(`episodeShowId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "name",
-            "columnName": "name",
+            "fieldPath": "episodeName",
+            "columnName": "episodeName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -122,20 +122,20 @@
             "notNull": true
           },
           {
-            "fieldPath": "artworkUrl",
-            "columnName": "artworkUrl",
+            "fieldPath": "episodeArtworkUrl",
+            "columnName": "episodeArtworkUrl",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "episodeId",
+            "columnName": "episodeId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "showId",
-            "columnName": "showId",
+            "fieldPath": "episodeShowId",
+            "columnName": "episodeShowId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -148,18 +148,18 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "episodeId"
           ],
           "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_episode_showId",
+            "name": "index_episode_episodeShowId",
             "unique": false,
             "columnNames": [
-              "showId"
+              "episodeShowId"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_episode_showId` ON `${TABLE_NAME}` (`showId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_episode_episodeShowId` ON `${TABLE_NAME}` (`episodeShowId`)"
           }
         ],
         "foreignKeys": [
@@ -168,21 +168,21 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "showId"
+              "episodeShowId"
             ],
             "referencedColumns": [
-              "id"
+              "showId"
             ]
           }
         ]
       },
       {
         "tableName": "showSearch",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `searchTerm` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showSearchId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `searchTerm` TEXT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "showSearchId",
+            "columnName": "showSearchId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -195,7 +195,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "showSearchId"
           ],
           "autoGenerate": true
         },
@@ -213,29 +213,29 @@
       },
       {
         "tableName": "showSearchResults",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showSearchId` INTEGER NOT NULL, `name` TEXT NOT NULL, `artworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, FOREIGN KEY(`showSearchId`) REFERENCES `showSearch`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showSearchResultsId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showSearchResultsSearchId` INTEGER NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, FOREIGN KEY(`showSearchResultsSearchId`) REFERENCES `showSearch`(`showSearchId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "showSearchResultsId",
+            "columnName": "showSearchResultsId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "showSearchId",
-            "columnName": "showSearchId",
+            "fieldPath": "showSearchResultsSearchId",
+            "columnName": "showSearchResultsSearchId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "showDetails.name",
-            "columnName": "name",
+            "fieldPath": "showDetails.showName",
+            "columnName": "showName",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "showDetails.artworkUrl",
-            "columnName": "artworkUrl",
+            "fieldPath": "showDetails.showArtworkUrl",
+            "columnName": "showArtworkUrl",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -260,26 +260,26 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "showSearchResultsId"
           ],
           "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_showSearchResults_name",
+            "name": "index_showSearchResults_showName",
             "unique": false,
             "columnNames": [
-              "name"
+              "showName"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_showName` ON `${TABLE_NAME}` (`showName`)"
           },
           {
-            "name": "index_showSearchResults_showSearchId",
+            "name": "index_showSearchResults_showSearchResultsSearchId",
             "unique": false,
             "columnNames": [
-              "showSearchId"
+              "showSearchResultsSearchId"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_showSearchId` ON `${TABLE_NAME}` (`showSearchId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_showSearchResults_showSearchResultsSearchId` ON `${TABLE_NAME}` (`showSearchResultsSearchId`)"
           }
         ],
         "foreignKeys": [
@@ -288,71 +288,65 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "showSearchId"
+              "showSearchResultsSearchId"
             ],
             "referencedColumns": [
-              "id"
+              "showSearchId"
             ]
           }
         ]
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeId` INTEGER NOT NULL, `total` INTEGER NOT NULL, `progress` INTEGER NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`episodeId`) REFERENCES `episode`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `downloadShowId` INTEGER NOT NULL, `downloadEpisodeId` INTEGER NOT NULL, `downloadManagerId` INTEGER NOT NULL, FOREIGN KEY(`downloadShowId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`downloadEpisodeId`) REFERENCES `episode`(`episodeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "downloadId",
+            "columnName": "downloadId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "showId",
-            "columnName": "showId",
+            "fieldPath": "downloadShowId",
+            "columnName": "downloadShowId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "episodeId",
-            "columnName": "episodeId",
+            "fieldPath": "downloadEpisodeId",
+            "columnName": "downloadEpisodeId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "total",
-            "columnName": "total",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "progress",
-            "columnName": "progress",
+            "fieldPath": "downloadManagerId",
+            "columnName": "downloadManagerId",
             "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "downloadId"
           ],
           "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_downloads_showId",
+            "name": "index_downloads_downloadShowId",
             "unique": false,
             "columnNames": [
-              "showId"
+              "downloadShowId"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_showId` ON `${TABLE_NAME}` (`showId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_downloadShowId` ON `${TABLE_NAME}` (`downloadShowId`)"
           },
           {
-            "name": "index_downloads_episodeId",
+            "name": "index_downloads_downloadEpisodeId",
             "unique": false,
             "columnNames": [
-              "episodeId"
+              "downloadEpisodeId"
             ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_episodeId` ON `${TABLE_NAME}` (`episodeId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_downloadEpisodeId` ON `${TABLE_NAME}` (`downloadEpisodeId`)"
           }
         ],
         "foreignKeys": [
@@ -361,10 +355,10 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "showId"
+              "downloadShowId"
             ],
             "referencedColumns": [
-              "id"
+              "showId"
             ]
           },
           {
@@ -372,10 +366,10 @@
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "episodeId"
+              "downloadEpisodeId"
             ],
             "referencedColumns": [
-              "id"
+              "episodeId"
             ]
           }
         ]
@@ -384,7 +378,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '183d2e37f0971c92a466c48a9abad9b5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c79f81de600a39b45a2d685fe152a6b2')"
     ]
   }
 }

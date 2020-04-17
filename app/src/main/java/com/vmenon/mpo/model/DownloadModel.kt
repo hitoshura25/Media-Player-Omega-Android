@@ -9,27 +9,21 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = ShowModel::class,
-            parentColumns = arrayOf("id"),
-            childColumns = arrayOf("showId")
+            parentColumns = arrayOf("showId"),
+            childColumns = arrayOf("downloadShowId")
         ),
         ForeignKey(
             entity = EpisodeModel::class,
-            parentColumns = arrayOf("id"),
-            childColumns = arrayOf("episodeId")
+            parentColumns = arrayOf("episodeId"),
+            childColumns = arrayOf("downloadEpisodeId")
         )
     ],
-    indices = [Index("showId"), Index("episodeId")],
+    indices = [Index("downloadShowId"), Index("downloadEpisodeId")],
     tableName = "downloads"
 )
 data class DownloadModel(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
-    val showId: Long,
-    val episodeId: Long,
-    var total: Int = 0,
-    var progress: Int = 0
-) {
-    @Synchronized
-    fun addProgress(progress: Int) {
-        this.progress += progress
-    }
-}
+    @PrimaryKey(autoGenerate = true) val downloadId: Long = 0L,
+    val downloadShowId: Long,
+    val downloadEpisodeId: Long,
+    val downloadManagerId: Long
+)

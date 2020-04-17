@@ -48,7 +48,7 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
         holder.show = show
 
         Glide.with(holder.itemView.context)
-            .load(show.showDetails.artworkUrl)
+            .load(show.showDetails.showArtworkUrl)
             .fitCenter()
             .crossFade()
             .into(holder.imageView)

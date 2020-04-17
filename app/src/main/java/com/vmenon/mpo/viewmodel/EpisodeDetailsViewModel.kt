@@ -18,7 +18,7 @@ class EpisodeDetailsViewModel @Inject constructor(
             .map { episode ->
                 EpisodeDetailsModel(
                     episode,
-                    showRepository.getShow(episode.showId).blockingFirst()
+                    showRepository.getShow(episode.episodeShowId).blockingFirst()
                 )
             }
             .subscribeOn(schedulerProvider.io())

@@ -35,9 +35,8 @@ class ShowDetailsViewModel @Inject constructor(
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
-    fun queueDownload(showDetails: ShowDetailsModel, episode: EpisodeModel) {
+    fun queueDownload(showDetails: ShowDetailsModel, episode: EpisodeModel) =
         downloadManager.queueDownload(showDetails, episode)
-    }
 
     private fun fetchInitialUpdate(show: ShowModel): Single<ShowModel> =
         showUpdateManager.updateShow(show).andThen(Single.just(show))

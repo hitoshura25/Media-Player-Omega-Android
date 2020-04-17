@@ -541,12 +541,12 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             val metadata = MediaMetadataCompat.Builder().putString(
                 MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
             )
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showDetails.name)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showDetails.showName)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.showDetails.author)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
                 .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.showDetails.genres))
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showDetails.artworkUrl)
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showDetails.showArtworkUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.episodeName)
                 .build()
             handlePlayRequest(mediaFile)
             mediaSession.setMetadata(metadata)
@@ -736,7 +736,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                         .observeOn(schedulerProvider.main())
                         .subscribe { episode ->
                             subscriptions.add(
-                                showRepository.getShow(episode.showId).firstElement()
+                                showRepository.getShow(episode.episodeShowId).firstElement()
                                     .subscribeOn(schedulerProvider.io())
                                     .observeOn(schedulerProvider.main())
                                     .subscribe(
