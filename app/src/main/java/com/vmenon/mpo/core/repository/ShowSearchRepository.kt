@@ -17,7 +17,7 @@ class ShowSearchRepository(
 
     fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultsModel>> {
         return showSearchResultsProcessors[term].startWith(
-            showSearchResultDao.loadSearchResults(term).firstElement().toFlowable()
+            showSearchResultDao.getBySearchTerm(term).firstElement().toFlowable()
         )
     }
 
@@ -38,7 +38,7 @@ class ShowSearchRepository(
                     showSearchResultDao.deleteResultsForSearch(showSearch.showSearchId)
                 } else {
                     val newSearch = ShowSearchModel(searchTerm = keyword)
-                    showSearchId = showSearchResultDao.saveSearch(newSearch)
+                    showSearchId = showSearchResultDao.save(newSearch)
                 }
                 val searchResults = ArrayList<ShowSearchResultsModel>()
                 // TODO try sorting on server...
@@ -60,7 +60,7 @@ class ShowSearchRepository(
                         )
                     } ?: Log.e("ShowSearchRepository", "FeedUrl null! $show")
                 }
-                showSearchResultDao.saveSearchResults(searchResults).forEachIndexed { index, id ->
+                showSearchResultDao.save(searchResults).forEachIndexed { index, id ->
                     searchResults[index] = searchResults[index].copy(showSearchResultsId = id)
                 }
                 showSearchResultsProcessors[keyword].offer(searchResults)

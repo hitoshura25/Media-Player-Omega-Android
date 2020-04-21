@@ -50,25 +50,29 @@ class DownloadManager(
     }
 
     fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
-        val download = downloadRepository.byDownloadManagerId(
+        val downloadWithShowAndEpisode = downloadRepository.getByDownloadManagerId(
             downloadManagerId
         ).firstElement().blockingGet()
 
-        if (download != null) {
-            val filename = URLUtil.guessFileName(download.episode.downloadUrl, null, null)
-            val showDir = File(context.filesDir, download.show.showName)
+        if (downloadWithShowAndEpisode != null) {
+            val filename = URLUtil.guessFileName(
+                downloadWithShowAndEpisode.episode.downloadUrl,
+                null,
+                null
+            )
+            val showDir = File(context.filesDir, downloadWithShowAndEpisode.show.showName)
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
-            download.episode.filename = episodeFile.path
+            downloadWithShowAndEpisode.episode.filename = episodeFile.path
             episodeRepository.save(
                 EpisodeModel(
-                    details = download.episode,
-                    showId = download.download.showId,
-                    id = download.download.episodeId
+                    details = downloadWithShowAndEpisode.episode,
+                    showId = downloadWithShowAndEpisode.download.showId,
+                    id = downloadWithShowAndEpisode.download.episodeId
                 )
             ).ignoreElement().blockingAwait()
-            downloadRepository.deleteDownload(download.download.id).blockingAwait()
+            downloadRepository.delete(downloadWithShowAndEpisode.download.id).blockingAwait()
         }
     }
 

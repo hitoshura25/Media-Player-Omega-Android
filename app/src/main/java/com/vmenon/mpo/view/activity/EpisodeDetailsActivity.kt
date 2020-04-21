@@ -71,25 +71,25 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         subscriptions.add(
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
-                    { episodeDetails ->
-                        episodeName.text = episodeDetails.episode.details.episodeName
+                    { episodeWithShowDetails ->
+                        episodeName.text = episodeWithShowDetails.episode.details.episodeName
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeDetails.episode.details.description.replace(
+                            episodeWithShowDetails.episode.details.description.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
                             )
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
-                            Date(episodeDetails.episode.details.published)
+                            Date(episodeWithShowDetails.episode.details.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.showDetails.showArtworkUrl)
+                            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
                             .into(appBarImage)
 
                         episodeImage.visibility = View.VISIBLE
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.showDetails.showArtworkUrl).fitCenter()
+                            .load(episodeWithShowDetails.showDetails.showArtworkUrl).fitCenter()
                             .into(episodeImage)
                     },
                     { error ->

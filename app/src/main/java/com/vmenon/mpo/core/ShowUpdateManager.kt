@@ -19,7 +19,7 @@ class ShowUpdateManager(
     private val downloadManager: DownloadManager
 ) {
     fun updateAllShows(): Completable =
-        showRepository.notUpdatedInLast((1000 * 60 * 5).toLong())
+        showRepository.getSubscribedAndLastUpdatedBefore((1000 * 60 * 5).toLong())
             .flatMapCompletable(this::fetchShowUpdatesAndQueueDownloads)
 
     fun updateShow(show: ShowModel): Completable = fetchShowUpdate(

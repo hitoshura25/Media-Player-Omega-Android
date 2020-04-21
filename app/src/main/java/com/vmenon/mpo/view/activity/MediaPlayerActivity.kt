@@ -38,7 +38,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
-    private lateinit var episode: EpisodeWithShowDetailsModel
+    private lateinit var episodeWithShowDetails: EpisodeWithShowDetailsModel
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -96,7 +96,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                                         .firstElement()
                                         .subscribe(
                                             { episode ->
-                                                this@MediaPlayerActivity.episode = episode
+                                                this@MediaPlayerActivity.episodeWithShowDetails = episode
                                                 updateUIFromMedia()
                                             },
                                             { error -> }
@@ -217,9 +217,11 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                 viewModel.getEpisodeDetails(episodeId)
                     .firstElement()
                     .subscribe(
-                        { episode ->
-                            this@MediaPlayerActivity.episode = episode
-                            requestedMediaId = MediaHelper.createMediaId(episode.episode)
+                        { episodeWithShowDetails ->
+                            this@MediaPlayerActivity.episodeWithShowDetails = episodeWithShowDetails
+                            requestedMediaId = MediaHelper.createMediaId(
+                                episodeWithShowDetails.episode
+                            )
                             updateUIFromMedia()
                         },
                         { error ->
@@ -279,8 +281,11 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     }
 
     private fun updateUIFromMedia() {
-        Glide.with(this).load(episode.showDetails.showArtworkUrl).fitCenter().into(artworkImage!!)
-        mediaTitle.text = episode.episode.details.episodeName
+        Glide.with(this)
+            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
+            .fitCenter()
+            .into(artworkImage!!)
+        mediaTitle.text = episodeWithShowDetails.episode.details.episodeName
     }
 
     private fun scheduleSeekbarUpdate() {

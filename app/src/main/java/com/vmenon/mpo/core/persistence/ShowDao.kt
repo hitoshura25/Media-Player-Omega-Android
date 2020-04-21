@@ -23,8 +23,8 @@ interface ShowDao {
     fun update(show: ShowModel)
 
     @Query("SELECT * FROM show WHERE isSubscribed")
-    fun loadAllSubscribed(): Flowable<List<ShowModel>>
+    fun getSubscribed(): Flowable<List<ShowModel>>
 
     @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
-    fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): Maybe<List<ShowModel>>
+    fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long): Maybe<List<ShowModel>>
 }

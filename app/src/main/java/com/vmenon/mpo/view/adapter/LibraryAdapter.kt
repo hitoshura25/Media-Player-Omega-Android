@@ -18,7 +18,7 @@ class LibraryAdapter(private val episodes: List<EpisodeWithShowDetailsModel>) :
     private var listener: LibrarySelectedListener? = null
 
     interface LibrarySelectedListener {
-        fun onEpisodeSelected(episode: EpisodeWithShowDetailsModel)
+        fun onEpisodeSelected(episodeWithShowDetails: EpisodeWithShowDetailsModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -43,12 +43,13 @@ class LibraryAdapter(private val episodes: List<EpisodeWithShowDetailsModel>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val episode = episodes[position]
-        holder.episode = episode
-        holder.nameText.text = episode.episode.details.episodeName
+        val episodeWithShowDetails = episodes[position]
+        holder.episode = episodeWithShowDetails
+        holder.nameText.text = episodeWithShowDetails.episode.details.episodeName
 
         Glide.with(holder.itemView.context)
-            .load(episode.episode.details.episodeArtworkUrl ?: episode.showDetails.showArtworkUrl)
+            .load(episodeWithShowDetails.episode.details.episodeArtworkUrl
+                ?: episodeWithShowDetails.showDetails.showArtworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

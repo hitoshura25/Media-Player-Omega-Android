@@ -18,7 +18,7 @@ class EpisodeRepository(private val episodeDao: EpisodeDao) {
         )
     }
 
-    fun getAllEpisodes(): Flowable<List<EpisodeWithShowDetailsModel>> = episodeDao.load()
+    fun getAll(): Flowable<List<EpisodeWithShowDetailsModel>> = episodeDao.getAllWithShowDetails()
 
-    fun getEpisodeWithShow(id: Long): Flowable<EpisodeWithShowDetailsModel> = episodeDao.byIdWithShow(id)
+    fun getById(id: Long): Flowable<EpisodeWithShowDetailsModel> = episodeDao.getWithShowDetailsById(id)
 }

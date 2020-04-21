@@ -25,7 +25,7 @@ interface EpisodeDao {
         INNER JOIN show on episode.showId = show.id
         """
     )
-    fun load(): Flowable<List<EpisodeWithShowDetailsModel>>
+    fun getAllWithShowDetails(): Flowable<List<EpisodeWithShowDetailsModel>>
 
     @Query(
         """
@@ -34,5 +34,5 @@ interface EpisodeDao {
         WHERE episode.id = :id
         """
     )
-    fun byIdWithShow(id: Long): Flowable<EpisodeWithShowDetailsModel>
+    fun getWithShowDetailsById(id: Long): Flowable<EpisodeWithShowDetailsModel>
 }

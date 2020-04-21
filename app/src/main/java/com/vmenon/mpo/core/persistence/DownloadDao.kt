@@ -21,7 +21,7 @@ interface DownloadDao {
         WHERE downloadManagerId = :id
         """
     )
-    fun byDownloadManagerId(id: Long): Flowable<DownloadWithShowAndEpisodeDetailsModel>
+    fun getWithShowAndEpisodeDetailsByDownloadManagerId(id: Long): Flowable<DownloadWithShowAndEpisodeDetailsModel>
 
     @Query(
         """
@@ -30,7 +30,7 @@ interface DownloadDao {
         INNER JOIN show on downloads.showId = show.id
         """
     )
-    fun loadDownloadsWithShowAndEpisode(): Flowable<List<DownloadWithShowAndEpisodeDetailsModel>>
+    fun getAllWithShowAndEpisodeDetails(): Flowable<List<DownloadWithShowAndEpisodeDetailsModel>>
 
     @Query("DELETE FROM downloads WHERE id = :id")
     fun delete(id: Long)

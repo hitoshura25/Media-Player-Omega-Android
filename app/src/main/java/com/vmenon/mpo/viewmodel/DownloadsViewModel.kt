@@ -15,7 +15,7 @@ class DownloadsViewModel @Inject constructor(
     val downloads: Flowable<List<QueuedDownloadModel>> =
         Flowable.interval(0L, 2L, TimeUnit.SECONDS)
             .flatMap {
-                downloadRepository.getAllDownloads()
+                downloadRepository.getAllQueued()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.main())
             }

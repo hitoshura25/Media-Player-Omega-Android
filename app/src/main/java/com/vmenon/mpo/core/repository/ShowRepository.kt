@@ -8,7 +8,7 @@ import io.reactivex.Single
 import java.util.*
 
 class ShowRepository(private val showDao: ShowDao) {
-    fun getAllSubscribedShows(): Flowable<List<ShowModel>> = showDao.loadAllSubscribed()
+    fun getSubscribed(): Flowable<List<ShowModel>> = showDao.getSubscribed()
 
     fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
         emitter.onSuccess(
@@ -28,8 +28,8 @@ class ShowRepository(private val showDao: ShowDao) {
         )
     }
 
-    fun notUpdatedInLast(interval: Long): Maybe<List<ShowModel>> {
+    fun getSubscribedAndLastUpdatedBefore(interval: Long): Maybe<List<ShowModel>> {
         val compareTime = Date().time - interval
-        return showDao.loadSubscribedLastUpdatedBefore(compareTime)
+        return showDao.getSubscribedAndLastUpdatedBefore(compareTime)
     }
 }

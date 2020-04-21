@@ -12,7 +12,7 @@ class EpisodeDetailsViewModel @Inject constructor(
     private val schedulerProvider: SchedulerProvider
 ) : ViewModel() {
     fun getEpisodeDetails(id: Long): Flowable<EpisodeWithShowDetailsModel> =
-        episodeRepository.getEpisodeWithShow(id)
+        episodeRepository.getById(id)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 }

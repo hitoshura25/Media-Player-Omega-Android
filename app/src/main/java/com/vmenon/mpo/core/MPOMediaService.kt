@@ -35,7 +35,6 @@ import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowDetailsModel
-import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
 import io.reactivex.disposables.CompositeDisposable
 
@@ -728,11 +727,15 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
 
-                    subscriptions.add(episodeRepository.getEpisodeWithShow(mediaType.id).firstElement()
+                    subscriptions.add(episodeRepository.getById(mediaType.id).firstElement()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.main())
-                        .subscribe { episode ->
-                            playEpisode(mediaId, episode.episode, episode.showDetails)
+                        .subscribe { episodeWithShowDetails ->
+                            playEpisode(
+                                mediaId,
+                                episodeWithShowDetails.episode,
+                                episodeWithShowDetails.showDetails
+                            )
                         }
 
                     )

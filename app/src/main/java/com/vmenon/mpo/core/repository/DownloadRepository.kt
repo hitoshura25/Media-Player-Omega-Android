@@ -18,8 +18,8 @@ class DownloadRepository(
         Context.DOWNLOAD_SERVICE
     ) as DownloadManager
 
-    fun getAllDownloads(): Flowable<List<QueuedDownloadModel>> =
-        downloadDao.loadDownloadsWithShowAndEpisode().map { savedDownloads ->
+    fun getAllQueued(): Flowable<List<QueuedDownloadModel>> =
+        downloadDao.getAllWithShowAndEpisodeDetails().map { savedDownloads ->
             val downloadListItems = ArrayList<QueuedDownloadModel>()
             val savedDownloadMap = savedDownloads.map {
                 it.download.details.downloadManagerId to it
@@ -35,12 +35,12 @@ class DownloadRepository(
                 val downloaded = cursor.getInt(
                     cursor.getColumnIndex(COLUMN_BYTES_DOWNLOADED_SO_FAR)
                 )
-                savedDownloadMap[id]?.let { savedDownload ->
+                savedDownloadMap[id]?.let { savedDownloadWithShowAndEpisode ->
                     downloadListItems.add(
                         QueuedDownloadModel(
-                            download = savedDownload.download,
-                            show = savedDownload.show,
-                            episode = savedDownload.episode,
+                            download = savedDownloadWithShowAndEpisode.download,
+                            show = savedDownloadWithShowAndEpisode.show,
+                            episode = savedDownloadWithShowAndEpisode.episode,
                             progress = downloaded,
                             total = if (totalSize == -1) 0 else totalSize
                         )
@@ -62,11 +62,11 @@ class DownloadRepository(
         )
     }
 
-    fun deleteDownload(downloadId: Long): Completable = Completable.create { emitter ->
+    fun delete(downloadId: Long): Completable = Completable.create { emitter ->
         downloadDao.delete(downloadId)
         emitter.onComplete()
     }
 
-    fun byDownloadManagerId(downloadManagerId: Long) =
-        downloadDao.byDownloadManagerId(downloadManagerId)
+    fun getByDownloadManagerId(downloadManagerId: Long) =
+        downloadDao.getWithShowAndEpisodeDetailsByDownloadManagerId(downloadManagerId)
 }
