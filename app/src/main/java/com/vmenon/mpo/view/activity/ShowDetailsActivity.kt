@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.di.AppComponent
+import com.vmenon.mpo.model.EpisodeDetailsModel
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowDetailsAndEpisodesModel
 import com.vmenon.mpo.viewmodel.ShowDetailsViewModel
@@ -97,7 +98,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     private fun displayDetails(showDetails: ShowDetailsAndEpisodesModel) {
         show = showDetails
         @Suppress("DEPRECATION")
-        showDescription.text = Html.fromHtml(showDetails.showDescription)
+        showDescription.text = Html.fromHtml(showDetails.showDetails.showDescription)
         Glide.with(this).load(showDetails.showDetails.showArtworkUrl).fitCenter().into(showImage)
 
         episodesList.setHasFixedSize(true)
@@ -107,15 +108,17 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             showDetails.showDetails,
             showDetails.episodes.map {
                 EpisodeModel(
-                    episodeName = it.episodeName,
-                    description = it.description,
-                    published = it.published,
-                    type = it.type,
-                    downloadUrl = it.downloadUrl,
-                    length = it.length,
-                    episodeArtworkUrl = it.episodeArtworkUrl,
-                    episodeShowId = 0L,
-                    filename = ""
+                    details = EpisodeDetailsModel(
+                        episodeName = it.episodeName,
+                        description = it.description,
+                        published = it.published,
+                        type = it.type,
+                        downloadUrl = it.downloadUrl,
+                        length = it.length,
+                        episodeArtworkUrl = it.episodeArtworkUrl,
+                        filename = ""
+                    ),
+                    showId = 0L
                 )
             }
         ).apply { setListener(this@ShowDetailsActivity) }

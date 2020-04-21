@@ -7,9 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.LibraryAdapter
-import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeAndShowModel
+import com.vmenon.mpo.model.EpisodeWithShowDetailsModel
 import com.vmenon.mpo.viewmodel.LibraryViewModel
 import kotlinx.android.synthetic.main.activity_library.*
 import javax.inject.Inject
@@ -54,9 +53,9 @@ class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedList
         )
     }
 
-    override fun onEpisodeSelected(episode: EpisodeAndShowModel) {
+    override fun onEpisodeSelected(episode: EpisodeWithShowDetailsModel) {
         val intent = Intent(this, EpisodeDetailsActivity::class.java)
-        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episode.episode.episodeId)
+        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episode.episode.id)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }

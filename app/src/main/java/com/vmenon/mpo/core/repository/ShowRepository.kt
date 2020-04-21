@@ -12,14 +12,14 @@ class ShowRepository(private val showDao: ShowDao) {
 
     fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
         emitter.onSuccess(
-            if (show.showId == 0L) {
-                val existingShow = showDao.getByName(show.showDetails.showName).blockingGet()
+            if (show.id == 0L) {
+                val existingShow = showDao.getByName(show.details.showName).blockingGet()
                 if (existingShow != null) {
-                    existingShow.isSubscribed = show.isSubscribed
+                    existingShow.details.isSubscribed = show.details.isSubscribed
                     showDao.update(existingShow)
                     existingShow
                 } else {
-                    show.copy(showId = showDao.insert(show))
+                    show.copy(id = showDao.insert(show))
                 }
             } else {
                 showDao.update(show)

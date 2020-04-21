@@ -21,7 +21,7 @@ object MediaHelper {
     }
 
     fun createMediaId(episode: EpisodeModel): String {
-        return EPISODE_MEDIA_PREFIX + ":" + episode.episodeId
+        return EPISODE_MEDIA_PREFIX + ":" + episode.id
     }
 
     fun getMediaTypeFromMediaId(mediaId: String): MediaType? {

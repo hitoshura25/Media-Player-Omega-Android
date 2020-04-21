@@ -32,7 +32,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.drawable.ic_play_arrow_white_48dp
 
     override val collapsedToolbarTitle: CharSequence
-        get() = show?.showDetails?.showName ?: ""
+        get() = show?.details?.showName ?: ""
 
     override val expandedToolbarTitle: CharSequence
         get() = ""
@@ -72,24 +72,24 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
                     { episodeDetails ->
-                        episodeName.text = episodeDetails.episode.episodeName
+                        episodeName.text = episodeDetails.episode.details.episodeName
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeDetails.episode.description.replace(
+                            episodeDetails.episode.details.description.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
                             )
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
-                            Date(episodeDetails.episode.published)
+                            Date(episodeDetails.episode.details.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.showArtworkUrl)
+                            .load(episodeDetails.showDetails.showArtworkUrl)
                             .into(appBarImage)
 
                         episodeImage.visibility = View.VISIBLE
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.showArtworkUrl).fitCenter()
+                            .load(episodeDetails.showDetails.showArtworkUrl).fitCenter()
                             .into(episodeImage)
                     },
                     { error ->

@@ -51,7 +51,8 @@ class ShowSearchRepository(
                                     showArtworkUrl = show.artworkUrl,
                                     author = show.author,
                                     feedUrl = it,
-                                    genres = show.genres
+                                    genres = show.genres,
+                                    showDescription = ""
                                 ),
                                 showSearchResultsId = 0L,
                                 showSearchResultsSearchId = showSearchId
@@ -75,10 +76,11 @@ class ShowSearchRepository(
         ).flatMapPublisher { showDetails ->
             Flowable.just(
                 ShowDetailsAndEpisodesModel(
-                    showDetails = showSearchResult.showDetails,
-                    showDescription = showDetails.description,
+                    showDetails = showSearchResult.showDetails.copy(
+                        showDescription = showDetails.description
+                    ),
                     episodes = showDetails.episodes.map { episode ->
-                        EpisodeModel(
+                        EpisodeDetailsModel(
                             episodeName = episode.name,
                             episodeArtworkUrl = episode.artworkUrl,
                             description = episode.description,
@@ -86,7 +88,6 @@ class ShowSearchRepository(
                             length = episode.length,
                             published = episode.published,
                             type = episode.type,
-                            episodeShowId = 0L,
                             filename = ""
                         )
                     })

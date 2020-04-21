@@ -19,7 +19,7 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeAndShowModel
+import com.vmenon.mpo.model.EpisodeWithShowDetailsModel
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
@@ -38,7 +38,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
-    private lateinit var episode: EpisodeAndShowModel
+    private lateinit var episode: EpisodeWithShowDetailsModel
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -279,8 +279,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     }
 
     private fun updateUIFromMedia() {
-        Glide.with(this).load(episode.show.showDetails.showArtworkUrl).fitCenter().into(artworkImage!!)
-        mediaTitle.text = episode.episode.episodeName
+        Glide.with(this).load(episode.showDetails.showArtworkUrl).fitCenter().into(artworkImage!!)
+        mediaTitle.text = episode.episode.details.episodeName
     }
 
     private fun scheduleSeekbarUpdate() {

@@ -26,10 +26,11 @@ class ShowDetailsViewModel @Inject constructor(
     fun subscribeToShow(showDetails: ShowDetailsModel): Single<ShowModel> =
         showRepository.save(
             ShowModel(
-                showDetails = showDetails,
-                lastEpisodePublished = 0L,
-                lastUpdate = 0L,
-                isSubscribed = true
+                details = showDetails.copy(
+                    lastEpisodePublished = 0L,
+                    lastUpdate = 0L,
+                    isSubscribed = true
+                )
             )
         ).flatMap(this::fetchInitialUpdate)
             .subscribeOn(schedulerProvider.io())

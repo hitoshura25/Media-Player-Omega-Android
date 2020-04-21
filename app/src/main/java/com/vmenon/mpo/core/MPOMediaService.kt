@@ -34,6 +34,7 @@ import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.ShowDetailsModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.util.MediaHelper
 import io.reactivex.disposables.CompositeDisposable
@@ -531,18 +532,18 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: ShowModel) {
+    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: ShowDetailsModel) {
         if (requestedMediaId == mediaId) {
-            val mediaFile = File(episode.filename)
+            val mediaFile = File(episode.details.filename)
             val metadata = MediaMetadataCompat.Builder().putString(
                 MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
             )
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showDetails.showName)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.showDetails.author)
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
-                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.showDetails.genres))
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showDetails.showArtworkUrl)
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.episodeName)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showName)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.details.length)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showArtworkUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.details.episodeName)
                 .build()
             handlePlayRequest(mediaFile)
             mediaSession.setMetadata(metadata)
@@ -731,7 +732,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.main())
                         .subscribe { episode ->
-                            playEpisode(mediaId, episode.episode, episode.show)
+                            playEpisode(mediaId, episode.episode, episode.showDetails)
                         }
 
                     )

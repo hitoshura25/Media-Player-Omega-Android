@@ -5,5 +5,9 @@ data class ShowDetailsModel(
     val showArtworkUrl: String,
     val genres: List<String>,
     val author: String,
-    val feedUrl: String
+    val feedUrl: String,
+    val showDescription: String,
+    var lastUpdate: Long = -1L,
+    var lastEpisodePublished: Long = -1L,
+    var isSubscribed: Boolean = false
 )

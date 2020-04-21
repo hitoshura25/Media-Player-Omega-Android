@@ -21,7 +21,9 @@ class DownloadRepository(
     fun getAllDownloads(): Flowable<List<QueuedDownloadModel>> =
         downloadDao.loadDownloadsWithShowAndEpisode().map { savedDownloads ->
             val downloadListItems = ArrayList<QueuedDownloadModel>()
-            val savedDownloadMap = savedDownloads.map { it.download.downloadManagerId to it}.toMap()
+            val savedDownloadMap = savedDownloads.map {
+                it.download.details.downloadManagerId to it
+            }.toMap()
             val downloadManagerIds = savedDownloadMap.keys
 
             val cursor = downloadManager.query(
@@ -51,8 +53,8 @@ class DownloadRepository(
 
     fun save(downloadModel: DownloadModel): Single<DownloadModel> = Single.create { emitter ->
         emitter.onSuccess(
-            if (downloadModel.downloadId == 0L) {
-                downloadModel.copy(downloadId = downloadDao.insert(downloadModel))
+            if (downloadModel.id == 0L) {
+                downloadModel.copy(id = downloadDao.insert(downloadModel))
             } else {
                 downloadDao.update(downloadModel)
                 downloadModel

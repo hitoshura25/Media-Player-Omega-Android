@@ -8,11 +8,8 @@ import androidx.room.PrimaryKey
 @Entity(indices = [Index(value = ["showName"], unique = true)], tableName = "show")
 data class ShowModel(
     @Embedded
-    val showDetails: ShowDetailsModel,
+    val details: ShowDetailsModel,
 
     @PrimaryKey(autoGenerate = true)
-    val showId: Long = 0L,
-    var lastUpdate: Long = -1L,
-    var lastEpisodePublished: Long = -1L,
-    var isSubscribed: Boolean = false
+    val id: Long = 0L
 )

@@ -1,29 +1,27 @@
 package com.vmenon.mpo.model
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     foreignKeys = [
         ForeignKey(
             entity = ShowModel::class,
-            parentColumns = arrayOf("showId"),
-            childColumns = arrayOf("downloadShowId")
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("showId")
         ),
         ForeignKey(
             entity = EpisodeModel::class,
-            parentColumns = arrayOf("episodeId"),
-            childColumns = arrayOf("downloadEpisodeId")
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("episodeId")
         )
     ],
-    indices = [Index("downloadShowId"), Index("downloadEpisodeId")],
+    indices = [Index("showId"), Index("episodeId")],
     tableName = "downloads"
 )
 data class DownloadModel(
-    @PrimaryKey(autoGenerate = true) val downloadId: Long = 0L,
-    val downloadShowId: Long,
-    val downloadEpisodeId: Long,
-    val downloadManagerId: Long
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val showId: Long,
+    val episodeId: Long,
+    @Embedded
+    val details: DownloadDetailsModel
 )
