@@ -26,21 +26,6 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun provideDownloadManager(
-        downloadRepository: DownloadRepository,
-        episodeRepository: EpisodeRepository,
-        showRepository: ShowRepository
-    ): DownloadManager {
-        return DownloadManager(
-            application.applicationContext,
-            downloadRepository,
-            episodeRepository,
-            showRepository
-        )
-    }
-
-    @Provides
-    @Singleton
     fun providePlayer(): MPOPlayer =
         MPOExoPlayer(application)
 
@@ -60,11 +45,11 @@ class AppModule(private val application: Application) {
         service: MediaPlayerOmegaService,
         episodeRepository: EpisodeRepository,
         showRepository: ShowRepository,
-        downloadManager: DownloadManager
+        downloadRepository: DownloadRepository
     ): ShowUpdateManager = ShowUpdateManager(
         service,
         showRepository,
         episodeRepository,
-        downloadManager
+        downloadRepository
     )
 }

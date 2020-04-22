@@ -3,6 +3,7 @@ package com.vmenon.mpo.core
 import android.text.TextUtils
 import android.util.Log
 import com.vmenon.mpo.api.Episode
+import com.vmenon.mpo.core.repository.DownloadRepository
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeDetailsModel
@@ -16,7 +17,7 @@ class ShowUpdateManager(
     private val service: MediaPlayerOmegaService,
     private val showRepository: ShowRepository,
     private val episodeRepository: EpisodeRepository,
-    private val downloadManager: DownloadManager
+    private val downloadRepository: DownloadRepository
 ) {
     fun updateAllShows(): Completable =
         showRepository.getSubscribedAndLastUpdatedBefore((1000 * 60 * 5).toLong())
@@ -65,7 +66,7 @@ class ShowUpdateManager(
                 showId = show.id
             )
         ).flatMap { savedEpisode ->
-            downloadManager.queueDownload(show, savedEpisode)
+            downloadRepository.queueDownload(show, savedEpisode)
         }).flatMapCompletable {
             show.details.lastUpdate = Date().time
             show.details.lastEpisodePublished = episode.published

@@ -1,6 +1,7 @@
 package com.vmenon.mpo.model
 
 import androidx.room.*
+import com.vmenon.mpo.core.persistence.BaseEntity
 
 @Entity(
     foreignKeys = [ForeignKey(
@@ -12,8 +13,10 @@ import androidx.room.*
     tableName = "episode"
 )
 data class EpisodeModel(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    @PrimaryKey(autoGenerate = true) override val id: Long = BaseEntity.UNSAVED_ID,
     val showId: Long,
     @Embedded
     val details: EpisodeDetailsModel
-)
+) : BaseEntity<EpisodeModel> {
+    override fun copyWithNewId(newId: Long): EpisodeModel = copy(id = newId)
+}

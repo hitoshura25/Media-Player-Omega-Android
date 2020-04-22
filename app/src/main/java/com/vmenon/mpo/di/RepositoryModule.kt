@@ -27,8 +27,13 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideDownloadRepository(application: Application, downloadDao: DownloadDao) =
-        DownloadRepository(application.applicationContext, downloadDao)
+    fun provideDownloadRepository(
+        application: Application,
+        downloadDao: DownloadDao,
+        episodeDao: EpisodeDao,
+        showDao: ShowDao
+    ) =
+        DownloadRepository(application.applicationContext, downloadDao, episodeDao, showDao)
 
     @Provides
     @Singleton

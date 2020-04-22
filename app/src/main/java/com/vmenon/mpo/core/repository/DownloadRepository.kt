@@ -3,16 +3,24 @@ package com.vmenon.mpo.core.repository
 import android.app.DownloadManager
 import android.app.DownloadManager.*
 import android.content.Context
+import android.net.Uri
+import android.util.Log
+import android.webkit.URLUtil
 import com.vmenon.mpo.core.persistence.DownloadDao
-import com.vmenon.mpo.model.QueuedDownloadModel
-import com.vmenon.mpo.model.DownloadModel
+import com.vmenon.mpo.core.persistence.EpisodeDao
+import com.vmenon.mpo.core.persistence.ShowDao
+import com.vmenon.mpo.model.*
+import com.vmenon.mpo.util.writeToFile
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.Completable
+import java.io.File
 
 class DownloadRepository(
     val context: Context,
-    private val downloadDao: DownloadDao
+    private val downloadDao: DownloadDao,
+    private val episodeDao: EpisodeDao,
+    private val showDao: ShowDao
 ) {
     private val downloadManager: DownloadManager = context.getSystemService(
         Context.DOWNLOAD_SERVICE
@@ -51,22 +59,76 @@ class DownloadRepository(
             downloadListItems
         }
 
-    fun save(downloadModel: DownloadModel): Single<DownloadModel> = Single.create { emitter ->
-        emitter.onSuccess(
-            if (downloadModel.id == 0L) {
-                downloadModel.copy(id = downloadDao.insert(downloadModel))
-            } else {
-                downloadDao.update(downloadModel)
-                downloadModel
-            }
+    fun queueDownload(
+        showDetails: ShowDetailsModel,
+        episode: EpisodeModel
+    ) = createShowAndEpisodeForDownload(showDetails, episode).flatMap { showAndEpisode ->
+        queueDownload(showAndEpisode.first, showAndEpisode.second)
+    }
+
+    fun queueDownload(show: ShowModel, episode: EpisodeModel) = Single.fromCallable {
+        val downloadManagerId = downloadManager.enqueue(
+            Request(Uri.parse(episode.details.downloadUrl))
+                .setTitle(episode.details.episodeName)
         )
+
+        val download = DownloadModel(
+            showId = show.id,
+            episodeId = episode.id,
+            details = DownloadDetailsModel(downloadManagerId = downloadManagerId)
+        )
+        val savedDownload = downloadDao.insertOrUpdate(download)
+        Log.d("MPO", "Queued download: $download, ${episode.details.downloadUrl}")
+        savedDownload
     }
 
-    fun delete(downloadId: Long): Completable = Completable.create { emitter ->
-        downloadDao.delete(downloadId)
-        emitter.onComplete()
+    fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
+        val downloadWithShowAndEpisode =
+            downloadDao.getWithShowAndEpisodeDetailsByDownloadManagerId(
+                downloadManagerId
+            ).firstElement().blockingGet()
+
+        if (downloadWithShowAndEpisode != null) {
+            val filename = URLUtil.guessFileName(
+                downloadWithShowAndEpisode.episode.downloadUrl,
+                null,
+                null
+            )
+            val showDir = File(context.filesDir, downloadWithShowAndEpisode.show.showName)
+            showDir.mkdir()
+            val episodeFile = File(showDir, filename)
+            downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
+            downloadWithShowAndEpisode.episode.filename = episodeFile.path
+            episodeDao.insertOrUpdate(
+                EpisodeModel(
+                    details = downloadWithShowAndEpisode.episode,
+                    showId = downloadWithShowAndEpisode.download.showId,
+                    id = downloadWithShowAndEpisode.download.episodeId
+                )
+            )
+            downloadDao.delete(downloadWithShowAndEpisode.download.id)
+        }
     }
 
-    fun getByDownloadManagerId(downloadManagerId: Long) =
-        downloadDao.getWithShowAndEpisodeDetailsByDownloadManagerId(downloadManagerId)
+    private fun createShowAndEpisodeForDownload(
+        showDetails: ShowDetailsModel,
+        episode: EpisodeModel
+    ) = Single.fromCallable {
+        val savedShow = showDao.insertOrUpdate(
+            ShowModel(
+                details = showDetails.copy(
+                    lastEpisodePublished = 0L,
+                    lastUpdate = 0L
+                )
+            )
+        )
+
+        val savedEpisode = episodeDao.insertOrUpdate(
+            EpisodeModel(
+                details = episode.details,
+                showId = savedShow.id
+            )
+        )
+        Pair(savedShow, savedEpisode)
+    }
 }

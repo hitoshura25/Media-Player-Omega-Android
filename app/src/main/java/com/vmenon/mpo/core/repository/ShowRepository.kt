@@ -10,22 +10,20 @@ import java.util.*
 class ShowRepository(private val showDao: ShowDao) {
     fun getSubscribed(): Flowable<List<ShowModel>> = showDao.getSubscribed()
 
-    fun save(show: ShowModel): Single<ShowModel> = Single.create { emitter ->
-        emitter.onSuccess(
-            if (show.id == 0L) {
-                val existingShow = showDao.getByName(show.details.showName).blockingGet()
-                if (existingShow != null) {
-                    existingShow.details.isSubscribed = show.details.isSubscribed
-                    showDao.update(existingShow)
-                    existingShow
-                } else {
-                    show.copy(id = showDao.insert(show))
-                }
+    fun save(show: ShowModel): Single<ShowModel> = Single.fromCallable {
+        if (show.id == 0L) {
+            val existingShow = showDao.getByName(show.details.showName).blockingGet()
+            if (existingShow != null) {
+                existingShow.details.isSubscribed = show.details.isSubscribed
+                showDao.update(existingShow)
+                existingShow
             } else {
-                showDao.update(show)
-                show
+                show.copy(id = showDao.insert(show))
             }
-        )
+        } else {
+            showDao.update(show)
+            show
+        }
     }
 
     fun getSubscribedAndLastUpdatedBefore(interval: Long): Maybe<List<ShowModel>> {
