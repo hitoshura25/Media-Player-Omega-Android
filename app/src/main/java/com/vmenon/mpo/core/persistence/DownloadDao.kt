@@ -2,22 +2,30 @@ package com.vmenon.mpo.core.persistence
 
 import androidx.room.*
 import com.vmenon.mpo.model.DownloadModel
+import com.vmenon.mpo.model.DownloadWithShowAndEpisodeDetailsModel
 import io.reactivex.Flowable
 
 @Dao
-interface DownloadDao {
-    @Insert
-    fun insert(download: DownloadModel): Long
+abstract class DownloadDao : BaseDao<DownloadModel> {
+    @Query(
+        """
+        SELECT * from downloads 
+        INNER JOIN episode on downloads.episodeId = episode.id
+        INNER JOIN show on downloads.showId = show.id
+        WHERE downloadManagerId = :id
+        """
+    )
+    abstract fun getWithShowAndEpisodeDetailsByDownloadManagerId(id: Long): Flowable<DownloadWithShowAndEpisodeDetailsModel>
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(download: DownloadModel)
-
-    @Query("SELECT * FROM downloads")
-    fun load(): Flowable<List<DownloadModel>>
-
-    @Query("SELECT * from downloads WHERE id = :id")
-    fun byId(id: Long): Flowable<DownloadModel>
+    @Query(
+        """
+        SELECT * from downloads 
+        INNER JOIN episode on downloads.episodeId = episode.id
+        INNER JOIN show on downloads.showId = show.id
+        """
+    )
+    abstract fun getAllWithShowAndEpisodeDetails(): Flowable<List<DownloadWithShowAndEpisodeDetailsModel>>
 
     @Query("DELETE FROM downloads WHERE id = :id")
-    fun delete(id: Long)
+    abstract fun delete(id: Long)
 }

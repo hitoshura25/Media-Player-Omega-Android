@@ -32,7 +32,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.drawable.ic_play_arrow_white_48dp
 
     override val collapsedToolbarTitle: CharSequence
-        get() = show?.showDetails?.name ?: ""
+        get() = show?.details?.showName ?: ""
 
     override val expandedToolbarTitle: CharSequence
         get() = ""
@@ -71,25 +71,25 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         subscriptions.add(
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
-                    { episodeDetails ->
-                        episodeName.text = episodeDetails.episode.name
+                    { episodeWithShowDetails ->
+                        episodeName.text = episodeWithShowDetails.episode.details.episodeName
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeDetails.episode.description.replace(
+                            episodeWithShowDetails.episode.details.description.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
                             )
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
-                            Date(episodeDetails.episode.published)
+                            Date(episodeWithShowDetails.episode.details.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.artworkUrl)
+                            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
                             .into(appBarImage)
 
                         episodeImage.visibility = View.VISIBLE
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeDetails.show.showDetails.artworkUrl).fitCenter()
+                            .load(episodeWithShowDetails.showDetails.showArtworkUrl).fitCenter()
                             .into(episodeImage)
                     },
                     { error ->

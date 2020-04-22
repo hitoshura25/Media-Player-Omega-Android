@@ -73,17 +73,17 @@ class EpisodesAdapter(private val showDetails: ShowDetailsModel, private val epi
         val episode = episodes[position]
         holder.episode = episode
         holder.showDetails = showDetails
-        holder.nameText.text = episode.name
+        holder.nameText.text = episode.details.episodeName
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+            episode.details.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
-            Date(episode.published)
+            Date(episode.details.published)
         )
 
         Glide.with(holder.thumbnailImage.context)
-            .load(episode.artworkUrl)
+            .load(episode.details.episodeArtworkUrl ?: showDetails.showArtworkUrl)
             .fitCenter()
             .into(holder.thumbnailImage)
         holder.thumbnailImage.visibility = View.VISIBLE

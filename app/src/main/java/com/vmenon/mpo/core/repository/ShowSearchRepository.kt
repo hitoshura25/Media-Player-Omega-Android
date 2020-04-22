@@ -17,7 +17,7 @@ class ShowSearchRepository(
 
     fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultsModel>> {
         return showSearchResultsProcessors[term].startWith(
-            showSearchResultDao.loadSearchResults(term).firstElement().toFlowable()
+            showSearchResultDao.getBySearchTerm(term).firstElement().toFlowable()
         )
     }
 
@@ -34,11 +34,11 @@ class ShowSearchRepository(
                 val showSearch = showSearchResultDao.getSearchForTerm(keyword).blockingGet()
                 val showSearchId: Long
                 if (showSearch != null) {
-                    showSearchId = showSearch.id
-                    showSearchResultDao.deleteResultsForSearch(showSearch.id)
+                    showSearchId = showSearch.showSearchId
+                    showSearchResultDao.deleteResultsForSearch(showSearch.showSearchId)
                 } else {
                     val newSearch = ShowSearchModel(searchTerm = keyword)
-                    showSearchId = showSearchResultDao.saveSearch(newSearch)
+                    showSearchId = showSearchResultDao.save(newSearch)
                 }
                 val searchResults = ArrayList<ShowSearchResultsModel>()
                 // TODO try sorting on server...
@@ -47,20 +47,21 @@ class ShowSearchRepository(
                         searchResults.add(
                             ShowSearchResultsModel(
                                 showDetails = ShowDetailsModel(
-                                    name = show.name,
-                                    artworkUrl = show.artworkUrl,
+                                    showName = show.name,
+                                    showArtworkUrl = show.artworkUrl,
                                     author = show.author,
                                     feedUrl = it,
-                                    genres = show.genres
+                                    genres = show.genres,
+                                    showDescription = ""
                                 ),
-                                id = 0L,
-                                showSearchId = showSearchId
+                                showSearchResultsId = 0L,
+                                showSearchResultsSearchId = showSearchId
                             )
                         )
                     } ?: Log.e("ShowSearchRepository", "FeedUrl null! $show")
                 }
-                showSearchResultDao.saveSearchResults(searchResults).forEachIndexed { index, id ->
-                    searchResults[index] = searchResults[index].copy(id = id)
+                showSearchResultDao.save(searchResults).forEachIndexed { index, id ->
+                    searchResults[index] = searchResults[index].copy(showSearchResultsId = id)
                 }
                 showSearchResultsProcessors[keyword].offer(searchResults)
             }
@@ -75,18 +76,18 @@ class ShowSearchRepository(
         ).flatMapPublisher { showDetails ->
             Flowable.just(
                 ShowDetailsAndEpisodesModel(
-                    showDetails = showSearchResult.showDetails,
-                    showDescription = showDetails.description,
+                    showDetails = showSearchResult.showDetails.copy(
+                        showDescription = showDetails.description
+                    ),
                     episodes = showDetails.episodes.map { episode ->
-                        EpisodeModel(
-                            name = episode.name,
-                            artworkUrl = episode.artworkUrl,
+                        EpisodeDetailsModel(
+                            episodeName = episode.name,
+                            episodeArtworkUrl = episode.artworkUrl,
                             description = episode.description,
                             downloadUrl = episode.downloadUrl,
                             length = episode.length,
                             published = episode.published,
                             type = episode.type,
-                            showId = 0L,
                             filename = ""
                         )
                     })

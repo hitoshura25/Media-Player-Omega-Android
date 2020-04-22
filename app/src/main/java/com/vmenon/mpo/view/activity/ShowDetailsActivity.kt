@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.di.AppComponent
+import com.vmenon.mpo.model.EpisodeDetailsModel
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowDetailsAndEpisodesModel
 import com.vmenon.mpo.viewmodel.ShowDetailsViewModel
@@ -86,7 +87,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show?.showDetails?.name
+            collapsingToolbar.title = show?.showDetails?.showName
             collapsed = true
         } else if (collapsed) {
             collapsingToolbar.title = ""
@@ -97,8 +98,8 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     private fun displayDetails(showDetails: ShowDetailsAndEpisodesModel) {
         show = showDetails
         @Suppress("DEPRECATION")
-        showDescription.text = Html.fromHtml(showDetails.showDescription)
-        Glide.with(this).load(showDetails.showDetails.artworkUrl).fitCenter().into(showImage)
+        showDescription.text = Html.fromHtml(showDetails.showDetails.showDescription)
+        Glide.with(this).load(showDetails.showDetails.showArtworkUrl).fitCenter().into(showImage)
 
         episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(this)
@@ -107,15 +108,17 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             showDetails.showDetails,
             showDetails.episodes.map {
                 EpisodeModel(
-                    name = it.name,
-                    description = it.description,
-                    published = it.published,
-                    type = it.type,
-                    downloadUrl = it.downloadUrl,
-                    length = it.length,
-                    artworkUrl = it.artworkUrl,
-                    showId = 0L,
-                    filename = ""
+                    details = EpisodeDetailsModel(
+                        episodeName = it.episodeName,
+                        description = it.description,
+                        published = it.published,
+                        type = it.type,
+                        downloadUrl = it.downloadUrl,
+                        length = it.length,
+                        episodeArtworkUrl = it.episodeArtworkUrl,
+                        filename = ""
+                    ),
+                    showId = 0L
                 )
             }
         ).apply { setListener(this@ShowDetailsActivity) }
@@ -161,7 +164,11 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     override fun onDownloadEpisode(episode: EpisodeModel) {
         show?.let {
-            showDetailsViewModel.queueDownload(it.showDetails, episode)
+            subscriptions.add(
+                showDetailsViewModel.queueDownload(it.showDetails, episode)
+                    .ignoreElement()
+                    .subscribe {}
+            )
         }
     }
 }

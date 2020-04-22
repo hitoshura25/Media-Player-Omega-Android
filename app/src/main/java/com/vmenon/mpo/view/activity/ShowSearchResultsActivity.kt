@@ -55,7 +55,7 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     override fun onShowSelected(show: ShowSearchResultsModel) {
         val intent = Intent(this, ShowDetailsActivity::class.java)
-        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, show.id)
+        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, show.showSearchResultsId)
         startActivity(intent)
     }
 

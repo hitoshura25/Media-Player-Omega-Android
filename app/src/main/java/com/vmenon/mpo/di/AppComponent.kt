@@ -8,6 +8,7 @@ import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.view.activity.ShowDetailsActivity
 import com.vmenon.mpo.view.activity.ShowSearchResultsActivity
 import com.vmenon.mpo.core.MPOMediaService
+import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 
 import javax.inject.Singleton
@@ -28,6 +29,7 @@ interface AppComponent {
     fun inject(service: MPOMediaService)
 
     fun inject(worker: UpdateAllShowsWorker)
+    fun inject(worker: DownloadCompleteWorker)
 
     fun inject(activity: DownloadsActivity)
     fun inject(activity: EpisodeDetailsActivity)

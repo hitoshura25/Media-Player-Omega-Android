@@ -4,20 +4,20 @@ import androidx.room.*
 
 @Entity(
     indices = [
-        Index(value = ["name"]),
-        Index("showSearchId")
+        Index(value = ["showName"]),
+        Index("showSearchResultsSearchId")
     ],
     tableName = "showSearchResults",
     foreignKeys = [ForeignKey(
         entity = ShowSearchModel::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("showSearchId")
+        parentColumns = arrayOf("showSearchId"),
+        childColumns = arrayOf("showSearchResultsSearchId")
     )]
 )
 data class ShowSearchResultsModel(
     @Embedded
     val showDetails: ShowDetailsModel,
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
-    val showSearchId: Long
+    val showSearchResultsId: Long = 0L,
+    val showSearchResultsSearchId: Long
 )

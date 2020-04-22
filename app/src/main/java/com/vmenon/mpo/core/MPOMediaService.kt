@@ -33,9 +33,8 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.core.repository.EpisodeRepository
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
-import com.vmenon.mpo.core.repository.ShowRepository
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowDetailsModel
 import com.vmenon.mpo.util.MediaHelper
 import io.reactivex.disposables.CompositeDisposable
 
@@ -50,9 +49,6 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     @Inject
     lateinit var episodeRepository: EpisodeRepository
-
-    @Inject
-    lateinit var showRepository: ShowRepository
 
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
@@ -105,7 +101,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             val action = intent.action
             val transportControls = mediaSession.controller
                 .transportControls
-            Log.d(TAG, "Received intent with action " + action)
+            Log.d(TAG, "Received intent with action $action")
             when (action) {
                 NOTIFICATION_ACTION_PAUSE -> transportControls.pause()
                 NOTIFICATION_ACTION_PLAY -> transportControls.play()
@@ -535,18 +531,18 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
     }
 
-    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: ShowModel) {
+    private fun playEpisode(mediaId: String, episode: EpisodeModel, show: ShowDetailsModel) {
         if (requestedMediaId == mediaId) {
-            val mediaFile = File(episode.filename)
+            val mediaFile = File(episode.details.filename)
             val metadata = MediaMetadataCompat.Builder().putString(
                 MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
             )
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showDetails.name)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.showDetails.author)
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
-                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.showDetails.genres))
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showDetails.artworkUrl)
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, show.showName)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, show.author)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.details.length)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, TextUtils.join(" ", show.genres))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, show.showArtworkUrl)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.details.episodeName)
                 .build()
             handlePlayRequest(mediaFile)
             mediaSession.setMetadata(metadata)
@@ -731,22 +727,14 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
 
-                    subscriptions.add(episodeRepository.getEpisode(mediaType.id).firstElement()
+                    subscriptions.add(episodeRepository.getById(mediaType.id).firstElement()
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.main())
-                        .subscribe { episode ->
-                            subscriptions.add(
-                                showRepository.getShow(episode.showId).firstElement()
-                                    .subscribeOn(schedulerProvider.io())
-                                    .observeOn(schedulerProvider.main())
-                                    .subscribe(
-                                        { show ->
-                                            playEpisode(mediaId, episode, show)
-                                        },
-                                        { error ->
-
-                                        }
-                                    )
+                        .subscribe { episodeWithShowDetails ->
+                            playEpisode(
+                                mediaId,
+                                episodeWithShowDetails.episode,
+                                episodeWithShowDetails.showDetails
                             )
                         }
 

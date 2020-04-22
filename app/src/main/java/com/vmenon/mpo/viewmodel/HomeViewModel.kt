@@ -12,7 +12,7 @@ class HomeViewModel @Inject constructor(
     private val schedulerProvider: SchedulerProvider
 ) : ViewModel() {
     fun subscribedShows(): Flowable<List<ShowModel>> =
-        showRepository.getAllSubscribedShows()
+        showRepository.getSubscribed()
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 }

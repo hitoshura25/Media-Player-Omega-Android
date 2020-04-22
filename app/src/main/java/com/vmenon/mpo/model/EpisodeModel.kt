@@ -1,9 +1,7 @@
 package com.vmenon.mpo.model
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
+import com.vmenon.mpo.core.persistence.BaseEntity
 
 @Entity(
     foreignKeys = [ForeignKey(
@@ -15,14 +13,10 @@ import androidx.room.PrimaryKey
     tableName = "episode"
 )
 data class EpisodeModel(
-    val name: String,
-    val description: String,
-    val published: Long,
-    val type: String,
-    val downloadUrl: String,
-    val length: Long,
-    val artworkUrl: String?,
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    @PrimaryKey(autoGenerate = true) override val id: Long = BaseEntity.UNSAVED_ID,
     val showId: Long,
-    var filename: String
-)
+    @Embedded
+    val details: EpisodeDetailsModel
+) : BaseEntity<EpisodeModel> {
+    override fun copyWithNewId(newId: Long): EpisodeModel = copy(id = newId)
+}

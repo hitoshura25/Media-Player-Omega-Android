@@ -1,34 +1,21 @@
 package com.vmenon.mpo.core.persistence
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 
 import com.vmenon.mpo.model.ShowModel
 
-import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Update
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 
 @Dao
-interface ShowDao {
-
-    @Query("SELECT * FROM show where id = :id")
-    fun getById(id: Long): Flowable<ShowModel>
-
-    @Query("SELECT * FROM show where name = :name")
-    fun getByName(name: String): Maybe<ShowModel>
-
-    @Insert
-    fun insert(show: ShowModel): Long
-
-    @Update(onConflict = REPLACE)
-    fun update(show: ShowModel)
+abstract class ShowDao : BaseDao<ShowModel> {
+    @Query("SELECT * FROM show where showName = :name")
+    abstract fun getByName(name: String): Maybe<ShowModel>
 
     @Query("SELECT * FROM show WHERE isSubscribed")
-    fun loadAllSubscribed(): Flowable<List<ShowModel>>
+    abstract fun getSubscribed(): Flowable<List<ShowModel>>
 
     @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
-    fun loadSubscribedLastUpdatedBefore(comparisonTime: Long): Maybe<List<ShowModel>>
+    abstract fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long): Maybe<List<ShowModel>>
 }

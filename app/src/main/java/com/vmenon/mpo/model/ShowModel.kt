@@ -4,15 +4,15 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.vmenon.mpo.core.persistence.BaseEntity
 
-@Entity(indices = [Index(value = ["name"], unique = true)], tableName = "show")
+@Entity(indices = [Index(value = ["showName"], unique = true)], tableName = "show")
 data class ShowModel(
     @Embedded
-    val showDetails: ShowDetailsModel,
+    val details: ShowDetailsModel,
 
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
-    var lastUpdate: Long = -1L,
-    var lastEpisodePublished: Long = -1L,
-    var isSubscribed: Boolean = false
-)
+    override val id: Long = BaseEntity.UNSAVED_ID
+) : BaseEntity<ShowModel> {
+    override fun copyWithNewId(newId: Long): ShowModel = copy(id = newId)
+}

@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 @Entity(indices = [Index(value = ["searchTerm"], unique = true)], tableName = "showSearch")
 data class ShowSearchModel(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    val showSearchId: Long = 0L,
     val searchTerm: String
 )

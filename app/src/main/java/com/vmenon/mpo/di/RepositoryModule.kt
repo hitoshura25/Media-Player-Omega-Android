@@ -1,5 +1,6 @@
 package com.vmenon.mpo.di
 
+import android.app.Application
 import com.vmenon.mpo.core.persistence.DownloadDao
 import com.vmenon.mpo.core.persistence.EpisodeDao
 import com.vmenon.mpo.core.persistence.ShowDao
@@ -26,8 +27,13 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideDownloadRepository(downloadDao: DownloadDao) =
-        DownloadRepository(downloadDao)
+    fun provideDownloadRepository(
+        application: Application,
+        downloadDao: DownloadDao,
+        episodeDao: EpisodeDao,
+        showDao: ShowDao
+    ) =
+        DownloadRepository(application.applicationContext, downloadDao, episodeDao, showDao)
 
     @Provides
     @Singleton
