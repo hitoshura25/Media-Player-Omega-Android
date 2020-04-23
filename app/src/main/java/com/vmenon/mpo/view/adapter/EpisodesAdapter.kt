@@ -12,21 +12,23 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.ShowSearchResultDetailsModel
+import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowDetailsModel
 import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat
 
 import java.util.Date
 
-class EpisodesAdapter(private val showDetails: ShowDetailsModel, private val episodes: List<EpisodeModel>) :
-    RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
+class EpisodesAdapter(
+    private val showDetails: ShowSearchResultDetailsModel
+) : RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onEpisodeSelected(episode: EpisodeModel)
-        fun onDownloadEpisode(episode: EpisodeModel)
+        fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel)
+        fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -35,8 +37,8 @@ class EpisodesAdapter(private val showDetails: ShowDetailsModel, private val epi
         val publishedText: TextView = v.episodeDate
         val thumbnailImage: ImageView = v.episodeImage
         val menuButton: ImageButton = v.episodeMenuButton
-        lateinit var episode: EpisodeModel
-        lateinit var showDetails: ShowDetailsModel
+        lateinit var episode: ShowSearchResultEpisodeModel
+        lateinit var showDetails: ShowSearchResultModel
     }
 
     fun setListener(listener: EpisodeSelectedListener) {
@@ -70,26 +72,26 @@ class EpisodesAdapter(private val showDetails: ShowDetailsModel, private val epi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val episode = episodes[position]
+        val episode = showDetails.episodes[position]
         holder.episode = episode
-        holder.showDetails = showDetails
-        holder.nameText.text = episode.details.episodeName
+        holder.showDetails = showDetails.show
+        holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.details.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+            episode.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
-            Date(episode.details.published)
+            Date(episode.published)
         )
 
         Glide.with(holder.thumbnailImage.context)
-            .load(episode.details.episodeArtworkUrl ?: showDetails.showArtworkUrl)
+            .load(episode.artworkUrl ?: showDetails.show.artWorkUrl)
             .fitCenter()
             .into(holder.thumbnailImage)
         holder.thumbnailImage.visibility = View.VISIBLE
     }
 
     override fun getItemCount(): Int {
-        return episodes.size
+        return showDetails.episodes.size
     }
 }

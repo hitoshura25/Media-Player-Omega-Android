@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.ShowModel
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_episode_details.*
@@ -32,7 +32,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.drawable.ic_play_arrow_white_48dp
 
     override val collapsedToolbarTitle: CharSequence
-        get() = show?.details?.showName ?: ""
+        get() = show?.name ?: ""
 
     override val expandedToolbarTitle: CharSequence
         get() = ""
@@ -72,24 +72,24 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
                     { episodeWithShowDetails ->
-                        episodeName.text = episodeWithShowDetails.episode.details.episodeName
+                        episodeName.text = episodeWithShowDetails.name
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeWithShowDetails.episode.details.description.replace(
+                            episodeWithShowDetails.description.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
                             )
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
-                            Date(episodeWithShowDetails.episode.details.published)
+                            Date(episodeWithShowDetails.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
+                            .load(episodeWithShowDetails.artworkUrl)
                             .into(appBarImage)
 
                         episodeImage.visibility = View.VISIBLE
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.showDetails.showArtworkUrl).fitCenter()
+                            .load(episodeWithShowDetails.artworkUrl).fitCenter()
                             .into(episodeImage)
                     },
                     { error ->

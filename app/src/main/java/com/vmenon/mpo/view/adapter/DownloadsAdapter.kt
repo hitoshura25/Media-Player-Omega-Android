@@ -9,19 +9,19 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.DownloadModel
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.QueuedDownloadModel
 import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong
 
-class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
+class DownloadsAdapter(private val downloads: List<DownloadModel>) :
     RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
         val progressText: TextView = v.progress
         val imageView: ImageView = v.showImage
-        var download: QueuedDownloadModel? = null
+        var download: DownloadModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +38,7 @@ class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val download = downloads[position]
         holder.download = download
-        holder.nameText.text = download.episode.episodeName
+        holder.nameText.text = download.episode.name
 
         var progress: Double =
             if (download.total == 0) 0.0
@@ -48,7 +48,7 @@ class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
         holder.progressText.text = "${progress.roundToLong()}%"
 
         Glide.with(holder.itemView.context)
-            .load(download.episode.episodeArtworkUrl ?: download.show.showArtworkUrl)
+            .load(download.episode.artworkUrl ?: download.episode.show.artworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

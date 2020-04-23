@@ -2,7 +2,7 @@ package com.vmenon.mpo.di
 
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.Constants
-import com.vmenon.mpo.service.MediaPlayerOmegaService
+import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -29,7 +29,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaService {
+    fun provideService(httpClient: OkHttpClient): com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService {
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -39,7 +39,7 @@ class NetworkModule {
             .client(httpClient)
             .build()
 
-        return retrofit.create(MediaPlayerOmegaService::class.java)
+        return retrofit.create(com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService::class.java)
     }
 
     /**

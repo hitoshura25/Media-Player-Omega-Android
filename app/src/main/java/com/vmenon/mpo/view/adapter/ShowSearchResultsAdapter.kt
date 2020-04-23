@@ -10,30 +10,30 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.ShowSearchResultsModel
 import kotlinx.android.synthetic.main.show_result.view.*
 
 class ShowSearchResultsAdapter :
     RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
-    private val shows = ArrayList<ShowSearchResultsModel>()
+    private val shows = ArrayList<ShowSearchResultModel>()
 
     interface ShowSelectedListener {
-        fun onShowSelected(show: ShowSearchResultsModel)
+        fun onShowSelected(show: ShowSearchResultModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.showName
         val imageView: ImageView = v.showImage
-        var show: ShowSearchResultsModel? = null
+        var show: ShowSearchResultModel? = null
     }
 
     fun setListener(listener: ShowSelectedListener) {
         this.listener = listener
     }
 
-    fun update(searchResults: List<ShowSearchResultsModel>, diffResult: DiffUtil.DiffResult) {
+    fun update(searchResults: List<ShowSearchResultModel>, diffResult: DiffUtil.DiffResult) {
         this.shows.clear()
         this.shows.addAll(searchResults)
         diffResult.dispatchUpdatesTo(this)
@@ -57,10 +57,10 @@ class ShowSearchResultsAdapter :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val show = shows[position]
         holder.show = show
-        holder.nameText.text = show.showDetails.showName
+        holder.nameText.text = show.name
 
         Glide.with(holder.itemView.context)
-            .load(show.showDetails.showArtworkUrl)
+            .load(show.artWorkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

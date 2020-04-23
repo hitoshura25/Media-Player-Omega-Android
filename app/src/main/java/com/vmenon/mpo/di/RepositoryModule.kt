@@ -1,12 +1,11 @@
 package com.vmenon.mpo.di
 
 import android.app.Application
-import com.vmenon.mpo.core.persistence.DownloadDao
-import com.vmenon.mpo.core.persistence.EpisodeDao
-import com.vmenon.mpo.core.persistence.ShowDao
-import com.vmenon.mpo.core.persistence.ShowSearchResultDao
-import com.vmenon.mpo.core.repository.*
-import com.vmenon.mpo.service.MediaPlayerOmegaService
+import com.vmenon.mpo.persistence.room.dao.DownloadDao
+import com.vmenon.mpo.persistence.room.dao.EpisodeDao
+import com.vmenon.mpo.persistence.room.dao.ShowDao
+import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
+import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -18,8 +17,8 @@ class RepositoryModule {
     fun provideShowSearchRepository(
         service: MediaPlayerOmegaService,
         showSearchResultDao: ShowSearchResultDao
-    ): ShowSearchRepository {
-        return ShowSearchRepository(
+    ): com.vmenon.mpo.repository.ShowSearchRepository {
+        return com.vmenon.mpo.repository.ShowSearchRepository(
             service,
             showSearchResultDao
         )
@@ -33,15 +32,20 @@ class RepositoryModule {
         episodeDao: EpisodeDao,
         showDao: ShowDao
     ) =
-        DownloadRepository(application.applicationContext, downloadDao, episodeDao, showDao)
+        com.vmenon.mpo.repository.DownloadRepository(
+            application.applicationContext,
+            downloadDao,
+            episodeDao,
+            showDao
+        )
 
     @Provides
     @Singleton
     fun provideEpisodeRepository(episodeDao: EpisodeDao) =
-        EpisodeRepository(episodeDao)
+        com.vmenon.mpo.repository.EpisodeRepository(episodeDao)
 
     @Provides
     @Singleton
-    fun provideShowRepository(showDao: ShowDao) =
-        ShowRepository(showDao)
+    fun provideShowRepository(showDao: ShowDao, service: MediaPlayerOmegaService) =
+        com.vmenon.mpo.repository.ShowRepository(showDao, service)
 }

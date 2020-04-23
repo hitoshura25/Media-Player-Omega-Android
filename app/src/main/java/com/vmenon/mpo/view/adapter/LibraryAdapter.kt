@@ -9,22 +9,22 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.EpisodeModel
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.EpisodeWithShowDetailsModel
 import kotlinx.android.synthetic.main.library_item.view.*
 
-class LibraryAdapter(private val episodes: List<EpisodeWithShowDetailsModel>) :
+class LibraryAdapter(private val episodes: List<EpisodeModel>) :
     RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
     private var listener: LibrarySelectedListener? = null
 
     interface LibrarySelectedListener {
-        fun onEpisodeSelected(episodeWithShowDetails: EpisodeWithShowDetailsModel)
+        fun onEpisodeSelected(episodeWithShowDetails: EpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.episodeName
         val imageView: ImageView = v.episodeImage
-        var episode: EpisodeWithShowDetailsModel? = null
+        var episode: EpisodeModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -45,11 +45,11 @@ class LibraryAdapter(private val episodes: List<EpisodeWithShowDetailsModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episodeWithShowDetails = episodes[position]
         holder.episode = episodeWithShowDetails
-        holder.nameText.text = episodeWithShowDetails.episode.details.episodeName
+        holder.nameText.text = episodeWithShowDetails.name
 
         Glide.with(holder.itemView.context)
-            .load(episodeWithShowDetails.episode.details.episodeArtworkUrl
-                ?: episodeWithShowDetails.showDetails.showArtworkUrl)
+            .load(episodeWithShowDetails.artworkUrl
+                ?: episodeWithShowDetails.show.artworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

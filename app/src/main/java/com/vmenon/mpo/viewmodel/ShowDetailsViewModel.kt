@@ -1,43 +1,51 @@
 package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.vmenom.mpo.model.ShowModel
+import com.vmenom.mpo.model.ShowSearchResultDetailsModel
+import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.core.SchedulerProvider
 import com.vmenon.mpo.core.ShowUpdateManager
-import com.vmenon.mpo.core.repository.DownloadRepository
-import com.vmenon.mpo.core.repository.ShowRepository
-import com.vmenon.mpo.core.repository.ShowSearchRepository
-import com.vmenon.mpo.model.*
+
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
 class ShowDetailsViewModel @Inject constructor(
-    private val showSearchRepository: ShowSearchRepository,
-    private val showRepository: ShowRepository,
+    private val showSearchRepository: com.vmenon.mpo.repository.ShowSearchRepository,
+    private val showRepository: com.vmenon.mpo.repository.ShowRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val downloadRepository: DownloadRepository,
+    private val downloadRepository: com.vmenon.mpo.repository.DownloadRepository,
     private val showUpdateManager: ShowUpdateManager
 ) : ViewModel() {
-    fun getShowDetails(showSearchResultId: Long): Flowable<ShowDetailsAndEpisodesModel> =
+    fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel> =
         showSearchRepository.getShowDetails(showSearchResultId)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
-    fun subscribeToShow(showDetails: ShowDetailsModel): Single<ShowModel> =
+    fun subscribeToShow(showDetails: ShowSearchResultDetailsModel): Single<ShowModel> =
         showRepository.save(
             ShowModel(
-                details = showDetails.copy(
-                    lastEpisodePublished = 0L,
-                    lastUpdate = 0L,
-                    isSubscribed = true
-                )
+                name = showDetails.show.name,
+                artworkUrl = showDetails.show.artWorkUrl,
+                description = showDetails.show.description,
+                genres = showDetails.show.genres,
+                feedUrl = showDetails.show.feedUrl,
+                author = showDetails.show.author,
+                lastEpisodePublished = 0L,
+                lastUpdate = 0L,
+                isSubscribed = true
             )
         ).flatMap(this::fetchInitialUpdate)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
-    fun queueDownload(showDetails: ShowDetailsModel, episode: EpisodeModel) =
-        downloadRepository.queueDownload(showDetails, episode)
+    fun queueDownload(
+        show: ShowSearchResultModel,
+        episode: ShowSearchResultEpisodeModel
+    ) =
+        downloadRepository.queueDownload(show, episode)
 
     private fun fetchInitialUpdate(show: ShowModel): Single<ShowModel> =
         showUpdateManager.updateShow(show).andThen(Single.just(show))

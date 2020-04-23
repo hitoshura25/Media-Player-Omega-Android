@@ -3,7 +3,7 @@ package com.vmenon.mpo.core.work
 import android.content.Context
 import android.util.Log
 import androidx.work.WorkerParameters
-import com.vmenon.mpo.core.repository.DownloadRepository
+import com.vmenon.mpo.repository.DownloadRepository
 import javax.inject.Inject
 
 class DownloadCompleteWorker(

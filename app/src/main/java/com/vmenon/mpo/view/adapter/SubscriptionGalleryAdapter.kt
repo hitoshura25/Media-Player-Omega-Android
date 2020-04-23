@@ -7,9 +7,9 @@ import android.widget.ImageView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
-import com.vmenon.mpo.model.ShowModel
 
 import androidx.recyclerview.widget.RecyclerView
+import com.vmenom.mpo.model.ShowModel
 import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
 class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
@@ -48,7 +48,7 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
         holder.show = show
 
         Glide.with(holder.itemView.context)
-            .load(show.details.showArtworkUrl)
+            .load(show.artworkUrl)
             .fitCenter()
             .crossFade()
             .into(holder.imageView)

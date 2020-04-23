@@ -6,7 +6,7 @@ import androidx.appcompat.widget.Toolbar
 import android.text.Html
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
@@ -18,10 +18,9 @@ import com.vmenon.mpo.view.adapter.EpisodesAdapter
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenom.mpo.model.ShowSearchResultDetailsModel
+import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeDetailsModel
-import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowDetailsAndEpisodesModel
 import com.vmenon.mpo.viewmodel.ShowDetailsViewModel
 import kotlinx.android.synthetic.main.activity_show_details.*
 import kotlinx.android.synthetic.main.show_details_container.*
@@ -33,7 +32,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     lateinit var showDetailsViewModel: ShowDetailsViewModel
 
     private lateinit var collapsingToolbar: CollapsingToolbarLayout
-    private var show: ShowDetailsAndEpisodesModel? = null
+    private var show: ShowSearchResultDetailsModel? = null
 
     private var collapsed = false
     private var scrollRange = -1
@@ -87,7 +86,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show?.showDetails?.showName
+            collapsingToolbar.title = show?.show?.name
             collapsed = true
         } else if (collapsed) {
             collapsingToolbar.title = ""
@@ -95,36 +94,21 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         }
     }
 
-    private fun displayDetails(showDetails: ShowDetailsAndEpisodesModel) {
+    private fun displayDetails(showDetails: ShowSearchResultDetailsModel) {
         show = showDetails
         @Suppress("DEPRECATION")
-        showDescription.text = Html.fromHtml(showDetails.showDetails.showDescription)
-        Glide.with(this).load(showDetails.showDetails.showArtworkUrl).fitCenter().into(showImage)
+        showDescription.text = Html.fromHtml(showDetails.show.description)
+        Glide.with(this).load(showDetails.show.artWorkUrl).fitCenter().into(showImage)
 
         episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(this)
         episodesList.layoutManager = layoutManager
-        episodesList.adapter = EpisodesAdapter(
-            showDetails.showDetails,
-            showDetails.episodes.map {
-                EpisodeModel(
-                    details = EpisodeDetailsModel(
-                        episodeName = it.episodeName,
-                        description = it.description,
-                        published = it.published,
-                        type = it.type,
-                        downloadUrl = it.downloadUrl,
-                        length = it.length,
-                        episodeArtworkUrl = it.episodeArtworkUrl,
-                        filename = ""
-                    ),
-                    showId = 0L
-                )
-            }
-        ).apply { setListener(this@ShowDetailsActivity) }
+        episodesList.adapter = EpisodesAdapter(showDetails).apply {
+            setListener(this@ShowDetailsActivity)
+        }
 
         nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
-            object : ViewTreeObserver.OnGlobalLayoutListener {
+            object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     nestedScrollView.scrollY = 0
                     @Suppress("DEPRECATION")
@@ -136,7 +120,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
         subscribeButton.setOnClickListener {
             subscriptions.add(
-                showDetailsViewModel.subscribeToShow(showDetails.showDetails).ignoreElement()
+                showDetailsViewModel.subscribeToShow(showDetails).ignoreElement()
                     .subscribe(
                         {
                             Snackbar.make(
@@ -158,17 +142,18 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         const val EXTRA_SHOW = "extraShow"
     }
 
-    override fun onEpisodeSelected(episode: EpisodeModel) {
+    override fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel) {
 
     }
 
-    override fun onDownloadEpisode(episode: EpisodeModel) {
-        show?.let {
+    override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
+        show?.let { details ->
             subscriptions.add(
-                showDetailsViewModel.queueDownload(it.showDetails, episode)
+                showDetailsViewModel.queueDownload(details.show, episode)
                     .ignoreElement()
                     .subscribe {}
             )
         }
+
     }
 }

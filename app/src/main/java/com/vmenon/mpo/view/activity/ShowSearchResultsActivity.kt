@@ -12,8 +12,8 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.ShowSearchResultsModel
 import com.vmenon.mpo.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.viewmodel.ShowSearchResultsViewModel
 import kotlinx.android.synthetic.main.activity_show_search_results.*
@@ -25,7 +25,7 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     lateinit var adapter: ShowSearchResultsAdapter
 
-    var searchResults: List<ShowSearchResultsModel> = emptyList()
+    var searchResults: List<ShowSearchResultModel> = emptyList()
 
     override fun inject(appComponent: AppComponent) {
         appComponent.inject(this)
@@ -53,43 +53,46 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
         handleIntent(intent)
     }
 
-    override fun onShowSelected(show: ShowSearchResultsModel) {
+    override fun onShowSelected(show: ShowSearchResultModel) {
         val intent = Intent(this, ShowDetailsActivity::class.java)
-        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, show.showSearchResultsId)
+        intent.putExtra(ShowDetailsActivity.EXTRA_SHOW, show.id)
         startActivity(intent)
     }
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY)
-            title = this.getString(R.string.show_search_title, query)
+            intent.getStringExtra(SearchManager.QUERY)?.let { query ->
+                title = this.getString(R.string.show_search_title, query)
 
-            subscriptions.add(
-                showSearchResultsViewModel.searchShows(query)
-                    .subscribe(
-                        {
+                subscriptions.add(
+                    showSearchResultsViewModel.searchShows(query)
+                        .subscribe(
+                            {
 
-                        },
-                        {
+                            },
+                            {
 
+                            }
+                        )
+                )
+
+                subscriptions.add(
+                    showSearchResultsViewModel.getShowSearchResultsForTerm(query)
+                        .flatMapSingle {
+                            showSearchResultsViewModel.getDiff(
+                                it,
+                                ShowSearchResultsDiff(searchResults, it)
+                            )
                         }
-                    )
-            )
-
-            subscriptions.add(
-                showSearchResultsViewModel.getShowSearchResultsForTerm(query)
-                    .flatMapSingle { showSearchResultsViewModel.getDiff(
-                        it,
-                        ShowSearchResultsDiff(searchResults, it)
-                    )}
-                    .subscribe(
-                        { showsAndDiff ->
-                            this.searchResults = showsAndDiff.first
-                            adapter.update(this.searchResults, showsAndDiff.second)
-                        },
-                        { error -> Log.w("MPO", "Error search for shows", error) }
-                    )
-            )
+                        .subscribe(
+                            { showsAndDiff ->
+                                this.searchResults = showsAndDiff.first
+                                adapter.update(this.searchResults, showsAndDiff.second)
+                            },
+                            { error -> Log.w("MPO", "Error search for shows", error) }
+                        )
+                )
+            }
         }
     }
 }

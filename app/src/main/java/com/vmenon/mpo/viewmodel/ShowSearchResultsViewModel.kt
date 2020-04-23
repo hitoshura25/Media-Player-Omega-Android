@@ -2,16 +2,15 @@ package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
+import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.core.SchedulerProvider
-import com.vmenon.mpo.core.repository.ShowSearchRepository
-import com.vmenon.mpo.model.ShowSearchResultsModel
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
 class ShowSearchResultsViewModel @Inject constructor(
-    private val showSearchRepository: ShowSearchRepository,
+    private val showSearchRepository: com.vmenon.mpo.repository.ShowSearchRepository,
     private val schedulerProvider: SchedulerProvider
 ) : ViewModel() {
 
@@ -20,15 +19,15 @@ class ShowSearchResultsViewModel @Inject constructor(
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
-    fun getShowSearchResultsForTerm(keyword: String): Flowable<List<ShowSearchResultsModel>> =
+    fun getShowSearchResultsForTerm(keyword: String): Flowable<List<ShowSearchResultModel>> =
         showSearchRepository.getShowSearchResultsForTerm(keyword)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
     fun getDiff(
-        newSearchResults: List<ShowSearchResultsModel>,
+        newSearchResults: List<ShowSearchResultModel>,
         callback: DiffUtil.Callback
-    ): Single<Pair<List<ShowSearchResultsModel>, DiffUtil.DiffResult>> =
+    ): Single<Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult>> =
         Single.just(Pair(newSearchResults, DiffUtil.calculateDiff(callback)))
             .subscribeOn(schedulerProvider.computation())
             .observeOn(schedulerProvider.main())

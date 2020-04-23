@@ -14,12 +14,12 @@ import android.view.View
 import android.widget.SeekBar
 
 import com.bumptech.glide.Glide
+import com.vmenom.mpo.model.EpisodeModel
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeWithShowDetailsModel
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
@@ -38,7 +38,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
     lateinit var viewModel: EpisodeDetailsViewModel
 
     private val handler = Handler()
-    private lateinit var episodeWithShowDetails: EpisodeWithShowDetailsModel
+    private lateinit var episodeWithShowDetails: EpisodeModel
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -219,9 +219,7 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                     .subscribe(
                         { episodeWithShowDetails ->
                             this@MediaPlayerActivity.episodeWithShowDetails = episodeWithShowDetails
-                            requestedMediaId = MediaHelper.createMediaId(
-                                episodeWithShowDetails.episode
-                            )
+                            requestedMediaId = MediaHelper.createMediaId(episodeWithShowDetails)
                             updateUIFromMedia()
                         },
                         { error ->
@@ -282,10 +280,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     private fun updateUIFromMedia() {
         Glide.with(this)
-            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
+            .load(episodeWithShowDetails.artworkUrl)
             .fitCenter()
             .into(artworkImage!!)
-        mediaTitle.text = episodeWithShowDetails.episode.details.episodeName
+        mediaTitle.text = episodeWithShowDetails.name
     }
 
     private fun scheduleSeekbarUpdate() {

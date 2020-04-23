@@ -2,7 +2,11 @@ package com.vmenon.mpo.di
 
 import android.app.Application
 import androidx.room.Room
-import com.vmenon.mpo.core.persistence.*
+import com.vmenon.mpo.persistence.*
+import com.vmenon.mpo.persistence.room.dao.DownloadDao
+import com.vmenon.mpo.persistence.room.dao.EpisodeDao
+import com.vmenon.mpo.persistence.room.dao.ShowDao
+import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
