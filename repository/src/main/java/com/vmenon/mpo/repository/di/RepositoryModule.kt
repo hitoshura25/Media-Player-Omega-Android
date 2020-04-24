@@ -1,8 +1,7 @@
 package com.vmenon.mpo.repository.di
 
 import android.app.Application
-import com.vmenon.mpo.api.di.ApiModule
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
+import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
@@ -15,15 +14,15 @@ import com.vmenon.mpo.repository.ShowSearchRepository
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [RoomModule::class, ApiModule::class])
+@Module(includes = [RoomModule::class])
 class RepositoryModule {
     @Provides
     fun provideShowSearchRepository(
-        service: MediaPlayerOmegaService,
+        api: MediaPlayerOmegaApi,
         showSearchResultDao: ShowSearchResultDao
     ): ShowSearchRepository {
         return ShowSearchRepository(
-            service,
+            api,
             showSearchResultDao
         )
     }
@@ -47,6 +46,6 @@ class RepositoryModule {
         EpisodeRepository(episodeDao)
 
     @Provides
-    fun provideShowRepository(showDao: ShowDao, service: MediaPlayerOmegaService) =
-        ShowRepository(showDao, service)
+    fun provideShowRepository(showDao: ShowDao, api: MediaPlayerOmegaApi) =
+        ShowRepository(showDao, api)
 }

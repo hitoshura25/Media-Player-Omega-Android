@@ -1,6 +1,7 @@
 package com.vmenon.mpo.repository.di
 
 import android.app.Application
+import com.vmenon.mpo.api.di.ApiComponent
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository
@@ -11,6 +12,9 @@ import dagger.Component
 @Component(
     modules = [
         RepositoryModule::class
+    ],
+    dependencies = [
+        ApiComponent::class
     ]
 )
 @RepositoryScope
@@ -19,6 +23,7 @@ interface RepositoryComponent {
     interface Builder {
         @BindsInstance
         fun application(application: Application): Builder
+        fun apiComponent(component: ApiComponent): Builder
         fun build(): RepositoryComponent
     }
 

@@ -4,6 +4,7 @@ import androidx.multidex.MultiDexApplication
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.vmenon.mpo.api.di.DaggerApiComponent
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.di.AppModule
@@ -18,7 +19,10 @@ class MPOApplication : MultiDexApplication() {
         super.onCreate()
         this.appComponent = DaggerAppComponent.builder()
             .appModule(AppModule(this))
-            .repositoryComponent(DaggerRepositoryComponent.builder().application(this).build())
+            .repositoryComponent(DaggerRepositoryComponent.builder()
+                .application(this)
+                .apiComponent(DaggerApiComponent.builder().build())
+                .build())
             .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(

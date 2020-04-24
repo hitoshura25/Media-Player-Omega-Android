@@ -2,7 +2,7 @@ package com.vmenon.mpo.repository
 
 import com.vmenom.mpo.model.ShowModel
 import com.vmenom.mpo.model.ShowUpdateModel
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
+import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 
 import io.reactivex.Flowable
@@ -12,7 +12,7 @@ import java.util.*
 
 class ShowRepository(
     private val showDao: ShowDao,
-    private val api: MediaPlayerOmegaService
+    private val api: MediaPlayerOmegaApi
 ) {
     fun getSubscribed(): Flowable<List<ShowModel>> = showDao.getSubscribed().map { shows ->
         shows.map { it.toModel() }

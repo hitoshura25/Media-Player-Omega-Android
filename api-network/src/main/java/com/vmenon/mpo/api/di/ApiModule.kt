@@ -1,6 +1,9 @@
 package com.vmenon.mpo.api.di
 
 import com.google.gson.GsonBuilder
+import com.vmenon.mpo.api.MediaPlayerOmegaApi
+import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitApi
+import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -15,6 +18,10 @@ import java.util.concurrent.TimeUnit
 @Module
 class ApiModule {
     @Provides
+    fun provideApi(service: MediaPlayerOmegaRetrofitService): MediaPlayerOmegaApi =
+        MediaPlayerOmegaRetrofitApi(service)
+
+    @Provides
     fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -24,7 +31,7 @@ class ApiModule {
     }
 
     @Provides
-    fun provideService(httpClient: OkHttpClient): com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService {
+    fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaRetrofitService {
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -34,7 +41,7 @@ class ApiModule {
             .client(httpClient)
             .build()
 
-        return retrofit.create(com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService::class.java)
+        return retrofit.create(com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService::class.java)
     }
 
     /**

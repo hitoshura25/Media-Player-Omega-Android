@@ -47,8 +47,6 @@ dependencies {
     implementation "androidx.media:media:$mediaVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
-    implementation "androidx.room:room-runtime:$roomVersion"
-
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     // LiveData
@@ -73,20 +71,12 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
 
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-
     implementation 'com.github.bumptech.glide:glide:3.7.0'
 
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    testImplementation "com.google.code.gson:gson:$gsonVersion"
-
     implementation 'com.google.android.exoplayer:exoplayer-core:2.11.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.12'

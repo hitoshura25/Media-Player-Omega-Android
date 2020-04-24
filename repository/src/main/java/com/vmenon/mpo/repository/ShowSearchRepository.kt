@@ -5,16 +5,16 @@ import android.util.LruCache
 import com.vmenom.mpo.model.ShowSearchResultDetailsModel
 import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.api.model.Episode
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.persistence.room.entity.*
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.processors.PublishProcessor
 
 class ShowSearchRepository(
-    private val service: MediaPlayerOmegaService,
+    private val api: MediaPlayerOmegaApi,
     private val showSearchResultDao: ShowSearchResultDao
 ) {
     private val showSearchResultsProcessors =
@@ -35,7 +35,7 @@ class ShowSearchRepository(
             createShowDetailsModel(showSearchResult)
         }
 
-    fun searchShows(keyword: String): Completable = service.searchPodcasts(keyword)
+    fun searchShows(keyword: String): Completable = api.searchPodcasts(keyword)
         .flatMapCompletable { shows ->
             Completable.fromAction {
                 val showSearch = showSearchResultDao.getSearchForTerm(keyword).blockingGet()
@@ -80,7 +80,7 @@ class ShowSearchRepository(
     private fun createShowDetailsModel(
         showSearchResult: ShowSearchResultsEntity
     ): Flowable<ShowSearchResultDetailsModel> =
-        service.getPodcastDetails(
+        api.getPodcastDetails(
             showSearchResult.showDetails.feedUrl,
             10
         ).flatMapPublisher { showDetails ->

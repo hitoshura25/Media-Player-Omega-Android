@@ -10,7 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 // TODO: Should I Rename API endpoints to not be podcast specific?
-interface MediaPlayerOmegaService {
+interface MediaPlayerOmegaRetrofitService {
     @GET("podcasts")
     fun searchPodcasts(@Query("keyword") keyword: String): Single<List<Show>>
 
