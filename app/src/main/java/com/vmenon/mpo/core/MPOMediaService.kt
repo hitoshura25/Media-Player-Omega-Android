@@ -31,7 +31,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenom.mpo.model.EpisodeModel
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
-import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.util.MediaHelper
 import io.reactivex.disposables.CompositeDisposable

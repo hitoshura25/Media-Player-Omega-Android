@@ -40,6 +40,7 @@ dependencies {
     implementation project(':api-network')
     implementation project(':model')
     implementation project(':repository')
+    implementation project(':player')
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:$cardViewVersion"
@@ -76,7 +77,6 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.0'
     implementation 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.12'

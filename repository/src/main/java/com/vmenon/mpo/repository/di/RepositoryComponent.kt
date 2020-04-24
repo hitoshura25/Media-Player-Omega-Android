@@ -8,6 +8,7 @@ import com.vmenon.mpo.repository.ShowRepository
 import com.vmenon.mpo.repository.ShowSearchRepository
 import dagger.BindsInstance
 import dagger.Component
+import javax.inject.Singleton
 
 @Component(
     modules = [
@@ -17,7 +18,7 @@ import dagger.Component
         ApiComponent::class
     ]
 )
-@RepositoryScope
+@Singleton
 interface RepositoryComponent {
     @Component.Builder
     interface Builder {

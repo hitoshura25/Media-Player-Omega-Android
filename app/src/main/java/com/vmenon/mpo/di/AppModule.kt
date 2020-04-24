@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 
 import com.vmenon.mpo.core.*
-import com.vmenon.mpo.core.player.MPOExoPlayer
-import com.vmenon.mpo.core.player.MPOPlayer
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository
@@ -19,10 +17,6 @@ import javax.inject.Provider
 class AppModule(private val application: Application) {
     @Provides
     fun providesApplication(): Application = application
-
-    @Provides
-    fun providePlayer(): MPOPlayer =
-        MPOExoPlayer(application)
 
     @Provides
     fun provideViewModelFactory(

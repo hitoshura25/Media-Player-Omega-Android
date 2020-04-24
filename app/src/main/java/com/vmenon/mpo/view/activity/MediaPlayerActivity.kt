@@ -18,8 +18,9 @@ import com.vmenom.mpo.model.EpisodeModel
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
-import com.vmenon.mpo.core.player.MPOPlayer
+import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.di.AppComponent
+import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 import javax.inject.Inject
 
-class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.VideoSizeListener {
+class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeListener {
     @Inject
     lateinit var player: MPOPlayer
 
@@ -202,8 +203,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
             connectionCallback,
             null
         ) // optional Bundle
-
-
 
         player.setVideoSizeListener(this@MediaPlayerActivity)
     }

@@ -1,4 +1,4 @@
-package com.vmenon.mpo.core.player
+package com.vmenon.mpo.player.exo
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
@@ -23,11 +23,13 @@ import java.io.File
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.vmenon.mpo.player.BaseMPOPlayer
+import javax.inject.Inject
 
 /**
  * Uses ExoPlayer under the hood
  */
-class MPOExoPlayer(context: Context) : MPOPlayer() {
+class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
     private var exoPlayer: SimpleExoPlayer? = null
     private val appContext: Context = context.applicationContext
     private var seekRequested = false

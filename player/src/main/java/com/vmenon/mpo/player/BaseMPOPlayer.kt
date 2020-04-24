@@ -1,15 +1,16 @@
-package com.vmenon.mpo.core.player
+package com.vmenon.mpo.player
 
 import android.media.MediaMetadataRetriever
 import android.os.Handler
 import android.os.Looper
-import android.view.SurfaceHolder
+import com.vmenon.mpo.player.MPOPlayer.MediaPlayerListener
+import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
 
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 
-abstract class MPOPlayer {
+abstract class BaseMPOPlayer : MPOPlayer {
 
     protected var mListener: MediaPlayerListener? = null
     protected var mVideoSizeListener: VideoSizeListener? = null
@@ -25,57 +26,31 @@ abstract class MPOPlayer {
 
     protected var currentPos: Long = 0
 
-    abstract val isPlaying: Boolean
-
-    interface MediaPlayerListener {
-        fun onMediaPrepared()
-        fun onMediaFinished()
-        fun onMediaSeekFinished()
-    }
-
-    interface VideoSizeListener {
-        fun onMediaVideoSizeDetermined(width: Int, height: Int)
-    }
-
-    fun prepareForPlayback(file: File) {
+    override fun prepareForPlayback(file: File) {
         videoSizeCalculated = false
         doPrepareForPlayback(file)
         executor.execute(MediaMetadataRetrieverTask(file.path, mVideoSizeListener))
     }
 
-    fun setListener(listener: MediaPlayerListener?) {
+    override fun setListener(listener: MediaPlayerListener?) {
         this.mListener = listener
     }
 
-    fun setVideoSizeListener(listener: VideoSizeListener?) {
+    override fun setVideoSizeListener(listener: VideoSizeListener?) {
         this.mVideoSizeListener = listener
     }
 
-    fun cleanup() {
+    override fun cleanup() {
         doCleanUp()
     }
 
-    fun getVideoWidth(): Int {
+    override fun getVideoWidth(): Int {
         return if (videoSizeCalculated) videoWidth else 0
     }
 
-    fun getVideoHeight(): Int {
+    override fun getVideoHeight(): Int {
         return if (videoSizeCalculated) videoHeight else 0
     }
-
-    abstract fun play()
-
-    abstract fun pause()
-
-    abstract fun stop()
-
-    abstract fun seekTo(position: Long)
-
-    abstract fun setVolume(volume: Float)
-
-    abstract fun setDisplay(surfaceHolder: SurfaceHolder?)
-
-    abstract fun getCurrentPosition(): Long
 
     protected abstract fun doCleanUp()
 

@@ -13,10 +13,12 @@ import com.vmenon.mpo.repository.ShowRepository
 import com.vmenon.mpo.repository.ShowSearchRepository
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module(includes = [RoomModule::class])
 class RepositoryModule {
     @Provides
+    @Singleton
     fun provideShowSearchRepository(
         api: MediaPlayerOmegaApi,
         showSearchResultDao: ShowSearchResultDao
@@ -28,6 +30,7 @@ class RepositoryModule {
     }
 
     @Provides
+    @Singleton
     fun provideDownloadRepository(
         application: Application,
         downloadDao: DownloadDao,
@@ -42,10 +45,12 @@ class RepositoryModule {
         )
 
     @Provides
+    @Singleton
     fun provideEpisodeRepository(episodeDao: EpisodeDao) =
         EpisodeRepository(episodeDao)
 
     @Provides
+    @Singleton
     fun provideShowRepository(showDao: ShowDao, api: MediaPlayerOmegaApi) =
         ShowRepository(showDao, api)
 }
