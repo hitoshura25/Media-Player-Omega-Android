@@ -2,6 +2,7 @@ package com.vmenon.mpo.persistence.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 
 import com.vmenon.mpo.persistence.room.entity.EpisodeEntity
 import com.vmenon.mpo.persistence.room.entity.EpisodeWithShowDetailsEntity

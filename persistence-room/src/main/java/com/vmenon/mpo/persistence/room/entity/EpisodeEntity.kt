@@ -1,6 +1,7 @@
 package com.vmenon.mpo.persistence.room.entity
 
 import androidx.room.*
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 
 @Entity(
     foreignKeys = [ForeignKey(

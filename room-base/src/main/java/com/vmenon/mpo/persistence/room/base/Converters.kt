@@ -1,4 +1,4 @@
-package com.vmenon.mpo.persistence
+package com.vmenon.mpo.persistence.room.base
 
 import androidx.room.TypeConverter
 

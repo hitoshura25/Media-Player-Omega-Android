@@ -40,7 +40,6 @@ dependencies {
     implementation project(':api-network')
     implementation project(':model')
     implementation project(':repository')
-    implementation project(':persistence-room')
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:$cardViewVersion"

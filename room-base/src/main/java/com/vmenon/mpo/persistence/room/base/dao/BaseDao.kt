@@ -1,9 +1,9 @@
-package com.vmenon.mpo.persistence.room.dao
+package com.vmenon.mpo.persistence.room.base.dao
 
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Update
-import com.vmenon.mpo.persistence.room.entity.BaseEntity
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 
 interface BaseDao<T : BaseEntity<T>> {
     @Insert

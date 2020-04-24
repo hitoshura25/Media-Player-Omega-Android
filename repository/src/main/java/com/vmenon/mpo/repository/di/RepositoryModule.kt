@@ -1,38 +1,41 @@
-package com.vmenon.mpo.di
+package com.vmenon.mpo.repository.di
 
 import android.app.Application
+import com.vmenon.mpo.api.di.ApiModule
+import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaService
+import com.vmenon.mpo.persistence.room.di.RoomModule
+import com.vmenon.mpo.repository.DownloadRepository
+import com.vmenon.mpo.repository.EpisodeRepository
+import com.vmenon.mpo.repository.ShowRepository
+import com.vmenon.mpo.repository.ShowSearchRepository
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
-@Module
+@Module(includes = [RoomModule::class, ApiModule::class])
 class RepositoryModule {
     @Provides
-    @Singleton
     fun provideShowSearchRepository(
         service: MediaPlayerOmegaService,
         showSearchResultDao: ShowSearchResultDao
-    ): com.vmenon.mpo.repository.ShowSearchRepository {
-        return com.vmenon.mpo.repository.ShowSearchRepository(
+    ): ShowSearchRepository {
+        return ShowSearchRepository(
             service,
             showSearchResultDao
         )
     }
 
     @Provides
-    @Singleton
     fun provideDownloadRepository(
         application: Application,
         downloadDao: DownloadDao,
         episodeDao: EpisodeDao,
         showDao: ShowDao
     ) =
-        com.vmenon.mpo.repository.DownloadRepository(
+        DownloadRepository(
             application.applicationContext,
             downloadDao,
             episodeDao,
@@ -40,12 +43,10 @@ class RepositoryModule {
         )
 
     @Provides
-    @Singleton
     fun provideEpisodeRepository(episodeDao: EpisodeDao) =
-        com.vmenon.mpo.repository.EpisodeRepository(episodeDao)
+        EpisodeRepository(episodeDao)
 
     @Provides
-    @Singleton
     fun provideShowRepository(showDao: ShowDao, service: MediaPlayerOmegaService) =
-        com.vmenon.mpo.repository.ShowRepository(showDao, service)
+        ShowRepository(showDao, service)
 }

@@ -8,6 +8,7 @@ import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.di.AppModule
 import com.vmenon.mpo.di.DaggerAppComponent
+import com.vmenon.mpo.repository.di.DaggerRepositoryComponent
 import java.util.concurrent.TimeUnit
 
 class MPOApplication : MultiDexApplication() {
@@ -15,9 +16,10 @@ class MPOApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        this.appComponent = DaggerAppComponent.builder().appModule(
-            AppModule(this)
-        ).build()
+        this.appComponent = DaggerAppComponent.builder()
+            .appModule(AppModule(this))
+            .repositoryComponent(DaggerRepositoryComponent.builder().application(this).build())
+            .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "Update",

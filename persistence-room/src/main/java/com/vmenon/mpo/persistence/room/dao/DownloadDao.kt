@@ -1,6 +1,7 @@
 package com.vmenon.mpo.persistence.room.dao
 
 import androidx.room.*
+import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 import com.vmenon.mpo.persistence.room.entity.DownloadEntity
 import com.vmenon.mpo.persistence.room.entity.DownloadWithShowAndEpisodeDetailsEntity
 import io.reactivex.Flowable

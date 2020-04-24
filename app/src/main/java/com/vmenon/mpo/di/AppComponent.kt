@@ -10,19 +10,18 @@ import com.vmenon.mpo.view.activity.ShowSearchResultsActivity
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
-
-import javax.inject.Singleton
+import com.vmenon.mpo.repository.di.RepositoryComponent
 
 import dagger.Component
 
-@Singleton
+@AppScope
 @Component(
     modules = [
         AppModule::class,
-        NetworkModule::class,
-        RepositoryModule::class,
-        RoomModule::class,
         ViewModelModule::class
+    ],
+    dependencies = [
+        RepositoryComponent::class
     ]
 )
 interface AppComponent {

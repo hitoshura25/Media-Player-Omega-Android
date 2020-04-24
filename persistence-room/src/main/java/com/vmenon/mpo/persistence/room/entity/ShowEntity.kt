@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 
 @Entity(indices = [Index(value = ["showName"], unique = true)], tableName = "show")
 data class ShowEntity(

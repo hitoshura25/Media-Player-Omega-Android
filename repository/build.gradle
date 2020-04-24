@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -21,14 +22,23 @@ android {
 }
 
 dependencies {
-    implementation project(':extensions')
     implementation project(':persistence-room')
+    implementation project(':extensions')
     implementation project(':api-model')
     implementation project(':api-network')
     implementation project(':model')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
 }

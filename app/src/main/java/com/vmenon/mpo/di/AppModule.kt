@@ -11,8 +11,6 @@ import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository
 import com.vmenon.mpo.viewmodel.ViewModelFactory
 
-import javax.inject.Singleton
-
 import dagger.Module
 import dagger.Provides
 import javax.inject.Provider
@@ -20,25 +18,20 @@ import javax.inject.Provider
 @Module
 class AppModule(private val application: Application) {
     @Provides
-    @Singleton
     fun providesApplication(): Application = application
 
     @Provides
-    @Singleton
     fun providePlayer(): MPOPlayer =
         MPOExoPlayer(application)
 
-    @Singleton
     @Provides
     fun provideViewModelFactory(
         creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
     ): ViewModelFactory = ViewModelFactory(creators)
 
-    @Singleton
     @Provides
     fun provideSchedulerProvider(): SchedulerProvider = DefaultSchedulerProvider()
 
-    @Singleton
     @Provides
     fun provideShowUpdateManager(
         episodeRepository: EpisodeRepository,

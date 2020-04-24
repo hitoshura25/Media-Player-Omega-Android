@@ -1,4 +1,4 @@
-package com.vmenon.mpo.persistence.room.entity
+package com.vmenon.mpo.persistence.room.base.entity
 
 interface BaseEntity<T: BaseEntity<T>> {
     val id: Long

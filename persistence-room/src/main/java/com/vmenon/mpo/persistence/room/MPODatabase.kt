@@ -1,8 +1,9 @@
-package com.vmenon.mpo.persistence
+package com.vmenon.mpo.persistence.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.vmenon.mpo.persistence.room.base.Converters
 import com.vmenon.mpo.persistence.room.entity.*
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
