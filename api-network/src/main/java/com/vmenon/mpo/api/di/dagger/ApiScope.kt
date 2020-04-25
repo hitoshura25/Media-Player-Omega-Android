@@ -1,4 +1,4 @@
-package com.vmenon.mpo.api.di
+package com.vmenon.mpo.api.di.dagger
 
 import javax.inject.Scope
 

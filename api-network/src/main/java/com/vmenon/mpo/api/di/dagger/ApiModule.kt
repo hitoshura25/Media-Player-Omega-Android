@@ -1,4 +1,4 @@
-package com.vmenon.mpo.api.di
+package com.vmenon.mpo.api.di.dagger
 
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.api.MediaPlayerOmegaApi

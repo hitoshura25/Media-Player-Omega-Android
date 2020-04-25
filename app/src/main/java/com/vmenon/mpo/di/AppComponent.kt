@@ -10,9 +10,8 @@ import com.vmenon.mpo.view.activity.ShowSearchResultsActivity
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
-import com.vmenon.mpo.player.MPOPlayer
-import com.vmenon.mpo.player.di.PlayerComponent
-import com.vmenon.mpo.repository.di.RepositoryComponent
+import com.vmenon.mpo.player.di.dagger.PlayerComponent
+import com.vmenon.mpo.repository.di.dagger.RepositoryComponent
 
 import dagger.Component
 
@@ -28,8 +27,6 @@ import dagger.Component
 )
 @AppScope
 interface AppComponent {
-    fun player(): MPOPlayer
-
     fun inject(service: MPOMediaService)
 
     fun inject(worker: UpdateAllShowsWorker)

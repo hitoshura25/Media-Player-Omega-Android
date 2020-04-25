@@ -1,4 +1,4 @@
-package com.vmenon.mpo.persistence.room.di
+package com.vmenon.mpo.persistence.room.di.dagger
 
 import android.app.Application
 import androidx.room.Room

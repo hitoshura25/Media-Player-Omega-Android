@@ -1,4 +1,4 @@
-package com.vmenon.mpo.api.di
+package com.vmenon.mpo.api.di.dagger
 
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import dagger.Component

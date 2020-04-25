@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player.di
+package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
 import com.vmenon.mpo.player.MPOPlayer

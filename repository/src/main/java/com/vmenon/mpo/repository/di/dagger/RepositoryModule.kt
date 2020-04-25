@@ -1,4 +1,4 @@
-package com.vmenon.mpo.repository.di
+package com.vmenon.mpo.repository.di.dagger
 
 import android.app.Application
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
@@ -6,7 +6,7 @@ import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.persistence.room.di.RoomModule
+import com.vmenon.mpo.persistence.room.di.dagger.RoomModule
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository

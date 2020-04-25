@@ -1,7 +1,7 @@
-package com.vmenon.mpo.repository.di
+package com.vmenon.mpo.repository.di.dagger
 
 import android.app.Application
-import com.vmenon.mpo.api.di.ApiComponent
+import com.vmenon.mpo.api.di.dagger.ApiComponent
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository
