@@ -47,7 +47,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
         get() = R.id.nav_library
 
     override fun inject(appComponent: AppComponent) {
-        appComponent.inject(this)
+        appComponent.activityComponent().create().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

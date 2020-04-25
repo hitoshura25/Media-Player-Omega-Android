@@ -26,7 +26,7 @@ class DownloadsActivity : BaseDrawerActivity() {
         get() = true
 
     override fun inject(appComponent: AppComponent) {
-        appComponent.inject(this)
+        appComponent.activityComponent().create().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

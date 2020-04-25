@@ -28,7 +28,7 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
     var searchResults: List<ShowSearchResultModel> = emptyList()
 
     override fun inject(appComponent: AppComponent) {
-        appComponent.inject(this)
+        appComponent.activityComponent().create().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
