@@ -29,8 +29,7 @@ android {
 }
 
 dependencies {
-    implementation project(':room-base')
-    implementation project(':persistence-room')
+    api project(':persistence-room')
     implementation project(':extensions')
     implementation project(':api-model')
     implementation project(':api-network')

@@ -14,14 +14,17 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 class ApiModule {
     @Provides
+    @Singleton
     fun provideApi(service: MediaPlayerOmegaRetrofitService): MediaPlayerOmegaApi =
         MediaPlayerOmegaRetrofitApi(service)
 
     @Provides
+    @Singleton
     fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -31,6 +34,7 @@ class ApiModule {
     }
 
     @Provides
+    @Singleton
     fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaRetrofitService {
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()

@@ -30,13 +30,12 @@ android {
 
 
 dependencies {
-    implementation project(':room-base')
+    api project(':room-base')
+    api "androidx.room:room-rxjava2:$roomVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 
-    implementation "androidx.room:room-rxjava2:$roomVersion"
-    
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 

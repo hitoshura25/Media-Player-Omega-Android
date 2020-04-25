@@ -2,6 +2,7 @@ package com.vmenon.mpo.repository.di.dagger
 
 import android.app.Application
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
+import com.vmenon.mpo.api.di.dagger.ApiModule
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
@@ -15,7 +16,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module(includes = [RoomModule::class])
+@Module(includes = [RoomModule::class, ApiModule::class])
 class RepositoryModule {
     @Provides
     @Singleton

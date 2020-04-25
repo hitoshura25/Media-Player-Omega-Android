@@ -10,22 +10,21 @@ import com.vmenon.mpo.view.activity.ShowSearchResultsActivity
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
-import com.vmenon.mpo.player.di.dagger.PlayerComponent
-import com.vmenon.mpo.repository.di.dagger.RepositoryComponent
+import com.vmenon.mpo.player.di.dagger.PlayerModule
+import com.vmenon.mpo.repository.di.dagger.RepositoryModule
 
 import dagger.Component
+import javax.inject.Singleton
 
 @Component(
     modules = [
         AppModule::class,
-        ViewModelModule::class
-    ],
-    dependencies = [
-        RepositoryComponent::class,
-        PlayerComponent::class
+        ViewModelModule::class,
+        RepositoryModule::class,
+        PlayerModule::class
     ]
 )
-@AppScope
+@Singleton
 interface AppComponent {
     fun inject(service: MPOMediaService)
 
