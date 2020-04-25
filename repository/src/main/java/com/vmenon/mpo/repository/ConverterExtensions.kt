@@ -2,6 +2,7 @@ package com.vmenon.mpo.repository
 
 import com.vmenom.mpo.model.*
 import com.vmenon.mpo.api.model.Episode
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_ID
 import com.vmenon.mpo.persistence.room.entity.*
 
 internal fun ShowDetailsEntity.toModel(showId: Long) = ShowModel(
@@ -40,7 +41,7 @@ internal fun ShowEntity.toModel() = ShowModel(
     author = details.author,
     isSubscribed = details.isSubscribed,
     lastEpisodePublished = details.lastEpisodePublished,
-    lastUpdate = details.lastEpisodePublished
+    lastUpdate = details.lastUpdate
 )
 
 internal fun ShowModel.toEntity() = ShowEntity(
@@ -54,7 +55,8 @@ internal fun ShowModel.toEntity() = ShowEntity(
         author = author,
         feedUrl = feedUrl,
         genres = genres
-    )
+    ),
+    id = id
 )
 
 internal fun Episode.toModel(show: ShowModel) = EpisodeModel(
@@ -139,8 +141,12 @@ internal fun ShowSearchResultModel.toEntity() = ShowEntity(
         feedUrl = feedUrl,
         genres = genres,
         showArtworkUrl = artWorkUrl,
-        showDescription = description
-    )
+        showDescription = description,
+        lastEpisodePublished = 0L,
+        lastUpdate = 0L,
+        isSubscribed = false
+    ),
+    id = id
 )
 
 internal fun ShowSearchResultEpisodeModel.toEntity(showId: Long) = EpisodeEntity(
@@ -152,6 +158,8 @@ internal fun ShowSearchResultEpisodeModel.toEntity(showId: Long) = EpisodeEntity
         downloadUrl = downloadUrl,
         length = length,
         published = published,
-        type = type
-    )
+        type = type,
+        filename = null
+    ),
+    id = UNSAVED_ID
 )

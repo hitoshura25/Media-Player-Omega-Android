@@ -8,5 +8,5 @@ data class EpisodeDetailsEntity(
     val downloadUrl: String,
     val length: Long,
     val episodeArtworkUrl: String?,
-    var filename: String? = null
+    val filename: String?
 )

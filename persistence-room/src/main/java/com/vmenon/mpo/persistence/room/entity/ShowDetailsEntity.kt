@@ -7,7 +7,7 @@ data class ShowDetailsEntity(
     val author: String,
     val feedUrl: String,
     val showDescription: String,
-    var lastUpdate: Long = -1L,
-    var lastEpisodePublished: Long = -1L,
-    var isSubscribed: Boolean = false
+    val lastUpdate: Long,
+    val lastEpisodePublished: Long,
+    val isSubscribed: Boolean
 )

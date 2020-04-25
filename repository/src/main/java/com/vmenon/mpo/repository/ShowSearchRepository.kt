@@ -7,6 +7,7 @@ import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenom.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.api.model.Episode
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.persistence.room.entity.*
 import io.reactivex.Completable
@@ -46,6 +47,7 @@ class ShowSearchRepository(
                 } else {
                     val newSearch =
                         ShowSearchEntity(
+                            showSearchId = BaseEntity.UNSAVED_ID,
                             searchTerm = keyword
                         )
                     showSearchId = showSearchResultDao.save(newSearch)
@@ -62,7 +64,10 @@ class ShowSearchRepository(
                                     author = show.author,
                                     feedUrl = it,
                                     genres = show.genres,
-                                    showDescription = ""
+                                    showDescription = "",
+                                    lastEpisodePublished = 0L,
+                                    lastUpdate = 0L,
+                                    isSubscribed = false
                                 ),
                                 showSearchResultsId = 0L,
                                 showSearchResultsSearchId = showSearchId

@@ -15,6 +15,8 @@ import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.entity.*
 import com.vmenon.mpo.extensions.writeToFile
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_ID
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.Completable
@@ -97,10 +99,9 @@ class DownloadRepository(
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
-            downloadWithShowAndEpisode.episode.filename = episodeFile.path
             episodeDao.insertOrUpdate(
                 EpisodeEntity(
-                    details = downloadWithShowAndEpisode.episode,
+                    details = downloadWithShowAndEpisode.episode.copy(filename = episodeFile.path),
                     showId = downloadWithShowAndEpisode.download.showId,
                     id = downloadWithShowAndEpisode.download.episodeId
                 )
@@ -134,7 +135,8 @@ class DownloadRepository(
             episodeId = episodeId,
             details = DownloadDetailsEntity(
                 downloadManagerId = downloadManagerId
-            )
+            ),
+            id = UNSAVED_ID
         )
         val savedDownload = downloadDao.insertOrUpdate(download)
         Log.d("MPO", "Queued download: $download, $downloadUrl")

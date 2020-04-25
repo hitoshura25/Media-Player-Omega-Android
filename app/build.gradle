@@ -84,6 +84,8 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation "androidx.work:work-runtime-ktx:$workVersion"
+
+    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 }
 repositories {
     mavenCentral()

@@ -8,7 +8,7 @@ data class ShowModel(
     val author: String,
     val feedUrl: String,
     val description: String,
-    var lastUpdate: Long = -1L,
-    var lastEpisodePublished: Long = -1L,
+    val lastUpdate: Long,
+    val lastEpisodePublished: Long,
     val isSubscribed: Boolean = false
 )

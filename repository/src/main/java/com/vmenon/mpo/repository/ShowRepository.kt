@@ -22,8 +22,9 @@ class ShowRepository(
         if (show.id == 0L) {
             val existingShow = showDao.getByName(show.name).blockingGet()
             if (existingShow != null) {
-                existingShow.details.isSubscribed = show.isSubscribed
-                showDao.update(existingShow)
+                showDao.update(existingShow.copy(
+                    details = existingShow.details.copy(isSubscribed = show.isSubscribed)
+                ))
                 existingShow.toModel()
             } else {
                 show.copy(id = showDao.insert(show.toEntity()))

@@ -41,8 +41,9 @@ class ShowUpdateManager(
             .flatMap { savedEpisode ->
                 downloadRepository.queueDownload(savedEpisode)
             }.flatMapCompletable { savedDownload ->
-                savedDownload.episode.show.lastUpdate = Date().time
-                savedDownload.episode.show.lastEpisodePublished = savedDownload.episode.published
-                showRepository.save(savedDownload.episode.show).ignoreElement()
+                showRepository.save(savedDownload.episode.show.copy(
+                    lastUpdate = Date().time,
+                    lastEpisodePublished = savedDownload.episode.published
+                )).ignoreElement()
             }
 }

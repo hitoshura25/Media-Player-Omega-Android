@@ -12,7 +12,7 @@ data class ShowEntity(
     val details: ShowDetailsEntity,
 
     @PrimaryKey(autoGenerate = true)
-    override val id: Long = BaseEntity.UNSAVED_ID
+    override val id: Long
 ) : BaseEntity<ShowEntity> {
     override fun copyWithNewId(newId: Long): ShowEntity = copy(id = newId)
 }

@@ -13,7 +13,7 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
     tableName = "episode"
 )
 data class EpisodeEntity(
-    @PrimaryKey(autoGenerate = true) override val id: Long = BaseEntity.UNSAVED_ID,
+    @PrimaryKey(autoGenerate = true) override val id: Long,
     val showId: Long,
     @Embedded
     val details: EpisodeDetailsEntity

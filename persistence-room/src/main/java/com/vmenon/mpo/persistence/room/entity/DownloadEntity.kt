@@ -20,7 +20,7 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
     tableName = "downloads"
 )
 data class DownloadEntity(
-    @PrimaryKey(autoGenerate = true) override val id: Long = BaseEntity.UNSAVED_ID,
+    @PrimaryKey(autoGenerate = true) override val id: Long,
     val showId: Long,
     val episodeId: Long,
     @Embedded

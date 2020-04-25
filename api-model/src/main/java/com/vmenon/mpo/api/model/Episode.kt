@@ -7,5 +7,5 @@ data class Episode(
     val type: String,
     val downloadUrl: String,
     val length: Long,
-    var artworkUrl: String?
+    val artworkUrl: String?
 )

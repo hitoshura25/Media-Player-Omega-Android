@@ -18,6 +18,6 @@ data class ShowSearchResultsEntity(
     @Embedded
     val showDetails: ShowDetailsEntity,
     @PrimaryKey(autoGenerate = true)
-    val showSearchResultsId: Long = 0L,
+    val showSearchResultsId: Long,
     val showSearchResultsSearchId: Long
 )
