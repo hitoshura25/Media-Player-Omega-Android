@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.vmenon.mpo.R
 
 import androidx.recyclerview.widget.RecyclerView
-import com.vmenom.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowModel
 import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
 class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :

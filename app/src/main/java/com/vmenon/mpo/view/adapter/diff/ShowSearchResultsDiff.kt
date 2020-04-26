@@ -1,7 +1,7 @@
 package com.vmenon.mpo.view.adapter.diff
 
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 
 class ShowSearchResultsDiff(
     private val oldSearchResults: List<ShowSearchResultModel>,

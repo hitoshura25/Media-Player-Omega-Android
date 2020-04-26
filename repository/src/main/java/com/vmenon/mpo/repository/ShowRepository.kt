@@ -1,7 +1,7 @@
 package com.vmenon.mpo.repository
 
-import com.vmenom.mpo.model.ShowModel
-import com.vmenom.mpo.model.ShowUpdateModel
+import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowUpdateModel
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 

@@ -2,7 +2,7 @@ package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.core.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Flowable

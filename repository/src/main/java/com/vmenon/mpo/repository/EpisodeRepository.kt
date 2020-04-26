@@ -1,6 +1,6 @@
 package com.vmenon.mpo.repository
 
-import com.vmenom.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import io.reactivex.Flowable
 import io.reactivex.Single

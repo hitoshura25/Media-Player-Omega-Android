@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.viewmodel.ShowSearchResultsViewModel

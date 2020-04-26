@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.R
 import kotlinx.android.synthetic.main.library_item.view.*
 

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenom.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeModel
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.LibraryAdapter

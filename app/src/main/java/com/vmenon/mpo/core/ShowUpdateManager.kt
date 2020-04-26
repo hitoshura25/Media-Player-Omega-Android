@@ -1,8 +1,8 @@
 package com.vmenon.mpo.core
 
 import android.util.Log
-import com.vmenom.mpo.model.ShowModel
-import com.vmenom.mpo.model.ShowUpdateModel
+import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowUpdateModel
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository

@@ -1,7 +1,7 @@
 package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.vmenom.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.core.SchedulerProvider
 import io.reactivex.Flowable
 import javax.inject.Inject

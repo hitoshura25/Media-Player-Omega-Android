@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.R
 import kotlinx.android.synthetic.main.show_result.view.*
 

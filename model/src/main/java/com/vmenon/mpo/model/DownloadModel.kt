@@ -1,4 +1,4 @@
-package com.vmenom.mpo.model
+package com.vmenon.mpo.model
 
 data class DownloadModel(
     val id: Long = 0L,

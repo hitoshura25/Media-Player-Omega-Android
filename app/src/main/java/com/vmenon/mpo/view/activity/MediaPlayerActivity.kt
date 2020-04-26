@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.SeekBar
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.Constants
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService

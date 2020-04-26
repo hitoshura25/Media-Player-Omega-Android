@@ -1,6 +1,6 @@
 package com.vmenon.mpo.repository
 
-import com.vmenom.mpo.model.*
+import com.vmenon.mpo.model.*
 import com.vmenon.mpo.api.model.Episode
 import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_ID
 import com.vmenon.mpo.persistence.room.entity.*

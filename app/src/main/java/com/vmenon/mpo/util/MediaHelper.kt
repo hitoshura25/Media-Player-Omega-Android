@@ -1,6 +1,6 @@
 package com.vmenon.mpo.util
 
-import com.vmenom.mpo.model.EpisodeModel
+import com.vmenon.mpo.model.EpisodeModel
 
 object MediaHelper {
 

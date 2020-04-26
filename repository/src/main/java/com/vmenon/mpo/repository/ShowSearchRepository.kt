@@ -2,9 +2,9 @@ package com.vmenon.mpo.repository
 
 import android.util.Log
 import android.util.LruCache
-import com.vmenom.mpo.model.ShowSearchResultDetailsModel
-import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultDetailsModel
+import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.api.model.Episode
 import com.vmenon.mpo.persistence.room.base.entity.BaseEntity

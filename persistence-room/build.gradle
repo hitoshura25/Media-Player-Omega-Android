@@ -30,8 +30,10 @@ android {
 
 
 dependencies {
-    api project(':room-base')
-    api "androidx.room:room-rxjava2:$roomVersion"
+    implementation project(':model')
+    implementation project(':persistence')
+    implementation project(':room-base')
+    implementation "androidx.room:room-rxjava2:$roomVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"

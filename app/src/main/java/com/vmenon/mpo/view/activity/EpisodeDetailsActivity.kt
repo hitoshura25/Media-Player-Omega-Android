@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.ShowModel
+import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.R
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel

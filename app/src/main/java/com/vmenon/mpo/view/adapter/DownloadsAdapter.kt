@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.DownloadModel
+import com.vmenon.mpo.model.DownloadModel
 import com.vmenon.mpo.R
 import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong

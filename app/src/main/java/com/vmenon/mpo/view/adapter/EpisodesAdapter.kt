@@ -12,9 +12,9 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.vmenom.mpo.model.ShowSearchResultDetailsModel
-import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenom.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.ShowSearchResultDetailsModel
+import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.R
 import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat

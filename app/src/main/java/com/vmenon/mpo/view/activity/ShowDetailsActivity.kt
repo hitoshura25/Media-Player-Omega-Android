@@ -18,8 +18,8 @@ import com.vmenon.mpo.view.adapter.EpisodesAdapter
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenom.mpo.model.ShowSearchResultDetailsModel
-import com.vmenom.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.model.ShowSearchResultDetailsModel
+import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.ShowDetailsViewModel
 import kotlinx.android.synthetic.main.activity_show_details.*
