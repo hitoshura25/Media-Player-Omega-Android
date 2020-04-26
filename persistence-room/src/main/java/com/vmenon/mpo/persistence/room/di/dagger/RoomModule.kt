@@ -9,12 +9,11 @@ import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
-class RoomModule {
-    @Provides
-    @Singleton
+class RoomModule(application: Application) {
+    private val mpDatabase: MPODatabase by lazy { provideMPODatabase(application) }
+
     fun provideMPODatabase(application: Application): MPODatabase {
         return Room.databaseBuilder(
             application.applicationContext, MPODatabase::class.java,
@@ -23,26 +22,22 @@ class RoomModule {
     }
 
     @Provides
-    @Singleton
-    fun provideShowDao(mpDatabase: MPODatabase): ShowDao {
+    fun provideShowDao(): ShowDao {
         return mpDatabase.showDao()
     }
 
     @Provides
-    @Singleton
-    fun provideEpisodeDao(mpDatabase: MPODatabase): EpisodeDao {
+    fun provideEpisodeDao(): EpisodeDao {
         return mpDatabase.episodeDao()
     }
 
     @Provides
-    @Singleton
-    fun provideDownloadDao(mpDatabase: MPODatabase): DownloadDao {
+    fun provideDownloadDao(): DownloadDao {
         return mpDatabase.downloadDao()
     }
 
     @Provides
-    @Singleton
-    fun provideShowSearchResultsDao(mpDatabase: MPODatabase): ShowSearchResultDao {
+    fun provideShowSearchResultsDao(): ShowSearchResultDao {
         return mpDatabase.showSearchResultsDao()
     }
 }

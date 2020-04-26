@@ -1,12 +1,7 @@
 package com.vmenon.mpo.repository.di.dagger
 
 import android.app.Application
-import com.vmenon.mpo.api.MediaPlayerOmegaApi
-import com.vmenon.mpo.api.di.dagger.ApiModule
-import com.vmenon.mpo.persistence.room.dao.DownloadDao
-import com.vmenon.mpo.persistence.room.dao.EpisodeDao
-import com.vmenon.mpo.persistence.room.dao.ShowDao
-import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
+import com.vmenon.mpo.api.di.dagger.ApiComponent
 import com.vmenon.mpo.persistence.room.di.dagger.RoomModule
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
@@ -14,44 +9,43 @@ import com.vmenon.mpo.repository.ShowRepository
 import com.vmenon.mpo.repository.ShowSearchRepository
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
-@Module(includes = [RoomModule::class, ApiModule::class])
-class RepositoryModule {
-    @Provides
-    @Singleton
-    fun provideShowSearchRepository(
-        api: MediaPlayerOmegaApi,
-        showSearchResultDao: ShowSearchResultDao
-    ): ShowSearchRepository {
-        return ShowSearchRepository(
-            api,
-            showSearchResultDao
+@Module
+class RepositoryModule(application: Application, apiComponent: ApiComponent) {
+    private val roomModule: RoomModule by lazy { RoomModule(application) }
+    private val searchRepository: ShowSearchRepository by lazy {
+        ShowSearchRepository(
+            apiComponent.api(),
+            roomModule.provideShowSearchResultsDao()
+        )
+    }
+
+    private val showRepository: ShowRepository by lazy {
+        ShowRepository(roomModule.provideShowDao(), apiComponent.api())
+    }
+
+    private val episodeRepository: EpisodeRepository by lazy {
+        EpisodeRepository(roomModule.provideEpisodeDao())
+    }
+
+    private val downloadRepository: DownloadRepository by lazy {
+        DownloadRepository(
+            context = application,
+            downloadDao = roomModule.provideDownloadDao(),
+            episodeDao = roomModule.provideEpisodeDao(),
+            showDao = roomModule.provideShowDao()
         )
     }
 
     @Provides
-    @Singleton
-    fun provideDownloadRepository(
-        application: Application,
-        downloadDao: DownloadDao,
-        episodeDao: EpisodeDao,
-        showDao: ShowDao
-    ) =
-        DownloadRepository(
-            application.applicationContext,
-            downloadDao,
-            episodeDao,
-            showDao
-        )
+    fun provideShowSearchRepository(): ShowSearchRepository = searchRepository
 
     @Provides
-    @Singleton
-    fun provideEpisodeRepository(episodeDao: EpisodeDao) =
-        EpisodeRepository(episodeDao)
+    fun provideDownloadRepository(): DownloadRepository = downloadRepository
 
     @Provides
-    @Singleton
-    fun provideShowRepository(showDao: ShowDao, api: MediaPlayerOmegaApi) =
-        ShowRepository(showDao, api)
+    fun provideEpisodeRepository(): EpisodeRepository = episodeRepository
+
+    @Provides
+    fun provideShowRepository(): ShowRepository = showRepository
 }
