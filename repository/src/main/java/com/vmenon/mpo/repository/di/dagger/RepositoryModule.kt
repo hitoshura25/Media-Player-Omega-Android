@@ -21,7 +21,7 @@ class RepositoryModule(application: Application, apiComponent: ApiComponent) {
     }
 
     private val showRepository: ShowRepository by lazy {
-        ShowRepository(roomModule.provideShowDao(), apiComponent.api())
+        ShowRepository(roomModule.provideShowPersistence(), apiComponent.api())
     }
 
     private val episodeRepository: EpisodeRepository by lazy {

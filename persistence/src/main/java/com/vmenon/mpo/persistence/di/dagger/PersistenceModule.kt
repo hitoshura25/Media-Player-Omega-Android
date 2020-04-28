@@ -2,8 +2,10 @@ package com.vmenon.mpo.persistence.di.dagger
 
 import android.app.Application
 import androidx.room.Room
+import com.vmenon.mpo.persistence.ShowPersistence
 import com.vmenon.mpo.persistence.ShowSearchPersistence
 import com.vmenon.mpo.persistence.room.MPODatabase
+import com.vmenon.mpo.persistence.room.ShowPersistenceRoom
 import com.vmenon.mpo.persistence.room.ShowSearchPersistenceRoom
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
@@ -19,6 +21,9 @@ class PersistenceModule(application: Application) {
     @Provides
     fun provideShowSearchPersistence(): ShowSearchPersistence =
         ShowSearchPersistenceRoom(provideShowSearchResultsDao())
+
+    @Provides
+    fun provideShowPersistence(): ShowPersistence = ShowPersistenceRoom(provideShowDao())
 
     fun provideMPODatabase(application: Application): MPODatabase {
         return Room.databaseBuilder(

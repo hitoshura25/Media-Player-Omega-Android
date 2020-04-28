@@ -3,7 +3,7 @@ package com.vmenon.mpo.repository
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowUpdateModel
 import com.vmenon.mpo.api.MediaPlayerOmegaApi
-import com.vmenon.mpo.persistence.room.dao.ShowDao
+import com.vmenon.mpo.persistence.ShowPersistence
 
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -11,35 +11,30 @@ import io.reactivex.Single
 import java.util.*
 
 class ShowRepository(
-    private val showDao: ShowDao,
+    private val showPersistence: ShowPersistence,
     private val api: MediaPlayerOmegaApi
 ) {
-    fun getSubscribed(): Flowable<List<ShowModel>> = showDao.getSubscribed().map { shows ->
-        shows.map { it.toModel() }
-    }
+    fun getSubscribed(): Flowable<List<ShowModel>> = showPersistence.getSubscribed()
 
     fun save(show: ShowModel): Single<ShowModel> = Single.fromCallable {
         if (show.id == 0L) {
-            val existingShow = showDao.getByName(show.name).blockingGet()
+            val existingShow = showPersistence.getByName(show.name).blockingGet()
             if (existingShow != null) {
-                showDao.update(existingShow.copy(
-                    details = existingShow.details.copy(isSubscribed = show.isSubscribed)
-                ))
-                existingShow.toModel()
+                val updatedShow = existingShow.copy(isSubscribed = show.isSubscribed)
+                showPersistence.update(updatedShow)
+                updatedShow
             } else {
-                show.copy(id = showDao.insert(show.toEntity()))
+                showPersistence.insert(show)
             }
         } else {
-            showDao.update(show.toEntity())
+            showPersistence.update(show)
             show
         }
     }
 
     fun getSubscribedAndLastUpdatedBefore(interval: Long): Maybe<List<ShowModel>> {
         val compareTime = Date().time - interval
-        return showDao.getSubscribedAndLastUpdatedBefore(compareTime).map { shows ->
-            shows.map { it.toModel()  }
-        }
+        return showPersistence.getSubscribedAndLastUpdatedBefore(compareTime)
     }
 
     fun getShowUpdate(show: ShowModel): Maybe<ShowUpdateModel> =
