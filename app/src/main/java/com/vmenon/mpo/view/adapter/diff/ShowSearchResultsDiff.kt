@@ -17,7 +17,7 @@ class ShowSearchResultsDiff(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         oldSearchResults[oldItemPosition].name == newSearchResults[newItemPosition].name &&
-                oldSearchResults[oldItemPosition].artWorkUrl == newSearchResults[newItemPosition].artWorkUrl &&
+                oldSearchResults[oldItemPosition].artworkUrl == newSearchResults[newItemPosition].artworkUrl &&
                 oldSearchResults[oldItemPosition].author == newSearchResults[newItemPosition].author &&
                 oldSearchResults[oldItemPosition].description == newSearchResults[newItemPosition].description &&
                 oldSearchResults[oldItemPosition].feedUrl == newSearchResults[newItemPosition].feedUrl &&

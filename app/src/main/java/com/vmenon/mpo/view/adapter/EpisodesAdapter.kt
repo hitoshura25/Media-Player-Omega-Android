@@ -85,7 +85,7 @@ class EpisodesAdapter(
         )
 
         Glide.with(holder.thumbnailImage.context)
-            .load(episode.artworkUrl ?: showDetails.show.artWorkUrl)
+            .load(episode.artworkUrl ?: showDetails.show.artworkUrl)
             .fitCenter()
             .into(holder.thumbnailImage)
         holder.thumbnailImage.visibility = View.VISIBLE

@@ -98,7 +98,7 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         show = showDetails
         @Suppress("DEPRECATION")
         showDescription.text = Html.fromHtml(showDetails.show.description)
-        Glide.with(this).load(showDetails.show.artWorkUrl).fitCenter().into(showImage)
+        Glide.with(this).load(showDetails.show.artworkUrl).fitCenter().into(showImage)
 
         episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(this)

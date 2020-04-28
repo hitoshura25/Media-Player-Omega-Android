@@ -60,7 +60,7 @@ class ShowSearchResultsAdapter :
         holder.nameText.text = show.name
 
         Glide.with(holder.itemView.context)
-            .load(show.artWorkUrl)
+            .load(show.artworkUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

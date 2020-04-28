@@ -2,7 +2,7 @@ package com.vmenon.mpo.repository.di.dagger
 
 import android.app.Application
 import com.vmenon.mpo.api.di.dagger.ApiComponent
-import com.vmenon.mpo.persistence.room.di.dagger.RoomModule
+import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.repository.DownloadRepository
 import com.vmenon.mpo.repository.EpisodeRepository
 import com.vmenon.mpo.repository.ShowRepository
@@ -12,11 +12,11 @@ import dagger.Provides
 
 @Module
 class RepositoryModule(application: Application, apiComponent: ApiComponent) {
-    private val roomModule: RoomModule by lazy { RoomModule(application) }
+    private val roomModule: PersistenceModule by lazy { PersistenceModule(application) }
     private val searchRepository: ShowSearchRepository by lazy {
         ShowSearchRepository(
             apiComponent.api(),
-            roomModule.provideShowSearchResultsDao()
+            roomModule.provideShowSearchPersistence()
         )
     }
 

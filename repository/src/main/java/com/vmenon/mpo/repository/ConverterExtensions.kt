@@ -2,8 +2,19 @@ package com.vmenon.mpo.repository
 
 import com.vmenon.mpo.model.*
 import com.vmenon.mpo.api.model.Episode
+import com.vmenon.mpo.api.model.Show
 import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_ID
 import com.vmenon.mpo.persistence.room.entity.*
+
+internal fun Show.toSearchResultsModel() = ShowSearchResultModel(
+    id = UNSAVED_ID,
+    author = author,
+    artworkUrl = artworkUrl,
+    feedUrl = feedUrl ?: "",
+    genres = genres,
+    name = name,
+    description = ""
+)
 
 internal fun ShowDetailsEntity.toModel(showId: Long) = ShowModel(
     id = showId,
@@ -57,6 +68,16 @@ internal fun ShowModel.toEntity() = ShowEntity(
         genres = genres
     ),
     id = id
+)
+
+internal fun Episode.toModel() = ShowSearchResultEpisodeModel(
+    name = name,
+    artworkUrl = artworkUrl,
+    description = description,
+    downloadUrl = downloadUrl,
+    length = length,
+    published = published,
+    type = type
 )
 
 internal fun Episode.toModel(show: ShowModel) = EpisodeModel(
@@ -140,11 +161,11 @@ internal fun ShowSearchResultModel.toEntity() = ShowEntity(
         author = author,
         feedUrl = feedUrl,
         genres = genres,
-        showArtworkUrl = artWorkUrl,
-        showDescription = description,
+        showArtworkUrl = artworkUrl,
         lastEpisodePublished = 0L,
         lastUpdate = 0L,
-        isSubscribed = false
+        isSubscribed = false,
+        showDescription = ""
     ),
     id = id
 )

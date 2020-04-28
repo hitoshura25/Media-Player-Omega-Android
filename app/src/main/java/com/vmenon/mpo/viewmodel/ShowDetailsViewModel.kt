@@ -28,7 +28,7 @@ class ShowDetailsViewModel @Inject constructor(
         showRepository.save(
             ShowModel(
                 name = showDetails.show.name,
-                artworkUrl = showDetails.show.artWorkUrl,
+                artworkUrl = showDetails.show.artworkUrl,
                 description = showDetails.show.description,
                 genres = showDetails.show.genres,
                 feedUrl = showDetails.show.feedUrl,
