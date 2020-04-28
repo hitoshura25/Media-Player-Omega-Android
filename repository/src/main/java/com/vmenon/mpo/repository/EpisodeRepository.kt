@@ -1,20 +1,15 @@
 package com.vmenon.mpo.repository
 
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.persistence.room.dao.EpisodeDao
+import com.vmenon.mpo.persistence.EpisodePersistence
 import io.reactivex.Flowable
 import io.reactivex.Single
 
-class EpisodeRepository(private val episodeDao: EpisodeDao) {
+class EpisodeRepository(private val episodePersistence: EpisodePersistence) {
     fun save(episode: EpisodeModel): Single<EpisodeModel> = Single.fromCallable {
-        episode.copy(id = episodeDao.insertOrUpdate(episode.toEntity()).id)
+        episodePersistence.insertOrUpdate(episode)
     }
 
-    fun getAll(): Flowable<List<EpisodeModel>> =
-        episodeDao.getAllWithShowDetails().map { episodesWithShowDetails ->
-            episodesWithShowDetails.map { it.toModel()  }
-        }
-
-    fun getById(id: Long): Flowable<EpisodeModel> =
-        episodeDao.getWithShowDetailsById(id).map { it.toModel() }
+    fun getAll(): Flowable<List<EpisodeModel>> = episodePersistence.getAll()
+    fun getById(id: Long): Flowable<EpisodeModel> = episodePersistence.getById(id)
 }
