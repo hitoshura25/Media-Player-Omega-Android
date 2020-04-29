@@ -17,19 +17,15 @@ class ShowRepository(
     fun getSubscribed(): Flowable<List<ShowModel>> = showPersistence.getSubscribed()
 
     fun save(show: ShowModel): Single<ShowModel> = Single.fromCallable {
+        var showToSave: ShowModel = show
         if (show.id == 0L) {
             val existingShow = showPersistence.getByName(show.name).blockingGet()
             if (existingShow != null) {
-                val updatedShow = existingShow.copy(isSubscribed = show.isSubscribed)
-                showPersistence.update(updatedShow)
-                updatedShow
-            } else {
-                showPersistence.insert(show)
+                showToSave = existingShow.copy(isSubscribed = show.isSubscribed)
             }
-        } else {
-            showPersistence.update(show)
-            show
         }
+
+        showPersistence.insertOrUpdate(showToSave)
     }
 
     fun getSubscribedAndLastUpdatedBefore(interval: Long): Maybe<List<ShowModel>> {

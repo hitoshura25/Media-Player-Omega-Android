@@ -1,11 +1,13 @@
 package com.vmenon.mpo.persistence.room
 
+import com.vmenon.mpo.model.DownloadModel
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 import com.vmenon.mpo.persistence.room.entity.*
 
-fun ShowSearchResultsEntity.toModel(): ShowSearchResultModel  =
+fun ShowSearchResultsEntity.toModel(): ShowSearchResultModel =
     ShowSearchResultModel(
         id = showSearchResultsId,
         name = showDetails.showName,
@@ -96,4 +98,41 @@ internal fun EpisodeEntity.toModel(show: ShowModel) = EpisodeModel(
     name = details.episodeName,
     filename = details.filename,
     show = show
+)
+
+internal fun EpisodeDetailsEntity.toModel(episodeId: Long, show: ShowModel) = EpisodeModel(
+    id = episodeId,
+    description = description,
+    artworkUrl = episodeArtworkUrl,
+    name = episodeName,
+    type = type,
+    published = published,
+    length = length,
+    downloadUrl = downloadUrl,
+    filename = filename,
+    show = show
+)
+
+internal fun DownloadWithShowAndEpisodeDetailsEntity.toModel() = DownloadModel(
+    id = download.id,
+    episode = episode.toModel(
+        episodeId = download.episodeId,
+        show = show.toModel(download.showId)
+    ),
+    downloadManagerId = download.details.downloadManagerId
+)
+
+internal fun DownloadModel.toEntity() = DownloadEntity(
+    showId = episode.show.id,
+    episodeId = episode.id,
+    details = DownloadDetailsEntity(
+        downloadManagerId = downloadManagerId
+    ),
+    id = id
+)
+
+internal fun DownloadEntity.toModel(episode: EpisodeModel) = DownloadModel(
+    id = id,
+    downloadManagerId = details.downloadManagerId,
+    episode = episode
 )

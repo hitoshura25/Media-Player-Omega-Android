@@ -31,9 +31,9 @@ class RepositoryModule(application: Application, apiComponent: ApiComponent) {
     private val downloadRepository: DownloadRepository by lazy {
         DownloadRepository(
             context = application,
-            downloadDao = roomModule.provideDownloadDao(),
-            episodeDao = roomModule.provideEpisodeDao(),
-            showDao = roomModule.provideShowDao()
+            downloadPersistence = roomModule.provideDownloadPersistence(),
+            episodePersistence = roomModule.provideEpisodePersistence(),
+            showPersistence = roomModule.provideShowPersistence()
         )
     }
 

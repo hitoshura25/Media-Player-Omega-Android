@@ -6,15 +6,11 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.webkit.URLUtil
-import com.vmenon.mpo.model.DownloadModel
-import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.persistence.room.dao.DownloadDao
-import com.vmenon.mpo.persistence.room.dao.EpisodeDao
-import com.vmenon.mpo.persistence.room.dao.ShowDao
-import com.vmenon.mpo.persistence.room.entity.*
 import com.vmenon.mpo.extensions.writeToFile
+import com.vmenon.mpo.model.*
+import com.vmenon.mpo.persistence.DownloadPersistence
+import com.vmenon.mpo.persistence.EpisodePersistence
+import com.vmenon.mpo.persistence.ShowPersistence
 import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_ID
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -23,22 +19,21 @@ import java.io.File
 
 class DownloadRepository(
     val context: Context,
-    private val downloadDao: DownloadDao,
-    private val episodeDao: EpisodeDao,
-    private val showDao: ShowDao
+    private val downloadPersistence: DownloadPersistence,
+    private val episodePersistence: EpisodePersistence,
+    private val showPersistence: ShowPersistence
 ) {
     private val downloadManager: DownloadManager = context.getSystemService(
         Context.DOWNLOAD_SERVICE
     ) as DownloadManager
 
-    fun getAllQueued(): Flowable<List<DownloadModel>> =
-        downloadDao.getAllWithShowAndEpisodeDetails().map { savedDownloads ->
-            val downloadListItems = ArrayList<DownloadModel>()
+    fun getAllQueued(): Flowable<List<QueuedDownloadModel>> =
+        downloadPersistence.getAll().map { savedDownloads ->
+            val downloadListItems = ArrayList<QueuedDownloadModel>()
             val savedDownloadMap = savedDownloads.map {
-                it.download.details.downloadManagerId to it
+                it.downloadManagerId to it
             }.toMap()
             val downloadManagerIds = savedDownloadMap.keys
-
             val cursor = downloadManager.query(
                 Query().setFilterById(*downloadManagerIds.toLongArray())
             )
@@ -50,7 +45,8 @@ class DownloadRepository(
                 )
                 savedDownloadMap[id]?.let { savedDownloadWithShowAndEpisode ->
                     downloadListItems.add(
-                        savedDownloadWithShowAndEpisode.toModel(
+                        QueuedDownloadModel(
+                            download = savedDownloadWithShowAndEpisode,
                             progress = downloaded,
                             total = if (totalSize == -1) 0 else totalSize
                         )
@@ -62,29 +58,31 @@ class DownloadRepository(
         }
 
     fun queueDownload(episode: EpisodeModel): Single<DownloadModel> = Single.fromCallable {
-        queueDownload(
-            episodeId = episode.id,
-            episodeName = episode.name,
-            downloadUrl = episode.downloadUrl,
-            showId = episode.show.id
-        ).toModel(episode)
+        val downloadManagerId = downloadManager.enqueue(
+            Request(Uri.parse(episode.downloadUrl))
+                .setTitle(episode.name)
+        )
+
+        val download = DownloadModel(
+            episode = episode,
+            downloadManagerId = downloadManagerId,
+            id = UNSAVED_ID
+        )
+
+        Log.d("MPO", "Queued download: $download, ${download.episode.downloadUrl}")
+        downloadPersistence.insertOrUpdate(download)
     }
 
     fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
-    ): Single<DownloadModel> = createShowAndEpisodeForDownload(show, episode).map { showAndEpisode ->
-        queueDownload(
-            episodeId = showAndEpisode.second.id,
-            episodeName = showAndEpisode.second.details.episodeName,
-            downloadUrl = showAndEpisode.second.details.downloadUrl,
-            showId = showAndEpisode.second.showId
-        ).toModel(showAndEpisode.second.toModel(showAndEpisode.first.toModel()))
+    ): Single<DownloadModel> = createShowAndEpisodeForDownload(show, episode).flatMap { showAndEpisode ->
+        queueDownload(showAndEpisode.second)
     }
 
     fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
         val downloadWithShowAndEpisode =
-            downloadDao.getWithShowAndEpisodeDetailsByDownloadManagerId(
+            downloadPersistence.getByDownloadManagerId(
                 downloadManagerId
             ).firstElement().blockingGet()
 
@@ -94,18 +92,14 @@ class DownloadRepository(
                 null,
                 null
             )
-            val showDir = File(context.filesDir, downloadWithShowAndEpisode.show.showName)
+            val showDir = File(context.filesDir, downloadWithShowAndEpisode.episode.show.name)
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
             downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
-            episodeDao.insertOrUpdate(
-                EpisodeEntity(
-                    details = downloadWithShowAndEpisode.episode.copy(filename = episodeFile.path),
-                    showId = downloadWithShowAndEpisode.download.showId,
-                    id = downloadWithShowAndEpisode.download.episodeId
-                )
+            episodePersistence.insertOrUpdate(
+                downloadWithShowAndEpisode.episode.copy(filename = episodeFile.path)
             )
-            downloadDao.delete(downloadWithShowAndEpisode.download.id)
+            downloadPersistence.delete(downloadWithShowAndEpisode.id)
         }
     }
 
@@ -113,32 +107,8 @@ class DownloadRepository(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
     ) = Single.fromCallable {
-        val savedShow = showDao.insertOrUpdate(show.toEntity())
-        val savedEpisode = episodeDao.insertOrUpdate(episode.toEntity(savedShow.id))
+        val savedShow = showPersistence.insertOrUpdate(show.toShowModel())
+        val savedEpisode = episodePersistence.insertOrUpdate(episode.toEpisodeModel(savedShow))
         Pair(savedShow, savedEpisode)
-    }
-
-    private fun queueDownload(
-        episodeId: Long,
-        episodeName: String,
-        downloadUrl: String,
-        showId: Long
-    ): DownloadEntity {
-        val downloadManagerId = downloadManager.enqueue(
-            Request(Uri.parse(downloadUrl))
-                .setTitle(episodeName)
-        )
-
-        val download = DownloadEntity(
-            showId = showId,
-            episodeId = episodeId,
-            details = DownloadDetailsEntity(
-                downloadManagerId = downloadManagerId
-            ),
-            id = UNSAVED_ID
-        )
-        val savedDownload = downloadDao.insertOrUpdate(download)
-        Log.d("MPO", "Queued download: $download, $downloadUrl")
-        return savedDownload
     }
 }

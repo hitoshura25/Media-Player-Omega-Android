@@ -12,6 +12,6 @@ class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) : EpisodePersis
     override fun getById(id: Long): Flowable<EpisodeModel> =
         episodeDao.getWithShowDetailsById(id).map { it.toModel() }
 
-    override fun insertOrUpdate(episode: EpisodeModel): EpisodeModel =
-        episodeDao.insertOrUpdate(episode.toEntity()).toModel(episode.show)
+    override fun insertOrUpdate(model: EpisodeModel): EpisodeModel =
+        episodeDao.insertOrUpdate(model.toEntity()).toModel(model.show)
 }

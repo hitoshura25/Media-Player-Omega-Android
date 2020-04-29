@@ -19,11 +19,6 @@ class ShowPersistenceRoom(private val showDao: ShowDao) : ShowPersistence {
             shows.map { it.toModel() }
         }
 
-    override fun insert(show: ShowModel): ShowModel = show.copy(
-        id = showDao.insert(show.toEntity())
-    )
-
-    override fun update(show: ShowModel) {
-        showDao.update(show.toEntity())
-    }
+    override fun insertOrUpdate(model: ShowModel): ShowModel =
+        showDao.insertOrUpdate(model.toEntity()).toModel()
 }
