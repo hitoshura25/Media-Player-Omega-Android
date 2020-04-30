@@ -5,34 +5,40 @@ import androidx.room.Room
 import com.vmenon.mpo.persistence.DownloadPersistence
 import com.vmenon.mpo.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.ShowPersistence
-import com.vmenon.mpo.persistence.ShowSearchPersistence
 import com.vmenon.mpo.persistence.room.*
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
+import com.vmenon.mpo.search.persistence.ShowSearchPersistence
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
-class PersistenceModule(application: Application) {
-    private val mpDatabase: MPODatabase by lazy { provideMPODatabase(application) }
+class PersistenceModule {
+    @Provides
+    @Singleton
+    fun provideShowSearchPersistence(
+        showSearchResultDao: ShowSearchResultDao
+    ) : ShowSearchPersistence = ShowSearchPersistenceRoom(showSearchResultDao)
 
     @Provides
-    fun provideShowSearchPersistence(): ShowSearchPersistence =
-        ShowSearchPersistenceRoom(provideShowSearchResultsDao())
+    @Singleton
+    fun provideShowPersistence(showDao: ShowDao): ShowPersistence = ShowPersistenceRoom(showDao)
 
     @Provides
-    fun provideShowPersistence(): ShowPersistence = ShowPersistenceRoom(provideShowDao())
+    @Singleton
+    fun provideEpisodePersistence(episodeDao: EpisodeDao): EpisodePersistence =
+        EpisodePersistenceRoom(episodeDao)
 
     @Provides
-    fun provideEpisodePersistence(): EpisodePersistence =
-        EpisodePersistenceRoom(provideEpisodeDao())
+    @Singleton
+    fun provideDownloadPersistence(downloadDao: DownloadDao): DownloadPersistence =
+        DownloadPersistenceRoom(downloadDao)
 
     @Provides
-    fun provideDownloadPersistence(): DownloadPersistence =
-        DownloadPersistenceRoom(provideDownloadDao())
-
+    @Singleton
     fun provideMPODatabase(application: Application): MPODatabase {
         return Room.databaseBuilder(
             application.applicationContext, MPODatabase::class.java,
@@ -41,22 +47,25 @@ class PersistenceModule(application: Application) {
     }
 
     @Provides
-    fun provideShowDao(): ShowDao {
-        return mpDatabase.showDao()
+    @Singleton
+    fun provideShowDao(database: MPODatabase): ShowDao {
+        return database.showDao()
     }
 
     @Provides
-    fun provideEpisodeDao(): EpisodeDao {
-        return mpDatabase.episodeDao()
+    @Singleton
+    fun provideEpisodeDao(database: MPODatabase): EpisodeDao {
+        return database.episodeDao()
     }
 
     @Provides
-    fun provideDownloadDao(): DownloadDao {
-        return mpDatabase.downloadDao()
+    @Singleton
+    fun provideDownloadDao(database: MPODatabase): DownloadDao {
+        return database.downloadDao()
     }
 
     @Provides
-    fun provideShowSearchResultsDao(): ShowSearchResultDao {
-        return mpDatabase.showSearchResultsDao()
-    }
+    @Singleton
+    fun provideShowSearchResultDao(database: MPODatabase): ShowSearchResultDao =
+        database.showSearchResultsDao()
 }

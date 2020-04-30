@@ -2,13 +2,13 @@ package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.core.SchedulerProvider
+import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import io.reactivex.Flowable
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
     private val showRepository: com.vmenon.mpo.repository.ShowRepository,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: com.vmenon.mpo.rx.scheduler.SchedulerProvider
 ) : ViewModel() {
     fun subscribedShows(): Flowable<List<ShowModel>> =
         showRepository.getSubscribed()

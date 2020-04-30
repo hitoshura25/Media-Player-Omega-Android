@@ -1,14 +1,15 @@
 package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.vmenon.mpo.core.SchedulerProvider
+import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.QueuedDownloadModel
+import com.vmenon.mpo.repository.DownloadRepository
 import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DownloadsViewModel @Inject constructor(
-    downloadRepository: com.vmenon.mpo.repository.DownloadRepository,
+    downloadRepository: DownloadRepository,
     schedulerProvider: SchedulerProvider
 ) : ViewModel() {
     val downloads: Flowable<List<QueuedDownloadModel>> =

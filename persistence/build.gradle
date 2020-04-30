@@ -30,15 +30,15 @@ android {
 
 
 dependencies {
+    api project(':room-base')
     implementation project(':model')
-    implementation project(':room-base')
+    implementation project(':search-persistence')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
+    api "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-rxjava2:$roomVersion"
-
-    implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"

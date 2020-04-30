@@ -4,19 +4,19 @@ import com.vmenon.mpo.model.DownloadModel
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 import com.vmenon.mpo.persistence.room.entity.*
 
 fun ShowSearchResultsEntity.toModel(): ShowSearchResultModel =
     ShowSearchResultModel(
         id = showSearchResultsId,
-        name = showDetails.showName,
-        genres = showDetails.genres,
-        feedUrl = showDetails.feedUrl,
-        author = showDetails.author,
-        artworkUrl = showDetails.showArtworkUrl,
-        description = showDetails.showDescription
+        name = showName,
+        genres = genres,
+        feedUrl = feedUrl,
+        author = author,
+        artworkUrl = showArtworkUrl,
+        description = showDescription
     )
+
 
 internal fun ShowEntity.toModel() = ShowModel(
     id = id,

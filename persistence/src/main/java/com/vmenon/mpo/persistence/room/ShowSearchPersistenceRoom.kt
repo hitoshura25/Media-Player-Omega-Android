@@ -2,12 +2,11 @@ package com.vmenon.mpo.persistence.room
 
 import com.vmenon.mpo.model.SearchResultsModel
 import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.persistence.ShowSearchPersistence
 import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.persistence.room.entity.ShowDetailsEntity
 import com.vmenon.mpo.persistence.room.entity.ShowSearchEntity
 import com.vmenon.mpo.persistence.room.entity.ShowSearchResultsEntity
+import com.vmenon.mpo.search.persistence.ShowSearchPersistence
 import io.reactivex.Flowable
 
 class ShowSearchPersistenceRoom(
@@ -40,17 +39,15 @@ class ShowSearchPersistenceRoom(
             show.feedUrl.let {
                 searchResults.add(
                     ShowSearchResultsEntity(
-                        showDetails = ShowDetailsEntity(
-                            showName = show.name,
-                            showArtworkUrl = show.artworkUrl,
-                            author = show.author,
-                            feedUrl = it,
-                            genres = show.genres,
-                            showDescription = "",
-                            lastEpisodePublished = 0L,
-                            lastUpdate = 0L,
-                            isSubscribed = false
-                        ),
+                        showName = show.name,
+                        showArtworkUrl = show.artworkUrl,
+                        author = show.author,
+                        feedUrl = it,
+                        genres = show.genres,
+                        showDescription = "",
+                        lastEpisodePublished = 0L,
+                        lastUpdate = 0L,
+                        isSubscribed = false,
                         showSearchResultsId = 0L,
                         showSearchResultsSearchId = showSearchId
                     )

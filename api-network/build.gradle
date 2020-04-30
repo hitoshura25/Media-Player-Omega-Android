@@ -5,9 +5,9 @@ apply plugin: 'kotlin-kapt'
 sourceSets.main.kotlin.srcDirs += 'build/generated/source'
 
 dependencies {
-    implementation project(':api-model')
+    implementation project(':api')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"

@@ -1,12 +1,16 @@
 package com.vmenon.mpo.di
 
 import com.mpo.core.di.ThirdPartyIntegratorModule
+import com.vmenon.mpo.api.di.dagger.ApiModule
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.core.ThirdPartyIntegrator
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
+import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerModule
-import com.vmenon.mpo.repository.di.dagger.RepositoryComponent
+import com.vmenon.mpo.repository.di.dagger.RepositoryModule
+import com.vmenon.mpo.search.di.dagger.SearchComponent
+import com.vmenon.mpo.search.di.dagger.SearchModule
 
 import dagger.Component
 import javax.inject.Singleton
@@ -17,10 +21,11 @@ import javax.inject.Singleton
         ViewModelModule::class,
         PlayerModule::class,
         ThirdPartyIntegratorModule::class,
-        ActivitySubcomponentsModule::class
-    ],
-    dependencies = [
-        RepositoryComponent::class
+        SubcomponentsModule::class,
+        RepositoryModule::class,
+        PersistenceModule::class,
+        SearchModule::class,
+        ApiModule::class
     ]
 )
 @Singleton
@@ -29,13 +34,13 @@ interface AppComponent {
     interface Builder {
         fun appModule(module: AppModule): Builder
         fun thirdPartyIntegratorModule(module: ThirdPartyIntegratorModule): Builder
-        fun repositoryComponent(component: RepositoryComponent): Builder
         fun build(): AppComponent
     }
 
     fun inject(service: MPOMediaService)
     fun inject(worker: UpdateAllShowsWorker)
     fun inject(worker: DownloadCompleteWorker)
-    fun activityComponent(): ActivityComponent.Factory
     fun thirdPartyIntegrator(): ThirdPartyIntegrator
+
+    fun activityComponent(): ActivityComponent.Factory
 }

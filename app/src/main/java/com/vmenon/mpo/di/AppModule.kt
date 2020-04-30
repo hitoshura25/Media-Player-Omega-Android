@@ -2,6 +2,8 @@ package com.vmenon.mpo.di
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
+import com.vmenon.mpo.rx.scheduler.DefaultSchedulerProvider
+import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 
 import com.vmenon.mpo.core.*
 import com.vmenon.mpo.repository.DownloadRepository
@@ -24,7 +26,8 @@ class AppModule(private val application: Application) {
     ): ViewModelFactory = ViewModelFactory(creators)
 
     @Provides
-    fun provideSchedulerProvider(): SchedulerProvider = DefaultSchedulerProvider()
+    fun provideSchedulerProvider(): SchedulerProvider =
+        DefaultSchedulerProvider()
 
     @Provides
     fun provideShowUpdateManager(

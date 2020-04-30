@@ -12,10 +12,10 @@ import javax.inject.Inject
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.view.adapter.diff.ShowSearchResultsDiff
-import com.vmenon.mpo.viewmodel.ShowSearchResultsViewModel
+import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
 class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
@@ -27,12 +27,9 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     var searchResults: List<ShowSearchResultModel> = emptyList()
 
-    override fun inject(appComponent: AppComponent) {
-        appComponent.activityComponent().create().inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
 
         setContentView(R.layout.activity_show_search_results)
         // use this setting to improve performance if you know that changes

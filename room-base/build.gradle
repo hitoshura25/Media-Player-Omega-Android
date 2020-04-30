@@ -23,7 +23,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
     
     testImplementation "androidx.room:room-testing:$roomVersion"

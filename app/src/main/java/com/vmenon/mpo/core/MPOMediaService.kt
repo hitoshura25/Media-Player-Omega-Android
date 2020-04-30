@@ -31,6 +31,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
+import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.util.MediaHelper
@@ -49,7 +50,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     lateinit var episodeRepository: com.vmenon.mpo.repository.EpisodeRepository
 
     @Inject
-    lateinit var schedulerProvider: SchedulerProvider
+    lateinit var schedulerProvider: com.vmenon.mpo.rx.scheduler.SchedulerProvider
 
     @Inject
     lateinit var player: MPOPlayer

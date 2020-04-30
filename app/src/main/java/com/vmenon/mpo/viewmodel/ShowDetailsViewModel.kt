@@ -5,7 +5,7 @@ import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.core.SchedulerProvider
+import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.core.ShowUpdateManager
 
 import io.reactivex.Flowable
@@ -13,9 +13,9 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class ShowDetailsViewModel @Inject constructor(
-    private val showSearchRepository: com.vmenon.mpo.repository.ShowSearchRepository,
+    private val showSearchRepository: com.vmenon.mpo.search.repository.ShowSearchRepository,
     private val showRepository: com.vmenon.mpo.repository.ShowRepository,
-    private val schedulerProvider: SchedulerProvider,
+    private val schedulerProvider: com.vmenon.mpo.rx.scheduler.SchedulerProvider,
     private val downloadRepository: com.vmenon.mpo.repository.DownloadRepository,
     private val showUpdateManager: ShowUpdateManager
 ) : ViewModel() {

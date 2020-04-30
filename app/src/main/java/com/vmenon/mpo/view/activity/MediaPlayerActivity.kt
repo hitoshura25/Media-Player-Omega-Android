@@ -16,10 +16,10 @@ import android.widget.SeekBar
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.Constants
+import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
 import com.vmenon.mpo.player.MPOPlayer
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
@@ -134,12 +134,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
         }
     }
 
-    override fun inject(appComponent: AppComponent) {
-        appComponent.activityComponent().create().inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
+
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true

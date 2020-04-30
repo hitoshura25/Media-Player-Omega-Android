@@ -18,9 +18,9 @@ import com.vmenon.mpo.view.adapter.EpisodesAdapter
 import javax.inject.Inject
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.ShowDetailsViewModel
 import kotlinx.android.synthetic.main.activity_show_details.*
 import kotlinx.android.synthetic.main.show_details_container.*
@@ -37,12 +37,9 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
     private var collapsed = false
     private var scrollRange = -1
 
-    override fun inject(appComponent: AppComponent) {
-        appComponent.activityComponent().create().inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
 
         setContentView(R.layout.activity_show_details)
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)

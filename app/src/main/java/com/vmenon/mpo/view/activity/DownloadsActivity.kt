@@ -3,10 +3,10 @@ package com.vmenon.mpo.view.activity
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.view.adapter.DownloadsAdapter
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.DownloadsViewModel
 import kotlinx.android.synthetic.main.activity_downloads.*
 import javax.inject.Inject
@@ -25,12 +25,10 @@ class DownloadsActivity : BaseDrawerActivity() {
     override val isRootActivity: Boolean
         get() = true
 
-    override fun inject(appComponent: AppComponent) {
-        appComponent.activityComponent().create().inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
+
         downloadsList.layoutManager = LinearLayoutManager(this)
         downloadsList.setHasFixedSize(true)
         downloadsList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))

@@ -36,11 +36,17 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':api-model')
+    implementation project(':api')
     implementation project(':api-network')
     implementation project(':model')
     implementation project(':repository')
     implementation project(':player')
+    implementation project(':view-base')
+    implementation project(':viewmodel-base')
+    implementation project(':search')
+    implementation project(':search-persistence')
+    implementation project(':persistence')
+    implementation project(':rx-base')
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:$cardViewVersion"
@@ -80,7 +86,7 @@ dependencies {
     implementation 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.12'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
     implementation 'com.android.support:multidex:1.0.3'
     implementation "androidx.work:work-runtime-ktx:$workVersion"

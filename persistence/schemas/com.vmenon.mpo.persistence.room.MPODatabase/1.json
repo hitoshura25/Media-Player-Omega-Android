@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bb94d8be515c49f08cf16c0b46e37db7",
+    "identityHash": "3789d313d2cd6802dfbb84aa074ae115",
     "entities": [
       {
         "tableName": "show",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -24,7 +24,7 @@
             "fieldPath": "details.showArtworkUrl",
             "columnName": "showArtworkUrl",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "details.genres",
@@ -219,8 +219,62 @@
       },
       {
         "tableName": "showSearchResults",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showSearchResultsId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showSearchResultsSearchId` INTEGER NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT NOT NULL, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL, FOREIGN KEY(`showSearchResultsSearchId`) REFERENCES `showSearch`(`showSearchId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showName` TEXT NOT NULL, `showArtworkUrl` TEXT, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL, `showSearchResultsId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showSearchResultsSearchId` INTEGER NOT NULL, FOREIGN KEY(`showSearchResultsSearchId`) REFERENCES `showSearch`(`showSearchId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
+          {
+            "fieldPath": "showName",
+            "columnName": "showName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showArtworkUrl",
+            "columnName": "showArtworkUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "genres",
+            "columnName": "genres",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "feedUrl",
+            "columnName": "feedUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showDescription",
+            "columnName": "showDescription",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdate",
+            "columnName": "lastUpdate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastEpisodePublished",
+            "columnName": "lastEpisodePublished",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSubscribed",
+            "columnName": "isSubscribed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "showSearchResultsId",
             "columnName": "showSearchResultsId",
@@ -230,60 +284,6 @@
           {
             "fieldPath": "showSearchResultsSearchId",
             "columnName": "showSearchResultsSearchId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.showName",
-            "columnName": "showName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.showArtworkUrl",
-            "columnName": "showArtworkUrl",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.genres",
-            "columnName": "genres",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.author",
-            "columnName": "author",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.feedUrl",
-            "columnName": "feedUrl",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.showDescription",
-            "columnName": "showDescription",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.lastUpdate",
-            "columnName": "lastUpdate",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.lastEpisodePublished",
-            "columnName": "lastEpisodePublished",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "showDetails.isSubscribed",
-            "columnName": "isSubscribed",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -408,7 +408,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bb94d8be515c49f08cf16c0b46e37db7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3789d313d2cd6802dfbb84aa074ae115')"
     ]
   }
 }
