@@ -32,7 +32,10 @@ android {
 dependencies {
     api project(':room-base')
     implementation project(':model')
-    implementation project(':search-persistence')
+    implementation project(':search-shared')
+    implementation project(':shows-shared')
+    implementation project(':downloads-shared')
+    implementation project(':persistence-base')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"

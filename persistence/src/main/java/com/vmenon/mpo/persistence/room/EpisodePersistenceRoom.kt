@@ -1,11 +1,12 @@
 package com.vmenon.mpo.persistence.room
 
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.persistence.EpisodePersistence
+import com.vmenon.mpo.shows.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import io.reactivex.Flowable
 
-class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) : EpisodePersistence {
+class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) :
+    EpisodePersistence {
     override fun getAll(): Flowable<List<EpisodeModel>> =
         episodeDao.getAllWithShowDetails().map { episodes -> episodes.map { it.toModel() } }
 

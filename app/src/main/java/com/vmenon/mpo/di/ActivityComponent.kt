@@ -16,6 +16,5 @@ interface ActivityComponent {
     fun inject(activity: LibraryActivity)
     fun inject(activity: HomeActivity)
     fun inject(activity: MediaPlayerActivity)
-    fun inject(activity: ShowDetailsActivity)
-    fun inject(activity: ShowSearchResultsActivity)
+
 }

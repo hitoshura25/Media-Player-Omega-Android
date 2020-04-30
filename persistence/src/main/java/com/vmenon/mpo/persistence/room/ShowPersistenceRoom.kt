@@ -1,7 +1,7 @@
 package com.vmenon.mpo.persistence.room
 
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.persistence.ShowPersistence
+import com.vmenon.mpo.shows.persistence.ShowPersistence
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import io.reactivex.Flowable
 import io.reactivex.Maybe

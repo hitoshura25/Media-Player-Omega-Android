@@ -27,10 +27,10 @@
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".view.activity.ShowSearchResultsActivity" />
+                android:value="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.ShowSearchResultsActivity"
+            android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -41,7 +41,7 @@
                 android:resource="@xml/show_searchable" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.ShowDetailsActivity"
+            android:name="com.vmenon.mpo.search.view.activity.ShowDetailsActivity"
             android:label=""
             android:parentActivityName="com.vmenon.mpo.view.activity.HomeActivity"
             android:theme="@style/AppThemeNoActionBar">

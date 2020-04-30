@@ -33,6 +33,7 @@ import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.player.MPOPlayer
+import com.vmenon.mpo.shows.repository.EpisodeRepository
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.util.MediaHelper
 import io.reactivex.disposables.CompositeDisposable
@@ -47,10 +48,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     AudioManager.OnAudioFocusChangeListener {
 
     @Inject
-    lateinit var episodeRepository: com.vmenon.mpo.repository.EpisodeRepository
+    lateinit var episodeRepository: EpisodeRepository
 
     @Inject
-    lateinit var schedulerProvider: com.vmenon.mpo.rx.scheduler.SchedulerProvider
+    lateinit var schedulerProvider: SchedulerProvider
 
     @Inject
     lateinit var player: MPOPlayer

@@ -2,7 +2,7 @@ package com.vmenon.mpo.core.work
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import com.vmenon.mpo.core.ShowUpdateManager
+import com.vmenon.mpo.shows.ShowUpdateManager
 import javax.inject.Inject
 
 class UpdateAllShowsWorker(

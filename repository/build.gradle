@@ -37,6 +37,9 @@ dependencies {
     implementation project(':api')
     implementation project(':api-network')
     implementation project(':model')
+    implementation project(':search-shared')
+    implementation project(':shows-shared')
+    implementation project(':downloads-shared')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

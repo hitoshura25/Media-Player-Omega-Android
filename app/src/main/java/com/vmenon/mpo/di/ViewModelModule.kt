@@ -1,6 +1,7 @@
 package com.vmenon.mpo.di
 
 import androidx.lifecycle.ViewModel
+import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
 import com.vmenon.mpo.viewmodel.*
 import dagger.Binds
 import dagger.Module

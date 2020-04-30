@@ -43,8 +43,12 @@ dependencies {
     implementation project(':player')
     implementation project(':view-base')
     implementation project(':viewmodel-base')
+
     implementation project(':search')
-    implementation project(':search-persistence')
+    implementation project(':search-shared')
+    implementation project(':downloads-shared')
+    implementation project(':shows-shared')
+
     implementation project(':persistence')
     implementation project(':rx-base')
 

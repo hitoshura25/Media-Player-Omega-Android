@@ -1,9 +1,9 @@
 package com.vmenon.mpo.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.vmenon.mpo.downloads.repository.DownloadRepository
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.QueuedDownloadModel
-import com.vmenon.mpo.repository.DownloadRepository
 import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

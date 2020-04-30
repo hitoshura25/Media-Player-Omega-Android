@@ -2,15 +2,15 @@ package com.vmenon.mpo.persistence.di.dagger
 
 import android.app.Application
 import androidx.room.Room
-import com.vmenon.mpo.persistence.DownloadPersistence
-import com.vmenon.mpo.persistence.EpisodePersistence
-import com.vmenon.mpo.persistence.ShowPersistence
+import com.vmenon.mpo.downloads.persistence.DownloadPersistence
+import com.vmenon.mpo.shows.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.room.*
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.search.persistence.ShowSearchPersistence
+import com.vmenon.mpo.shows.persistence.ShowPersistence
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -21,7 +21,8 @@ class PersistenceModule {
     @Singleton
     fun provideShowSearchPersistence(
         showSearchResultDao: ShowSearchResultDao
-    ) : ShowSearchPersistence = ShowSearchPersistenceRoom(showSearchResultDao)
+    ) : ShowSearchPersistence =
+        ShowSearchPersistenceRoom(showSearchResultDao)
 
     @Provides
     @Singleton
@@ -34,7 +35,7 @@ class PersistenceModule {
 
     @Provides
     @Singleton
-    fun provideDownloadPersistence(downloadDao: DownloadDao): DownloadPersistence =
+    fun provideDownloadPersistence(downloadDao: DownloadDao): com.vmenon.mpo.downloads.persistence.DownloadPersistence =
         DownloadPersistenceRoom(downloadDao)
 
     @Provides

@@ -10,7 +10,6 @@ import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerModule
 import com.vmenon.mpo.repository.di.dagger.RepositoryModule
 import com.vmenon.mpo.search.di.dagger.SearchComponent
-import com.vmenon.mpo.search.di.dagger.SearchModule
 
 import dagger.Component
 import javax.inject.Singleton
@@ -24,7 +23,6 @@ import javax.inject.Singleton
         SubcomponentsModule::class,
         RepositoryModule::class,
         PersistenceModule::class,
-        SearchModule::class,
         ApiModule::class
     ]
 )
@@ -43,4 +41,5 @@ interface AppComponent {
     fun thirdPartyIntegrator(): ThirdPartyIntegrator
 
     fun activityComponent(): ActivityComponent.Factory
+    fun searchComponent(): SearchComponent.Factory
 }
