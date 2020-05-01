@@ -25,7 +25,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':viewmodel-base') // Remove
     implementation project(':rx')
     implementation project(':model')
     implementation project(':view')

@@ -13,8 +13,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.search.R
 
-import javax.inject.Inject
-
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
@@ -29,11 +27,9 @@ import kotlinx.android.synthetic.main.show_details_container.*
 class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
-    @Inject
-    lateinit var showDetailsViewModel: ShowDetailsViewModel
-
-    @Inject
-    lateinit var navigationController: NavigationController
+    private val showDetailsViewModel by lazy {
+        viewModel() as ShowDetailsViewModel
+    }
 
     private lateinit var collapsingToolbar: CollapsingToolbarLayout
     private var show: ShowSearchResultDetailsModel? = null
@@ -43,7 +39,10 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as SearchComponentProvider).searchComponent().inject(this)
+        (applicationContext as SearchComponentProvider).searchComponent().apply {
+            inject(this@ShowDetailsActivity)
+            inject(showDetailsViewModel)
+        }
 
         setContentView(R.layout.activity_show_details)
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
@@ -55,15 +54,12 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
         collapsingToolbar = findViewById(R.id.collapsing_toolbar)
 
         nav_view.setNavigationItemSelectedListener { menuItem ->
-            navigationController.onNavigationSelected(menuItem.itemId, this@ShowDetailsActivity)
-            /*if (R.id.nav_downloads == menuItem.itemId) {
-                val intent = Intent(
-                    this@ShowDetailsActivity,
-                    DownloadsActivity::class.java
-                )
-                startActivity(intent)
-            }*/
-
+            val location = when (menuItem.itemId) {
+                R.id.nav_downloads -> NavigationController.Location.DOWNLOADS
+                R.id.nav_library -> NavigationController.Location.LIBRARY
+                else -> NavigationController.Location.HOME
+            }
+            navigationController.onNavigationSelected(location, this, null)
             menuItem.isChecked = true
             drawer_layout.closeDrawers()
             true

@@ -8,10 +8,13 @@ import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class DownloadsViewModel @Inject constructor(
-    downloadRepository: DownloadRepository,
-    schedulerProvider: SchedulerProvider
-) : ViewModel() {
+class DownloadsViewModel : ViewModel() {
+
+    @Inject
+    lateinit var downloadRepository: DownloadRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     init {
         println("DownloadViewModel()")

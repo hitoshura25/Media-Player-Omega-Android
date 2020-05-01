@@ -1,7 +1,6 @@
 package com.vmenon.mpo.downloads.view.activity
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -11,11 +10,11 @@ import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import kotlinx.android.synthetic.main.activity_downloads.*
-import javax.inject.Inject
 
 class DownloadsActivity : BaseDrawerActivity() {
-
-    lateinit var viewModel: DownloadsViewModel
+    private val viewModel by lazy {
+        viewModel() as DownloadsViewModel
+    }
 
     override val layoutResourceId: Int
         get() = R.layout.activity_downloads
@@ -28,8 +27,10 @@ class DownloadsActivity : BaseDrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as DownloadsComponentProvider).downloadsComponent().inject(this)
-        viewModel = ViewModelProvider(this, viewModelFactory)[DownloadsViewModel::class.java]
+        (applicationContext as DownloadsComponentProvider).downloadsComponent().apply {
+            inject(this@DownloadsActivity)
+            inject(viewModel)
+        }
 
         downloadsList.layoutManager = LinearLayoutManager(this)
         downloadsList.setHasFixedSize(true)

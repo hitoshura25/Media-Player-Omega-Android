@@ -1,4 +1,4 @@
-package com.vmenon.mpo.viewmodel
+package com.vmenon.mpo.library.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.vmenon.mpo.model.EpisodeModel
@@ -7,10 +7,14 @@ import com.vmenon.mpo.shows.repository.EpisodeRepository
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class EpisodeDetailsViewModel @Inject constructor(
-    private val episodeRepository: EpisodeRepository,
-    private val schedulerProvider: SchedulerProvider
-) : ViewModel() {
+class EpisodeDetailsViewModel : ViewModel() {
+
+    @Inject
+    lateinit var episodeRepository: EpisodeRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
+
     fun getEpisodeDetails(id: Long): Flowable<EpisodeModel> =
         episodeRepository.getById(id)
             .subscribeOn(schedulerProvider.io())

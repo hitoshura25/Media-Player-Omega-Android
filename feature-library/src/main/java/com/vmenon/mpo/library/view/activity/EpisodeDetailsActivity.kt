@@ -1,4 +1,4 @@
-package com.vmenon.mpo.view.activity
+package com.vmenon.mpo.library.view.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +7,13 @@ import android.view.View
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.R
-import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
+import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
+import com.vmenon.mpo.navigation.NavigationController
+import com.vmenon.mpo.navigation.NavigationParams
+import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
 import kotlinx.android.synthetic.main.activity_episode_details.*
 
 import java.text.DateFormat
@@ -19,9 +22,9 @@ import java.util.Date
 import javax.inject.Inject
 
 class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
-
-    @Inject
-    lateinit var viewModel: EpisodeDetailsViewModel
+    private val viewModel by lazy {
+        viewModel() as EpisodeDetailsViewModel
+    }
 
     private var episodeId: Long = -1
     private var show: ShowModel? = null
@@ -48,8 +51,10 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
-
+        (applicationContext as LibraryComponentProvider).libraryComponent().apply {
+            inject(this@EpisodeDetailsActivity)
+            inject(viewModel)
+        }
         appBarImage = findViewById(R.id.appBarImage)
     }
 
@@ -59,9 +64,11 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
     }
 
     override fun onFabClick() {
-        val intent = Intent(this, MediaPlayerActivity::class.java)
-        intent.putExtra(MediaPlayerActivity.EXTRA_EPISODE, episodeId)
-        startActivity(intent)
+        navigationController.onNavigationSelected(
+            NavigationController.Location.PLAYER,
+            this,
+            Bundle().apply { putLong(NavigationParams.episodeIdParam, episodeId) }
+        )
     }
 
     private fun displayEpisode(intent: Intent) {

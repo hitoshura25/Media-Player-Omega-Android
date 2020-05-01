@@ -27,7 +27,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':rx')
     implementation project(':model')
-    implementation project(':viewmodel-base')
     implementation project(':view')
     implementation project(':api-search')
     implementation project(':api-shows')

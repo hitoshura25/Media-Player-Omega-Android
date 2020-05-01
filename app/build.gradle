@@ -42,10 +42,10 @@ dependencies {
     implementation project(':repository')
     implementation project(':player')
     implementation project(':view')
-    implementation project(':viewmodel-base')
 
     implementation project(':feature-search')
     implementation project(':feature-downloads')
+    implementation project(':feature-library')
 
     implementation project(':api-search')
     implementation project(':api-downloads')

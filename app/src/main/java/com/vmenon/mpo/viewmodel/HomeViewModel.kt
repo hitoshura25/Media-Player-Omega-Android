@@ -7,10 +7,12 @@ import com.vmenon.mpo.shows.repository.ShowRepository
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(
-    private val showRepository: ShowRepository,
-    private val schedulerProvider: SchedulerProvider
-) : ViewModel() {
+class HomeViewModel : ViewModel() {
+    @Inject
+    lateinit var showRepository: ShowRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     init {
         println("HomeViewModel()")

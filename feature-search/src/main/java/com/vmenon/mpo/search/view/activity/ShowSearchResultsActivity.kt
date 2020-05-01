@@ -8,8 +8,6 @@ import android.util.Log
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
 
-import javax.inject.Inject
-
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.ShowSearchResultModel
@@ -20,9 +18,9 @@ import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
 class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
-
-    @Inject
-    lateinit var showSearchResultsViewModel: ShowSearchResultsViewModel
+    private val showSearchResultsViewModel by lazy {
+        viewModel() as ShowSearchResultsViewModel
+    }
 
     lateinit var adapter: ShowSearchResultsAdapter
 
@@ -30,7 +28,10 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as SearchComponentProvider).searchComponent().inject(this)
+        (applicationContext as SearchComponentProvider).searchComponent().apply {
+            inject(this@ShowSearchResultsActivity)
+            inject(showSearchResultsViewModel)
+        }
 
         setContentView(R.layout.activity_show_search_results)
         // use this setting to improve performance if you know that changes

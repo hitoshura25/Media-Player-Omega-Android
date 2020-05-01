@@ -34,8 +34,8 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.shows.repository.EpisodeRepository
-import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import com.vmenon.mpo.util.MediaHelper
+import com.vmenon.mpo.view.activity.MediaPlayerActivity
 import io.reactivex.disposables.CompositeDisposable
 
 import java.io.File

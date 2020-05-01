@@ -1,4 +1,4 @@
-package com.vmenon.mpo.view.adapter
+package com.vmenon.mpo.library.view.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 
@@ -10,7 +10,7 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.R
+import com.vmenon.mpo.library.R
 import kotlinx.android.synthetic.main.library_item.view.*
 
 class LibraryAdapter(private val episodes: List<EpisodeModel>) :

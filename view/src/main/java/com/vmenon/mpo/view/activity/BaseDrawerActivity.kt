@@ -8,14 +8,10 @@ import android.view.MenuItem
 import android.view.ViewGroup
 
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.navigation.NavigationController
+import com.vmenon.mpo.navigation.NavigationController.Location
 import com.vmenon.mpo.view.R
-import javax.inject.Inject
 
 abstract class BaseDrawerActivity : BaseActivity() {
-
-    @Inject
-    protected lateinit var navigationController: NavigationController
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -47,7 +43,13 @@ abstract class BaseDrawerActivity : BaseActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
-            navigationController.onNavigationSelected(menuItem.itemId, this)
+            val location = when (menuItem.itemId) {
+                R.id.nav_downloads -> Location.DOWNLOADS
+                R.id.nav_library -> Location.LIBRARY
+                else -> Location.HOME
+            }
+            navigationController.onNavigationSelected(location, this, null)
+            menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
         }

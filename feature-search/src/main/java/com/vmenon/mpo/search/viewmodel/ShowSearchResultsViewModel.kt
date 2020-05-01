@@ -10,10 +10,13 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
-class ShowSearchResultsViewModel @Inject constructor(
-    private val showSearchRepository: ShowSearchRepository,
-    private val schedulerProvider: SchedulerProvider
-) : ViewModel() {
+class ShowSearchResultsViewModel : ViewModel() {
+
+    @Inject
+    lateinit var showSearchRepository: ShowSearchRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
 
     fun searchShows(keyword: String): Completable =
         showSearchRepository.searchShows(keyword)

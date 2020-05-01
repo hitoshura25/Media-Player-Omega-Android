@@ -1,10 +1,10 @@
 package com.vmenon.mpo.downloads.di.dagger
 
 import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
-import com.vmenon.mpo.viewmodel.ViewModelFactory
+import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import dagger.Subcomponent
 
-@Subcomponent(modules = [ViewModelModule::class])
+@Subcomponent
 interface DownloadsComponent {
     @Subcomponent.Factory
     interface Factory {
@@ -12,5 +12,5 @@ interface DownloadsComponent {
     }
 
     fun inject(activity: DownloadsActivity)
-    fun viewModelFactory(): ViewModelFactory
+    fun inject(viewModel: DownloadsViewModel)
 }

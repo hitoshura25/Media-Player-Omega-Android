@@ -7,6 +7,7 @@ import com.vmenon.mpo.core.ThirdPartyIntegrator
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
+import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerModule
 import com.vmenon.mpo.repository.di.dagger.RepositoryModule
@@ -18,7 +19,6 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AppModule::class,
-        ViewModelModule::class,
         PlayerModule::class,
         ThirdPartyIntegratorModule::class,
         SubcomponentsModule::class,
@@ -44,4 +44,5 @@ interface AppComponent {
     fun activityComponent(): ActivityComponent.Factory
     fun searchComponent(): SearchComponent.Factory
     fun downloadsComponent(): DownloadsComponent.Factory
+    fun libraryComponent(): LibraryComponent.Factory
 }

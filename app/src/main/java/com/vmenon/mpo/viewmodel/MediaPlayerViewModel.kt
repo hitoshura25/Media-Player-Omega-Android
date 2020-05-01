@@ -7,12 +7,15 @@ import com.vmenon.mpo.shows.repository.EpisodeRepository
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class LibraryViewModel @Inject constructor(
-    private val episodeRepository: EpisodeRepository,
-    private val schedulerProvider: SchedulerProvider
-) : ViewModel() {
-    fun allEpisodes(): Flowable<List<EpisodeModel>> =
-        episodeRepository.getAll()
+class MediaPlayerViewModel : ViewModel() {
+    @Inject
+    lateinit var episodeRepository: EpisodeRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
+
+    fun getEpisodeDetails(id: Long): Flowable<EpisodeModel> =
+        episodeRepository.getById(id)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 }

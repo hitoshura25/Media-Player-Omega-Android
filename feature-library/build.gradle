@@ -25,12 +25,20 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':api-shows')
+    implementation project(':rx')
+    implementation project(':model')
+    implementation project(':view')
+    implementation project(':player')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    implementation "androidx.media:media:$mediaVersion"
     implementation 'com.github.bumptech.glide:glide:3.7.0'
 
     implementation "com.google.dagger:dagger:$daggerVersion"

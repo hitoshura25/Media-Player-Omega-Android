@@ -19,10 +19,11 @@ import com.vmenon.mpo.Constants
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
+import com.vmenon.mpo.navigation.NavigationParams
 import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.util.MediaHelper
-import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
+import com.vmenon.mpo.viewmodel.MediaPlayerViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
 
 import java.util.concurrent.Executors
@@ -35,8 +36,9 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
     @Inject
     lateinit var player: MPOPlayer
 
-    @Inject
-    lateinit var viewModel: EpisodeDetailsViewModel
+    val viewModel by lazy {
+        viewModel() as MediaPlayerViewModel
+    }
 
     private val handler = Handler()
     private lateinit var episodeWithShowDetails: EpisodeModel
@@ -136,7 +138,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
+        (application as MPOApplication).appComponent.activityComponent().create().apply {
+            inject(this@MediaPlayerActivity)
+            inject(viewModel)
+        }
 
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
@@ -209,7 +214,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
         super.onStart()
         mediaBrowser.connect()
         if (!fromNotification) {
-            val episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
+            val episodeId = navigationController.getParams(this).getLong(
+                NavigationParams.episodeIdParam,
+                -1L
+            )
             subscriptions.add(
                 viewModel.getEpisodeDetails(episodeId)
                     .firstElement()
@@ -403,7 +411,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
     }
 
     companion object {
-        const val EXTRA_EPISODE = "extraEpisode"
         const val EXTRA_NOTIFICATION_MEDIA_ID = "extraNotificationMediaId"
 
         private const val EXTRA_MEDIA_ID = "extraMediaId"

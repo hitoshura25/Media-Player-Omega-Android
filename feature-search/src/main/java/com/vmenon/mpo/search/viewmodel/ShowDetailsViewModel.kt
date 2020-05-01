@@ -15,13 +15,23 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
-class ShowDetailsViewModel @Inject constructor(
-    private val showSearchRepository: ShowSearchRepository,
-    private val showRepository: ShowRepository,
-    private val schedulerProvider: SchedulerProvider,
-    private val downloadRepository: DownloadRepository,
-    private val showUpdateManager: ShowUpdateManager
-) : ViewModel() {
+class ShowDetailsViewModel : ViewModel() {
+
+    @Inject
+    lateinit var showSearchRepository: ShowSearchRepository
+
+    @Inject
+    lateinit var showRepository: ShowRepository
+
+    @Inject
+    lateinit var schedulerProvider: SchedulerProvider
+
+    @Inject
+    lateinit var downloadRepository: DownloadRepository
+
+    @Inject
+    lateinit var showUpdateManager: ShowUpdateManager
+
     fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel> =
         showSearchRepository.getShowDetails(showSearchResultId)
             .subscribeOn(schedulerProvider.io())
@@ -47,8 +57,7 @@ class ShowDetailsViewModel @Inject constructor(
     fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
-    ) =
-        downloadRepository.queueDownload(show, episode)
+    ) = downloadRepository.queueDownload(show, episode)
 
     private fun fetchInitialUpdate(show: ShowModel): Single<ShowModel> =
         showUpdateManager.updateShow(show).andThen(Single.just(show))

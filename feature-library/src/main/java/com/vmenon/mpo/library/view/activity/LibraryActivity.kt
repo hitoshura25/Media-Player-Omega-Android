@@ -1,22 +1,22 @@
-package com.vmenon.mpo.view.activity
+package com.vmenon.mpo.library.view.activity
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.model.EpisodeModel
 
-import com.vmenon.mpo.R
-import com.vmenon.mpo.view.adapter.LibraryAdapter
-import com.vmenon.mpo.viewmodel.LibraryViewModel
+import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.library.view.adapter.LibraryAdapter
+import com.vmenon.mpo.library.viewmodel.LibraryViewModel
+import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_library.*
-import javax.inject.Inject
 
 class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedListener {
-
-    @Inject
-    lateinit var viewModel: LibraryViewModel
+    private val viewModel by lazy {
+        viewModel() as LibraryViewModel
+    }
 
     override val layoutResourceId: Int
         get() = R.layout.activity_library
@@ -29,7 +29,10 @@ class LibraryActivity : BaseDrawerActivity(), LibraryAdapter.LibrarySelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as MPOApplication).appComponent.activityComponent().create().inject(this)
+        (applicationContext as LibraryComponentProvider).libraryComponent().apply {
+            inject(this@LibraryActivity)
+            inject(viewModel)
+        }
 
         val layoutManager = LinearLayoutManager(this)
         libraryList.setHasFixedSize(true)
