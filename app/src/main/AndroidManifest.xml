@@ -50,7 +50,7 @@
                 android:value="com.vmenon.mpo.view.activity.HomeActivity" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.DownloadsActivity"
+            android:name="com.vmenon.mpo.downloads.view.activity.DownloadsActivity"
             android:label="@string/downloads"
             android:launchMode="singleInstance"
             android:theme="@style/AppThemeNoActionBar" />

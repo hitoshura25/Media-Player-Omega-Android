@@ -9,12 +9,13 @@ import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.di.AppModule
 import com.vmenon.mpo.di.DaggerAppComponent
+import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
+import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import java.util.concurrent.TimeUnit
 
-class MPOApplication : MultiDexApplication(),
-    SearchComponentProvider {
+class MPOApplication : MultiDexApplication(), SearchComponentProvider, DownloadsComponentProvider {
     lateinit var appComponent: AppComponent
 
     override fun onCreate() {
@@ -38,4 +39,6 @@ class MPOApplication : MultiDexApplication(),
     }
 
     override fun searchComponent(): SearchComponent = appComponent.searchComponent().create()
+    override fun downloadsComponent(): DownloadsComponent =
+        appComponent.downloadsComponent().create()
 }

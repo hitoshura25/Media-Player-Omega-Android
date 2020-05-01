@@ -11,10 +11,8 @@ interface ActivityComponent {
         fun create(): ActivityComponent
     }
 
-    fun inject(activity: DownloadsActivity)
     fun inject(activity: EpisodeDetailsActivity)
     fun inject(activity: LibraryActivity)
     fun inject(activity: HomeActivity)
     fun inject(activity: MediaPlayerActivity)
-
 }

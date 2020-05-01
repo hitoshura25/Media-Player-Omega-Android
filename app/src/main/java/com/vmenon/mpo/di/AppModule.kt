@@ -26,7 +26,8 @@ class AppModule(private val application: Application) {
     @Provides
     fun provideViewModelFactory(
         creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
-    ): ViewModelFactory = ViewModelFactory(creators)
+    ): ViewModelFactory =
+        ViewModelFactory(creators)
 
     @Provides
     fun provideSchedulerProvider(): SchedulerProvider =

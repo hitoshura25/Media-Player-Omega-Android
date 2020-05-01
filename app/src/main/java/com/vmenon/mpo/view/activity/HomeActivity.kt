@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 
 import android.util.Log
 import android.view.Menu
+import androidx.lifecycle.ViewModelProvider
 import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
@@ -18,7 +19,6 @@ import javax.inject.Inject
 
 class HomeActivity : BaseDrawerActivity() {
 
-    @Inject
     lateinit var viewModel: HomeViewModel
 
     override val layoutResourceId: Int
@@ -33,6 +33,8 @@ class HomeActivity : BaseDrawerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (application as MPOApplication).appComponent.activityComponent().create().inject(this)
+
+        viewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
 
         setTitle(R.string.shows)
         showList.setHasFixedSize(true)
