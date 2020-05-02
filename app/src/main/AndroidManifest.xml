@@ -22,16 +22,15 @@
             android:theme="@style/AppThemeNoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".view.activity.ShowSearchResultsActivity" />
+                android:value="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.ShowSearchResultsActivity"
+            android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -42,7 +41,7 @@
                 android:resource="@xml/show_searchable" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.ShowDetailsActivity"
+            android:name="com.vmenon.mpo.search.view.activity.ShowDetailsActivity"
             android:label=""
             android:parentActivityName="com.vmenon.mpo.view.activity.HomeActivity"
             android:theme="@style/AppThemeNoActionBar">
@@ -51,22 +50,22 @@
                 android:value="com.vmenon.mpo.view.activity.HomeActivity" />
         </activity>
         <activity
-            android:name="com.vmenon.mpo.view.activity.DownloadsActivity"
+            android:name="com.vmenon.mpo.downloads.view.activity.DownloadsActivity"
             android:label="@string/downloads"
             android:launchMode="singleInstance"
             android:theme="@style/AppThemeNoActionBar" />
         <activity
-            android:name="com.vmenon.mpo.view.activity.LibraryActivity"
+            android:name="com.vmenon.mpo.library.view.activity.LibraryActivity"
             android:label="@string/library"
             android:launchMode="singleInstance"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name="com.vmenon.mpo.view.activity.EpisodeDetailsActivity"
+        <activity android:name="com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity"
                   android:theme="@style/AppThemeNoActionBar"
-                  android:parentActivityName="com.vmenon.mpo.view.activity.LibraryActivity"
+                  android:parentActivityName="com.vmenon.mpo.library.view.activity.LibraryActivity"
                   android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmenon.mpo.view.activity.LibraryActivity" />
+                android:value="com.vmenon.mpo.library.view.activity.LibraryActivity" />
         </activity>
         
         <activity android:name="com.vmenon.mpo.view.activity.MediaPlayerActivity"

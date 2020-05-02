@@ -8,18 +8,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 
 import android.util.Log
 import android.view.Menu
+import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
+import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
-class HomeActivity : BaseDrawerActivity() {
-
-    @Inject
-    lateinit var viewModel: HomeViewModel
+class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
+    private val viewModel: HomeViewModel by viewModel()
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main
@@ -30,16 +28,10 @@ class HomeActivity : BaseDrawerActivity() {
     override val isRootActivity: Boolean
         get() = true
 
-    override fun inject(appComponent: AppComponent) {
-        appComponent.inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.shows)
         showList.setHasFixedSize(true)
-        val gridLayoutManager = GridLayoutManager(this, 3)
-        gridLayoutManager.orientation = GridLayoutManager.HORIZONTAL
         showList.layoutManager = GridLayoutManager(this, 3)
     }
 
@@ -74,5 +66,13 @@ class HomeActivity : BaseDrawerActivity() {
                     }
                 )
         )
+    }
+
+    override fun setupComponent(context: Context): ActivityComponent =
+        (context as MPOApplication).appComponent.activityComponent().create()
+
+    override fun inject(component: ActivityComponent) {
+        component.inject(this)
+        component.inject(viewModel)
     }
 }

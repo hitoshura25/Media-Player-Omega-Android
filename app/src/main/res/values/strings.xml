@@ -1,17 +1,5 @@
 <resources>
     <string name="app_name">Media Player Omega Android</string>
-    <string name="shows">Shows</string>
-    <string name="search_title">Search</string>
-    <string name="search_hint">Search term or feed url</string>
-    <string name="show_search_title">%1$s shows</string>
-    <string name="recent_episodes">Recent Episodes</string>
-    <string name="play">Play</string>
-    <string name="pause">Pause</string>
-    <string name="download">Download</string>
-    <string name="downloads">Downloads</string>
-    <string name="home">Home</string>
-    <string name="library">Library</string>
-    <string name="show_notes">Show Notes</string>
 
     <!-- Notification Channel -->
     <string name="notification_channel">MPO_Channel_ID</string>

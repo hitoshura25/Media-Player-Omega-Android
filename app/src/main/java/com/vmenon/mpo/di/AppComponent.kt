@@ -1,41 +1,48 @@
 package com.vmenon.mpo.di
 
-import com.vmenon.mpo.view.activity.DownloadsActivity
-import com.vmenon.mpo.view.activity.EpisodeDetailsActivity
-import com.vmenon.mpo.view.activity.LibraryActivity
-import com.vmenon.mpo.view.activity.HomeActivity
-import com.vmenon.mpo.view.activity.MediaPlayerActivity
-import com.vmenon.mpo.view.activity.ShowDetailsActivity
-import com.vmenon.mpo.view.activity.ShowSearchResultsActivity
+import com.mpo.core.di.ThirdPartyIntegratorModule
+import com.vmenon.mpo.api.di.dagger.ApiModule
 import com.vmenon.mpo.core.MPOMediaService
+import com.vmenon.mpo.core.ThirdPartyIntegrator
 import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
-
-import javax.inject.Singleton
+import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
+import com.vmenon.mpo.library.di.dagger.LibraryComponent
+import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
+import com.vmenon.mpo.player.di.dagger.PlayerModule
+import com.vmenon.mpo.repository.di.dagger.RepositoryModule
+import com.vmenon.mpo.search.di.dagger.SearchComponent
 
 import dagger.Component
+import javax.inject.Singleton
 
-@Singleton
 @Component(
     modules = [
         AppModule::class,
-        NetworkModule::class,
+        PlayerModule::class,
+        ThirdPartyIntegratorModule::class,
+        SubcomponentsModule::class,
         RepositoryModule::class,
-        RoomModule::class,
-        ViewModelModule::class
+        PersistenceModule::class,
+        ApiModule::class
     ]
 )
+@Singleton
 interface AppComponent {
-    fun inject(service: MPOMediaService)
+    @Component.Builder
+    interface Builder {
+        fun appModule(module: AppModule): Builder
+        fun thirdPartyIntegratorModule(module: ThirdPartyIntegratorModule): Builder
+        fun build(): AppComponent
+    }
 
+    fun inject(service: MPOMediaService)
     fun inject(worker: UpdateAllShowsWorker)
     fun inject(worker: DownloadCompleteWorker)
+    fun thirdPartyIntegrator(): ThirdPartyIntegrator
 
-    fun inject(activity: DownloadsActivity)
-    fun inject(activity: EpisodeDetailsActivity)
-    fun inject(activity: LibraryActivity)
-    fun inject(activity: HomeActivity)
-    fun inject(activity: MediaPlayerActivity)
-    fun inject(activity: ShowDetailsActivity)
-    fun inject(activity: ShowSearchResultsActivity)
+    fun activityComponent(): ActivityComponent.Factory
+    fun searchComponent(): SearchComponent.Factory
+    fun downloadsComponent(): DownloadsComponent.Factory
+    fun libraryComponent(): LibraryComponent.Factory
 }

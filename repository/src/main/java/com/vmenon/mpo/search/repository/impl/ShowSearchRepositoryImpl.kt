@@ -1,0 +1,56 @@
+package com.vmenon.mpo.search.repository.impl
+
+import com.vmenon.mpo.model.ShowSearchResultDetailsModel
+import com.vmenon.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.api.MediaPlayerOmegaApi
+import com.vmenon.mpo.model.SearchResultsModel
+import com.vmenon.mpo.repository.toModel
+import com.vmenon.mpo.repository.toSearchResultsModel
+import com.vmenon.mpo.search.persistence.ShowSearchPersistence
+import com.vmenon.mpo.search.repository.ShowSearchRepository
+import io.reactivex.Completable
+import io.reactivex.Flowable
+
+class ShowSearchRepositoryImpl(
+    private val api: MediaPlayerOmegaApi,
+    private val showSearchPersistence: ShowSearchPersistence
+) : ShowSearchRepository {
+    override fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultModel>> {
+        return showSearchPersistence.getBySearchTerm(term)
+    }
+
+    override fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel> =
+        showSearchPersistence.getSearchResultById(
+            showSearchResultId
+        ).flatMap { showSearchResult ->
+            createShowDetailsModel(showSearchResult)
+        }
+
+    override fun searchShows(keyword: String): Completable = api.searchPodcasts(keyword)
+        .flatMapCompletable { shows ->
+            Completable.fromAction {
+                val showSearchResults = shows.map { it.toSearchResultsModel() }
+                showSearchPersistence.save(
+                    SearchResultsModel(
+                        searchTerm = keyword,
+                        shows = showSearchResults
+                    )
+                )
+            }
+        }
+
+    private fun createShowDetailsModel(
+        showSearchResult: ShowSearchResultModel
+    ): Flowable<ShowSearchResultDetailsModel> =
+        api.getPodcastDetails(
+            showSearchResult.feedUrl,
+            10
+        ).flatMapPublisher { showDetails ->
+            Flowable.just(
+                ShowSearchResultDetailsModel(
+                    show = showSearchResult,
+                    episodes = showDetails.episodes.map { it.toModel() }
+                )
+            )
+        }
+}

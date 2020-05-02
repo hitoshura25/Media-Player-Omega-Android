@@ -1,6 +1,7 @@
 package com.vmenon.mpo.view.activity
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.*
 import android.support.v4.media.MediaBrowserCompat
@@ -14,14 +15,17 @@ import android.view.View
 import android.widget.SeekBar
 
 import com.bumptech.glide.Glide
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.Constants
+import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
-import com.vmenon.mpo.core.player.MPOPlayer
-import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.model.EpisodeWithShowDetailsModel
+import com.vmenon.mpo.di.ActivityComponent
+import com.vmenon.mpo.navigation.NavigationParams
+import com.vmenon.mpo.player.MPOPlayer
+import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.util.MediaHelper
-import com.vmenon.mpo.viewmodel.EpisodeDetailsViewModel
+import com.vmenon.mpo.viewmodel.MediaPlayerViewModel
 import kotlinx.android.synthetic.main.activity_media_player.*
 
 import java.util.concurrent.Executors
@@ -30,15 +34,15 @@ import java.util.concurrent.TimeUnit
 
 import javax.inject.Inject
 
-class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.VideoSizeListener {
+class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Callback,
+    VideoSizeListener {
     @Inject
     lateinit var player: MPOPlayer
 
-    @Inject
-    lateinit var viewModel: EpisodeDetailsViewModel
+    val viewModel: MediaPlayerViewModel by viewModel()
 
     private val handler = Handler()
-    private lateinit var episodeWithShowDetails: EpisodeWithShowDetailsModel
+    private lateinit var episodeWithShowDetails: EpisodeModel
     private lateinit var mediaBrowser: MediaBrowserCompat
     private var playbackState: PlaybackStateCompat? = null
     private var playOnStart = false
@@ -96,7 +100,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
                                         .firstElement()
                                         .subscribe(
                                             { episode ->
-                                                this@MediaPlayerActivity.episodeWithShowDetails = episode
+                                                this@MediaPlayerActivity.episodeWithShowDetails =
+                                                    episode
                                                 updateUIFromMedia()
                                             },
                                             { error -> }
@@ -131,10 +136,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             updatePlaybackState(state)
         }
-    }
-
-    override fun inject(appComponent: AppComponent) {
-        appComponent.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,8 +204,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
             null
         ) // optional Bundle
 
-
-
         player.setVideoSizeListener(this@MediaPlayerActivity)
     }
 
@@ -212,16 +211,17 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         super.onStart()
         mediaBrowser.connect()
         if (!fromNotification) {
-            val episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
+            val episodeId = navigationController.getParams(this).getLong(
+                NavigationParams.episodeIdParam,
+                -1L
+            )
             subscriptions.add(
                 viewModel.getEpisodeDetails(episodeId)
                     .firstElement()
                     .subscribe(
                         { episodeWithShowDetails ->
                             this@MediaPlayerActivity.episodeWithShowDetails = episodeWithShowDetails
-                            requestedMediaId = MediaHelper.createMediaId(
-                                episodeWithShowDetails.episode
-                            )
+                            requestedMediaId = MediaHelper.createMediaId(episodeWithShowDetails)
                             updateUIFromMedia()
                         },
                         { error ->
@@ -282,10 +282,10 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
 
     private fun updateUIFromMedia() {
         Glide.with(this)
-            .load(episodeWithShowDetails.showDetails.showArtworkUrl)
+            .load(episodeWithShowDetails.artworkUrl)
             .fitCenter()
             .into(artworkImage!!)
-        mediaTitle.text = episodeWithShowDetails.episode.details.episodeName
+        mediaTitle.text = episodeWithShowDetails.name
     }
 
     private fun scheduleSeekbarUpdate() {
@@ -407,8 +407,15 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, MPOPlayer.Vi
         }
     }
 
+    override fun setupComponent(context: Context): ActivityComponent =
+        (context as MPOApplication).appComponent.activityComponent().create()
+
+    override fun inject(component: ActivityComponent) {
+        component.inject(this)
+        component.inject(viewModel)
+    }
+
     companion object {
-        const val EXTRA_EPISODE = "extraEpisode"
         const val EXTRA_NOTIFICATION_MEDIA_ID = "extraNotificationMediaId"
 
         private const val EXTRA_MEDIA_ID = "extraMediaId"
