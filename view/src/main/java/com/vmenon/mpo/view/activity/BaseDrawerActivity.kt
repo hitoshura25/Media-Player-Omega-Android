@@ -11,7 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.navigation.NavigationController.Location
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerActivity : BaseActivity() {
+abstract class BaseDrawerActivity<COMPONENT: Any> : BaseActivity<COMPONENT>() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView

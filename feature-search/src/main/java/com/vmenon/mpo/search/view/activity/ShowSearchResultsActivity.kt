@@ -1,6 +1,7 @@
 package com.vmenon.mpo.search.view.activity
 
 import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,13 +12,15 @@ import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
-class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowSelectedListener {
+class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
+    ShowSearchResultsAdapter.ShowSelectedListener {
     private val showSearchResultsViewModel by lazy {
         viewModel() as ShowSearchResultsViewModel
     }
@@ -28,11 +31,6 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as SearchComponentProvider).searchComponent().apply {
-            inject(this@ShowSearchResultsActivity)
-            inject(showSearchResultsViewModel)
-        }
-
         setContentView(R.layout.activity_show_search_results)
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -93,5 +91,13 @@ class ShowSearchResultsActivity : BaseActivity(), ShowSearchResultsAdapter.ShowS
                 )
             }
         }
+    }
+
+    override fun setupComponent(context: Context): SearchComponent =
+        (context as SearchComponentProvider).searchComponent()
+
+    override fun inject(component: SearchComponent) {
+        component.inject(this)
+        component.inject(showSearchResultsViewModel)
     }
 }

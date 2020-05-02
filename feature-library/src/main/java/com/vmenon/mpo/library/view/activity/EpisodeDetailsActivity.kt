@@ -1,5 +1,6 @@
 package com.vmenon.mpo.library.view.activity
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Html
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.navigation.NavigationController
@@ -19,9 +21,8 @@ import kotlinx.android.synthetic.main.activity_episode_details.*
 import java.text.DateFormat
 
 import java.util.Date
-import javax.inject.Inject
 
-class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
+class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryComponent>() {
     private val viewModel by lazy {
         viewModel() as EpisodeDetailsViewModel
     }
@@ -51,10 +52,6 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as LibraryComponentProvider).libraryComponent().apply {
-            inject(this@EpisodeDetailsActivity)
-            inject(viewModel)
-        }
         appBarImage = findViewById(R.id.appBarImage)
     }
 
@@ -106,5 +103,14 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity() {
 
     companion object {
         const val EXTRA_EPISODE = "extraEpisode"
+    }
+
+    override fun setupComponent(context: Context): LibraryComponent =
+        (context as LibraryComponentProvider).libraryComponent()
+
+
+    override fun inject(component: LibraryComponent) {
+        component.inject(this)
+        component.inject(viewModel)
     }
 }

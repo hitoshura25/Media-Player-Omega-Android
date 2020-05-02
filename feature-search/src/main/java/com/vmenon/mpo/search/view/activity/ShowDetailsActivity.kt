@@ -1,5 +1,6 @@
 package com.vmenon.mpo.search.view.activity
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import android.text.Html
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.navigation.NavigationController
+import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
@@ -24,7 +26,7 @@ import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_show_details.*
 import kotlinx.android.synthetic.main.show_details_container.*
 
-class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener,
+class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
     private val showDetailsViewModel by lazy {
@@ -39,11 +41,6 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as SearchComponentProvider).searchComponent().apply {
-            inject(this@ShowDetailsActivity)
-            inject(showDetailsViewModel)
-        }
-
         setContentView(R.layout.activity_show_details)
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         appBarLayout.addOnOffsetChangedListener(this)
@@ -153,5 +150,13 @@ class ShowDetailsActivity : BaseActivity(), AppBarLayout.OnOffsetChangedListener
             )
         }
 
+    }
+
+    override fun setupComponent(context: Context): SearchComponent =
+        (context as SearchComponentProvider).searchComponent()
+
+    override fun inject(component: SearchComponent) {
+        component.inject(this)
+        component.inject(showDetailsViewModel)
     }
 }

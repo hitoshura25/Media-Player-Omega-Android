@@ -1,6 +1,7 @@
 package com.vmenon.mpo.view.activity
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.*
 import android.support.v4.media.MediaBrowserCompat
@@ -19,6 +20,7 @@ import com.vmenon.mpo.Constants
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.core.MPOMediaService
+import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.navigation.NavigationParams
 import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
@@ -32,7 +34,8 @@ import java.util.concurrent.TimeUnit
 
 import javax.inject.Inject
 
-class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeListener {
+class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Callback,
+    VideoSizeListener {
     @Inject
     lateinit var player: MPOPlayer
 
@@ -99,7 +102,8 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
                                         .firstElement()
                                         .subscribe(
                                             { episode ->
-                                                this@MediaPlayerActivity.episodeWithShowDetails = episode
+                                                this@MediaPlayerActivity.episodeWithShowDetails =
+                                                    episode
                                                 updateUIFromMedia()
                                             },
                                             { error -> }
@@ -138,11 +142,6 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as MPOApplication).appComponent.activityComponent().create().apply {
-            inject(this@MediaPlayerActivity)
-            inject(viewModel)
-        }
-
         setContentView(R.layout.activity_media_player)
         if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
             fromNotification = true
@@ -408,6 +407,14 @@ class MediaPlayerActivity : BaseActivity(), SurfaceHolder.Callback, VideoSizeLis
                 }
             }
         }
+    }
+
+    override fun setupComponent(context: Context): ActivityComponent =
+        (context as MPOApplication).appComponent.activityComponent().create()
+
+    override fun inject(component: ActivityComponent) {
+        component.inject(this)
+        component.inject(viewModel)
     }
 
     companion object {

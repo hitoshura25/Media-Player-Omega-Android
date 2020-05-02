@@ -11,11 +11,12 @@ import android.view.Menu
 import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
+import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-class HomeActivity : BaseDrawerActivity() {
+class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
     private val viewModel by lazy {
         viewModel() as HomeViewModel
     }
@@ -31,15 +32,8 @@ class HomeActivity : BaseDrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as MPOApplication).appComponent.activityComponent().create().apply {
-            inject(this@HomeActivity)
-            inject(viewModel)
-        }
-
         setTitle(R.string.shows)
         showList.setHasFixedSize(true)
-        val gridLayoutManager = GridLayoutManager(this, 3)
-        gridLayoutManager.orientation = GridLayoutManager.HORIZONTAL
         showList.layoutManager = GridLayoutManager(this, 3)
     }
 
@@ -74,5 +68,13 @@ class HomeActivity : BaseDrawerActivity() {
                     }
                 )
         )
+    }
+
+    override fun setupComponent(context: Context): ActivityComponent =
+        (context as MPOApplication).appComponent.activityComponent().create()
+
+    override fun inject(component: ActivityComponent) {
+        component.inject(this)
+        component.inject(viewModel)
     }
 }
