@@ -21,9 +21,7 @@ import kotlinx.android.synthetic.main.activity_show_search_results.*
 
 class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
-    private val showSearchResultsViewModel by lazy {
-        viewModel() as ShowSearchResultsViewModel
-    }
+    private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
     lateinit var adapter: ShowSearchResultsAdapter
 

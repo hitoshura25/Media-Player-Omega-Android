@@ -14,9 +14,7 @@ import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import kotlinx.android.synthetic.main.activity_downloads.*
 
 class DownloadsActivity : BaseDrawerActivity<DownloadsComponent>() {
-    private val viewModel by lazy {
-        viewModel() as DownloadsViewModel
-    }
+    private val viewModel: DownloadsViewModel by viewModel()
 
     override val layoutResourceId: Int
         get() = R.layout.activity_downloads

@@ -29,9 +29,7 @@ import kotlinx.android.synthetic.main.show_details_container.*
 class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
-    private val showDetailsViewModel by lazy {
-        viewModel() as ShowDetailsViewModel
-    }
+    private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
 
     private lateinit var collapsingToolbar: CollapsingToolbarLayout
     private var show: ShowSearchResultDetailsModel? = null

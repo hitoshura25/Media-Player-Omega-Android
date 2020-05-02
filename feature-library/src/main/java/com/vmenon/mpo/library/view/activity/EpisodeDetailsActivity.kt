@@ -23,9 +23,7 @@ import java.text.DateFormat
 import java.util.Date
 
 class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryComponent>() {
-    private val viewModel by lazy {
-        viewModel() as EpisodeDetailsViewModel
-    }
+    private val viewModel: EpisodeDetailsViewModel by viewModel()
 
     private var episodeId: Long = -1
     private var show: ShowModel? = null

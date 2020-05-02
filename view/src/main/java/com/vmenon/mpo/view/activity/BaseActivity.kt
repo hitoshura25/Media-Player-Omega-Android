@@ -10,7 +10,7 @@ import com.vmenon.mpo.navigation.NavigationController
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-abstract class BaseActivity<COMPONENT: Any> : AppCompatActivity() {
+abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
     protected lateinit var subscriptions: CompositeDisposable
 
     lateinit var component: COMPONENT
@@ -37,7 +37,7 @@ abstract class BaseActivity<COMPONENT: Any> : AppCompatActivity() {
     protected abstract fun setupComponent(context: Context): COMPONENT
     protected abstract fun inject(component: COMPONENT)
 
-    protected inline fun <reified VIEW_MODEL: ViewModel> viewModel(): VIEW_MODEL {
-        return ViewModelProvider(this)[VIEW_MODEL::class.java].apply {  }
+    protected inline fun <reified VIEW_MODEL : ViewModel> viewModel(): Lazy<VIEW_MODEL> = lazy {
+        ViewModelProvider(this)[VIEW_MODEL::class.java]
     }
 }

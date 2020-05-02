@@ -17,9 +17,7 @@ import kotlinx.android.synthetic.main.activity_library.*
 
 class LibraryActivity : BaseDrawerActivity<LibraryComponent>(),
     LibraryAdapter.LibrarySelectedListener {
-    private val viewModel by lazy {
-        viewModel() as LibraryViewModel
-    }
+    private val viewModel: LibraryViewModel by viewModel()
 
     override val layoutResourceId: Int
         get() = R.layout.activity_library

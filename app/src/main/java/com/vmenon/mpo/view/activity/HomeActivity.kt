@@ -17,9 +17,7 @@ import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
-    private val viewModel by lazy {
-        viewModel() as HomeViewModel
-    }
+    private val viewModel: HomeViewModel by viewModel()
 
     override val layoutResourceId: Int
         get() = R.layout.activity_main

@@ -39,9 +39,7 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
     @Inject
     lateinit var player: MPOPlayer
 
-    val viewModel by lazy {
-        viewModel() as MediaPlayerViewModel
-    }
+    val viewModel: MediaPlayerViewModel by viewModel()
 
     private val handler = Handler()
     private lateinit var episodeWithShowDetails: EpisodeModel
