@@ -4,8 +4,9 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
@@ -20,6 +21,7 @@ import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import com.vmenon.mpo.view.LoadingStateHelper
 import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
+import kotlinx.coroutines.launch
 
 class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
@@ -73,42 +75,29 @@ class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
         if (Intent.ACTION_SEARCH == intent.action) {
             intent.getStringExtra(SearchManager.QUERY)?.let { query ->
                 title = this.getString(R.string.show_search_title, query)
-
-                subscriptions.add(
-                    showSearchResultsViewModel.searchShows(query)
-                        .subscribe(
-                            {
-
-                            },
-                            {
-
-                            }
-                        )
-                )
-
-                subscriptions.add(
-                    showSearchResultsViewModel.getShowSearchResultsForTerm(query)
-                        .flatMapSingle {
-                            showSearchResultsViewModel.getDiff(
-                                it,
-                                ShowSearchResultsDiff(searchResults, it)
+                showSearchResultsViewModel.searchShows(query)
+                showSearchResultsViewModel.getShowSearchResultsForTerm(query).observe(this,
+                    Observer { results ->
+                        lifecycleScope.launch {
+                            val diff = showSearchResultsViewModel.calculateDiff(
+                                results,
+                                ShowSearchResultsDiff(searchResults, results)
                             )
+                            this@ShowSearchResultsActivity.searchResults = diff.first
+                            adapter.update(
+                                this@ShowSearchResultsActivity.searchResults,
+                                diff.second
+                            )
+                            if (searchResults.isEmpty()) {
+                                noShowsText.visibility = View.VISIBLE
+                                showList.visibility = View.GONE
+                            } else {
+                                showList.visibility = View.VISIBLE
+                                noShowsText.visibility = View.GONE
+                            }
+                            loadingStateHelper.showContentState()
                         }
-                        .subscribe(
-                            { showsAndDiff ->
-                                this.searchResults = showsAndDiff.first
-                                adapter.update(this.searchResults, showsAndDiff.second)
-                                if (searchResults.isEmpty()) {
-                                    noShowsText.visibility = View.VISIBLE
-                                    showList.visibility = View.GONE
-                                } else {
-                                    showList.visibility = View.VISIBLE
-                                    noShowsText.visibility = View.GONE
-                                }
-                                loadingStateHelper.showContentState()
-                            },
-                            { error -> Log.w("MPO", "Error search for shows", error) }
-                        )
+                    }
                 )
             }
         }

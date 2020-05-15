@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Html
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
@@ -23,7 +24,8 @@ import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
 import kotlinx.android.synthetic.main.show_details_panel_content.*
 import kotlinx.android.synthetic.main.show_details_content.*
 
-class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
+class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>(),
+    AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
@@ -35,34 +37,25 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>
         super.onCreate(savedInstanceState)
         loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
         loadingStateHelper.showLoadingState()
-    }
 
-    override fun onStart() {
-        super.onStart()
-        val showSearchResultId = intent.getLongExtra(EXTRA_SHOW, -1)
-        subscriptions.add(
-            showDetailsViewModel.getShowDetails(showSearchResultId)
-                .subscribe(
-                    { showDetails ->
-                        displayDetails(showDetails)
-                    },
-                    { error ->
-                        Log.w("MPO", "Error getting show details for id $showSearchResultId", error)
-                        Snackbar.make(
-                            detailsContainer,
-                            "There was a problem getting the details for this show",
-                            Snackbar.LENGTH_LONG
-                        ).show()
-                    }
-                )
-        )
+        val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
+        showDetailsViewModel.getShowDetails(intent.getLongExtra(EXTRA_SHOW, -1))
+            .observe(this, Observer { showDetails -> displayDetails(showDetails) })
+
+        showDetailsViewModel.showSubscribed().observe(this, Observer {
+            Snackbar.make(
+                detailsContainer, "You have subscribed to this show",
+                Snackbar.LENGTH_LONG
+            )
+                .setAction("UNDO", undoListener)
+                .show()
+        })
     }
 
     override fun onStop() {
         super.onStop()
         loadingStateHelper.reset()
     }
-
 
     override val fabDrawableResource: Int
         get() = R.drawable.ic_add_white_48dp
@@ -75,20 +68,7 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>
 
     override fun onFabClick() {
         show?.let { showDetails ->
-            subscriptions.add(
-                showDetailsViewModel.subscribeToShow(showDetails)
-                    .subscribe(
-                        { subscribedShow ->
-                            Snackbar.make(
-                                detailsContainer,
-                                "You have subscribed to this show",
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                            toggleSubscribeButton(subscribedShow.isSubscribed)
-                        },
-                        { error -> error.printStackTrace() }
-                    )
-            )
+            showDetailsViewModel.subscribeToShow(showDetails)
         }
     }
 

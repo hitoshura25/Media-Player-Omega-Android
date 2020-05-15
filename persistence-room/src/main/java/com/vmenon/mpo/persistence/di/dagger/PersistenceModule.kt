@@ -8,7 +8,6 @@ import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.search.persistence.ShowSearchPersistence
 import com.vmenon.mpo.shows.persistence.ShowPersistence
 import dagger.Module
@@ -20,10 +19,9 @@ class PersistenceModule {
     @Provides
     @Singleton
     fun provideShowSearchPersistence(
-        showSearchResultDao: ShowSearchResultDao,
-        schedulerProvider: SchedulerProvider
+        showSearchResultDao: ShowSearchResultDao
     ) : ShowSearchPersistence =
-        ShowSearchPersistenceRoom(showSearchResultDao, schedulerProvider)
+        ShowSearchPersistenceRoom(showSearchResultDao)
 
     @Provides
     @Singleton

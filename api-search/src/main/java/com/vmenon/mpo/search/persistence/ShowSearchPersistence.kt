@@ -2,10 +2,10 @@ package com.vmenon.mpo.search.persistence
 
 import com.vmenon.mpo.model.SearchResultsModel
 import com.vmenon.mpo.model.ShowSearchResultModel
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 interface ShowSearchPersistence {
-    fun getBySearchTermOrderedByName(searchTerm: String): Flowable<List<ShowSearchResultModel>>
-    fun getSearchResultById(id: Long): Flowable<ShowSearchResultModel>
-    fun save(results: SearchResultsModel)
+    fun getBySearchTermOrderedByName(searchTerm: String): Flow<List<ShowSearchResultModel>>
+    fun getSearchResultById(id: Long): Flow<ShowSearchResultModel>
+    suspend fun save(results: SearchResultsModel)
 }
