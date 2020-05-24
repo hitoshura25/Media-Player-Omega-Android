@@ -1,10 +1,11 @@
 package com.vmenon.mpo.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.vmenon.mpo.model.ShowModel
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.shows.repository.ShowRepository
-import io.reactivex.Flowable
 import javax.inject.Inject
 
 class HomeViewModel : ViewModel() {
@@ -18,8 +19,6 @@ class HomeViewModel : ViewModel() {
         println("HomeViewModel()")
     }
 
-    fun subscribedShows(): Flowable<List<ShowModel>> =
-        showRepository.getSubscribed()
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
+    fun subscribedShows(): LiveData<List<ShowModel>> =
+        showRepository.getSubscribed().asLiveData()
 }

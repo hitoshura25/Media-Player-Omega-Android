@@ -69,13 +69,13 @@ class ShowDetailsViewModel : ViewModel() {
                     lastUpdate = 0L,
                     isSubscribed = true
                 )
-            ).blockingGet()
+            )
 
             show
         }
 
     private suspend fun performUpdate(show: ShowModel) =
         withContext(Dispatchers.Default) {
-            showUpdateManager.updateShow(show).blockingAwait()
+            showUpdateManager.updateShow(show)
         }
 }

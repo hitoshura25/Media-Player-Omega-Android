@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 
 import android.util.Log
 import android.view.Menu
+import androidx.lifecycle.Observer
 import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
@@ -33,6 +34,12 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
         setTitle(R.string.shows)
         showList.setHasFixedSize(true)
         showList.layoutManager = GridLayoutManager(this, 3)
+        viewModel.subscribedShows().observe(this, Observer{ shows ->
+            Log.d("MPO", "Got " + shows.size + " shows")
+            val adapter = SubscriptionGalleryAdapter(shows)
+            adapter.setHasStableIds(true)
+            showList.adapter = adapter
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -48,24 +55,6 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
         )
 
         return true
-    }
-
-    override fun onStart() {
-        super.onStart()
-        subscriptions.add(
-            viewModel.subscribedShows()
-                .subscribe(
-                    { shows ->
-                        Log.d("MPO", "Got " + shows.size + " shows")
-                        val adapter = SubscriptionGalleryAdapter(shows)
-                        adapter.setHasStableIds(true)
-                        showList.adapter = adapter
-                    },
-                    { error ->
-
-                    }
-                )
-        )
     }
 
     override fun setupComponent(context: Context): ActivityComponent =

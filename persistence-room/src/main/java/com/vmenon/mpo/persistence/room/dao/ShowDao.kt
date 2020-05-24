@@ -6,8 +6,8 @@ import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 
 import com.vmenon.mpo.persistence.room.entity.ShowEntity
 
-import io.reactivex.Flowable
 import io.reactivex.Maybe
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ShowDao :
@@ -16,8 +16,8 @@ abstract class ShowDao :
     abstract fun getByName(name: String): Maybe<ShowEntity>
 
     @Query("SELECT * FROM show WHERE isSubscribed")
-    abstract fun getSubscribed(): Flowable<List<ShowEntity>>
+    abstract fun getSubscribed(): Flow<List<ShowEntity>>
 
     @Query("SELECT * FROM show WHERE isSubscribed AND lastUpdate < :comparisonTime")
-    abstract fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long): Maybe<List<ShowEntity>>
+    abstract suspend fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long): List<ShowEntity>?
 }
