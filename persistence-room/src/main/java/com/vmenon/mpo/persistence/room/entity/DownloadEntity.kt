@@ -7,12 +7,12 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
     foreignKeys = [
         ForeignKey(
             entity = ShowEntity::class,
-            parentColumns = arrayOf("id"),
+            parentColumns = arrayOf("showId"),
             childColumns = arrayOf("showId")
         ),
         ForeignKey(
             entity = EpisodeEntity::class,
-            parentColumns = arrayOf("id"),
+            parentColumns = arrayOf("episodeId"),
             childColumns = arrayOf("episodeId")
         )
     ],
@@ -20,11 +20,12 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
     tableName = "downloads"
 )
 data class DownloadEntity(
-    @PrimaryKey(autoGenerate = true) override val id: Long,
+    @PrimaryKey(autoGenerate = true) val downloadId: Long,
     val showId: Long,
     val episodeId: Long,
     @Embedded
     val details: DownloadDetailsEntity
 ) : BaseEntity<DownloadEntity> {
-    override fun copyWithNewId(newId: Long): DownloadEntity = copy(id = newId)
+    override fun id(): Long = downloadId
+    override fun copyWithNewId(newId: Long): DownloadEntity = copy(downloadId = newId)
 }

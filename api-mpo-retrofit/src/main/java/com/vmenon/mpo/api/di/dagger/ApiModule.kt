@@ -42,7 +42,7 @@ object ApiModule {
             .client(httpClient)
             .build()
 
-        return retrofit.create(com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService::class.java)
+        return retrofit.create(MediaPlayerOmegaRetrofitService::class.java)
     }
 
     /**

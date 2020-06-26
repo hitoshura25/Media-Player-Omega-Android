@@ -19,7 +19,7 @@ fun ShowSearchResultsEntity.toModel(): ShowSearchResultModel =
 
 
 internal fun ShowEntity.toModel() = ShowModel(
-    id = id,
+    id = showId,
     name = details.showName,
     artworkUrl = details.showArtworkUrl,
     genres = details.genres,
@@ -43,7 +43,7 @@ internal fun ShowModel.toEntity() = ShowEntity(
         feedUrl = feedUrl,
         genres = genres
     ),
-    id = id
+    showId = id
 )
 
 internal fun ShowDetailsEntity.toModel(showId: Long) = ShowModel(
@@ -60,7 +60,7 @@ internal fun ShowDetailsEntity.toModel(showId: Long) = ShowModel(
 )
 
 internal fun EpisodeWithShowDetailsEntity.toModel() = EpisodeModel(
-    id = episode.id,
+    id = episode.episodeId,
     name = episode.details.episodeName,
     filename = episode.details.filename,
     description = episode.details.description,
@@ -73,7 +73,7 @@ internal fun EpisodeWithShowDetailsEntity.toModel() = EpisodeModel(
 )
 
 internal fun EpisodeModel.toEntity() = EpisodeEntity(
-    id = id,
+    episodeId = id,
     showId = show.id,
     details = EpisodeDetailsEntity(
         episodeName = name,
@@ -88,7 +88,7 @@ internal fun EpisodeModel.toEntity() = EpisodeEntity(
 )
 
 internal fun EpisodeEntity.toModel(show: ShowModel) = EpisodeModel(
-    id = id,
+    id = episodeId,
     downloadUrl = details.downloadUrl,
     type = details.type,
     published = details.published,
@@ -114,7 +114,7 @@ internal fun EpisodeDetailsEntity.toModel(episodeId: Long, show: ShowModel) = Ep
 )
 
 internal fun DownloadWithShowAndEpisodeDetailsEntity.toModel() = DownloadModel(
-    id = download.id,
+    id = download.downloadId,
     episode = episode.toModel(
         episodeId = download.episodeId,
         show = show.toModel(download.showId)
@@ -128,11 +128,11 @@ internal fun DownloadModel.toEntity() = DownloadEntity(
     details = DownloadDetailsEntity(
         downloadManagerId = downloadManagerId
     ),
-    id = id
+    downloadId = id
 )
 
 internal fun DownloadEntity.toModel(episode: EpisodeModel) = DownloadModel(
-    id = id,
+    id = downloadId,
     downloadManagerId = details.downloadManagerId,
     episode = episode
 )

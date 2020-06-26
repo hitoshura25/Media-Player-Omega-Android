@@ -14,7 +14,7 @@ abstract class EpisodeDao :
     @Query(
         """
         SELECT * from episode 
-        INNER JOIN show on episode.showId = show.id
+        INNER JOIN show on episode.showId = show.showId
         """
     )
     abstract fun getAllWithShowDetails(): Flowable<List<EpisodeWithShowDetailsEntity>>
@@ -22,8 +22,8 @@ abstract class EpisodeDao :
     @Query(
         """
         SELECT * from episode 
-        INNER JOIN show on episode.showId = show.id
-        WHERE episode.id = :id
+        INNER JOIN show on episode.showId = show.showId
+        WHERE episode.episodeId = :id
         """
     )
     abstract fun getWithShowDetailsById(id: Long): Flowable<EpisodeWithShowDetailsEntity>

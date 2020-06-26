@@ -13,7 +13,7 @@ interface BaseDao<T : BaseEntity<T>> {
     fun update(entity: T)
 
     fun insertOrUpdate(entity: T): T =
-        if (entity.id == BaseEntity.UNSAVED_ID) {
+        if (entity.id() == BaseEntity.UNSAVED_ID) {
             entity.copyWithNewId(newId = insert(entity))
         } else {
             update(entity)

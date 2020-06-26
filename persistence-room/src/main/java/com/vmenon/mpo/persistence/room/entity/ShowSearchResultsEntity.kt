@@ -9,7 +9,7 @@ import androidx.room.*
     ],
     tableName = "showSearchResults",
     foreignKeys = [ForeignKey(
-        entity = com.vmenon.mpo.persistence.room.entity.ShowSearchEntity::class,
+        entity = ShowSearchEntity::class,
         parentColumns = arrayOf("showSearchId"),
         childColumns = arrayOf("showSearchResultsSearchId")
     )]
