@@ -58,6 +58,8 @@ class ShowDetailsViewModel : ViewModel() {
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
     ) = downloadRepository.queueDownload(show, episode)
+        .subscribeOn(schedulerProvider.io())
+        .observeOn(schedulerProvider.main())
 
     private fun fetchInitialUpdate(show: ShowModel): Single<ShowModel> =
         showUpdateManager.updateShow(show).andThen(Single.just(show))

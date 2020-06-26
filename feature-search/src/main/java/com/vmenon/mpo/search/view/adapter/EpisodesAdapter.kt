@@ -12,11 +12,13 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.search.R
 import kotlinx.android.synthetic.main.recent_episode.view.*
+import kotlinx.android.synthetic.main.show_details_container.*
 import java.text.DateFormat
 
 import java.util.Date
@@ -27,7 +29,7 @@ class EpisodesAdapter(
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel)
+        fun onPlayEpisode(episode: ShowSearchResultEpisodeModel)
         fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
     }
 
@@ -51,18 +53,15 @@ class EpisodesAdapter(
             false
         )
         val vh = ViewHolder(v)
-        v.setOnClickListener {
-            listener?.onEpisodeSelected(vh.episode)
-        }
-
         vh.menuButton.setOnClickListener {
             val popupMenu = PopupMenu(vh.menuButton.context, vh.menuButton)
             popupMenu.inflate(R.menu.episode_menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 if (R.id.download_episode == item.itemId) {
                     listener?.onDownloadEpisode(vh.episode)
+                } else if (R.id.play_episode == item.itemId) {
+                    listener?.onPlayEpisode(vh.episode)
                 }
-
                 false
             }
             popupMenu.show()

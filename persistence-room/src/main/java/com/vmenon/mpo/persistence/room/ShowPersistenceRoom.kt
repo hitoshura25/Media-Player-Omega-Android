@@ -14,6 +14,7 @@ class ShowPersistenceRoom(private val showDao: ShowDao) : ShowPersistence {
     override fun getSubscribed(): Flowable<List<ShowModel>> = showDao.getSubscribed().map { shows ->
         shows.map { it.toModel() }
     }
+
     override fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long) =
         showDao.getSubscribedAndLastUpdatedBefore(comparisonTime).map { shows ->
             shows.map { it.toModel() }

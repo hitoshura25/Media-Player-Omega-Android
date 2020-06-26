@@ -109,20 +109,16 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
                 }
             })
 
-        val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
-
         subscribeButton.setOnClickListener {
             subscriptions.add(
                 showDetailsViewModel.subscribeToShow(showDetails).ignoreElement()
                     .subscribe(
                         {
                             Snackbar.make(
-                                detailsContainer, "You have subscribed to this show",
+                                detailsContainer,
+                                "You have subscribed to this show",
                                 Snackbar.LENGTH_LONG
-                            )
-                                .setAction("UNDO", undoListener)
-                                .show()
-
+                            ).show()
                         },
                         { error -> error.printStackTrace() }
                     )
@@ -131,12 +127,12 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
 
     }
 
-    companion object {
-        const val EXTRA_SHOW = "extraShow"
-    }
-
-    override fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel) {
-
+    override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
+        Snackbar.make(
+            detailsContainer,
+            "Not Implemented yet",
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
@@ -144,7 +140,13 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
             subscriptions.add(
                 showDetailsViewModel.queueDownload(details.show, episode)
                     .ignoreElement()
-                    .subscribe {}
+                    .subscribe {
+                        Snackbar.make(
+                            detailsContainer,
+                            "Episode download has been queued",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
             )
         }
 
@@ -156,5 +158,9 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
     override fun inject(component: SearchComponent) {
         component.inject(this)
         component.inject(showDetailsViewModel)
+    }
+
+    companion object {
+        const val EXTRA_SHOW = "extraShow"
     }
 }
