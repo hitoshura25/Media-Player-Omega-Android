@@ -18,7 +18,7 @@ class ShowRepositoryImpl(
     override suspend fun save(show: ShowModel): ShowModel {
         var showToSave: ShowModel = show
         if (show.id == 0L) {
-            val existingShow = showPersistence.getByName(show.name).blockingGet()
+            val existingShow = showPersistence.getByName(show.name)
             if (existingShow != null) {
                 showToSave = existingShow.copy(isSubscribed = show.isSubscribed)
             }

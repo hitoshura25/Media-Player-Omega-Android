@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class ShowDao :
     BaseDao<ShowEntity> {
     @Query("SELECT * FROM show where showName = :name")
-    abstract fun getByName(name: String): Maybe<ShowEntity>
+    abstract suspend fun getByName(name: String): ShowEntity?
 
     @Query("SELECT * FROM show WHERE isSubscribed")
     abstract fun getSubscribed(): Flow<List<ShowEntity>>
