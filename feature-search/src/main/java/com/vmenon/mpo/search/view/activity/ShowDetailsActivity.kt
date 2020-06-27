@@ -10,7 +10,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.search.R
 
@@ -22,6 +21,7 @@ import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
+import com.vmenon.mpo.view.LoadingStateHelper
 import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_show_details.*
 import kotlinx.android.synthetic.main.show_details_container.*
@@ -30,23 +30,25 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
     EpisodesAdapter.EpisodeSelectedListener {
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
-
-    private lateinit var collapsingToolbar: CollapsingToolbarLayout
     private var show: ShowSearchResultDetailsModel? = null
 
     private var collapsed = false
     private var scrollRange = -1
 
+    private lateinit var loadingStateHelper: LoadingStateHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_details)
+        loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
+        loadingStateHelper.showLoadingState()
+
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
         appBarLayout.addOnOffsetChangedListener(this)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        collapsingToolbar = findViewById(R.id.collapsing_toolbar)
 
         nav_view.setNavigationItemSelectedListener { menuItem ->
             val location = when (menuItem.itemId) {
@@ -63,17 +65,28 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
 
     override fun onStart() {
         super.onStart()
+        val showSearchResultId = intent.getLongExtra(EXTRA_SHOW, -1)
         subscriptions.add(
-            showDetailsViewModel.getShowDetails(intent.getLongExtra(EXTRA_SHOW, -1))
+            showDetailsViewModel.getShowDetails(showSearchResultId)
                 .subscribe(
                     { showDetails ->
                         displayDetails(showDetails)
                     },
                     { error ->
-                        Log.w("MPO", "Error search for shows", error)
+                        Log.w("MPO", "Error getting show details for id $showSearchResultId", error)
+                        Snackbar.make(
+                            detailsContainer,
+                            "There was a problem getting the details for this show",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 )
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        loadingStateHelper.reset()
     }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
@@ -81,10 +94,10 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show?.show?.name
+            collapsing_toolbar.title = show?.show?.name
             collapsed = true
         } else if (collapsed) {
-            collapsingToolbar.title = ""
+            collapsing_toolbar.title = ""
             collapsed = false
         }
     }
@@ -126,7 +139,8 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
                     )
             )
         }
-
+        loadingStateHelper.showContentState()
+        subscribeButton.visibility = View.VISIBLE
     }
 
     override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
@@ -151,7 +165,6 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
                     }
             )
         }
-
     }
 
     override fun setupComponent(context: Context): SearchComponent =

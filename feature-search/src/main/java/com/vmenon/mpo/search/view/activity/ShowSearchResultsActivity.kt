@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
@@ -16,6 +17,7 @@ import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
+import com.vmenon.mpo.view.LoadingStateHelper
 import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
@@ -23,13 +25,16 @@ class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
-    lateinit var adapter: ShowSearchResultsAdapter
+    private lateinit var adapter: ShowSearchResultsAdapter
+    private lateinit var loadingStateHelper: LoadingStateHelper
 
     var searchResults: List<ShowSearchResultModel> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_search_results)
+        loadingStateHelper = LoadingStateHelper(contentProgressBar, searchResultsContainer)
+        loadingStateHelper.showLoadingState()
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         showList.setHasFixedSize(true)
@@ -46,6 +51,11 @@ class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
     override fun onStart() {
         super.onStart()
         handleIntent(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        loadingStateHelper.reset()
     }
 
     override fun onShowSelected(show: ShowSearchResultModel) {
@@ -83,6 +93,14 @@ class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
                             { showsAndDiff ->
                                 this.searchResults = showsAndDiff.first
                                 adapter.update(this.searchResults, showsAndDiff.second)
+                                if (searchResults.isEmpty()) {
+                                    noShowsText.visibility = View.VISIBLE
+                                    showList.visibility = View.GONE
+                                } else {
+                                    showList.visibility = View.VISIBLE
+                                    noShowsText.visibility = View.GONE
+                                }
+                                loadingStateHelper.showContentState()
                             },
                             { error -> Log.w("MPO", "Error search for shows", error) }
                         )
