@@ -7,14 +7,13 @@ class ShowSearchResultsDiff(
     private val oldSearchResults: List<ShowSearchResultModel>,
     private val newSearchResults: List<ShowSearchResultModel>
 ) : DiffUtil.Callback() {
+    // Using the show name as opposed to the database id
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         oldSearchResults[oldItemPosition].name ==
                 newSearchResults[oldItemPosition].name
 
     override fun getOldListSize(): Int = oldSearchResults.size
-
     override fun getNewListSize(): Int = newSearchResults.size
-
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         oldSearchResults[oldItemPosition].name == newSearchResults[newItemPosition].name &&
                 oldSearchResults[oldItemPosition].artworkUrl == newSearchResults[newItemPosition].artworkUrl &&

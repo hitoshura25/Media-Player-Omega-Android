@@ -84,13 +84,17 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
                             Date(episodeWithShowDetails.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.artworkUrl)
+                            .load(episodeWithShowDetails.show.artworkUrl)
                             .into(appBarImage)
 
-                        episodeImage.visibility = View.VISIBLE
-                        Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.artworkUrl).fitCenter()
-                            .into(episodeImage)
+                        if (episodeWithShowDetails.artworkUrl != null) {
+                            episodeImage.visibility = View.VISIBLE
+                            Glide.with(this@EpisodeDetailsActivity)
+                                .load(episodeWithShowDetails.artworkUrl).fitCenter()
+                                .into(episodeImage)
+                        } else {
+                            episodeImage.visibility = View.GONE
+                        }
                     },
                     { error ->
 
