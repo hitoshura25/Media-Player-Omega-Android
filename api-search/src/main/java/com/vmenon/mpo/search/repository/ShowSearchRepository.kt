@@ -6,7 +6,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 
 interface ShowSearchRepository {
-    fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultModel>>
+    fun getShowSearchResultsForTermOrderedByName(term: String): Flowable<List<ShowSearchResultModel>>
     fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel>
     fun searchShows(keyword: String): Completable
 }

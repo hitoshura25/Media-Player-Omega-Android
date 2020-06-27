@@ -15,8 +15,8 @@ class ShowSearchRepositoryImpl(
     private val api: MediaPlayerOmegaApi,
     private val showSearchPersistence: ShowSearchPersistence
 ) : ShowSearchRepository {
-    override fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultModel>> {
-        return showSearchPersistence.getBySearchTerm(term)
+    override fun getShowSearchResultsForTermOrderedByName(term: String): Flowable<List<ShowSearchResultModel>> {
+        return showSearchPersistence.getBySearchTermOrderedByName(term)
     }
 
     override fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel> =

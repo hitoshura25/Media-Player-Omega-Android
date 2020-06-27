@@ -26,7 +26,6 @@ class ShowSearchResultsAdapter :
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nameText: TextView = v.showName
         val imageView: ImageView = v.showImage
-        var show: ShowSearchResultModel? = null
     }
 
     fun setListener(listener: ShowSelectedListener) {
@@ -44,22 +43,11 @@ class ShowSearchResultsAdapter :
             R.layout.show_result, parent,
             false
         )
-        val vh =
-            ViewHolder(
-                v
-            )
-        v.setOnClickListener {
-            vh.show?.let {
-                listener?.onShowSelected(it)
-            }
-        }
-
-        return vh
+        return ViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val show = shows[position]
-        holder.show = show
         holder.nameText.text = show.name
 
         Glide.with(holder.itemView.context)
@@ -67,6 +55,10 @@ class ShowSearchResultsAdapter :
             .centerCrop()
             .crossFade()
             .into(holder.imageView)
+
+        holder.itemView.setOnClickListener {
+            listener?.onShowSelected(shows[position])
+        }
     }
 
     override fun getItemCount(): Int {

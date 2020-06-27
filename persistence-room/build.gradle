@@ -35,6 +35,7 @@ dependencies {
     implementation project(':api-shows')
     implementation project(':api-downloads')
     implementation project(':base-persistence')
+    implementation project(':rx')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"

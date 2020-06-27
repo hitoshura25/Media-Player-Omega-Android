@@ -17,7 +17,7 @@ interface ShowSearchResultDao {
         ORDER BY showSearchResults.showName
         """
     )
-    fun getBySearchTerm(searchTerm: String): Flowable<List<ShowSearchResultsEntity>>
+    fun getBySearchTermOrderedByName(searchTerm: String): Flowable<List<ShowSearchResultsEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(search: ShowSearchEntity): Long

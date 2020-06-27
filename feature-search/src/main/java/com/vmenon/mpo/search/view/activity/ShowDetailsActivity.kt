@@ -69,7 +69,9 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
                     { showDetails ->
                         displayDetails(showDetails)
                     },
-                    { error -> Log.w("MPO", "Error search for shows", error) }
+                    { error ->
+                        Log.w("MPO", "Error search for shows", error)
+                    }
                 )
         )
     }

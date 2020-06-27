@@ -24,7 +24,7 @@ class ShowSearchResultsViewModel : ViewModel() {
             .observeOn(schedulerProvider.main())
 
     fun getShowSearchResultsForTerm(keyword: String): Flowable<List<ShowSearchResultModel>> =
-        showSearchRepository.getShowSearchResultsForTerm(keyword)
+        showSearchRepository.getShowSearchResultsForTermOrderedByName(keyword)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.main())
 
