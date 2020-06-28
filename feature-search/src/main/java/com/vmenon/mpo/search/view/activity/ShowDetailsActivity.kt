@@ -126,21 +126,22 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
 
         subscribeButton.setOnClickListener {
             subscriptions.add(
-                showDetailsViewModel.subscribeToShow(showDetails).ignoreElement()
+                showDetailsViewModel.subscribeToShow(showDetails)
                     .subscribe(
-                        {
+                        { subscribedShow ->
                             Snackbar.make(
                                 detailsContainer,
                                 "You have subscribed to this show",
                                 Snackbar.LENGTH_LONG
                             ).show()
+                            toggleSubscribeButton(subscribedShow.isSubscribed)
                         },
                         { error -> error.printStackTrace() }
                     )
             )
         }
         loadingStateHelper.showContentState()
-        subscribeButton.visibility = View.VISIBLE
+        toggleSubscribeButton(showDetails.subscribed)
     }
 
     override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
@@ -173,6 +174,10 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
     override fun inject(component: SearchComponent) {
         component.inject(this)
         component.inject(showDetailsViewModel)
+    }
+
+    private fun toggleSubscribeButton(subscribed: Boolean) {
+        subscribeButton.visibility = if (subscribed) View.INVISIBLE else View.VISIBLE
     }
 
     companion object {
