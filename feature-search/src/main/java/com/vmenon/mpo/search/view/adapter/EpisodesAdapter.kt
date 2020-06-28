@@ -77,7 +77,7 @@ class EpisodesAdapter(
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+            episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
             Date(episode.published)

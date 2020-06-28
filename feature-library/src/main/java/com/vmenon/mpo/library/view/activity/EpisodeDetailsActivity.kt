@@ -72,13 +72,14 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
                     { episodeWithShowDetails ->
+                        show = episodeWithShowDetails.show
                         episodeName.text = episodeWithShowDetails.name
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeWithShowDetails.description.replace(
+                            episodeWithShowDetails.description?.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
-                            )
+                            ) ?: ""
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
                             Date(episodeWithShowDetails.published)
