@@ -75,7 +75,7 @@ class ShowSearchPersistenceRoom(
     @SuppressLint("CheckResult")
     private fun scheduleFirstSearchResultsLoad(searchTerm: String) {
         Completable.fromAction {
-            emitSearchResults(searchTerm)
+            emitSearchResults(searchTerm, true)
         }.subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.io())
             .subscribe {
@@ -83,11 +83,12 @@ class ShowSearchPersistenceRoom(
             }
     }
 
-    private fun emitSearchResults(searchTerm: String) {
-        searchResultsPublishers[searchTerm].onNext(
-            showSearchResultDao.getBySearchTermOrderedByName(searchTerm)
-                .blockingFirst(emptyList())
-        )
+    private fun emitSearchResults(searchTerm: String, ignoreEmpty: Boolean = false) {
+        val results = showSearchResultDao.getBySearchTermOrderedByName(searchTerm)
+            .blockingFirst(emptyList())
+        if (!ignoreEmpty || results.isNotEmpty()) {
+            searchResultsPublishers[searchTerm].onNext(results)
+        }
     }
 
     private class SearchResultsProcessorCache(
