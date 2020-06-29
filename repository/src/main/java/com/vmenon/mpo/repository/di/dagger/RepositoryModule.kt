@@ -9,6 +9,7 @@ import com.vmenon.mpo.search.repository.ShowSearchRepository
 import com.vmenon.mpo.search.repository.impl.EpisodeRepositoryImpl
 import com.vmenon.mpo.search.repository.impl.ShowSearchRepositoryImpl
 import com.vmenon.mpo.shows.persistence.EpisodePersistence
+import com.vmenon.mpo.shows.persistence.ShowPersistence
 import com.vmenon.mpo.shows.repository.EpisodeRepository
 import com.vmenon.mpo.shows.repository.ShowRepository
 import com.vmenon.mpo.shows.repository.impl.ShowRepositoryImpl
@@ -22,7 +23,7 @@ class RepositoryModule {
         application: Application,
         downloadPersistence: com.vmenon.mpo.downloads.persistence.DownloadPersistence,
         episodePersistence: EpisodePersistence,
-        showPersistence: com.vmenon.mpo.shows.persistence.ShowPersistence
+        showPersistence: ShowPersistence
     ): DownloadRepository = DownloadRepositoryImpl(
         context = application,
         downloadPersistence = downloadPersistence,
@@ -47,10 +48,12 @@ class RepositoryModule {
     @Provides
     fun showSearchRepository(
         api: MediaPlayerOmegaApi,
-        showSearchPersistence: ShowSearchPersistence
+        showSearchPersistence: ShowSearchPersistence,
+        showPersistence: ShowPersistence
     ): ShowSearchRepository =
         ShowSearchRepositoryImpl(
             api,
-            showSearchPersistence
+            showSearchPersistence,
+            showPersistence
         )
 }

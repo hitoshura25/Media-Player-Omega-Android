@@ -8,15 +8,18 @@ import com.vmenon.mpo.repository.toModel
 import com.vmenon.mpo.repository.toSearchResultsModel
 import com.vmenon.mpo.search.persistence.ShowSearchPersistence
 import com.vmenon.mpo.search.repository.ShowSearchRepository
+import com.vmenon.mpo.shows.persistence.ShowPersistence
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 class ShowSearchRepositoryImpl(
     private val api: MediaPlayerOmegaApi,
-    private val showSearchPersistence: ShowSearchPersistence
+    private val showSearchPersistence: ShowSearchPersistence,
+    private val showPersistence: ShowPersistence
 ) : ShowSearchRepository {
-    override fun getShowSearchResultsForTerm(term: String): Flowable<List<ShowSearchResultModel>> {
-        return showSearchPersistence.getBySearchTerm(term)
+    override fun getShowSearchResultsForTermOrderedByName(term: String): Flowable<List<ShowSearchResultModel>> {
+        return showSearchPersistence.getBySearchTermOrderedByName(term)
     }
 
     override fun getShowDetails(showSearchResultId: Long): Flowable<ShowSearchResultDetailsModel> =
@@ -42,15 +45,27 @@ class ShowSearchRepositoryImpl(
     private fun createShowDetailsModel(
         showSearchResult: ShowSearchResultModel
     ): Flowable<ShowSearchResultDetailsModel> =
+        checkSubscribed(showSearchResult).flatMap { subscribed ->
+            getDetailsFromApi(showSearchResult, subscribed)
+        }.toFlowable()
+
+    private fun getDetailsFromApi(
+        showSearchResult: ShowSearchResultModel,
+        subscribed: Boolean
+    ): Single<ShowSearchResultDetailsModel> =
         api.getPodcastDetails(
             showSearchResult.feedUrl,
             10
-        ).flatMapPublisher { showDetails ->
-            Flowable.just(
-                ShowSearchResultDetailsModel(
-                    show = showSearchResult,
-                    episodes = showDetails.episodes.map { it.toModel() }
-                )
+        ).map { showDetails ->
+            ShowSearchResultDetailsModel(
+                show = showSearchResult,
+                episodes = showDetails.episodes.map { it.toModel() },
+                subscribed = subscribed
             )
         }
+
+    private fun checkSubscribed(showSearchResult: ShowSearchResultModel): Single<Boolean> =
+        showPersistence.getByName(showSearchResult.name).map { show ->
+            show.isSubscribed
+        }.toSingle(false)
 }

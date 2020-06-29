@@ -12,8 +12,8 @@ abstract class DownloadDao :
     @Query(
         """
         SELECT * from downloads 
-        INNER JOIN episode on downloads.episodeId = episode.id
-        INNER JOIN show on downloads.showId = show.id
+        INNER JOIN episode on downloads.episodeId = episode.episodeId
+        INNER JOIN show on downloads.showId = show.showId
         WHERE downloadManagerId = :id
         """
     )
@@ -22,12 +22,12 @@ abstract class DownloadDao :
     @Query(
         """
         SELECT * from downloads 
-        INNER JOIN episode on downloads.episodeId = episode.id
-        INNER JOIN show on downloads.showId = show.id
+        INNER JOIN episode on downloads.episodeId = episode.episodeId
+        INNER JOIN show on downloads.showId = show.showId
         """
     )
     abstract fun getAllWithShowAndEpisodeDetails(): Flowable<List<DownloadWithShowAndEpisodeDetailsEntity>>
 
-    @Query("DELETE FROM downloads WHERE id = :id")
+    @Query("DELETE FROM downloads WHERE downloadId = :id")
     abstract fun delete(id: Long)
 }

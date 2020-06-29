@@ -72,25 +72,30 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
             viewModel.getEpisodeDetails(episodeId)
                 .subscribe(
                     { episodeWithShowDetails ->
+                        show = episodeWithShowDetails.show
                         episodeName.text = episodeWithShowDetails.name
                         @Suppress("DEPRECATION")
                         episodeDescription.text = Html.fromHtml(
-                            episodeWithShowDetails.description.replace(
+                            episodeWithShowDetails.description?.replace(
                                 "(<(//)img>)|(<img.+?>)".toRegex(),
                                 ""
-                            )
+                            ) ?: ""
                         )
                         episodeDate.text = DateFormat.getDateInstance().format(
                             Date(episodeWithShowDetails.published)
                         )
                         Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.artworkUrl)
+                            .load(episodeWithShowDetails.show.artworkUrl)
                             .into(appBarImage)
 
-                        episodeImage.visibility = View.VISIBLE
-                        Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.artworkUrl).fitCenter()
-                            .into(episodeImage)
+                        if (episodeWithShowDetails.artworkUrl != null) {
+                            episodeImage.visibility = View.VISIBLE
+                            Glide.with(this@EpisodeDetailsActivity)
+                                .load(episodeWithShowDetails.artworkUrl).fitCenter()
+                                .into(episodeImage)
+                        } else {
+                            episodeImage.visibility = View.GONE
+                        }
                     },
                     { error ->
 

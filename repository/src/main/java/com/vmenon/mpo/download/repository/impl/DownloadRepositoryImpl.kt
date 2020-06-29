@@ -78,9 +78,10 @@ class DownloadRepositoryImpl(
     override fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
-    ): Single<DownloadModel> = createShowAndEpisodeForDownload(show, episode).flatMap { showAndEpisode ->
-        queueDownload(showAndEpisode.second)
-    }
+    ): Single<DownloadModel> =
+        createShowAndEpisodeForDownload(show, episode).flatMap { showAndEpisode ->
+            queueDownload(showAndEpisode.second)
+        }
 
     override fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
         val downloadWithShowAndEpisode =
@@ -109,8 +110,12 @@ class DownloadRepositoryImpl(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
     ) = Single.fromCallable {
-        val savedShow = showPersistence.insertOrUpdate(show.toShowModel())
-        val savedEpisode = episodePersistence.insertOrUpdate(episode.toEpisodeModel(savedShow))
+        val savedShow =
+            showPersistence.getByName(show.name).blockingGet() ?: showPersistence.insertOrUpdate(
+                show.toShowModel()
+            )
+        val savedEpisode = episodePersistence.getByName(episode.name).blockingGet()
+            ?: episodePersistence.insertOrUpdate(episode.toEpisodeModel(savedShow))
         Pair(savedShow, savedEpisode)
     }
 }

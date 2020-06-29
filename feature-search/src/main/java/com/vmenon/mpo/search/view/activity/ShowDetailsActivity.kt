@@ -2,89 +2,135 @@ package com.vmenon.mpo.search.view.activity
 
 import android.content.Context
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
 import android.text.Html
 import android.util.Log
 import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.search.R
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenon.mpo.navigation.NavigationController
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
-import com.vmenon.mpo.view.activity.BaseActivity
-import kotlinx.android.synthetic.main.activity_show_details.*
-import kotlinx.android.synthetic.main.show_details_container.*
+import com.vmenon.mpo.view.LoadingStateHelper
+import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
+import kotlinx.android.synthetic.main.show_details_panel_content.*
+import kotlinx.android.synthetic.main.show_details_content.*
 
-class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
+class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
-
-    private lateinit var collapsingToolbar: CollapsingToolbarLayout
     private var show: ShowSearchResultDetailsModel? = null
 
-    private var collapsed = false
-    private var scrollRange = -1
+    private lateinit var loadingStateHelper: LoadingStateHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_details)
-        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
-        appBarLayout.addOnOffsetChangedListener(this)
-
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        collapsingToolbar = findViewById(R.id.collapsing_toolbar)
-
-        nav_view.setNavigationItemSelectedListener { menuItem ->
-            val location = when (menuItem.itemId) {
-                R.id.nav_downloads -> NavigationController.Location.DOWNLOADS
-                R.id.nav_library -> NavigationController.Location.LIBRARY
-                else -> NavigationController.Location.HOME
-            }
-            navigationController.onNavigationSelected(location, this, null)
-            menuItem.isChecked = true
-            drawer_layout.closeDrawers()
-            true
-        }
+        loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
+        loadingStateHelper.showLoadingState()
     }
 
     override fun onStart() {
         super.onStart()
+        val showSearchResultId = intent.getLongExtra(EXTRA_SHOW, -1)
         subscriptions.add(
-            showDetailsViewModel.getShowDetails(intent.getLongExtra(EXTRA_SHOW, -1))
+            showDetailsViewModel.getShowDetails(showSearchResultId)
                 .subscribe(
                     { showDetails ->
                         displayDetails(showDetails)
                     },
-                    { error -> Log.w("MPO", "Error search for shows", error) }
+                    { error ->
+                        Log.w("MPO", "Error getting show details for id $showSearchResultId", error)
+                        Snackbar.make(
+                            detailsContainer,
+                            "There was a problem getting the details for this show",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
                 )
         )
     }
 
-    override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-        if (scrollRange == -1) {
-            scrollRange = appBarLayout.totalScrollRange
+    override fun onStop() {
+        super.onStop()
+        loadingStateHelper.reset()
+    }
+
+
+    override val fabDrawableResource: Int
+        get() = R.drawable.ic_add_white_48dp
+    override val collapsedToolbarTitle: CharSequence
+        get() = show?.show?.name ?: ""
+    override val expandedToolbarTitle: CharSequence
+        get() = ""
+    override val collapsiblePanelContentLayoutId: Int
+        get() = R.layout.show_details_panel_content
+
+    override fun onFabClick() {
+        show?.let { showDetails ->
+            subscriptions.add(
+                showDetailsViewModel.subscribeToShow(showDetails)
+                    .subscribe(
+                        { subscribedShow ->
+                            Snackbar.make(
+                                detailsContainer,
+                                "You have subscribed to this show",
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                            toggleSubscribeButton(subscribedShow.isSubscribed)
+                        },
+                        { error -> error.printStackTrace() }
+                    )
+            )
         }
-        if (scrollRange + verticalOffset == 0) {
-            collapsingToolbar.title = show?.show?.name
-            collapsed = true
-        } else if (collapsed) {
-            collapsingToolbar.title = ""
-            collapsed = false
+    }
+
+    override val layoutResourceId: Int
+        get() = R.layout.show_details_content
+    override val navMenuId: Int
+        get() = R.id.nav_home
+
+    override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
+        Snackbar.make(
+            detailsContainer,
+            "Not Implemented yet",
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
+
+    override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
+        show?.let { details ->
+            subscriptions.add(
+                showDetailsViewModel.queueDownload(details.show, episode)
+                    .ignoreElement()
+                    .subscribe {
+                        Snackbar.make(
+                            detailsContainer,
+                            "Episode download has been queued",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+            )
         }
+    }
+
+    override fun setupComponent(context: Context): SearchComponent =
+        (context as SearchComponentProvider).searchComponent()
+
+    override fun inject(component: SearchComponent) {
+        component.inject(this)
+        component.inject(showDetailsViewModel)
+    }
+
+    private fun toggleSubscribeButton(subscribed: Boolean) {
+        findViewById<View>(R.id.fab).visibility = if (subscribed) View.INVISIBLE else View.VISIBLE
     }
 
     private fun displayDetails(showDetails: ShowSearchResultDetailsModel) {
@@ -99,62 +145,11 @@ class ShowDetailsActivity : BaseActivity<SearchComponent>(), AppBarLayout.OnOffs
         episodesList.adapter = EpisodesAdapter(showDetails).apply {
             setListener(this@ShowDetailsActivity)
         }
-
-        nestedScrollView.viewTreeObserver.addOnGlobalLayoutListener(
-            object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    nestedScrollView.scrollY = 0
-                    @Suppress("DEPRECATION")
-                    nestedScrollView.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                }
-            })
-
-        val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
-
-        subscribeButton.setOnClickListener {
-            subscriptions.add(
-                showDetailsViewModel.subscribeToShow(showDetails).ignoreElement()
-                    .subscribe(
-                        {
-                            Snackbar.make(
-                                detailsContainer, "You have subscribed to this show",
-                                Snackbar.LENGTH_LONG
-                            )
-                                .setAction("UNDO", undoListener)
-                                .show()
-
-                        },
-                        { error -> error.printStackTrace() }
-                    )
-            )
-        }
-
+        loadingStateHelper.showContentState()
+        toggleSubscribeButton(showDetails.subscribed)
     }
 
     companion object {
         const val EXTRA_SHOW = "extraShow"
-    }
-
-    override fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel) {
-
-    }
-
-    override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
-        show?.let { details ->
-            subscriptions.add(
-                showDetailsViewModel.queueDownload(details.show, episode)
-                    .ignoreElement()
-                    .subscribe {}
-            )
-        }
-
-    }
-
-    override fun setupComponent(context: Context): SearchComponent =
-        (context as SearchComponentProvider).searchComponent()
-
-    override fun inject(component: SearchComponent) {
-        component.inject(this)
-        component.inject(showDetailsViewModel)
     }
 }

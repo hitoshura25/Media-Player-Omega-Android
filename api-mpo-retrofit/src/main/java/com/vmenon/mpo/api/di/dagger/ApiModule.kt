@@ -26,9 +26,9 @@ object ApiModule {
 
     private fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
             .build()
     }
 
@@ -42,7 +42,7 @@ object ApiModule {
             .client(httpClient)
             .build()
 
-        return retrofit.create(com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService::class.java)
+        return retrofit.create(MediaPlayerOmegaRetrofitService::class.java)
     }
 
     /**

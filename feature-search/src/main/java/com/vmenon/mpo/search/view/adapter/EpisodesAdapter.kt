@@ -27,7 +27,7 @@ class EpisodesAdapter(
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onEpisodeSelected(episode: ShowSearchResultEpisodeModel)
+        fun onPlayEpisode(episode: ShowSearchResultEpisodeModel)
         fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
     }
 
@@ -51,18 +51,15 @@ class EpisodesAdapter(
             false
         )
         val vh = ViewHolder(v)
-        v.setOnClickListener {
-            listener?.onEpisodeSelected(vh.episode)
-        }
-
         vh.menuButton.setOnClickListener {
             val popupMenu = PopupMenu(vh.menuButton.context, vh.menuButton)
             popupMenu.inflate(R.menu.episode_menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 if (R.id.download_episode == item.itemId) {
                     listener?.onDownloadEpisode(vh.episode)
+                } else if (R.id.play_episode == item.itemId) {
+                    listener?.onPlayEpisode(vh.episode)
                 }
-
                 false
             }
             popupMenu.show()
@@ -78,7 +75,7 @@ class EpisodesAdapter(
         holder.nameText.text = episode.name
         @Suppress("DEPRECATION")
         holder.descriptionText.text = Html.fromHtml(
-            episode.description.replace("(<(//)img>)|(<img.+?>)".toRegex(), "")
+            episode.description?.replace("(<(//)img>)|(<img.+?>)".toRegex(), "") ?: ""
         )
         holder.publishedText.text = DateFormat.getDateInstance().format(
             Date(episode.published)

@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3789d313d2cd6802dfbb84aa074ae115",
+    "identityHash": "643c04d0b526c1f003ec184aa7d2e681",
     "entities": [
       {
         "tableName": "show",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`showId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showName` TEXT NOT NULL, `showArtworkUrl` TEXT, `genres` TEXT NOT NULL, `author` TEXT NOT NULL, `feedUrl` TEXT NOT NULL, `showDescription` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `lastEpisodePublished` INTEGER NOT NULL, `isSubscribed` INTEGER NOT NULL)",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "showId",
+            "columnName": "showId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -71,7 +71,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "showId"
           ],
           "autoGenerate": true
         },
@@ -89,11 +89,11 @@
       },
       {
         "tableName": "episode",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT NOT NULL, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "episodeId",
+            "columnName": "episodeId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -113,7 +113,7 @@
             "fieldPath": "details.description",
             "columnName": "description",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "details.published",
@@ -154,7 +154,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "episodeId"
           ],
           "autoGenerate": true
         },
@@ -177,7 +177,7 @@
               "showId"
             ],
             "referencedColumns": [
-              "id"
+              "showId"
             ]
           }
         ]
@@ -328,11 +328,11 @@
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeId` INTEGER NOT NULL, `downloadManagerId` INTEGER NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`episodeId`) REFERENCES `episode`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeId` INTEGER NOT NULL, `downloadManagerId` INTEGER NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`episodeId`) REFERENCES `episode`(`episodeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "downloadId",
+            "columnName": "downloadId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -357,7 +357,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "downloadId"
           ],
           "autoGenerate": true
         },
@@ -388,7 +388,7 @@
               "showId"
             ],
             "referencedColumns": [
-              "id"
+              "showId"
             ]
           },
           {
@@ -399,7 +399,7 @@
               "episodeId"
             ],
             "referencedColumns": [
-              "id"
+              "episodeId"
             ]
           }
         ]
@@ -408,7 +408,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3789d313d2cd6802dfbb84aa074ae115')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643c04d0b526c1f003ec184aa7d2e681')"
     ]
   }
 }

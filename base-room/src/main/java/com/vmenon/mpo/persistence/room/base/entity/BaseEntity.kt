@@ -1,7 +1,7 @@
 package com.vmenon.mpo.persistence.room.base.entity
 
 interface BaseEntity<T: BaseEntity<T>> {
-    val id: Long
+    fun id(): Long
     fun copyWithNewId(newId: Long): T
 
     companion object {

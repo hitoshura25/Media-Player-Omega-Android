@@ -7,14 +7,23 @@ import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 import com.vmenon.mpo.persistence.room.entity.EpisodeEntity
 import com.vmenon.mpo.persistence.room.entity.EpisodeWithShowDetailsEntity
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 
 @Dao
 abstract class EpisodeDao :
     BaseDao<EpisodeEntity> {
     @Query(
         """
+        SELECT * FROM episode INNER JOIN show on episode.showId = show.showId
+        WHERE episodeName = :name
+        """
+    )
+    abstract fun getByNameWithShowDetails(name: String): Maybe<EpisodeWithShowDetailsEntity>
+
+    @Query(
+        """
         SELECT * from episode 
-        INNER JOIN show on episode.showId = show.id
+        INNER JOIN show on episode.showId = show.showId
         """
     )
     abstract fun getAllWithShowDetails(): Flowable<List<EpisodeWithShowDetailsEntity>>
@@ -22,8 +31,8 @@ abstract class EpisodeDao :
     @Query(
         """
         SELECT * from episode 
-        INNER JOIN show on episode.showId = show.id
-        WHERE episode.id = :id
+        INNER JOIN show on episode.showId = show.showId
+        WHERE episode.episodeId = :id
         """
     )
     abstract fun getWithShowDetailsById(id: Long): Flowable<EpisodeWithShowDetailsEntity>

@@ -46,7 +46,7 @@ internal fun ShowSearchResultModel.toShowModel() = ShowModel(
     lastUpdate = 0L,
     isSubscribed = false,
     description = description,
-    id = id
+    id = UNSAVED_ID
 )
 
 internal fun ShowSearchResultEpisodeModel.toEpisodeModel(show: ShowModel) = EpisodeModel(
