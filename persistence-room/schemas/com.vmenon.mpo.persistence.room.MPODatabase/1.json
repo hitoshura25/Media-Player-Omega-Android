@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a38d8ee57ff67d0827963c4fa77878b8",
+    "identityHash": "643c04d0b526c1f003ec184aa7d2e681",
     "entities": [
       {
         "tableName": "show",
@@ -89,7 +89,7 @@
       },
       {
         "tableName": "episode",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT NOT NULL, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "episodeId",
@@ -113,7 +113,7 @@
             "fieldPath": "details.description",
             "columnName": "description",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "details.published",
@@ -408,7 +408,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a38d8ee57ff67d0827963c4fa77878b8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643c04d0b526c1f003ec184aa7d2e681')"
     ]
   }
 }

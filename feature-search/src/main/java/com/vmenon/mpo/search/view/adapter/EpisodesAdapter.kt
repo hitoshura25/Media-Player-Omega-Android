@@ -12,13 +12,11 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.model.ShowSearchResultDetailsModel
 import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.search.R
 import kotlinx.android.synthetic.main.recent_episode.view.*
-import kotlinx.android.synthetic.main.show_details_container.*
 import java.text.DateFormat
 
 import java.util.Date

@@ -18,10 +18,10 @@ import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import com.vmenon.mpo.view.LoadingStateHelper
-import com.vmenon.mpo.view.activity.BaseActivity
+import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 
-class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
+class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
@@ -30,9 +30,14 @@ class ShowSearchResultsActivity : BaseActivity<SearchComponent>(),
 
     var searchResults: List<ShowSearchResultModel> = emptyList()
 
+    override val layoutResourceId: Int
+        get() = R.layout.activity_show_search_results
+
+    override val navMenuId: Int
+        get() = R.id.nav_home
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_search_results)
         loadingStateHelper = LoadingStateHelper(contentProgressBar, searchResultsContainer)
         loadingStateHelper.showLoadingState()
         // use this setting to improve performance if you know that changes

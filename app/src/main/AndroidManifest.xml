@@ -30,6 +30,7 @@
         </activity>
         <activity
             android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
+            android:theme="@style/AppThemeNoActionBar"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
