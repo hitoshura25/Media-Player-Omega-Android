@@ -10,7 +10,7 @@ class ShowSearchResultsDiff(
     // Using the show name as opposed to the database id
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         oldSearchResults[oldItemPosition].name ==
-                newSearchResults[oldItemPosition].name
+                newSearchResults[newItemPosition].name
 
     override fun getOldListSize(): Int = oldSearchResults.size
     override fun getNewListSize(): Int = newSearchResults.size
