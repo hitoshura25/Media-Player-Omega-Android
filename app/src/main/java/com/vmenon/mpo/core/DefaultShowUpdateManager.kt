@@ -41,11 +41,8 @@ class DefaultShowUpdateManager(
     }
 
     private suspend fun saveEpisodeAndQueueDownload(showUpdate: ShowUpdateModel) {
-        val savedDownload = episodeRepository.save(showUpdate.newEpisode)
-            .flatMap { savedEpisode ->
-                downloadRepository.queueDownload(savedEpisode)
-            }.blockingGet()
-
+        val savedEpisode = episodeRepository.save(showUpdate.newEpisode).blockingGet()
+        val savedDownload =  downloadRepository.queueDownload(savedEpisode)
         showRepository.save(
             savedDownload.episode.show.copy(
                 lastUpdate = Date().time,

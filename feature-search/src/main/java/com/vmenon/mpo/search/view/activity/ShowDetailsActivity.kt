@@ -50,6 +50,14 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>
                 .setAction("UNDO", undoListener)
                 .show()
         })
+
+        showDetailsViewModel.downloadQueued().observe(this, Observer {
+            Snackbar.make(
+                detailsContainer,
+                "Episode download has been queued",
+                Snackbar.LENGTH_LONG
+            ).show()
+        })
     }
 
     override fun onStop() {
@@ -87,17 +95,7 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>
 
     override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
         show?.let { details ->
-            subscriptions.add(
-                showDetailsViewModel.queueDownload(details.show, episode)
-                    .ignoreElement()
-                    .subscribe {
-                        Snackbar.make(
-                            detailsContainer,
-                            "Episode download has been queued",
-                            Snackbar.LENGTH_LONG
-                        ).show()
-                    }
-            )
+            showDetailsViewModel.queueDownload(details.show, episode)
         }
     }
 

@@ -2,10 +2,7 @@ package com.vmenon.mpo.search.viewmodel
 
 import androidx.lifecycle.*
 import com.vmenon.mpo.downloads.repository.DownloadRepository
-import com.vmenon.mpo.model.ShowModel
-import com.vmenon.mpo.model.ShowSearchResultDetailsModel
-import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenon.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.model.*
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.search.repository.ShowSearchRepository
 import com.vmenon.mpo.shows.ShowUpdateManager
@@ -34,8 +31,11 @@ class ShowDetailsViewModel : ViewModel() {
     lateinit var showUpdateManager: ShowUpdateManager
 
     private val showSubscribed = MutableLiveData<ShowModel>()
+    private val downloadQueued = MutableLiveData<DownloadModel>()
 
     fun showSubscribed(): LiveData<ShowModel> = showSubscribed
+
+    fun downloadQueued() : LiveData<DownloadModel> = downloadQueued
 
     fun getShowDetails(showSearchResultId: Long): LiveData<ShowSearchResultDetailsModel> =
         showSearchRepository.getShowDetails(showSearchResultId).asLiveData()
@@ -51,9 +51,9 @@ class ShowDetailsViewModel : ViewModel() {
     fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
-    ) = downloadRepository.queueDownload(show, episode)
-        .subscribeOn(schedulerProvider.io())
-        .observeOn(schedulerProvider.main())
+    ) = viewModelScope.launch {
+        downloadQueued.postValue(downloadRepository.queueDownload(show, episode))
+    }
 
     private suspend fun saveShow(showDetails: ShowSearchResultDetailsModel) =
         withContext(Dispatchers.Default) {
