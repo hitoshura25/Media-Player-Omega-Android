@@ -7,5 +7,5 @@ import io.reactivex.Flowable
 interface DownloadPersistence : BasePersistence<DownloadModel> {
     fun getByDownloadManagerId(id: Long): Flowable<DownloadModel>
     fun getAll(): Flowable<List<DownloadModel>>
-    fun delete(id: Long)
+    suspend fun delete(id: Long)
 }

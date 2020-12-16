@@ -80,7 +80,7 @@ class DownloadRepositoryImpl(
         episode: ShowSearchResultEpisodeModel
     ): DownloadModel = queueDownload(createShowAndEpisodeForDownload(show, episode).second)
 
-    override fun notifyDownloadCompleted(downloadManagerId: Long) = Completable.fromAction {
+    override suspend fun notifyDownloadCompleted(downloadManagerId: Long) {
         val downloadWithShowAndEpisode =
             downloadPersistence.getByDownloadManagerId(
                 downloadManagerId

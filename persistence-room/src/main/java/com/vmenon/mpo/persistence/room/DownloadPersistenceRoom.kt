@@ -15,7 +15,7 @@ class DownloadPersistenceRoom(private val downloadDao: DownloadDao) :
             downloads.map { it.toModel() }
         }
 
-    override fun delete(id: Long) {
+    override suspend fun delete(id: Long) {
         downloadDao.delete(id)
     }
 

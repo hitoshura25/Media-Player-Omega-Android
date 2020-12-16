@@ -1,7 +1,6 @@
 package com.vmenon.mpo.downloads.repository
 
 import com.vmenon.mpo.model.*
-import io.reactivex.Completable
 import io.reactivex.Flowable
 
 interface DownloadRepository {
@@ -11,5 +10,6 @@ interface DownloadRepository {
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
     ): DownloadModel
-    fun notifyDownloadCompleted(downloadManagerId: Long): Completable
+
+    suspend fun notifyDownloadCompleted(downloadManagerId: Long)
 }
