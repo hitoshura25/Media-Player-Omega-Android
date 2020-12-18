@@ -14,15 +14,11 @@ import kotlinx.coroutines.flow.map
 class ShowSearchPersistenceRoom(
     private val showSearchResultDao: ShowSearchResultDao
 ) : ShowSearchPersistence {
-    override fun getBySearchTermOrderedByName(searchTerm: String): Flow<List<ShowSearchResultModel>> =
-        showSearchResultDao.getBySearchTerm(searchTerm).map { results ->
-            results.map { it.toModel() }
-        }
+    override suspend fun getBySearchTermOrderedByName(searchTerm: String): List<ShowSearchResultModel>? =
+        showSearchResultDao.getBySearchTerm(searchTerm)?.map { it.toModel() }
 
-    override fun getSearchResultById(id: Long): Flow<ShowSearchResultModel> {
-        return showSearchResultDao.getSearchResultById(id).filterNotNull().map {
-            it.toModel()
-        }
+    override suspend fun getSearchResultById(id: Long): ShowSearchResultModel? {
+        return showSearchResultDao.getSearchResultById(id)?.toModel()
     }
 
     override suspend fun save(results: SearchResultsModel) {

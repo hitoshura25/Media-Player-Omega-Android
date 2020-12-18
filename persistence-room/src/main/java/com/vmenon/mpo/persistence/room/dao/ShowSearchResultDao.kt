@@ -3,7 +3,6 @@ package com.vmenon.mpo.persistence.room.dao
 import androidx.room.*
 import com.vmenon.mpo.persistence.room.entity.ShowSearchEntity
 import com.vmenon.mpo.persistence.room.entity.ShowSearchResultsEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShowSearchResultDao {
@@ -16,7 +15,7 @@ interface ShowSearchResultDao {
         ORDER BY showSearchResults.showName
         """
     )
-    fun getBySearchTerm(searchTerm: String): Flow<List<ShowSearchResultsEntity>>
+    suspend fun getBySearchTerm(searchTerm: String): List<ShowSearchResultsEntity>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(search: ShowSearchEntity): Long
@@ -28,7 +27,7 @@ interface ShowSearchResultDao {
     suspend fun getSearchForTerm(searchTerm: String): ShowSearchEntity?
 
     @Query("SELECT * FROM showSearchResults WHERE showSearchResultsId = :id")
-    fun getSearchResultById(id: Long): Flow<ShowSearchResultsEntity>
+    suspend fun getSearchResultById(id: Long): ShowSearchResultsEntity?
 
     @Query("DELETE FROM showSearchResults where showSearchResultsSearchId=:searchId")
     suspend fun deleteResultsForSearch(searchId: Long)

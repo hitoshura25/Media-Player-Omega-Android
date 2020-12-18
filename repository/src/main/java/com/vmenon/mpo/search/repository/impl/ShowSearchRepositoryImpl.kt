@@ -9,26 +9,20 @@ import com.vmenon.mpo.repository.toSearchResultsModel
 import com.vmenon.mpo.search.persistence.ShowSearchPersistence
 import com.vmenon.mpo.search.repository.ShowSearchRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class ShowSearchRepositoryImpl(
     private val api: MediaPlayerOmegaApi,
     private val showSearchPersistence: ShowSearchPersistence
 ) : ShowSearchRepository {
-    override fun getShowSearchResultsForTerm(term: String): Flow<List<ShowSearchResultModel>> {
+    override suspend fun getShowSearchResultsForTerm(term: String): List<ShowSearchResultModel>? {
         return showSearchPersistence.getBySearchTermOrderedByName(term)
     }
 
-    override fun getShowDetails(showSearchResultId: Long): Flow<ShowSearchResultDetailsModel> =
+    override suspend fun getShowDetails(showSearchResultId: Long): ShowSearchResultDetailsModel? =
         showSearchPersistence.getSearchResultById(
             showSearchResultId
-        ).map { showSearchResult ->
-            withContext(Dispatchers.IO) {
-                createShowDetailsModel(showSearchResult)
-            }
-        }
+        )?.let { showSearchResult -> createShowDetailsModel(showSearchResult) }
 
     override suspend fun searchShows(keyword: String) {
         val showSearchResults = withContext(Dispatchers.IO) {

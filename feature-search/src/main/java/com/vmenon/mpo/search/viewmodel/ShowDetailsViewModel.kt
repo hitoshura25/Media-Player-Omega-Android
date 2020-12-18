@@ -35,10 +35,13 @@ class ShowDetailsViewModel : ViewModel() {
 
     fun showSubscribed(): LiveData<ShowModel> = showSubscribed
 
-    fun downloadQueued() : LiveData<DownloadModel> = downloadQueued
+    fun downloadQueued(): LiveData<DownloadModel> = downloadQueued
 
     fun getShowDetails(showSearchResultId: Long): LiveData<ShowSearchResultDetailsModel> =
-        showSearchRepository.getShowDetails(showSearchResultId).asLiveData()
+        liveData(Dispatchers.IO) {
+            showSearchRepository.getShowDetails(showSearchResultId)
+                ?.let { details -> emit(details) }
+        }
 
     fun subscribeToShow(showDetails: ShowSearchResultDetailsModel) {
         viewModelScope.launch {

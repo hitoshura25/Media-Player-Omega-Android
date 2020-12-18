@@ -1,9 +1,6 @@
 package com.vmenon.mpo.search.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.ShowSearchResultModel
@@ -21,14 +18,16 @@ class ShowSearchResultsViewModel : ViewModel() {
     @Inject
     lateinit var schedulerProvider: SchedulerProvider
 
+    private val searchResults = MutableLiveData<List<ShowSearchResultModel>>()
+
     fun searchShows(keyword: String) {
         viewModelScope.launch {
             showSearchRepository.searchShows(keyword)
+            searchResults.postValue(showSearchRepository.getShowSearchResultsForTerm(keyword))
         }
     }
 
-    fun getShowSearchResultsForTerm(keyword: String): LiveData<List<ShowSearchResultModel>> =
-        showSearchRepository.getShowSearchResultsForTerm(keyword).asLiveData()
+    fun getShowSearchResultsForTerm(keyword: String): LiveData<List<ShowSearchResultModel>> = searchResults
 
     suspend fun calculateDiff(
         newSearchResults: List<ShowSearchResultModel>,
