@@ -6,14 +6,13 @@ import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.repository.toModel
 import com.vmenon.mpo.shows.repository.ShowRepository
 
-import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 class ShowRepositoryImpl(
     private val showPersistence: com.vmenon.mpo.shows.persistence.ShowPersistence,
     private val api: MediaPlayerOmegaApi
 ) : ShowRepository {
-    override fun getSubscribed(): Flow<List<ShowModel>> = showPersistence.getSubscribed()
+    override suspend fun getSubscribed(): List<ShowModel> = showPersistence.getSubscribed()
 
     override suspend fun save(show: ShowModel): ShowModel {
         var showToSave: ShowModel = show

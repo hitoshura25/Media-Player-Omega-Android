@@ -7,15 +7,12 @@ import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.persistence.room.entity.ShowSearchEntity
 import com.vmenon.mpo.persistence.room.entity.ShowSearchResultsEntity
 import com.vmenon.mpo.search.persistence.ShowSearchPersistence
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 
 class ShowSearchPersistenceRoom(
     private val showSearchResultDao: ShowSearchResultDao
 ) : ShowSearchPersistence {
-    override suspend fun getBySearchTermOrderedByName(searchTerm: String): List<ShowSearchResultModel>? =
-        showSearchResultDao.getBySearchTerm(searchTerm)?.map { it.toModel() }
+    override suspend fun getBySearchTermOrderedByName(searchTerm: String): List<ShowSearchResultModel> =
+        showSearchResultDao.getBySearchTerm(searchTerm)?.map { it.toModel() } ?: emptyList()
 
     override suspend fun getSearchResultById(id: Long): ShowSearchResultModel? {
         return showSearchResultDao.getSearchResultById(id)?.toModel()

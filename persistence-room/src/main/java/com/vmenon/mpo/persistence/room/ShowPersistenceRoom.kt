@@ -9,11 +9,10 @@ import kotlinx.coroutines.flow.map
 class ShowPersistenceRoom(private val showDao: ShowDao) : ShowPersistence {
     override suspend fun getByName(name: String): ShowModel? = showDao.getByName(name)?.toModel()
 
-    override fun getSubscribed(): Flow<List<ShowModel>> = showDao.getSubscribed().map { shows ->
-        shows.map { it.toModel() }
-    }
+    override suspend fun getSubscribed(): List<ShowModel> = showDao.getSubscribed().map { it.toModel() }
+
     override suspend fun getSubscribedAndLastUpdatedBefore(comparisonTime: Long) =
-        showDao.getSubscribedAndLastUpdatedBefore(comparisonTime)?.map { show ->
+        showDao.getSubscribedAndLastUpdatedBefore(comparisonTime).map { show ->
             show.toModel()
         }
 

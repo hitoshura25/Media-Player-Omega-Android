@@ -33,6 +33,8 @@ dependencies {
     implementation project(':player')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 

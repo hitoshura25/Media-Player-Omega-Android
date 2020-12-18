@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Html
 import android.view.View
 import android.widget.ImageView
+import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.model.ShowModel
@@ -13,6 +14,7 @@ import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
+import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.navigation.NavigationController
 import com.vmenon.mpo.navigation.NavigationParams
 import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
@@ -68,40 +70,34 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
 
     private fun displayEpisode(intent: Intent) {
         episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
-        subscriptions.add(
-            viewModel.getEpisodeDetails(episodeId)
-                .subscribe(
-                    { episodeWithShowDetails ->
-                        show = episodeWithShowDetails.show
-                        episodeName.text = episodeWithShowDetails.name
-                        @Suppress("DEPRECATION")
-                        episodeDescription.text = Html.fromHtml(
-                            episodeWithShowDetails.description?.replace(
-                                "(<(//)img>)|(<img.+?>)".toRegex(),
-                                ""
-                            ) ?: ""
-                        )
-                        episodeDate.text = DateFormat.getDateInstance().format(
-                            Date(episodeWithShowDetails.published)
-                        )
-                        Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.show.artworkUrl)
-                            .into(appBarImage)
-
-                        if (episodeWithShowDetails.artworkUrl != null) {
-                            episodeImage.visibility = View.VISIBLE
-                            Glide.with(this@EpisodeDetailsActivity)
-                                .load(episodeWithShowDetails.artworkUrl).fitCenter()
-                                .into(episodeImage)
-                        } else {
-                            episodeImage.visibility = View.GONE
-                        }
-                    },
-                    { error ->
-
-                    }
+        viewModel.getEpisodeDetails(episodeId)
+            .observe(this, Observer { episodeWithShowDetails ->
+                show = episodeWithShowDetails.show
+                episodeName.text = episodeWithShowDetails.name
+                @Suppress("DEPRECATION")
+                episodeDescription.text = Html.fromHtml(
+                    episodeWithShowDetails.description?.replace(
+                        "(<(//)img>)|(<img.+?>)".toRegex(),
+                        ""
+                    ) ?: ""
                 )
-        )
+                episodeDate.text = DateFormat.getDateInstance().format(
+                    Date(episodeWithShowDetails.published)
+                )
+                Glide.with(this@EpisodeDetailsActivity)
+                    .load(episodeWithShowDetails.show.artworkUrl)
+                    .into(appBarImage)
+
+                if (episodeWithShowDetails.artworkUrl != null) {
+                    episodeImage.visibility = View.VISIBLE
+                    Glide.with(this@EpisodeDetailsActivity)
+                        .load(episodeWithShowDetails.artworkUrl).fitCenter()
+                        .into(episodeImage)
+                } else {
+                    episodeImage.visibility = View.GONE
+                }
+            }
+            )
     }
 
     companion object {

@@ -15,7 +15,7 @@ class ShowSearchRepositoryImpl(
     private val api: MediaPlayerOmegaApi,
     private val showSearchPersistence: ShowSearchPersistence
 ) : ShowSearchRepository {
-    override suspend fun getShowSearchResultsForTerm(term: String): List<ShowSearchResultModel>? {
+    override suspend fun getShowSearchResultsForTerm(term: String): List<ShowSearchResultModel> {
         return showSearchPersistence.getBySearchTermOrderedByName(term)
     }
 

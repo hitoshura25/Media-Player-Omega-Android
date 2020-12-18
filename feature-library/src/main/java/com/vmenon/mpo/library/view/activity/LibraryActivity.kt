@@ -3,6 +3,7 @@ package com.vmenon.mpo.library.view.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.model.EpisodeModel
@@ -38,15 +39,13 @@ class LibraryActivity : BaseDrawerActivity<LibraryComponent>(),
 
     override fun onStart() {
         super.onStart()
-        subscriptions.add(
-            viewModel.allEpisodes().subscribe(
-                { episodes ->
-                    val adapter = LibraryAdapter(episodes)
-                    adapter.setListener(this@LibraryActivity)
-                    libraryList.adapter = adapter
-                },
-                { error -> }
-            )
+        viewModel.allEpisodes().observe(
+            this,
+            Observer { episodes ->
+                val adapter = LibraryAdapter(episodes)
+                adapter.setListener(this@LibraryActivity)
+                libraryList.adapter = adapter
+            }
         )
     }
 

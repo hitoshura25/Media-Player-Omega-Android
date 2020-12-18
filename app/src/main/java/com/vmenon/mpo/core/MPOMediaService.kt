@@ -36,7 +36,10 @@ import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.shows.repository.EpisodeRepository
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
+import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.runBlocking
 
 import java.io.File
 import java.lang.ref.WeakReference
@@ -734,14 +737,16 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
 
-                    subscriptions.add(episodeRepository.getById(mediaType.id).firstElement()
+                    subscriptions.add(Maybe.fromCallable {  runBlocking { episodeRepository.getById(mediaType.id) }}
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.main())
                         .subscribe { episodeWithShowDetails ->
-                            playEpisode(
-                                mediaId,
-                                episodeWithShowDetails
-                            )
+                            if (episodeWithShowDetails != null) {
+                                playEpisode(
+                                    mediaId,
+                                    episodeWithShowDetails
+                                )
+                            }
                         }
 
                     )
@@ -788,12 +793,12 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     }
 
 
-    private class ArtworkTarget internal constructor(
+    private class ArtworkTarget(
         service: MPOMediaService,
-        internal var artworkUrl: String,
-        internal var notificationBuilder: NotificationCompat.Builder
+        var artworkUrl: String,
+        var notificationBuilder: NotificationCompat.Builder
     ) : SimpleTarget<Bitmap>(500, 500) {
-        internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
+        var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
         override fun onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation<in Bitmap>) {
             val service = serviceRef.get()

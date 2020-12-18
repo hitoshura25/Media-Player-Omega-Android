@@ -3,18 +3,17 @@ package com.vmenon.mpo.persistence.room
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.shows.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
-import io.reactivex.Flowable
 
 class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) :
     EpisodePersistence {
     override suspend fun getByName(name: String): EpisodeModel? =
         episodeDao.getByNameWithShowDetails(name)?.toModel()
 
-    override fun getAll(): Flowable<List<EpisodeModel>> =
-        episodeDao.getAllWithShowDetails().map { episodes -> episodes.map { it.toModel() } }
+    override suspend fun getAll(): List<EpisodeModel> =
+        episodeDao.getAllWithShowDetails().map { it.toModel() }
 
-    override fun getById(id: Long): Flowable<EpisodeModel> =
-        episodeDao.getWithShowDetailsById(id).map { it.toModel() }
+    override suspend fun getById(id: Long): EpisodeModel? =
+        episodeDao.getWithShowDetailsById(id)?.toModel()
 
     override fun insertOrUpdate(model: EpisodeModel): EpisodeModel =
         episodeDao.insertOrUpdate(model.toEntity()).toModel(model.show)

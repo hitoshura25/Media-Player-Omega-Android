@@ -6,8 +6,6 @@ import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 
 import com.vmenon.mpo.persistence.room.entity.EpisodeEntity
 import com.vmenon.mpo.persistence.room.entity.EpisodeWithShowDetailsEntity
-import io.reactivex.Flowable
-import io.reactivex.Maybe
 
 @Dao
 abstract class EpisodeDao :
@@ -26,7 +24,7 @@ abstract class EpisodeDao :
         INNER JOIN show on episode.showId = show.showId
         """
     )
-    abstract fun getAllWithShowDetails(): Flowable<List<EpisodeWithShowDetailsEntity>>
+    abstract suspend fun getAllWithShowDetails(): List<EpisodeWithShowDetailsEntity>
 
     @Query(
         """
@@ -35,5 +33,5 @@ abstract class EpisodeDao :
         WHERE episode.episodeId = :id
         """
     )
-    abstract fun getWithShowDetailsById(id: Long): Flowable<EpisodeWithShowDetailsEntity>
+    abstract suspend fun getWithShowDetailsById(id: Long): EpisodeWithShowDetailsEntity?
 }
