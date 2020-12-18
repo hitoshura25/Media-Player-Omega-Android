@@ -71,32 +71,34 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
     private fun displayEpisode(intent: Intent) {
         episodeId = intent.getLongExtra(EXTRA_EPISODE, -1L)
         viewModel.getEpisodeDetails(episodeId)
-            .observe(this, Observer { episodeWithShowDetails ->
-                show = episodeWithShowDetails.show
-                episodeName.text = episodeWithShowDetails.name
-                @Suppress("DEPRECATION")
-                episodeDescription.text = Html.fromHtml(
-                    episodeWithShowDetails.description?.replace(
-                        "(<(//)img>)|(<img.+?>)".toRegex(),
-                        ""
-                    ) ?: ""
-                )
-                episodeDate.text = DateFormat.getDateInstance().format(
-                    Date(episodeWithShowDetails.published)
-                )
-                Glide.with(this@EpisodeDetailsActivity)
-                    .load(episodeWithShowDetails.show.artworkUrl)
-                    .into(appBarImage)
-
-                if (episodeWithShowDetails.artworkUrl != null) {
-                    episodeImage.visibility = View.VISIBLE
+            .observe(
+                this,
+                Observer { episodeWithShowDetails ->
+                    show = episodeWithShowDetails.show
+                    episodeName.text = episodeWithShowDetails.name
+                    @Suppress("DEPRECATION")
+                    episodeDescription.text = Html.fromHtml(
+                        episodeWithShowDetails.description?.replace(
+                            "(<(//)img>)|(<img.+?>)".toRegex(),
+                            ""
+                        ) ?: ""
+                    )
+                    episodeDate.text = DateFormat.getDateInstance().format(
+                        Date(episodeWithShowDetails.published)
+                    )
                     Glide.with(this@EpisodeDetailsActivity)
-                        .load(episodeWithShowDetails.artworkUrl).fitCenter()
-                        .into(episodeImage)
-                } else {
-                    episodeImage.visibility = View.GONE
+                        .load(episodeWithShowDetails.show.artworkUrl)
+                        .into(appBarImage)
+
+                    if (episodeWithShowDetails.artworkUrl != null) {
+                        episodeImage.visibility = View.VISIBLE
+                        Glide.with(this@EpisodeDetailsActivity)
+                            .load(episodeWithShowDetails.artworkUrl).fitCenter()
+                            .into(episodeImage)
+                    } else {
+                        episodeImage.visibility = View.GONE
+                    }
                 }
-            }
             )
     }
 

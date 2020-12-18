@@ -273,9 +273,9 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
 
     private fun updateUIFromMedia() {
         Glide.with(this)
-            .load(episodeWithShowDetails.artworkUrl)
+            .load(episodeWithShowDetails.artworkUrl ?: episodeWithShowDetails.show.artworkUrl)
             .fitCenter()
-            .into(artworkImage!!)
+            .into(artworkImage)
         mediaTitle.text = episodeWithShowDetails.name
     }
 

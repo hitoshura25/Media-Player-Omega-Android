@@ -1,12 +1,10 @@
 package com.vmenon.mpo.downloads.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import com.vmenon.mpo.downloads.repository.DownloadRepository
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
-import com.vmenon.mpo.model.QueuedDownloadModel
-import io.reactivex.Flowable
-import kotlinx.coroutines.runBlocking
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class DownloadsViewModel : ViewModel() {
@@ -21,12 +19,10 @@ class DownloadsViewModel : ViewModel() {
         println("DownloadViewModel()")
     }
 
-    fun downloads(): Flowable<List<QueuedDownloadModel>> =
-        Flowable.interval(0L, 2L, TimeUnit.SECONDS)
-            .map {
-                runBlocking {
-                    downloadRepository.getAllQueued()
-                }
-            }.subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
+    val downloads = liveData{
+        while (true) {
+            emit(downloadRepository.getAllQueued())
+            delay(2000L)
+        }
+    }
 }
