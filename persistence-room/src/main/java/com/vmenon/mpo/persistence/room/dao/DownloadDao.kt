@@ -29,5 +29,5 @@ abstract class DownloadDao :
     abstract fun getAllWithShowAndEpisodeDetails(): Flowable<List<DownloadWithShowAndEpisodeDetailsEntity>>
 
     @Query("DELETE FROM downloads WHERE downloadId = :id")
-    abstract fun delete(id: Long)
+    abstract suspend fun delete(id: Long)
 }

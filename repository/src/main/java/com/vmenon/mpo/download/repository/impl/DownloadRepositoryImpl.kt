@@ -16,7 +16,6 @@ import com.vmenon.mpo.repository.toEpisodeModel
 import com.vmenon.mpo.repository.toShowModel
 import com.vmenon.mpo.shows.persistence.ShowPersistence
 import io.reactivex.Flowable
-import io.reactivex.Completable
 import java.io.File
 
 class DownloadRepositoryImpl(
@@ -111,7 +110,7 @@ class DownloadRepositoryImpl(
             showPersistence.getByName(show.name) ?: showPersistence.insertOrUpdate(
                 show.toShowModel()
             )
-        val savedEpisode = episodePersistence.getByName(episode.name).blockingGet()
+        val savedEpisode = episodePersistence.getByName(episode.name)
             ?: episodePersistence.insertOrUpdate(episode.toEpisodeModel(savedShow))
         return Pair(savedShow, savedEpisode)
     }

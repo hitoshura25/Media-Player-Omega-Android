@@ -41,7 +41,7 @@ class DefaultShowUpdateManager(
     }
 
     private suspend fun saveEpisodeAndQueueDownload(showUpdate: ShowUpdateModel) {
-        val savedEpisode = episodeRepository.save(showUpdate.newEpisode).blockingGet()
+        val savedEpisode = episodeRepository.save(showUpdate.newEpisode)
         val savedDownload =  downloadRepository.queueDownload(savedEpisode)
         showRepository.save(
             savedDownload.episode.show.copy(

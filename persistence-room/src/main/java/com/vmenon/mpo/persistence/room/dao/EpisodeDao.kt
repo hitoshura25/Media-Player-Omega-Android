@@ -18,7 +18,7 @@ abstract class EpisodeDao :
         WHERE episodeName = :name
         """
     )
-    abstract fun getByNameWithShowDetails(name: String): Maybe<EpisodeWithShowDetailsEntity>
+    abstract fun getByNameWithShowDetails(name: String): EpisodeWithShowDetailsEntity?
 
     @Query(
         """
