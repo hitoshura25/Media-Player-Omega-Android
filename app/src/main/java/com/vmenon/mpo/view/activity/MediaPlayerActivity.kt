@@ -104,7 +104,7 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
                                                     episode
                                                 updateUIFromMedia()
                                             },
-                                            { error -> }
+                                            { }
                                         )
                                 )
                             }
@@ -224,7 +224,7 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
                             requestedMediaId = MediaHelper.createMediaId(episodeWithShowDetails)
                             updateUIFromMedia()
                         },
-                        { error ->
+                        {
 
                         }
                     )

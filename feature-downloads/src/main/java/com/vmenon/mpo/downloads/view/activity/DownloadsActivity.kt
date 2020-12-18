@@ -35,7 +35,7 @@ class DownloadsActivity : BaseDrawerActivity<DownloadsComponent>() {
     override fun onStart() {
         super.onStart()
         subscriptions.add(
-            viewModel.downloads
+            viewModel.downloads()
                 .subscribe(
                     { downloads ->
                         val adapter = DownloadsAdapter(downloads)

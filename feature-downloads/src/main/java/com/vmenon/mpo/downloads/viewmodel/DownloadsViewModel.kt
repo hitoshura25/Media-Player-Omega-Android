@@ -5,6 +5,7 @@ import com.vmenon.mpo.downloads.repository.DownloadRepository
 import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.QueuedDownloadModel
 import io.reactivex.Flowable
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -20,11 +21,12 @@ class DownloadsViewModel : ViewModel() {
         println("DownloadViewModel()")
     }
 
-    val downloads: Flowable<List<QueuedDownloadModel>> =
+    fun downloads(): Flowable<List<QueuedDownloadModel>> =
         Flowable.interval(0L, 2L, TimeUnit.SECONDS)
-            .flatMap {
-                downloadRepository.getAllQueued()
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.main())
-            }
+            .map {
+                runBlocking {
+                    downloadRepository.getAllQueued()
+                }
+            }.subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.main())
 }

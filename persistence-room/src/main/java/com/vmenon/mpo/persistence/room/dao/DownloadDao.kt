@@ -4,7 +4,6 @@ import androidx.room.*
 import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 import com.vmenon.mpo.persistence.room.entity.DownloadEntity
 import com.vmenon.mpo.persistence.room.entity.DownloadWithShowAndEpisodeDetailsEntity
-import io.reactivex.Flowable
 
 @Dao
 abstract class DownloadDao :
@@ -17,7 +16,7 @@ abstract class DownloadDao :
         WHERE downloadManagerId = :id
         """
     )
-    abstract fun getWithShowAndEpisodeDetailsByDownloadManagerId(id: Long): Flowable<DownloadWithShowAndEpisodeDetailsEntity>
+    abstract suspend fun getWithShowAndEpisodeDetailsByDownloadManagerId(id: Long): DownloadWithShowAndEpisodeDetailsEntity
 
     @Query(
         """
@@ -26,7 +25,7 @@ abstract class DownloadDao :
         INNER JOIN show on downloads.showId = show.showId
         """
     )
-    abstract fun getAllWithShowAndEpisodeDetails(): Flowable<List<DownloadWithShowAndEpisodeDetailsEntity>>
+    abstract suspend fun getAllWithShowAndEpisodeDetails(): List<DownloadWithShowAndEpisodeDetailsEntity>
 
     @Query("DELETE FROM downloads WHERE downloadId = :id")
     abstract suspend fun delete(id: Long)

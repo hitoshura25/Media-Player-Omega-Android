@@ -15,7 +15,6 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity.Companion.UNSAVED_
 import com.vmenon.mpo.repository.toEpisodeModel
 import com.vmenon.mpo.repository.toShowModel
 import com.vmenon.mpo.shows.persistence.ShowPersistence
-import io.reactivex.Flowable
 import java.io.File
 
 class DownloadRepositoryImpl(
@@ -28,35 +27,35 @@ class DownloadRepositoryImpl(
         Context.DOWNLOAD_SERVICE
     ) as DownloadManager
 
-    override fun getAllQueued(): Flowable<List<QueuedDownloadModel>> =
-        downloadPersistence.getAll().map { savedDownloads ->
-            val downloadListItems = ArrayList<QueuedDownloadModel>()
-            val savedDownloadMap = savedDownloads.map {
-                it.downloadManagerId to it
-            }.toMap()
-            val downloadManagerIds = savedDownloadMap.keys
-            val cursor = downloadManager.query(
-                Query().setFilterById(*downloadManagerIds.toLongArray())
+    override suspend fun getAllQueued(): List<QueuedDownloadModel> {
+        val savedDownloads = downloadPersistence.getAll()
+        val downloadListItems = ArrayList<QueuedDownloadModel>()
+        val savedDownloadMap = savedDownloads.map {
+            it.downloadManagerId to it
+        }.toMap()
+        val downloadManagerIds = savedDownloadMap.keys
+        val cursor = downloadManager.query(
+            Query().setFilterById(*downloadManagerIds.toLongArray())
+        )
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID))
+            val totalSize = cursor.getInt(cursor.getColumnIndex(COLUMN_TOTAL_SIZE_BYTES))
+            val downloaded = cursor.getInt(
+                cursor.getColumnIndex(COLUMN_BYTES_DOWNLOADED_SO_FAR)
             )
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID))
-                val totalSize = cursor.getInt(cursor.getColumnIndex(COLUMN_TOTAL_SIZE_BYTES))
-                val downloaded = cursor.getInt(
-                    cursor.getColumnIndex(COLUMN_BYTES_DOWNLOADED_SO_FAR)
-                )
-                savedDownloadMap[id]?.let { savedDownloadWithShowAndEpisode ->
-                    downloadListItems.add(
-                        QueuedDownloadModel(
-                            download = savedDownloadWithShowAndEpisode,
-                            progress = downloaded,
-                            total = if (totalSize == -1) 0 else totalSize
-                        )
+            savedDownloadMap[id]?.let { savedDownloadWithShowAndEpisode ->
+                downloadListItems.add(
+                    QueuedDownloadModel(
+                        download = savedDownloadWithShowAndEpisode,
+                        progress = downloaded,
+                        total = if (totalSize == -1) 0 else totalSize
                     )
-                }
+                )
             }
-            cursor.close()
-            downloadListItems
         }
+        cursor.close()
+        return downloadListItems
+    }
 
     override suspend fun queueDownload(episode: EpisodeModel): DownloadModel {
         val downloadManagerId = downloadManager.enqueue(
@@ -83,23 +82,21 @@ class DownloadRepositoryImpl(
         val downloadWithShowAndEpisode =
             downloadPersistence.getByDownloadManagerId(
                 downloadManagerId
-            ).firstElement().blockingGet()
+            )
 
-        if (downloadWithShowAndEpisode != null) {
-            val filename = URLUtil.guessFileName(
-                downloadWithShowAndEpisode.episode.downloadUrl,
-                null,
-                null
-            )
-            val showDir = File(context.filesDir, downloadWithShowAndEpisode.episode.show.name)
-            showDir.mkdir()
-            val episodeFile = File(showDir, filename)
-            downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
-            episodePersistence.insertOrUpdate(
-                downloadWithShowAndEpisode.episode.copy(filename = episodeFile.path)
-            )
-            downloadPersistence.delete(downloadWithShowAndEpisode.id)
-        }
+        val filename = URLUtil.guessFileName(
+            downloadWithShowAndEpisode.episode.downloadUrl,
+            null,
+            null
+        )
+        val showDir = File(context.filesDir, downloadWithShowAndEpisode.episode.show.name)
+        showDir.mkdir()
+        val episodeFile = File(showDir, filename)
+        downloadManager.openDownloadedFile(downloadManagerId).writeToFile(episodeFile)
+        episodePersistence.insertOrUpdate(
+            downloadWithShowAndEpisode.episode.copy(filename = episodeFile.path)
+        )
+        downloadPersistence.delete(downloadWithShowAndEpisode.id)
     }
 
     private suspend fun createShowAndEpisodeForDownload(
