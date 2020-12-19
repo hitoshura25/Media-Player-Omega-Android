@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.View
 import android.widget.SeekBar
+import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.model.EpisodeModel
@@ -95,18 +96,13 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
                         val mediaType = MediaHelper.getMediaTypeFromMediaId(it)
                         when (mediaType?.mediaType) {
                             MediaHelper.MEDIA_TYPE_EPISODE -> {
-                                subscriptions.add(
-                                    viewModel.getEpisodeDetails(mediaType.id)
-                                        .firstElement()
-                                        .subscribe(
-                                            { episode ->
-                                                this@MediaPlayerActivity.episodeWithShowDetails =
-                                                    episode
-                                                updateUIFromMedia()
-                                            },
-                                            { error -> }
-                                        )
-                                )
+                                viewModel.getEpisodeDetails(mediaType.id)
+                                    .observe(this@MediaPlayerActivity, Observer { episode ->
+                                        this@MediaPlayerActivity.episodeWithShowDetails =
+                                            episode
+                                        updateUIFromMedia()
+                                    }
+                                    )
                             }
                             else -> {
                             }
@@ -215,20 +211,15 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
                 NavigationParams.episodeIdParam,
                 -1L
             )
-            subscriptions.add(
-                viewModel.getEpisodeDetails(episodeId)
-                    .firstElement()
-                    .subscribe(
-                        { episodeWithShowDetails ->
-                            this@MediaPlayerActivity.episodeWithShowDetails = episodeWithShowDetails
-                            requestedMediaId = MediaHelper.createMediaId(episodeWithShowDetails)
-                            updateUIFromMedia()
-                        },
-                        { error ->
-
-                        }
-                    )
-            )
+            viewModel.getEpisodeDetails(episodeId)
+                .observe(
+                    this,
+                    Observer { episodeWithShowDetails ->
+                        this@MediaPlayerActivity.episodeWithShowDetails = episodeWithShowDetails
+                        requestedMediaId = MediaHelper.createMediaId(episodeWithShowDetails)
+                        updateUIFromMedia()
+                    }
+                )
         }
     }
 
@@ -282,9 +273,9 @@ class MediaPlayerActivity : BaseActivity<ActivityComponent>(), SurfaceHolder.Cal
 
     private fun updateUIFromMedia() {
         Glide.with(this)
-            .load(episodeWithShowDetails.artworkUrl)
+            .load(episodeWithShowDetails.artworkUrl ?: episodeWithShowDetails.show.artworkUrl)
             .fitCenter()
-            .into(artworkImage!!)
+            .into(artworkImage)
         mediaTitle.text = episodeWithShowDetails.name
     }
 

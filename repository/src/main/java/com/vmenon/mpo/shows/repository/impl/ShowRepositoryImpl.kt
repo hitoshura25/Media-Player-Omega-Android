@@ -6,38 +6,35 @@ import com.vmenon.mpo.api.MediaPlayerOmegaApi
 import com.vmenon.mpo.repository.toModel
 import com.vmenon.mpo.shows.repository.ShowRepository
 
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import java.util.*
 
 class ShowRepositoryImpl(
     private val showPersistence: com.vmenon.mpo.shows.persistence.ShowPersistence,
     private val api: MediaPlayerOmegaApi
 ) : ShowRepository {
-    override fun getSubscribed(): Flowable<List<ShowModel>> = showPersistence.getSubscribed()
+    override suspend fun getSubscribed(): List<ShowModel> = showPersistence.getSubscribed()
 
-    override fun save(show: ShowModel): Single<ShowModel> = Single.fromCallable {
+    override suspend fun save(show: ShowModel): ShowModel {
         var showToSave: ShowModel = show
         if (show.id == 0L) {
-            val existingShow = showPersistence.getByName(show.name).blockingGet()
+            val existingShow = showPersistence.getByName(show.name)
             if (existingShow != null) {
                 showToSave = existingShow.copy(isSubscribed = show.isSubscribed)
             }
         }
 
-        showPersistence.insertOrUpdate(showToSave)
+        return showPersistence.insertOrUpdate(showToSave)
     }
 
-    override fun getSubscribedAndLastUpdatedBefore(interval: Long): Maybe<List<ShowModel>> {
+    override suspend fun getSubscribedAndLastUpdatedBefore(interval: Long): List<ShowModel>? {
         val compareTime = Date().time - interval
         return showPersistence.getSubscribedAndLastUpdatedBefore(compareTime)
     }
 
-    override fun getShowUpdate(show: ShowModel): Maybe<ShowUpdateModel> =
+    override suspend fun getShowUpdate(show: ShowModel): ShowUpdateModel? =
         api.getPodcastUpdate(show.feedUrl, show.lastEpisodePublished).map {
             ShowUpdateModel(
                 newEpisode = it.toModel(show)
             )
-        }
+        }.blockingGet()
 }

@@ -7,6 +7,6 @@ import dagger.Module
 @Module(subcomponents = [
     ActivityComponent::class,
     SearchComponent::class,
-    DownloadsComponent::class]
-)
+    DownloadsComponent::class
+])
 class SubcomponentsModule

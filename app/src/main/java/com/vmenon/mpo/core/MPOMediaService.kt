@@ -31,12 +31,11 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.player.MPOPlayer
 import com.vmenon.mpo.shows.repository.EpisodeRepository
 import com.vmenon.mpo.util.MediaHelper
 import com.vmenon.mpo.view.activity.MediaPlayerActivity
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.*
 
 import java.io.File
 import java.lang.ref.WeakReference
@@ -51,12 +50,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     lateinit var episodeRepository: EpisodeRepository
 
     @Inject
-    lateinit var schedulerProvider: SchedulerProvider
-
-    @Inject
     lateinit var player: MPOPlayer
-
-    private val subscriptions = CompositeDisposable()
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
@@ -81,6 +75,9 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     private val delayedStopHandler = DelayedStopHandler(this)
     private val audioNoisyIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
     private val audioNoisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -208,6 +205,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         // and notify associated MediaController(s).
         mediaSession.release()
         player.setListener(null)
+        serviceJob.cancel()
     }
 
     override fun onGetRoot(
@@ -734,23 +732,17 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     requestedMediaId = mediaId
                     currentMediaBitmap = null
 
-                    subscriptions.add(episodeRepository.getById(mediaType.id).firstElement()
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.main())
-                        .subscribe { episodeWithShowDetails ->
-                            playEpisode(
-                                mediaId,
-                                episodeWithShowDetails
-                            )
+                    serviceScope.launch {
+                        getEpisode(mediaType.id)?.let { episode ->
+                            playEpisode(mediaId, episode)
                         }
+                    }
 
-                    )
                 } else {
                     Log.w("MPO", "Unable to determine how to play media id: $mediaId")
                     return
                 }
             }
-
         }
 
         override fun onPause() {
@@ -768,6 +760,9 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             }
             updatePlaybackState(null)
         }
+
+        private suspend fun getEpisode(id: Long) =
+            withContext(Dispatchers.IO) { episodeRepository.getById(id) }
     }
 
     class DelayedStopHandler(service: MPOMediaService) : Handler() {
@@ -788,12 +783,12 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     }
 
 
-    private class ArtworkTarget internal constructor(
+    private class ArtworkTarget(
         service: MPOMediaService,
-        internal var artworkUrl: String,
-        internal var notificationBuilder: NotificationCompat.Builder
+        var artworkUrl: String,
+        var notificationBuilder: NotificationCompat.Builder
     ) : SimpleTarget<Bitmap>(500, 500) {
-        internal var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
+        var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
 
         override fun onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation<in Bitmap>) {
             val service = serviceRef.get()
@@ -810,20 +805,24 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         // The key in the extras of the incoming Intent indicating the command that
         // should be executed (see {@link #onStartCommand})
         const val CMD_NAME = "CMD_NAME"
+
         // A value of a CMD_NAME key in the extras of the incoming Intent that
         // indicates that the music playback should be paused (see {@link #onStartCommand})
         const val CMD_PAUSE = "CMD_PAUSE"
 
         // we don't have audio focus, and can't duck (play at a low volume)
         const val AUDIO_NO_FOCUS_NO_DUCK = 0
+
         // we don't have focus, but can duck (play at a low volume)
         const val AUDIO_NO_FOCUS_CAN_DUCK = 1
+
         // we have full audio focus
         const val AUDIO_FOCUSED = 2
 
         // The volume we set the media player to when we lose audio focus, but are
         // allowed to reduce the volume instead of stopping playback.
         const val VOLUME_DUCK = 0.2f
+
         // The volume we set the media player when we have audio focus.
         const val VOLUME_NORMAL = 1.0f
 

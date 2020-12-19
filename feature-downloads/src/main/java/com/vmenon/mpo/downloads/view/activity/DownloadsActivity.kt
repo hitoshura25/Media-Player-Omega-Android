@@ -2,6 +2,7 @@ package com.vmenon.mpo.downloads.view.activity
 
 import android.content.Context
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
@@ -34,17 +35,12 @@ class DownloadsActivity : BaseDrawerActivity<DownloadsComponent>() {
 
     override fun onStart() {
         super.onStart()
-        subscriptions.add(
-            viewModel.downloads
-                .subscribe(
-                    { downloads ->
-                        val adapter = DownloadsAdapter(downloads)
-                        downloadsList.adapter = adapter
-                    },
-                    { throwable ->
-                        throwable.printStackTrace()
-                    }
-                )
+        viewModel.downloads.observe(
+            this,
+            Observer { downloads ->
+                val adapter = DownloadsAdapter(downloads)
+                downloadsList.adapter = adapter
+            }
         )
     }
 

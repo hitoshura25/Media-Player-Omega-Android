@@ -2,10 +2,9 @@ package com.vmenon.mpo.search.persistence
 
 import com.vmenon.mpo.model.SearchResultsModel
 import com.vmenon.mpo.model.ShowSearchResultModel
-import io.reactivex.Flowable
 
 interface ShowSearchPersistence {
-    fun getBySearchTermOrderedByName(searchTerm: String): Flowable<List<ShowSearchResultModel>>
-    fun getSearchResultById(id: Long): Flowable<ShowSearchResultModel>
-    fun save(results: SearchResultsModel)
+    suspend fun getBySearchTermOrderedByName(searchTerm: String): List<ShowSearchResultModel>
+    suspend fun getSearchResultById(id: Long): ShowSearchResultModel?
+    suspend fun save(results: SearchResultsModel)
 }

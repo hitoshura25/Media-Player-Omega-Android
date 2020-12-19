@@ -20,7 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -38,7 +37,4 @@ dependencies {
     implementation "com.google.dagger:dagger-android:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
-
-    implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 }

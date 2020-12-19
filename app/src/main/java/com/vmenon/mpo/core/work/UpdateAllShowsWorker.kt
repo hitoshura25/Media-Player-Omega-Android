@@ -13,9 +13,10 @@ class UpdateAllShowsWorker(
     @Inject
     lateinit var showUpdateManager: ShowUpdateManager
 
-    override fun doMyWork(): Result {
+    override suspend fun doMyWork(): Result {
         appComponent.inject(this)
-        showUpdateManager.updateAllShows().blockingAwait()
+
+        showUpdateManager.updateAllShows()
         return Result.success()
     }
 }

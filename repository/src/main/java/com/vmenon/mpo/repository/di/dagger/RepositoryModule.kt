@@ -38,7 +38,7 @@ class RepositoryModule {
 
     @Provides
     fun provideShowRepository(
-        showPersistence: com.vmenon.mpo.shows.persistence.ShowPersistence,
+        showPersistence: ShowPersistence,
         api: MediaPlayerOmegaApi
     ): ShowRepository = ShowRepositoryImpl(
         showPersistence,
@@ -48,12 +48,10 @@ class RepositoryModule {
     @Provides
     fun showSearchRepository(
         api: MediaPlayerOmegaApi,
-        showSearchPersistence: ShowSearchPersistence,
-        showPersistence: ShowPersistence
+        showSearchPersistence: ShowSearchPersistence
     ): ShowSearchRepository =
         ShowSearchRepositoryImpl(
             api,
-            showSearchPersistence,
-            showPersistence
+            showSearchPersistence
         )
 }

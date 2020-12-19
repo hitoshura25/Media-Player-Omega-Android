@@ -7,12 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.vmenon.mpo.navigation.NavigationController
 
-import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
-    protected lateinit var subscriptions: CompositeDisposable
-
     lateinit var component: COMPONENT
 
     @Inject
@@ -22,16 +19,6 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         component = setupComponent(applicationContext)
         inject(component)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        subscriptions = CompositeDisposable()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        subscriptions.clear()
     }
 
     protected abstract fun setupComponent(context: Context): COMPONENT

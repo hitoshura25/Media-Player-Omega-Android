@@ -3,8 +3,6 @@ package com.vmenon.mpo.persistence.room.dao
 import androidx.room.*
 import com.vmenon.mpo.persistence.room.entity.ShowSearchEntity
 import com.vmenon.mpo.persistence.room.entity.ShowSearchResultsEntity
-import io.reactivex.Flowable
-import io.reactivex.Maybe
 
 @Dao
 interface ShowSearchResultDao {
@@ -17,20 +15,20 @@ interface ShowSearchResultDao {
         ORDER BY showSearchResults.showName
         """
     )
-    fun getBySearchTermOrderedByName(searchTerm: String): Flowable<List<ShowSearchResultsEntity>>
+    suspend fun getBySearchTerm(searchTerm: String): List<ShowSearchResultsEntity>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(search: ShowSearchEntity): Long
+    suspend fun save(search: ShowSearchEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(searchResults: List<ShowSearchResultsEntity>): List<Long>
+    suspend fun save(searchResults: List<ShowSearchResultsEntity>): List<Long>
 
     @Query("SELECT * FROM showSearch WHERE searchTerm=:searchTerm")
-    fun getSearchForTerm(searchTerm: String): Maybe<ShowSearchEntity>
+    suspend fun getSearchForTerm(searchTerm: String): ShowSearchEntity?
 
     @Query("SELECT * FROM showSearchResults WHERE showSearchResultsId = :id")
-    fun getSearchResultById(id: Long): Flowable<ShowSearchResultsEntity>
+    suspend fun getSearchResultById(id: Long): ShowSearchResultsEntity?
 
     @Query("DELETE FROM showSearchResults where showSearchResultsSearchId=:searchId")
-    fun deleteResultsForSearch(searchId: Long)
+    suspend fun deleteResultsForSearch(searchId: Long)
 }

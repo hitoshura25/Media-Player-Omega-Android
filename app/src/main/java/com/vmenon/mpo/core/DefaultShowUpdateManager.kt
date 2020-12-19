@@ -7,7 +7,6 @@ import com.vmenon.mpo.model.ShowUpdateModel
 import com.vmenon.mpo.shows.ShowUpdateManager
 import com.vmenon.mpo.shows.repository.EpisodeRepository
 import com.vmenon.mpo.shows.repository.ShowRepository
-import io.reactivex.Completable
 import java.util.*
 
 class DefaultShowUpdateManager(
@@ -15,36 +14,40 @@ class DefaultShowUpdateManager(
     private val episodeRepository: EpisodeRepository,
     private val downloadRepository: DownloadRepository
 ) : ShowUpdateManager {
-    override fun updateAllShows(): Completable =
-        showRepository.getSubscribedAndLastUpdatedBefore((1000 * 60 * 5).toLong())
-            .flatMapCompletable(this::fetchShowUpdatesAndQueueDownloads)
+    override suspend fun updateAllShows() {
+        showRepository.getSubscribedAndLastUpdatedBefore((1000 * 60 * 5).toLong())?.let { shows ->
+            fetchShowUpdatesAndQueueDownloads(shows)
+        }
+    }
 
-    override fun updateShow(show: ShowModel): Completable = fetchShowUpdate(show)
+    override suspend fun updateShow(show: ShowModel) {
+        fetchShowUpdate(show)
+    }
 
-    private fun fetchShowUpdatesAndQueueDownloads(shows: List<ShowModel>) = Completable.fromAction {
+    private suspend fun fetchShowUpdatesAndQueueDownloads(shows: List<ShowModel>) {
         shows.forEach { show ->
             Log.d(
                 "UpdateWorker",
                 "Got saved show: ${show.name} , ${show.feedUrl}, ${show.lastEpisodePublished}"
             )
-            fetchShowUpdate(show).blockingAwait()
+            fetchShowUpdate(show)
         }
     }
 
-    private fun fetchShowUpdate(show: ShowModel): Completable =
-        showRepository.getShowUpdate(show)
-            .flatMapCompletable { showUpdate ->
-                saveEpisodeAndQueueDownload(showUpdate)
-            }
+    private suspend fun fetchShowUpdate(show: ShowModel) {
+        showRepository.getShowUpdate(show)?.let { showUpdate ->
+            saveEpisodeAndQueueDownload(showUpdate)
+        }
+    }
 
-    private fun saveEpisodeAndQueueDownload(showUpdate: ShowUpdateModel): Completable =
-        episodeRepository.save(showUpdate.newEpisode)
-            .flatMap { savedEpisode ->
-                downloadRepository.queueDownload(savedEpisode)
-            }.flatMapCompletable { savedDownload ->
-                showRepository.save(savedDownload.episode.show.copy(
-                    lastUpdate = Date().time,
-                    lastEpisodePublished = savedDownload.episode.published
-                )).ignoreElement()
-            }
+    private suspend fun saveEpisodeAndQueueDownload(showUpdate: ShowUpdateModel) {
+        val savedEpisode = episodeRepository.save(showUpdate.newEpisode)
+        val savedDownload =  downloadRepository.queueDownload(savedEpisode)
+        showRepository.save(
+            savedDownload.episode.show.copy(
+                lastUpdate = Date().time,
+                lastEpisodePublished = savedDownload.episode.published
+            )
+        )
+    }
 }

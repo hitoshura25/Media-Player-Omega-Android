@@ -14,12 +14,12 @@ class DownloadCompleteWorker(
     @Inject
     lateinit var downloadRepository: DownloadRepository
 
-    override fun doMyWork(): Result {
+    override suspend fun doMyWork(): Result {
         appComponent.inject(this)
         val downloadManagerId = inputData.getLong(INPUT_DOWNLOAD_ID, -1)
         Log.d(javaClass.name, "downloadManagerId: $downloadManagerId")
         if (downloadManagerId != -1L) {
-            downloadRepository.notifyDownloadCompleted(downloadManagerId).blockingAwait()
+            downloadRepository.notifyDownloadCompleted(downloadManagerId)
         }
 
         return Result.success()

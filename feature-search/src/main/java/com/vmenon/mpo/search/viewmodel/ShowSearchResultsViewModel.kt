@@ -1,13 +1,12 @@
 package com.vmenon.mpo.search.viewmodel
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.search.repository.ShowSearchRepository
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ShowSearchResultsViewModel : ViewModel() {
@@ -15,24 +14,32 @@ class ShowSearchResultsViewModel : ViewModel() {
     @Inject
     lateinit var showSearchRepository: ShowSearchRepository
 
-    @Inject
-    lateinit var schedulerProvider: SchedulerProvider
+    private val searchResults = MutableLiveData<List<ShowSearchResultModel>>()
 
-    fun searchShows(keyword: String): Completable =
-        showSearchRepository.searchShows(keyword)
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
+    fun searchShows(keyword: String) {
+        viewModelScope.launch {
+            showSearchRepository.searchShows(keyword)
+            searchResults.postValue(showSearchRepository.getShowSearchResultsForTerm(keyword))
+        }
+    }
 
-    fun getShowSearchResultsForTerm(keyword: String): Flowable<List<ShowSearchResultModel>> =
-        showSearchRepository.getShowSearchResultsForTermOrderedByName(keyword)
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.main())
+    fun getShowSearchResultsForTerm(keyword: String): LiveData<List<ShowSearchResultModel>> = searchResults
 
-    fun getDiff(
+    suspend fun calculateDiff(
         newSearchResults: List<ShowSearchResultModel>,
         callback: DiffUtil.Callback
-    ): Single<Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult>> =
-        Single.just(Pair(newSearchResults, DiffUtil.calculateDiff(callback)))
-            .subscribeOn(schedulerProvider.computation())
-            .observeOn(schedulerProvider.main())
+    ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> {
+        println("Thread ${Thread.currentThread().name}")
+        return getDiff(newSearchResults, callback)
+    }
+
+    private suspend fun getDiff(
+        newSearchResults: List<ShowSearchResultModel>,
+        callback: DiffUtil.Callback
+    ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> =
+        withContext(Dispatchers.Default) {
+            println("Thread ${Thread.currentThread().name}")
+            Pair(newSearchResults, DiffUtil.calculateDiff(callback))
+        }
+
 }

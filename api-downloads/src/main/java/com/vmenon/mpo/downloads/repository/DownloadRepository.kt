@@ -1,16 +1,14 @@
 package com.vmenon.mpo.downloads.repository
 
 import com.vmenon.mpo.model.*
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Single
 
 interface DownloadRepository {
-    fun getAllQueued(): Flowable<List<QueuedDownloadModel>>
-    fun queueDownload(episode: EpisodeModel): Single<DownloadModel>
-    fun queueDownload(
+    suspend fun getAllQueued(): List<QueuedDownloadModel>
+    suspend fun queueDownload(episode: EpisodeModel): DownloadModel
+    suspend fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
-    ): Single<DownloadModel>
-    fun notifyDownloadCompleted(downloadManagerId: Long): Completable
+    ): DownloadModel
+
+    suspend fun notifyDownloadCompleted(downloadManagerId: Long)
 }
