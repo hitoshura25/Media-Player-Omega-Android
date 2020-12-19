@@ -2,7 +2,6 @@ package com.vmenon.mpo.search.viewmodel
 
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.search.repository.ShowSearchRepository
 import kotlinx.coroutines.Dispatchers
@@ -14,9 +13,6 @@ class ShowSearchResultsViewModel : ViewModel() {
 
     @Inject
     lateinit var showSearchRepository: ShowSearchRepository
-
-    @Inject
-    lateinit var schedulerProvider: SchedulerProvider
 
     private val searchResults = MutableLiveData<List<ShowSearchResultModel>>()
 

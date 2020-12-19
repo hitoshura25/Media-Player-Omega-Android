@@ -35,7 +35,6 @@ dependencies {
     implementation project(':api-shows')
     implementation project(':api-downloads')
     implementation project(':base-persistence')
-    implementation project(':rx')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
@@ -47,6 +46,4 @@ dependencies {
 
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 }

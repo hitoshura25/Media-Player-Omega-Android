@@ -1,8 +1,6 @@
 package com.vmenon.mpo.di
 
 import android.app.Application
-import com.vmenon.mpo.rx.scheduler.DefaultSchedulerProvider
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 
 import com.vmenon.mpo.core.*
 import com.vmenon.mpo.core.navigation.DefaultNavigationController
@@ -19,10 +17,6 @@ import dagger.Provides
 class AppModule(private val application: Application) {
     @Provides
     fun providesApplication(): Application = application
-
-    @Provides
-    fun provideSchedulerProvider(): SchedulerProvider =
-        DefaultSchedulerProvider()
 
     @Provides
     fun provideShowUpdateManager(

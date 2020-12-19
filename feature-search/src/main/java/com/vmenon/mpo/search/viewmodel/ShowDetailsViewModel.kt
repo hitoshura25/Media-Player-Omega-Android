@@ -3,7 +3,6 @@ package com.vmenon.mpo.search.viewmodel
 import androidx.lifecycle.*
 import com.vmenon.mpo.downloads.repository.DownloadRepository
 import com.vmenon.mpo.model.*
-import com.vmenon.mpo.rx.scheduler.SchedulerProvider
 import com.vmenon.mpo.search.repository.ShowSearchRepository
 import com.vmenon.mpo.shows.ShowUpdateManager
 import com.vmenon.mpo.shows.repository.ShowRepository
@@ -20,9 +19,6 @@ class ShowDetailsViewModel : ViewModel() {
 
     @Inject
     lateinit var showRepository: ShowRepository
-
-    @Inject
-    lateinit var schedulerProvider: SchedulerProvider
 
     @Inject
     lateinit var downloadRepository: DownloadRepository

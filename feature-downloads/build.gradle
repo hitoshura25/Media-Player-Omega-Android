@@ -25,7 +25,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':rx')
     implementation project(':model')
     implementation project(':view')
     implementation project(':api-downloads')
@@ -33,8 +32,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxJavaAndroidVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
