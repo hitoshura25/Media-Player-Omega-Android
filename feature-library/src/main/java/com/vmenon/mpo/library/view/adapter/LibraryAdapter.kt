@@ -9,8 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.model.EpisodeModel
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.my_library.domain.EpisodeModel
 import kotlinx.android.synthetic.main.library_item.view.*
 
 class LibraryAdapter(private val episodes: List<EpisodeModel>) :

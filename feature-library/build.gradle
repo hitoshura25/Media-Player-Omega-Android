@@ -28,6 +28,7 @@ dependencies {
 
     api project(':my-library-data')
     api project(':my-library-framework')
+    api project(':my-library-usecases')
 
     implementation project(':api-shows')
     implementation project(':model')

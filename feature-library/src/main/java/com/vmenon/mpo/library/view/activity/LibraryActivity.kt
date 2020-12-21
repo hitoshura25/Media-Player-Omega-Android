@@ -6,13 +6,16 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.common.domain.ErrorState
+import com.vmenon.mpo.common.domain.LoadingState
+import com.vmenon.mpo.common.domain.SuccessState
 
 import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
+import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_library.*
 
@@ -42,9 +45,17 @@ class LibraryActivity : BaseDrawerActivity<LibraryComponent>(),
         viewModel.allEpisodes().observe(
             this,
             Observer { episodes ->
-                val adapter = LibraryAdapter(episodes)
-                adapter.setListener(this@LibraryActivity)
-                libraryList.adapter = adapter
+                when (episodes) {
+                    is SuccessState -> {
+                        val adapter = LibraryAdapter(episodes.result)
+                        adapter.setListener(this@LibraryActivity)
+                        libraryList.adapter = adapter
+                    }
+                    LoadingState -> {
+                    }
+                    ErrorState -> {
+                    }
+                }
             }
         )
     }

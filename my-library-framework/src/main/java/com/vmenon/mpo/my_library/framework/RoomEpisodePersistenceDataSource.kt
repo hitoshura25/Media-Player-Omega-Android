@@ -17,6 +17,14 @@ class RoomEpisodePersistenceDataSource(private val episodeDao: EpisodeDao) :
     override suspend fun getByName(name: String): EpisodeModel? =
         episodeDao.getByNameWithShowDetails(name)?.toModel()
 
+    override suspend fun getAll(): List<EpisodeModel> =
+        episodeDao.getAllWithShowDetails().map { episode ->
+            episode.toModel()
+        }
+
+    override suspend fun getEpisode(episodeId: Long): EpisodeModel =
+        episodeDao.getWithShowDetailsById(episodeId).toModel()
+
     private fun EpisodeModel.toEntity() = EpisodeEntity(
         episodeId = id,
         showId = show.id,

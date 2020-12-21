@@ -9,12 +9,14 @@ import android.widget.ImageView
 import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.common.domain.ErrorState
+import com.vmenon.mpo.common.domain.LoadingState
+import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
-import com.vmenon.mpo.model.EpisodeModel
+import com.vmenon.mpo.my_library.domain.ShowModel
 import com.vmenon.mpo.navigation.NavigationController
 import com.vmenon.mpo.navigation.NavigationParams
 import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
@@ -74,30 +76,40 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
             .observe(
                 this,
                 Observer { episodeWithShowDetails ->
-                    show = episodeWithShowDetails.show
-                    episodeName.text = episodeWithShowDetails.name
-                    @Suppress("DEPRECATION")
-                    episodeDescription.text = Html.fromHtml(
-                        episodeWithShowDetails.description?.replace(
-                            "(<(//)img>)|(<img.+?>)".toRegex(),
-                            ""
-                        ) ?: ""
-                    )
-                    episodeDate.text = DateFormat.getDateInstance().format(
-                        Date(episodeWithShowDetails.published)
-                    )
-                    Glide.with(this@EpisodeDetailsActivity)
-                        .load(episodeWithShowDetails.show.artworkUrl)
-                        .into(appBarImage)
+                    when (episodeWithShowDetails) {
+                        is SuccessState -> {
+                            val episode = episodeWithShowDetails.result
+                            show = episode.show
+                            episodeName.text = episode.name
+                            @Suppress("DEPRECATION")
+                            episodeDescription.text = Html.fromHtml(
+                                episode.description?.replace(
+                                    "(<(//)img>)|(<img.+?>)".toRegex(),
+                                    ""
+                                ) ?: ""
+                            )
+                            episodeDate.text = DateFormat.getDateInstance().format(
+                                Date(episode.published)
+                            )
+                            Glide.with(this@EpisodeDetailsActivity)
+                                .load(episode.show.artworkUrl)
+                                .into(appBarImage)
 
-                    if (episodeWithShowDetails.artworkUrl != null) {
-                        episodeImage.visibility = View.VISIBLE
-                        Glide.with(this@EpisodeDetailsActivity)
-                            .load(episodeWithShowDetails.artworkUrl).fitCenter()
-                            .into(episodeImage)
-                    } else {
-                        episodeImage.visibility = View.GONE
+                            if (episode.artworkUrl != null) {
+                                episodeImage.visibility = View.VISIBLE
+                                Glide.with(this@EpisodeDetailsActivity)
+                                    .load(episode.artworkUrl).fitCenter()
+                                    .into(episodeImage)
+                            } else {
+                                episodeImage.visibility = View.GONE
+                            }
+                        }
+                        LoadingState -> {
+                        }
+                        ErrorState -> {
+                        }
                     }
+
                 }
             )
     }

@@ -6,4 +6,6 @@ interface MyLibraryService {
     suspend fun saveEpisode(episodeModel: EpisodeModel): EpisodeModel
     suspend fun getShowByName(name: String): ShowModel?
     suspend fun getEpisodeByName(name: String): EpisodeModel?
+    suspend fun getAllEpisodes(): List<EpisodeModel>
+    suspend fun getEpisode(episodeId: Long): EpisodeModel
 }

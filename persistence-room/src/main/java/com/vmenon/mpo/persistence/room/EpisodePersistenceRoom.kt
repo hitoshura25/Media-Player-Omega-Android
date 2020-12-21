@@ -13,7 +13,7 @@ class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) :
         episodeDao.getAllWithShowDetails().map { it.toModel() }
 
     override suspend fun getById(id: Long): EpisodeModel? =
-        episodeDao.getWithShowDetailsById(id)?.toModel()
+        episodeDao.getWithShowDetailsById(id).toModel()
 
     override suspend fun insertOrUpdate(model: EpisodeModel): EpisodeModel =
         episodeDao.insertOrUpdate(model.toEntity()).toModel(model.show)

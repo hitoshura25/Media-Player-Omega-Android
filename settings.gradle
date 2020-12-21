@@ -1,3 +1,4 @@
+include ':my-library-usecases'
 include ':downloads-usecases'
 include ':downloads-framework'
 include ':my-library-framework'

@@ -33,4 +33,10 @@ class MyLibraryRepository(
 
     override suspend fun getEpisodeByName(name: String): EpisodeModel? =
         episodePersistenceDataSource.getByName(name)
+
+    override suspend fun getAllEpisodes(): List<EpisodeModel> =
+        episodePersistenceDataSource.getAll()
+
+    override suspend fun getEpisode(episodeId: Long): EpisodeModel =
+        episodePersistenceDataSource.getEpisode(episodeId)
 }
