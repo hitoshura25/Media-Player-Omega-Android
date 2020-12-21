@@ -10,7 +10,7 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.downloads.R
-import com.vmenon.mpo.model.QueuedDownloadModel
+import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
 import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong
 

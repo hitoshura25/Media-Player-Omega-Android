@@ -27,6 +27,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':downloads-framework')
+    api project(':downloads-usecases')
 
     implementation project(':model')
     implementation project(':view')

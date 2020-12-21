@@ -5,6 +5,8 @@ import com.vmenon.mpo.downloads.data.DownloadsRepository
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.downloads.framework.DownloadManagerDownloadQueueDataSource
 import com.vmenon.mpo.downloads.framework.RoomDownloadsPersistenceDataSource
+import com.vmenon.mpo.downloads.usecases.DownloadsInteractors
+import com.vmenon.mpo.downloads.usecases.GetQueuedDownloads
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import dagger.Module
 import dagger.Provides
@@ -19,5 +21,11 @@ class DownloadsModule {
         DownloadsRepository(
             DownloadManagerDownloadQueueDataSource(application),
             RoomDownloadsPersistenceDataSource(downloadsDao)
+        )
+
+    @Provides
+    fun provideDownloadsInteractors(downloadsService: DownloadsService): DownloadsInteractors =
+        DownloadsInteractors(
+            GetQueuedDownloads(downloadsService)
         )
 }

@@ -5,6 +5,9 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.vmenon.mpo.common.domain.ErrorState
+import com.vmenon.mpo.common.domain.LoadingState
+import com.vmenon.mpo.common.domain.SuccessState
 
 import com.vmenon.mpo.downloads.R
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
@@ -31,15 +34,17 @@ class DownloadsActivity : BaseDrawerActivity<DownloadsComponent>() {
         downloadsList.layoutManager = LinearLayoutManager(this)
         downloadsList.setHasFixedSize(true)
         downloadsList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-    }
-
-    override fun onStart() {
-        super.onStart()
         viewModel.downloads.observe(
             this,
             Observer { downloads ->
-                val adapter = DownloadsAdapter(downloads)
-                downloadsList.adapter = adapter
+                when (downloads) {
+                    LoadingState -> {}
+                    ErrorState -> {}
+                    is SuccessState -> {
+                        val adapter = DownloadsAdapter(downloads.result)
+                        downloadsList.adapter = adapter
+                    }
+                }
             }
         )
     }

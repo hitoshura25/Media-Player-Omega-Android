@@ -1,3 +1,4 @@
+include ':downloads-usecases'
 include ':downloads-framework'
 include ':my-library-framework'
 include ':downloads-data'
