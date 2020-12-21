@@ -26,6 +26,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':downloads-domain')
     api project(':my-library-data')
     api project(':my-library-framework')
     api project(':my-library-usecases')

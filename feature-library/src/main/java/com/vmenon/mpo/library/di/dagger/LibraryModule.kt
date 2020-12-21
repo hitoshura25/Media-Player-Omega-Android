@@ -1,6 +1,7 @@
 package com.vmenon.mpo.library.di.dagger
 
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.my_library.data.EpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
@@ -12,6 +13,7 @@ import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
 import com.vmenon.mpo.my_library.usecases.GetAllEpisodes
 import com.vmenon.mpo.my_library.usecases.GetEpisodeDetails
 import com.vmenon.mpo.my_library.usecases.MyLibraryInteractors
+import com.vmenon.mpo.my_library.usecases.UpdateAllShows
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import dagger.Module
@@ -44,9 +46,13 @@ class LibraryModule {
     ): ShowUpdateDataSource = MpoRetrofitApiShowUpdateDataSource(mediaPlayerOmegaRetrofitService)
 
     @Provides
-    fun provideMyLibraryInteractors(myLibraryService: MyLibraryService): MyLibraryInteractors =
+    fun provideMyLibraryInteractors(
+        myLibraryService: MyLibraryService,
+        downloadService: DownloadsService
+    ): MyLibraryInteractors =
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
-            GetEpisodeDetails(myLibraryService)
+            GetEpisodeDetails(myLibraryService),
+            UpdateAllShows(myLibraryService, downloadService)
         )
 }
