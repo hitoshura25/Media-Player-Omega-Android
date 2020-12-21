@@ -25,7 +25,6 @@ class RoomSearchCacheDataSource(
             )
         }
 
-
     override suspend fun getSearchResultById(
         id: Long
     ): ShowSearchResultModel? = searchResultDao.getSearchResultById(id)?.let { entity ->

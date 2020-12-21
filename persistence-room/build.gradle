@@ -31,9 +31,9 @@ android {
 dependencies {
     api project(':base-room')
     implementation project(':model')
-    implementation project(':api-search')
+
     implementation project(':api-shows')
-    implementation project(':api-downloads')
+
     implementation project(':base-persistence')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])

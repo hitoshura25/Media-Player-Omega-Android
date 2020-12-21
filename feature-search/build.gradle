@@ -35,9 +35,9 @@ dependencies {
 
     implementation project(':model')
     implementation project(':view')
-    implementation project(':api-search')
+
     implementation project(':api-shows')
-    implementation project(':api-downloads')
+
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"

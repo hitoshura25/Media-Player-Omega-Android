@@ -34,9 +34,9 @@ dependencies {
     implementation project(':extensions')
     implementation project(':api-mpo')
     implementation project(':model')
-    implementation project(':api-search')
+
     implementation project(':api-shows')
-    implementation project(':api-downloads')
+
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
