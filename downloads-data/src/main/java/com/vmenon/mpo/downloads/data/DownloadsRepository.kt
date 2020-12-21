@@ -4,10 +4,13 @@ import com.vmenon.mpo.downloads.domain.DownloadModel
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
 import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.my_library.domain.MyLibraryService
 
 class DownloadsRepository(
     private val queueDataSource: DownloadsQueueDataSource,
-    private val persistenceDataSource: DownloadsPersistenceDataSource
+    private val persistenceDataSource: DownloadsPersistenceDataSource,
+    private val mediaPersistenceDataSource: MediaPersistenceDataSource,
+    private val myLibraryService: MyLibraryService
 ): DownloadsService {
     override suspend fun queueDownload(episode: EpisodeModel): DownloadModel {
         val queueId = queueDataSource.queueDownloadAndGetQueueId(episode)
@@ -40,5 +43,13 @@ class DownloadsRepository(
         }
 
         return downloadListItems
+    }
+
+    override suspend fun notifyDownloadCompleted(downloadQueueId: Long) {
+        // TODO Should this be in use case?
+        val download = persistenceDataSource.getByQueueId(downloadQueueId)
+        val mediaPath = mediaPersistenceDataSource.storeMediaAndGetPath(download)
+        myLibraryService.saveEpisode(download.episode.copy(filename = mediaPath))
+        persistenceDataSource.delete(download.id)
     }
 }

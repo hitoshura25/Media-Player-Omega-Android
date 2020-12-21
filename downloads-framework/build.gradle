@@ -36,6 +36,9 @@ dependencies {
     api project(':downloads-data')
     api project(':persistence-room')
 
+    implementation project(':extensions')
+
+    implementation libraries.coroutines
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'

@@ -3,7 +3,7 @@ package com.vmenon.mpo.core.work
 import android.content.Context
 import android.util.Log
 import androidx.work.WorkerParameters
-import com.vmenon.mpo.downloads.repository.DownloadRepository
+import com.vmenon.mpo.downloads.domain.DownloadsService
 import javax.inject.Inject
 
 class DownloadCompleteWorker(
@@ -12,14 +12,14 @@ class DownloadCompleteWorker(
 ) : BaseWorker(context, workerParams) {
 
     @Inject
-    lateinit var downloadRepository: DownloadRepository
+    lateinit var downloadsService: DownloadsService
 
     override suspend fun doMyWork(): Result {
         appComponent.inject(this)
         val downloadManagerId = inputData.getLong(INPUT_DOWNLOAD_ID, -1)
         Log.d(javaClass.name, "downloadManagerId: $downloadManagerId")
         if (downloadManagerId != -1L) {
-            downloadRepository.notifyDownloadCompleted(downloadManagerId)
+            downloadsService.notifyDownloadCompleted(downloadManagerId)
         }
 
         return Result.success()

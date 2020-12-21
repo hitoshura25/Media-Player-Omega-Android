@@ -15,6 +15,13 @@ class RoomDownloadsPersistenceDataSource(private val downloadDao: DownloadDao) :
     override suspend fun getAll(): List<DownloadModel> =
         downloadDao.getAllWithShowAndEpisodeDetails().map { download -> download.toModel() }
 
+    override suspend fun getByQueueId(queueId: Long): DownloadModel =
+        downloadDao.getWithShowAndEpisodeDetailsByDownloadManagerId(queueId).toModel()
+
+    override suspend fun delete(id: Long) {
+        downloadDao.delete(id)
+    }
+
     private fun DownloadWithShowAndEpisodeDetailsEntity.toModel() = DownloadModel(
         id = download.downloadId,
         episode = episode.toModel(
