@@ -8,6 +8,7 @@ import com.vmenon.mpo.downloads.framework.FileSystemMediaPersistenceDataSource
 import com.vmenon.mpo.downloads.framework.RoomDownloadsPersistenceDataSource
 import com.vmenon.mpo.downloads.usecases.DownloadsInteractors
 import com.vmenon.mpo.downloads.usecases.GetQueuedDownloads
+import com.vmenon.mpo.downloads.usecases.NotifyDownloadCompleted
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import dagger.Module
@@ -18,19 +19,21 @@ class DownloadsModule {
     @Provides
     fun provideDownloadsService(
         application: Application,
-        downloadsDao: DownloadDao,
-        myLibraryService: MyLibraryService
+        downloadsDao: DownloadDao
     ): DownloadsService =
         DownloadsRepository(
             DownloadManagerDownloadQueueDataSource(application),
             RoomDownloadsPersistenceDataSource(downloadsDao),
-            FileSystemMediaPersistenceDataSource(application),
-            myLibraryService
+            FileSystemMediaPersistenceDataSource(application)
         )
 
     @Provides
-    fun provideDownloadsInteractors(downloadsService: DownloadsService): DownloadsInteractors =
+    fun provideDownloadsInteractors(
+        downloadsService: DownloadsService,
+        myLibraryService: MyLibraryService
+    ): DownloadsInteractors =
         DownloadsInteractors(
-            GetQueuedDownloads(downloadsService)
+            GetQueuedDownloads(downloadsService),
+            NotifyDownloadCompleted(downloadsService, myLibraryService)
         )
 }
