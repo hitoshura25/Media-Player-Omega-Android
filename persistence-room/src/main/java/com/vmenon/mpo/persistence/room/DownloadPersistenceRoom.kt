@@ -16,6 +16,6 @@ class DownloadPersistenceRoom(private val downloadDao: DownloadDao) :
         downloadDao.delete(id)
     }
 
-    override fun insertOrUpdate(model: DownloadModel): DownloadModel =
+    override suspend fun insertOrUpdate(model: DownloadModel): DownloadModel =
         downloadDao.insertOrUpdate(model.toEntity()).toModel(model.episode)
 }

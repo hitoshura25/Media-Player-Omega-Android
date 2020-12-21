@@ -22,13 +22,13 @@ import java.text.DateFormat
 import java.util.Date
 
 class EpisodesAdapter(
-    private val showDetails: ShowSearchResultDetailsModel
+    private val showDetails: com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 ) : RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onPlayEpisode(episode: ShowSearchResultEpisodeModel)
-        fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
+        fun onPlayEpisode(episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel)
+        fun onDownloadEpisode(episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -37,8 +37,8 @@ class EpisodesAdapter(
         val publishedText: TextView = v.episodeDate
         val thumbnailImage: ImageView = v.episodeImage
         val menuButton: ImageButton = v.episodeMenuButton
-        lateinit var episode: ShowSearchResultEpisodeModel
-        lateinit var showDetails: ShowSearchResultModel
+        lateinit var episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
+        lateinit var showDetails: com.vmenon.mpo.search.domain.ShowSearchResultModel
     }
 
     fun setListener(listener: EpisodeSelectedListener) {

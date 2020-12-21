@@ -7,12 +7,12 @@ import com.vmenon.mpo.persistence.room.base.entity.BaseEntity
 
 interface BaseDao<T : BaseEntity<T>> {
     @Insert
-    fun insert(entity: T): Long
+    suspend fun insert(entity: T): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(entity: T)
+    suspend fun update(entity: T)
 
-    fun insertOrUpdate(entity: T): T =
+    suspend fun insertOrUpdate(entity: T): T =
         if (entity.id() == BaseEntity.UNSAVED_ID) {
             entity.copyWithNewId(newId = insert(entity))
         } else {

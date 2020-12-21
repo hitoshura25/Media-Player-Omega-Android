@@ -15,6 +15,6 @@ class EpisodePersistenceRoom(private val episodeDao: EpisodeDao) :
     override suspend fun getById(id: Long): EpisodeModel? =
         episodeDao.getWithShowDetailsById(id)?.toModel()
 
-    override fun insertOrUpdate(model: EpisodeModel): EpisodeModel =
+    override suspend fun insertOrUpdate(model: EpisodeModel): EpisodeModel =
         episodeDao.insertOrUpdate(model.toEntity()).toModel(model.show)
 }

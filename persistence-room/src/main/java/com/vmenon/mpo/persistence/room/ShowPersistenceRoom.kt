@@ -16,6 +16,6 @@ class ShowPersistenceRoom(private val showDao: ShowDao) : ShowPersistence {
             show.toModel()
         }
 
-    override fun insertOrUpdate(model: ShowModel): ShowModel =
+    override suspend fun insertOrUpdate(model: ShowModel): ShowModel =
         showDao.insertOrUpdate(model.toEntity()).toModel()
 }

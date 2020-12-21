@@ -4,6 +4,7 @@ import com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity
 import com.vmenon.mpo.library.view.activity.LibraryActivity
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
+import com.vmenon.mpo.my_library.domain.MyLibraryService
 import dagger.Subcomponent
 
 @Subcomponent
@@ -19,4 +20,6 @@ interface LibraryComponent {
 
     fun inject(viewModel: LibraryViewModel)
     fun inject(viewModel: EpisodeDetailsViewModel)
+
+    fun myLibraryService(): MyLibraryService
 }

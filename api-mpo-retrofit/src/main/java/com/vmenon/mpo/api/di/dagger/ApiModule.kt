@@ -17,9 +17,17 @@ import java.util.concurrent.TimeUnit
 
 @Module
 object ApiModule {
+    // TODO: May be able to remove below if just using datasources
     private val apiInstance: MediaPlayerOmegaApi by lazy {
-        MediaPlayerOmegaRetrofitApi(provideService(provideHttpClient()))
+        MediaPlayerOmegaRetrofitApi(retrofitApiInstance)
     }
+
+    private val retrofitApiInstance: MediaPlayerOmegaRetrofitService by lazy {
+        provideService(provideHttpClient())
+    }
+
+    @Provides
+    fun provideMediaPlayerRetrofitApi(): MediaPlayerOmegaRetrofitService = retrofitApiInstance
 
     @Provides
     fun provideApi(): MediaPlayerOmegaApi = apiInstance

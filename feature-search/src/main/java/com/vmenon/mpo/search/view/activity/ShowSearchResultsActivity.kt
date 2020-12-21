@@ -13,9 +13,12 @@ import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
 
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.model.ShowSearchResultModel
+import com.vmenon.mpo.common.domain.ErrorState
+import com.vmenon.mpo.common.domain.LoadingState
+import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import com.vmenon.mpo.view.LoadingStateHelper
@@ -41,7 +44,6 @@ class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadingStateHelper = LoadingStateHelper(contentProgressBar, searchResultsContainer)
-        loadingStateHelper.showLoadingState()
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         showList.setHasFixedSize(true)
@@ -76,27 +78,35 @@ class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
             intent.getStringExtra(SearchManager.QUERY)?.let { query ->
                 title = this.getString(R.string.show_search_title, query)
                 showSearchResultsViewModel.searchShows(query)
-                showSearchResultsViewModel.getShowSearchResultsForTerm(query).observe(this,
+                showSearchResultsViewModel.getShowSearchResultsForTerm().observe(this,
                     Observer { results ->
-                        lifecycleScope.launch {
-                            val diff = showSearchResultsViewModel.calculateDiff(
-                                results,
-                                ShowSearchResultsDiff(searchResults, results)
-                            )
-                            this@ShowSearchResultsActivity.searchResults = diff.first
-                            adapter.update(
-                                this@ShowSearchResultsActivity.searchResults,
-                                diff.second
-                            )
-                            if (searchResults.isEmpty()) {
-                                noShowsText.visibility = View.VISIBLE
-                                showList.visibility = View.GONE
-                            } else {
-                                showList.visibility = View.VISIBLE
-                                noShowsText.visibility = View.GONE
+                        when (results) {
+                            LoadingState -> {
+                                loadingStateHelper.showLoadingState()
                             }
-                            loadingStateHelper.showContentState()
+                            ErrorState -> TODO()
+                            is SuccessState -> {
+                                lifecycleScope.launch {
+                                    val diff = showSearchResultsViewModel.calculateDiff(
+                                        results.result,
+                                        ShowSearchResultsDiff(searchResults, results.result)
+                                    )
+                                    this@ShowSearchResultsActivity.searchResults = diff.first
+                                    adapter.update(
+                                        this@ShowSearchResultsActivity.searchResults,
+                                        diff.second
+                                    )
+                                    if (searchResults.isEmpty()) {
+                                        noShowsText.visibility = View.VISIBLE
+                                        showList.visibility = View.GONE
+                                    } else {
+                                        showList.visibility = View.VISIBLE
+                                        noShowsText.visibility = View.GONE
+                                    }
+                                    loadingStateHelper.showContentState()
+                                }                            }
                         }
+
                     }
                 )
             }

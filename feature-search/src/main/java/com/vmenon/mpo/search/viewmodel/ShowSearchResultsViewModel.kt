@@ -2,28 +2,32 @@ package com.vmenon.mpo.search.viewmodel
 
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenon.mpo.model.ShowSearchResultModel
-import com.vmenon.mpo.search.repository.ShowSearchRepository
+import com.vmenon.mpo.common.domain.ResultState
+import com.vmenon.mpo.search.domain.ShowSearchResultModel
+import com.vmenon.mpo.search.usecases.SearchInteractors
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ShowSearchResultsViewModel : ViewModel() {
 
     @Inject
-    lateinit var showSearchRepository: ShowSearchRepository
+    lateinit var searchInteractors: SearchInteractors
 
-    private val searchResults = MutableLiveData<List<ShowSearchResultModel>>()
+    private val searchTerm = MutableLiveData<String>()
 
-    fun searchShows(keyword: String) {
-        viewModelScope.launch {
-            showSearchRepository.searchShows(keyword)
-            searchResults.postValue(showSearchRepository.getShowSearchResultsForTerm(keyword))
+    private val searchResults = searchTerm.switchMap { keyword ->
+        liveData<ResultState<List<ShowSearchResultModel>>> {
+            emitSource(searchInteractors.searchForShows(keyword).asLiveData())
         }
     }
 
-    fun getShowSearchResultsForTerm(keyword: String): LiveData<List<ShowSearchResultModel>> = searchResults
+    fun searchShows(keyword: String) {
+        searchTerm.postValue(keyword)
+    }
+
+    fun getShowSearchResultsForTerm(): LiveData<ResultState<List<ShowSearchResultModel>>> =
+        searchResults
 
     suspend fun calculateDiff(
         newSearchResults: List<ShowSearchResultModel>,

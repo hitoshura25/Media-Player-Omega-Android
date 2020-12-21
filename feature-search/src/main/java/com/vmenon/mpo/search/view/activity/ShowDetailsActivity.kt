@@ -13,10 +13,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.search.R
 
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.model.ShowSearchResultDetailsModel
-import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.common.domain.ErrorState
+import com.vmenon.mpo.common.domain.LoadingState
+import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
+import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
 import com.vmenon.mpo.view.LoadingStateHelper
@@ -36,11 +39,17 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
-        loadingStateHelper.showLoadingState()
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
         showDetailsViewModel.getShowDetails(intent.getLongExtra(EXTRA_SHOW, -1))
-            .observe(this, Observer { showDetails -> displayDetails(showDetails) })
+            .observe(this, Observer { showDetails ->
+                when (showDetails) {
+                    LoadingState -> loadingStateHelper.showLoadingState()
+                    ErrorState -> TODO()
+                    is SuccessState -> displayDetails(showDetails.result)
+                }
+
+            })
 
         showDetailsViewModel.showSubscribed().observe(this, Observer {
             Snackbar.make(
