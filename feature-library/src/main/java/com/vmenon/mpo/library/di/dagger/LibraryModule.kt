@@ -10,10 +10,7 @@ import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.my_library.framework.MpoRetrofitApiShowUpdateDataSource
 import com.vmenon.mpo.my_library.framework.RoomEpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
-import com.vmenon.mpo.my_library.usecases.GetAllEpisodes
-import com.vmenon.mpo.my_library.usecases.GetEpisodeDetails
-import com.vmenon.mpo.my_library.usecases.MyLibraryInteractors
-import com.vmenon.mpo.my_library.usecases.UpdateAllShows
+import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import dagger.Module
@@ -53,6 +50,7 @@ class LibraryModule {
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
             GetEpisodeDetails(myLibraryService),
-            UpdateAllShows(myLibraryService, downloadService)
+            UpdateAllShows(myLibraryService, downloadService),
+            GetSubscribedShows(myLibraryService)
         )
 }

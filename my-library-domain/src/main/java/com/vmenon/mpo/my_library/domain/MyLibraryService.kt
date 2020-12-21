@@ -9,4 +9,5 @@ interface MyLibraryService {
     suspend fun getAllEpisodes(): List<EpisodeModel>
     suspend fun getEpisode(episodeId: Long): EpisodeModel
     suspend fun getShowsSubscribedAndLastUpdatedBefore(interval: Long): List<ShowModel>?
+    suspend fun getAllSubscribedShows(): List<ShowModel>
 }

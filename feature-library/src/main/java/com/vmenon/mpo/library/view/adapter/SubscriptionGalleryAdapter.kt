@@ -1,4 +1,4 @@
-package com.vmenon.mpo.view.adapter
+package com.vmenon.mpo.library.view.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.R
+import com.vmenon.mpo.library.R
 
 import androidx.recyclerview.widget.RecyclerView
-import com.vmenon.mpo.model.ShowModel
+import com.vmenon.mpo.my_library.domain.ShowModel
 import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
 class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :

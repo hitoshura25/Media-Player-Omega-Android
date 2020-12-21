@@ -8,18 +8,12 @@ import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.shows.persistence.ShowPersistence
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
 class PersistenceModule {
-
-    @Provides
-    @Singleton
-    fun provideShowPersistence(showDao: ShowDao): ShowPersistence = ShowPersistenceRoom(showDao)
-
     @Provides
     @Singleton
     fun provideEpisodePersistence(episodeDao: EpisodeDao): EpisodePersistence =

@@ -42,4 +42,7 @@ class MyLibraryRepository(
 
     override suspend fun getShowsSubscribedAndLastUpdatedBefore(interval: Long): List<ShowModel>? =
         showPersistenceDataSource.getSubscribedAndLastUpdatedBefore(interval)
+
+    override suspend fun getAllSubscribedShows(): List<ShowModel> =
+        showPersistenceDataSource.getSubscribed()
 }
