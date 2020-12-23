@@ -1,9 +1,6 @@
 package com.vmenon.mpo.player.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
 import com.vmenon.mpo.player.usecases.PlayerInteractors
@@ -18,8 +15,14 @@ class MediaPlayerViewModel : ViewModel() {
         emitSource(playerInteractors.listenForPlayBackStateChanges().asLiveData())
     }
 
-    fun connectClient(client: PlayerClient) = liveData {
-        emit(playerInteractors.connectPlayerClient(client))
+    val connected: LiveData<Unit> = MutableLiveData()
+
+    fun connectClient(client: PlayerClient) {
+        viewModelScope.launch {
+            if (playerInteractors.connectPlayerClient(client)) {
+                (connected as MutableLiveData).postValue(Unit)
+            }
+        }
     }
 
     fun disconnectClient(client: PlayerClient) {

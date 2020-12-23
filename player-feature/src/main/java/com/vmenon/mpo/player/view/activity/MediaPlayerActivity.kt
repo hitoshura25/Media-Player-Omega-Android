@@ -87,6 +87,14 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         surfaceView.holder.addCallback(this)
         player.setVideoSizeListener(this@MediaPlayerActivity)
 
+        viewModel.connected.observe(this, Observer {
+            updateMediaDisplay()
+            if (!fromNotification) {
+                requestedMediaId?.let {
+                    viewModel.playMedia(it)
+                }
+            }
+        })
         viewModel.playBackState.observe(this, Observer { playbackState ->
             updatePlaybackState(playbackState.state)
             updateProgress(playbackState)
@@ -98,16 +106,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
 
     override fun onStart() {
         super.onStart()
-        viewModel.connectClient(this).observe(this, Observer { connected ->
-            if (connected) {
-                updateMediaDisplay()
-                if (!fromNotification) {
-                    requestedMediaId?.let {
-                        viewModel.playMedia(it)
-                    }
-                }
-            }
-        })
+        viewModel.connectClient(this)
     }
 
     override fun onStop() {
