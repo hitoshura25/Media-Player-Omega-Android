@@ -28,8 +28,8 @@ import kotlinx.android.synthetic.main.activity_media_player.*
 
 import javax.inject.Inject
 
-const val REPLAY_DURATION = -10
-const val SKIP_DURATION = 30
+const val REPLAY_DURATION_SECONDS = -10
+const val SKIP_DURATION_SECONDS = 30
 
 class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
     VideoSizeListener, PlayerClient, NavigationView {
@@ -81,8 +81,8 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
             }
         })
 
-        replayButton.setOnClickListener { viewModel.skipPlayback(REPLAY_DURATION.toLong()) }
-        skipButton.setOnClickListener { viewModel.skipPlayback(SKIP_DURATION.toLong()) }
+        replayButton.setOnClickListener { viewModel.skipPlayback(REPLAY_DURATION_SECONDS.toLong()) }
+        skipButton.setOnClickListener { viewModel.skipPlayback(SKIP_DURATION_SECONDS.toLong()) }
 
         surfaceView.holder.addCallback(this)
         player.setVideoSizeListener(this@MediaPlayerActivity)
@@ -178,7 +178,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
     }
 
     private fun updateProgress(playbackState: PlaybackState) {
-        seekBar.progress = playbackState.position.toInt()
+        seekBar.progress = playbackState.positionInMillis.toInt()
     }
 
     private fun updateDuration(playbackState: PlaybackState) {

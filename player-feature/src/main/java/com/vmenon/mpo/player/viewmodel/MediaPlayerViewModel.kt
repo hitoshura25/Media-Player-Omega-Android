@@ -34,9 +34,9 @@ class MediaPlayerViewModel : ViewModel() {
         }
     }
 
-    fun skipPlayback(amount: Long) {
+    fun skipPlayback(amountSeconds: Long) {
         viewModelScope.launch {
-            playerInteractors.skipPlayback(amount)
+            playerInteractors.skipPlayback(amountSeconds * 1000)
         }
     }
 
