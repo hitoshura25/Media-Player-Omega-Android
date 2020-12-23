@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player
+package com.vmenon.mpo.player.framework
 
 import android.media.MediaPlayer
 import android.util.Log

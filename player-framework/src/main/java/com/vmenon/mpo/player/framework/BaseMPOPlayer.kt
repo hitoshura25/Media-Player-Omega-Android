@@ -1,10 +1,11 @@
-package com.vmenon.mpo.player
+package com.vmenon.mpo.player.framework
 
 import android.media.MediaMetadataRetriever
 import android.os.Handler
 import android.os.Looper
-import com.vmenon.mpo.player.MPOPlayer.MediaPlayerListener
-import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
+import com.vmenon.mpo.player.framework.MPOPlayer
+import com.vmenon.mpo.player.framework.MPOPlayer.MediaPlayerListener
+import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
 
 import java.io.File
 import java.lang.ref.WeakReference

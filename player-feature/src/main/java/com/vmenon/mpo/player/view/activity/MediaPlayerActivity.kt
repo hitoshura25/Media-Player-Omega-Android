@@ -13,8 +13,8 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationParams
 import com.vmenon.mpo.navigation.domain.NavigationView
-import com.vmenon.mpo.player.MPOPlayer
-import com.vmenon.mpo.player.MPOPlayer.VideoSizeListener
+import com.vmenon.mpo.player.framework.MPOPlayer
+import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider

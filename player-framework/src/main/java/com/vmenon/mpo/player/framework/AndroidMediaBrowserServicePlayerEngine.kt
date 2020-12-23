@@ -15,11 +15,15 @@ import kotlin.coroutines.suspendCoroutine
 
 class AndroidMediaBrowserServicePlayerEngine(
     private val context: Context,
-    private val serviceClass: Class<*>
+    configuration: MPOMediaBrowserService.Configuration
 ) : PlayerEngine {
     private var mediaBrowser: MediaBrowserCompat? = null
     private var mediaController: MediaControllerCompat? = null
     private var connected = false
+
+    init {
+        MPOMediaBrowserService.configuration = configuration
+    }
 
     private suspend fun connectToSession(): Boolean =
         suspendCoroutine { cont ->
@@ -30,7 +34,7 @@ class AndroidMediaBrowserServicePlayerEngine(
             }
             val mediaBrowser = MediaBrowserCompat(
                 context,
-                ComponentName(context, serviceClass),
+                ComponentName(context, MPOMediaBrowserService::class.java),
                 connectionCallback,
                 null
             )

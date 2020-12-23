@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player.exo
+package com.vmenon.mpo.player.framework.exo
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
@@ -23,7 +23,7 @@ import java.io.File
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.vmenon.mpo.player.BaseMPOPlayer
+import com.vmenon.mpo.player.framework.BaseMPOPlayer
 import javax.inject.Inject
 
 /**

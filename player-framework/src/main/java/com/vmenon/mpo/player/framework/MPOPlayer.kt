@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player
+package com.vmenon.mpo.player.framework
 
 import android.view.SurfaceHolder
 import java.io.File

@@ -1,8 +1,6 @@
 package com.vmenon.mpo.api.di.dagger
 
 import com.google.gson.GsonBuilder
-import com.vmenon.mpo.api.MediaPlayerOmegaApi
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitApi
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import dagger.Module
 import dagger.Provides
@@ -17,20 +15,12 @@ import java.util.concurrent.TimeUnit
 
 @Module
 object ApiModule {
-    // TODO: May be able to remove below if just using datasources
-    private val apiInstance: MediaPlayerOmegaApi by lazy {
-        MediaPlayerOmegaRetrofitApi(retrofitApiInstance)
-    }
-
     private val retrofitApiInstance: MediaPlayerOmegaRetrofitService by lazy {
         provideService(provideHttpClient())
     }
 
     @Provides
     fun provideMediaPlayerRetrofitApi(): MediaPlayerOmegaRetrofitService = retrofitApiInstance
-
-    @Provides
-    fun provideApi(): MediaPlayerOmegaApi = apiInstance
 
     private fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
