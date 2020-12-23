@@ -2,7 +2,6 @@ package com.vmenon.mpo.persistence.di.dagger
 
 import android.app.Application
 import androidx.room.Room
-import com.vmenon.mpo.shows.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.room.*
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
@@ -14,11 +13,6 @@ import javax.inject.Singleton
 
 @Module
 class PersistenceModule {
-    @Provides
-    @Singleton
-    fun provideEpisodePersistence(episodeDao: EpisodeDao): EpisodePersistence =
-        EpisodePersistenceRoom(episodeDao)
-
     @Provides
     @Singleton
     fun provideMPODatabase(application: Application): MPODatabase {

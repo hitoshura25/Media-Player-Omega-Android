@@ -12,7 +12,6 @@ import com.vmenon.mpo.library.di.dagger.LibraryModule
 import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerModule
-import com.vmenon.mpo.repository.di.dagger.RepositoryModule
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchModule
 
@@ -24,7 +23,6 @@ import javax.inject.Singleton
         AppModule::class,
         ThirdPartyIntegratorModule::class,
         SubcomponentsModule::class,
-        RepositoryModule::class,
         PersistenceModule::class,
         ApiModule::class,
         SearchModule::class,

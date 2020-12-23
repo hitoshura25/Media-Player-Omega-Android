@@ -20,32 +20,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':downloads-domain')
-    implementation project(':navigation-domain')
-    api project(':my-library-data')
-    api project(':my-library-framework')
-    api project(':my-library-usecases')
+    api project(':search-domain')
+    api project(':search-usecases')
+    api project(':search-data')
+    api project(':search-framework')
 
-    implementation project(':api-shows')
-    implementation project(':model')
+
     implementation project(':view')
 
+
+
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.media:media:$mediaVersion"
     implementation 'com.github.bumptech.glide:glide:3.7.0'
 
     implementation libraries.dagger
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     kapt libraries.dagger_annotations
 }
