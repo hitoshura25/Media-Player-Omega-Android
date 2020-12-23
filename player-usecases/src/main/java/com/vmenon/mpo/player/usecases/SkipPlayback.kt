@@ -1,7 +1,7 @@
 package com.vmenon.mpo.player.usecases
 
+import com.vmenon.mpo.player.domain.PlaybackState.*
 import com.vmenon.mpo.player.domain.PlayerEngine
-import com.vmenon.mpo.player.domain.State
 
 class SkipPlayback(private val playerEngine: PlayerEngine) {
     suspend operator fun invoke(amountMillis: Long) {

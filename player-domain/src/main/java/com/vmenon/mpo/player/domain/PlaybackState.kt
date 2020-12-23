@@ -5,25 +5,16 @@ data class PlaybackState(
     val durationInMillis: Long,
     val positionInMillis: Long,
     val state: State
-)
-
-data class PlaybackMedia(
-    val mediaId: String,
-    val title: String? = null,
-    val author: String? = null,
-    val artworkUrl: String? = null,
-    val album: String? = null,
-    val genres: List<String>? = null
-)
-
-enum class State {
-    PLAYING,
-    BUFFERING,
-    STOPPED,
-    PAUSED,
-    FAST_FORWARDING,
-    REWINDING,
-    ERROR,
-    NONE,
-    UNKNOWN
+) {
+    enum class State {
+        PLAYING,
+        BUFFERING,
+        STOPPED,
+        PAUSED,
+        FAST_FORWARDING,
+        REWINDING,
+        ERROR,
+        NONE,
+        UNKNOWN
+    }
 }

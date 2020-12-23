@@ -8,6 +8,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.vmenon.mpo.player.domain.*
+import com.vmenon.mpo.player.domain.PlaybackState.*
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.coroutines.resume

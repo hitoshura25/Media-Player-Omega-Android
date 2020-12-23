@@ -21,7 +21,7 @@ import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.player.domain.PlaybackMedia
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
-import com.vmenon.mpo.player.domain.State
+import com.vmenon.mpo.player.domain.PlaybackState.*
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
 import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_media_player.*
