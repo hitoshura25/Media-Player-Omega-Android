@@ -7,7 +7,7 @@ data class EpisodeModel(
     val published: Long,
     val type: String,
     val downloadUrl: String,
-    val length: Long,
+    val lengthInSeconds: Long,
     val artworkUrl: String?,
     val filename: String? = null,
     val show: ShowModel

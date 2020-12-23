@@ -39,16 +39,15 @@ dependencies {
     implementation project(':api-mpo')
     implementation project(':api-mpo-retrofit')
     implementation project(':model')
+    implementation project(':navigation-domain')
     implementation project(':repository')
-    implementation project(':player')
     implementation project(':view')
 
     implementation project(':feature-search')
     implementation project(':feature-downloads')
     implementation project(':feature-library')
-
-
-
+    implementation project(':feature-player')
+    
     implementation project(':api-shows')
 
     implementation project(':persistence-room')

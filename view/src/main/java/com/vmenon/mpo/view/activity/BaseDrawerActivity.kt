@@ -8,10 +8,10 @@ import android.view.MenuItem
 import android.view.ViewGroup
 
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.navigation.NavigationController.Location
+import com.vmenon.mpo.navigation.domain.NavigationController.Location
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerActivity<COMPONENT: Any> : BaseActivity<COMPONENT>() {
+abstract class BaseDrawerActivity<COMPONENT: Any> : BaseActivity<COMPONENT>(), com.vmenon.mpo.navigation.domain.NavigationView {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView

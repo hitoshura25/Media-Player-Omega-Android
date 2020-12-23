@@ -38,7 +38,7 @@ class QueueDownloadForShow(
                     artworkUrl = episode.artworkUrl,
                     name = episode.name,
                     downloadUrl = episode.downloadUrl,
-                    length = episode.length,
+                    lengthInSeconds = episode.length,
                     published = episode.published,
                     type = episode.type,
                     filename = null

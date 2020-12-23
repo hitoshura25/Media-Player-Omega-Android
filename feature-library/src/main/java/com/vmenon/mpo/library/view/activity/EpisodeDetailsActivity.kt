@@ -17,8 +17,7 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.my_library.domain.ShowModel
-import com.vmenon.mpo.navigation.NavigationController
-import com.vmenon.mpo.navigation.NavigationParams
+import com.vmenon.mpo.navigation.domain.NavigationView
 import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
 import kotlinx.android.synthetic.main.activity_episode_details.*
 
@@ -26,7 +25,8 @@ import java.text.DateFormat
 
 import java.util.Date
 
-class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryComponent>() {
+class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryComponent>(),
+    NavigationView {
     private val viewModel: EpisodeDetailsViewModel by viewModel()
 
     private var episodeId: Long = -1
@@ -63,11 +63,7 @@ class EpisodeDetailsActivity : BaseDrawerCollapsingToolbarActivity<LibraryCompon
     }
 
     override fun onFabClick() {
-        navigationController.onNavigationSelected(
-            NavigationController.Location.PLAYER,
-            this,
-            Bundle().apply { putLong(NavigationParams.episodeIdParam, episodeId) }
-        )
+        viewModel.playEpisode(episodeId, this)
     }
 
     private fun displayEpisode(intent: Intent) {

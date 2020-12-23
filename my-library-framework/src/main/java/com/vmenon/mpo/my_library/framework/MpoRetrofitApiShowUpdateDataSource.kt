@@ -23,7 +23,7 @@ class MpoRetrofitApiShowUpdateDataSource(
                         description = episode.description,
                         artworkUrl = episode.artworkUrl,
                         downloadUrl = episode.downloadUrl,
-                        length = episode.length,
+                        lengthInSeconds = episode.length,
                         published = episode.published,
                         type = episode.type,
                         show = show

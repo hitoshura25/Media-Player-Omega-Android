@@ -40,8 +40,8 @@ class MyLibraryRepository(
     override suspend fun getEpisode(episodeId: Long): EpisodeModel =
         episodePersistenceDataSource.getEpisode(episodeId)
 
-    override suspend fun getShowsSubscribedAndLastUpdatedBefore(interval: Long): List<ShowModel>? =
-        showPersistenceDataSource.getSubscribedAndLastUpdatedBefore(interval)
+    override suspend fun getShowsSubscribedAndLastUpdatedBefore(comparisonTime: Long): List<ShowModel>? =
+        showPersistenceDataSource.getSubscribedAndLastUpdatedBefore(comparisonTime)
 
     override suspend fun getAllSubscribedShows(): List<ShowModel> =
         showPersistenceDataSource.getSubscribed()

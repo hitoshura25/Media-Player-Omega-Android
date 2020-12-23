@@ -27,6 +27,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':downloads-domain')
+    implementation project(':navigation-domain')
     api project(':my-library-data')
     api project(':my-library-framework')
     api project(':my-library-usecases')
@@ -34,7 +35,6 @@ dependencies {
     implementation project(':api-shows')
     implementation project(':model')
     implementation project(':view')
-    implementation project(':player')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"

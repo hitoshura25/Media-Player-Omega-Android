@@ -3,44 +3,52 @@ package com.vmenon.mpo.core.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import com.vmenon.mpo.navigation.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
 import com.vmenon.mpo.view.activity.HomeActivity
 import com.vmenon.mpo.library.view.activity.LibraryActivity
-import com.vmenon.mpo.navigation.NavigationController.Companion.EXTRA_NAVIGATION_BUNDLE
-import com.vmenon.mpo.navigation.NavigationController.Location
-import com.vmenon.mpo.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.navigation.domain.NavigationController.Location
+import com.vmenon.mpo.navigation.domain.NavigationView
+import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
+import java.io.Serializable
 
 class DefaultNavigationController : NavigationController {
     override fun onNavigationSelected(
         location: Location,
-        context: Context,
-        navigationBundle: Bundle?
+        navigationView: NavigationView,
+        navigationParams: Map<String, Any>?
     ) {
+        if (navigationView !is Context) {
+            throw IllegalArgumentException("navigationView needs to be a Context!")
+        }
         val intent = when (location) {
-            Location.PLAYER -> Intent(context, MediaPlayerActivity::class.java)
-            Location.DOWNLOADS -> Intent(context, DownloadsActivity::class.java)
-            Location.HOME -> Intent(context, HomeActivity::class.java)
-            Location.LIBRARY ->Intent(context, LibraryActivity::class.java)
+            Location.PLAYER -> Intent(navigationView, MediaPlayerActivity::class.java)
+            Location.DOWNLOADS -> Intent(navigationView, DownloadsActivity::class.java)
+            Location.HOME -> Intent(navigationView, HomeActivity::class.java)
+            Location.LIBRARY ->Intent(navigationView, LibraryActivity::class.java)
         }
 
-        startActivityForNavigation(intent, context, navigationBundle)
+        startActivityForNavigation(intent, navigationView, navigationParams)
     }
 
-    override fun getParams(activity: Activity): Bundle =
-        activity.intent.getBundleExtra(EXTRA_NAVIGATION_BUNDLE) ?: Bundle.EMPTY
+    @Suppress("UNCHECKED_CAST")
+    override fun getParams(navigationView: NavigationView): Map<String, Any>? =
+        (navigationView as Activity).intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as? Map<String, Any>
 
     private fun startActivityForNavigation(
         intent: Intent,
         context: Context,
-        navigationBundle: Bundle?
+        navigationParams: Map<String, Any>?
     ) {
-        navigationBundle?.let {
-            intent.putExtra(EXTRA_NAVIGATION_BUNDLE, it)
+        navigationParams?.let { params ->
+            intent.putExtra(EXTRA_NAVIGATION_BUNDLE, params as Serializable)
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    companion object {
+        const val EXTRA_NAVIGATION_BUNDLE = "extraNavigationBundle"
     }
 }

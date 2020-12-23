@@ -53,7 +53,7 @@ class RoomDownloadsPersistenceDataSource(private val downloadDao: DownloadDao) :
         name = episodeName,
         type = type,
         published = published,
-        length = length,
+        lengthInSeconds = length,
         downloadUrl = downloadUrl,
         filename = filename,
         show = show

@@ -12,23 +12,23 @@ import android.widget.PopupMenu
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.model.ShowSearchResultDetailsModel
-import com.vmenon.mpo.model.ShowSearchResultEpisodeModel
-import com.vmenon.mpo.model.ShowSearchResultModel
 import com.vmenon.mpo.search.R
+import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
+import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat
 
 import java.util.Date
 
 class EpisodesAdapter(
-    private val showDetails: com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
+    private val showDetails: ShowSearchResultDetailsModel
 ) : RecyclerView.Adapter<EpisodesAdapter.ViewHolder>() {
     private var listener: EpisodeSelectedListener? = null
 
     interface EpisodeSelectedListener {
-        fun onPlayEpisode(episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel)
-        fun onDownloadEpisode(episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel)
+        fun onPlayEpisode(episode: ShowSearchResultEpisodeModel)
+        fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -37,8 +37,8 @@ class EpisodesAdapter(
         val publishedText: TextView = v.episodeDate
         val thumbnailImage: ImageView = v.episodeImage
         val menuButton: ImageButton = v.episodeMenuButton
-        lateinit var episode: com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
-        lateinit var showDetails: com.vmenon.mpo.search.domain.ShowSearchResultModel
+        lateinit var episode: ShowSearchResultEpisodeModel
+        lateinit var showDetails: ShowSearchResultModel
     }
 
     fun setListener(listener: EpisodeSelectedListener) {

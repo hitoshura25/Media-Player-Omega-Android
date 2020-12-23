@@ -12,6 +12,8 @@ dependencies {
     api project(':common-domain')
     api project(':downloads-domain')
     api project(':my-library-domain')
+    api project(':navigation-domain')
+    api project(':player-domain')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation libraries.coroutines

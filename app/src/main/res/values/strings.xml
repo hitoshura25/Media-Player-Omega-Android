@@ -1,7 +1,3 @@
 <resources>
     <string name="app_name">Media Player Omega Android</string>
-
-    <!-- Notification Channel -->
-    <string name="notification_channel">MPO_Channel_ID</string>
-    <string name="notification_channel_description">Channel ID for MPO</string>
 </resources>

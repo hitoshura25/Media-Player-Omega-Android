@@ -11,7 +11,9 @@ class UpdateAllShows(
     private val downloadService: DownloadsService
 ) {
     suspend operator fun invoke() {
-        myLibraryService.getShowsSubscribedAndLastUpdatedBefore((1000 * 60 * 5).toLong())
+        val interval = 1000 * 60 * 5
+        val compareTime = Date().time - interval
+        myLibraryService.getShowsSubscribedAndLastUpdatedBefore(compareTime)
             ?.let { shows ->
                 fetchShowUpdatesAndQueueDownloads(shows)
             }

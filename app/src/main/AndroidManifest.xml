@@ -66,15 +66,14 @@
                 android:value="com.vmenon.mpo.library.view.activity.LibraryActivity" />
         </activity>
         
-        <activity android:name="com.vmenon.mpo.view.activity.MediaPlayerActivity"
+        <activity android:name="com.vmenon.mpo.player.view.activity.MediaPlayerActivity"
                   android:theme="@style/AppThemeNoActionBar"/>
 
-        <service android:name=".core.MPOMediaService">
+        <service android:name="com.vmenon.mpo.player.framework.MPOMediaService" >
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-
         <receiver android:name=".core.receiver.DownloadReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
