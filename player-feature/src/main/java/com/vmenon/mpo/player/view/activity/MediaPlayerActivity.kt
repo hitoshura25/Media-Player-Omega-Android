@@ -100,6 +100,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         super.onStart()
         viewModel.connectClient(this).observe(this, Observer { connected ->
             if (connected) {
+                updateMediaDisplay()
                 if (!fromNotification) {
                     requestedMediaId?.let {
                         viewModel.playMedia(it)

@@ -40,6 +40,7 @@ buildscript {
                 ],
                 lifeCycle_ktx: [
                         "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion",
+                        "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion",
                         "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
                 ]
         ]
