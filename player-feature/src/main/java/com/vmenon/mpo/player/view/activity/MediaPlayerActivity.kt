@@ -183,7 +183,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
 
     private fun updateDuration(playbackState: PlaybackState) {
         Log.d("MPO", "updateDuration called ")
-        val duration = playbackState.duration.toInt()
+        val duration = playbackState.durationInMillis.toInt()
         seekBar.max = duration
     }
 

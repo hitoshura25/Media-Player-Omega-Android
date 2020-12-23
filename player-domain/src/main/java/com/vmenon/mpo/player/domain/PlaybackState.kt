@@ -2,7 +2,7 @@ package com.vmenon.mpo.player.domain
 
 data class PlaybackState(
     val media: PlaybackMedia,
-    val duration: Long,
+    val durationInMillis: Long,
     val positionInMillis: Long,
     val state: State
 )

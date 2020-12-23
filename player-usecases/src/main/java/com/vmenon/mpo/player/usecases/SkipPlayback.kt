@@ -12,12 +12,12 @@ class SkipPlayback(private val playerEngine: PlayerEngine) {
                     var newPosition = playbackState.positionInMillis + amountMillis
                     if (newPosition < 0) {
                         newPosition = 0
-                    } else if (newPosition > playbackState.duration) {
+                    } else if (newPosition > playbackState.durationInMillis) {
                         // Grace period for too much skipping?
-                        if (playbackState.positionInMillis > playbackState.duration - MEDIA_SKIP_GRACE_PERIOD_MS) {
+                        if (playbackState.positionInMillis > playbackState.durationInMillis - MEDIA_SKIP_GRACE_PERIOD_MS) {
                             return
                         }
-                        newPosition = playbackState.duration - MEDIA_SKIP_GRACE_PERIOD_MS
+                        newPosition = playbackState.durationInMillis - MEDIA_SKIP_GRACE_PERIOD_MS
                     }
                     playerEngine.seekTo(newPosition)
                 }

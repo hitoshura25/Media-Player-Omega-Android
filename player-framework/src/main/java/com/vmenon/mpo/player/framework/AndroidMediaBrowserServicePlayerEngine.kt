@@ -115,7 +115,7 @@ class AndroidMediaBrowserServicePlayerEngine(
                         album = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM),
                         author = metadata.getString(MediaMetadataCompat.METADATA_KEY_AUTHOR)
                     ),
-                    duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION),
+                    durationInMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION),
                     positionInMillis = playbackState.position,
                     state = when (playbackState.state) {
                         PlaybackStateCompat.STATE_PLAYING -> State.PLAYING
