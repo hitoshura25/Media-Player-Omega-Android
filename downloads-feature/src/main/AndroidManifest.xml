@@ -1,2 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vmenon.mpo.downloads" />
+    package="com.vmenon.mpo.downloads">
+    <application>
+        <activity
+            android:name="com.vmenon.mpo.downloads.view.activity.DownloadsActivity"
+            android:label="@string/downloads"
+            android:theme="@style/AppThemeNoActionBar" />
+    </application>
+</manifest>
