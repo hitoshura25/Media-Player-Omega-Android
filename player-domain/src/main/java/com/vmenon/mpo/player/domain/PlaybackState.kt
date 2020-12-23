@@ -4,6 +4,7 @@ data class PlaybackState(
     val media: PlaybackMedia,
     val durationInMillis: Long,
     val positionInMillis: Long,
+    val playbackSpeed: Float,
     val state: State
 ) {
     enum class State {

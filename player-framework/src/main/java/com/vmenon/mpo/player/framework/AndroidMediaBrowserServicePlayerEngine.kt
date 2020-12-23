@@ -9,6 +9,11 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.domain.PlaybackState.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.coroutines.resume
@@ -18,13 +23,15 @@ class AndroidMediaBrowserServicePlayerEngine(
     private val context: Context,
     configuration: MPOMediaBrowserService.Configuration
 ) : PlayerEngine {
+    init {
+        MPOMediaBrowserService.configuration = configuration
+    }
+
     private var mediaBrowser: MediaBrowserCompat? = null
     private var mediaController: MediaControllerCompat? = null
     private var connected = false
 
-    init {
-        MPOMediaBrowserService.configuration = configuration
-    }
+    private val mainScope = MainScope()
 
     private suspend fun connectToSession(): Boolean =
         suspendCoroutine { cont ->
@@ -43,12 +50,14 @@ class AndroidMediaBrowserServicePlayerEngine(
             AndroidXMediaPlayerEngine@ this.mediaBrowser = mediaBrowser
         }
 
+    private val playbackStateFlow = MutableSharedFlow<PlaybackState>()
     private val controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-
+            mainScope.launch { sendPlaybackState() }
         }
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+            mainScope.launch { sendPlaybackState() }
         }
     }
 
@@ -64,6 +73,8 @@ class AndroidMediaBrowserServicePlayerEngine(
                 mediaController.registerCallback(controllerCallback)
                 this.mediaController = mediaController
             }
+            // Emit a PlaybackState in the event there were no metadata or playback state changes
+            sendPlaybackState()
         }
         return connected
     }
@@ -118,6 +129,7 @@ class AndroidMediaBrowserServicePlayerEngine(
                     ),
                     durationInMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION),
                     positionInMillis = playbackState.position,
+                    playbackSpeed = playbackState.playbackSpeed,
                     state = when (playbackState.state) {
                         PlaybackStateCompat.STATE_PLAYING -> State.PLAYING
                         PlaybackStateCompat.STATE_BUFFERING -> State.BUFFERING
@@ -133,4 +145,11 @@ class AndroidMediaBrowserServicePlayerEngine(
             }
             return null
         }
+
+    override val playbackState: Flow<PlaybackState>
+        get() = playbackStateFlow.asSharedFlow()
+
+    private suspend fun sendPlaybackState() {
+        getCurrentPlaybackState()?.let { playbackStateFlow.emit(it) }
+    }
 }
