@@ -28,9 +28,9 @@ class MediaPlayerViewModel : ViewModel() {
         }
     }
 
-    fun togglePlaybackState(requestedMedia: String?) {
+    fun togglePlaybackState() {
         viewModelScope.launch {
-            playerInteractors.togglePlaybackState(requestedMedia)
+            playerInteractors.togglePlaybackState()
         }
     }
 

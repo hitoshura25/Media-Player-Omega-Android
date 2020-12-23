@@ -22,7 +22,6 @@ import com.vmenon.mpo.player.domain.PlaybackMedia
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
 import com.vmenon.mpo.player.domain.State
-import com.vmenon.mpo.player.framework.util.MediaHelper
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
 import com.vmenon.mpo.view.activity.BaseActivity
 import kotlinx.android.synthetic.main.activity_media_player.*
@@ -63,7 +62,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         playOnStart = savedInstanceState == null
 
         actionButton.setOnClickListener {
-            viewModel.togglePlaybackState(requestedMediaId)
+            viewModel.togglePlaybackState()
         }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

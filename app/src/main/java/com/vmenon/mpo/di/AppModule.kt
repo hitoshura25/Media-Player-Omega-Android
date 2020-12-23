@@ -14,5 +14,5 @@ class AppModule(private val application: Application) {
     fun providesApplication(): Application = application
 
     @Provides
-    fun providesNavigationController(): com.vmenon.mpo.navigation.domain.NavigationController = DefaultNavigationController()
+    fun providesNavigationController(): NavigationController = DefaultNavigationController()
 }

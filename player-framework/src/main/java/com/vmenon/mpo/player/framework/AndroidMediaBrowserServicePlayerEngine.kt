@@ -13,7 +13,7 @@ import java.lang.IllegalStateException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class AndroidXMediaPlayerEngine(
+class AndroidMediaBrowserServicePlayerEngine(
     private val context: Context,
     private val serviceClass: Class<*>
 ) : PlayerEngine {
@@ -128,5 +128,4 @@ class AndroidXMediaPlayerEngine(
             }
             return null
         }
-
 }

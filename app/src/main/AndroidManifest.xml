@@ -69,7 +69,7 @@
         <activity android:name="com.vmenon.mpo.player.view.activity.MediaPlayerActivity"
                   android:theme="@style/AppThemeNoActionBar"/>
 
-        <service android:name="com.vmenon.mpo.player.framework.MPOMediaService" >
+        <service android:name="com.vmenon.mpo.player.framework.MPOMediaBrowserService" >
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>

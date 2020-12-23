@@ -1,4 +1,4 @@
-package com.vmenon.mpo.core
+package com.vmenon.mpo.player.framework
 
 import android.app.*
 import android.content.BroadcastReceiver
@@ -28,13 +28,13 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import com.vmenon.mpo.model.EpisodeModel
-import com.vmenon.mpo.MPOApplication
-import com.vmenon.mpo.R
+import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.player.MPOPlayer
-import com.vmenon.mpo.shows.repository.EpisodeRepository
-import com.vmenon.mpo.util.MediaHelper
-import com.vmenon.mpo.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.player.R
+import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
+import com.vmenon.mpo.player.framework.util.MediaHelper
+import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
 import kotlinx.coroutines.*
 
 import java.io.File
@@ -43,11 +43,11 @@ import java.util.ArrayList
 
 import javax.inject.Inject
 
-class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListener,
+class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListener,
     AudioManager.OnAudioFocusChangeListener {
 
     @Inject
-    lateinit var episodeRepository: EpisodeRepository
+    lateinit var myLibraryService: MyLibraryService
 
     @Inject
     lateinit var player: MPOPlayer
@@ -59,7 +59,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     private var serviceStarted = false
     private var notificationStarted = false
-    private var audioFocus = AUDIO_NO_FOCUS_NO_DUCK
+    private var audioFocus =
+        AUDIO_NO_FOCUS_NO_DUCK
     private var playbackState: Int = 0
     private var playOnFocusGain: Boolean = false
     private var audioNoisyReceiverRegistered: Boolean = false
@@ -73,7 +74,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
     private var nextIntent: PendingIntent? = null
     private var stopIntent: PendingIntent? = null
 
-    private val delayedStopHandler = DelayedStopHandler(this)
+    private val delayedStopHandler =
+        DelayedStopHandler(this)
     private val audioNoisyIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
 
     private val serviceJob = Job()
@@ -84,9 +86,13 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.action) {
                 Log.d(TAG, "Headphones disconnected.")
                 if (playOnFocusGain && player.isPlaying) {
-                    val i = Intent(context, MPOMediaService::class.java)
-                    i.action = ACTION_CMD
-                    i.putExtra(CMD_NAME, CMD_PAUSE)
+                    val i = Intent(context, MPOMediaBrowserService::class.java)
+                    i.action =
+                        ACTION_CMD
+                    i.putExtra(
+                        CMD_NAME,
+                        CMD_PAUSE
+                    )
                     startService(i)
                 }
             }
@@ -123,7 +129,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
     override fun onCreate() {
         super.onCreate()
-        (application as MPOApplication).appComponent.inject(this)
+        (application as PlayerComponentProvider).playerComponent().inject(this)
 
         playbackState = PlaybackStateCompat.STATE_NONE
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -131,23 +137,28 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val pkg = packageName
         pauseIntent = PendingIntent.getBroadcast(
-            this, NOTIFICATION_REQUEST_CODE,
+            this,
+            NOTIFICATION_REQUEST_CODE,
             Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
         )
         playIntent = PendingIntent.getBroadcast(
-            this, NOTIFICATION_REQUEST_CODE,
+            this,
+            NOTIFICATION_REQUEST_CODE,
             Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
         )
         previousIntent = PendingIntent.getBroadcast(
-            this, NOTIFICATION_REQUEST_CODE,
+            this,
+            NOTIFICATION_REQUEST_CODE,
             Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
         )
         nextIntent = PendingIntent.getBroadcast(
-            this, NOTIFICATION_REQUEST_CODE,
+            this,
+            NOTIFICATION_REQUEST_CODE,
             Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
         )
         stopIntent = PendingIntent.getBroadcast(
-            this, NOTIFICATION_REQUEST_CODE,
+            this,
+            NOTIFICATION_REQUEST_CODE,
             Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
         )
 
@@ -159,7 +170,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         /*wifiLock = ((WifiManager) service.getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");*/
 
-        mediaSession = MediaSessionCompat(this, TAG)
+        mediaSession = MediaSessionCompat(
+            this,
+            TAG
+        )
         stateBuilder = PlaybackStateCompat.Builder().setActions(
             PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_PAUSE
         )
@@ -169,7 +183,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         player.setListener(this)
 
         val context = applicationContext
-        val intent = Intent(context, MediaPlayerActivity::class.java)
+        val intent =
+            Intent(context, MediaPlayerActivity::class.java)
         val pi = PendingIntent.getActivity(
             context, 99 /*request code*/,
             intent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -262,7 +277,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         Log.d(TAG, "onAudioFocusChange. focusChange=$focusChange")
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
             // We have gained focus:
-            audioFocus = AUDIO_FOCUSED
+            audioFocus =
+                AUDIO_FOCUSED
 
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
             focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
@@ -299,7 +315,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             // The MusicService needs to keep running even after the calling MediaBrowser
             // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
             // need to play media.
-            startService(Intent(applicationContext, MPOMediaService::class.java))
+            startService(Intent(applicationContext, MPOMediaBrowserService::class.java))
             serviceStarted = true
         }
 
@@ -483,7 +499,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                 AudioManager.AUDIOFOCUS_GAIN
             )
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                audioFocus = AUDIO_FOCUSED
+                audioFocus =
+                    AUDIO_FOCUSED
             }
         }
     }
@@ -493,7 +510,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         if (audioFocus == AUDIO_FOCUSED) {
             @Suppress("DEPRECATION")
             if (audioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                audioFocus = AUDIO_NO_FOCUS_NO_DUCK
+                audioFocus =
+                    AUDIO_NO_FOCUS_NO_DUCK
             }
         }
     }
@@ -537,14 +555,17 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                 )
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, episode.show.name)
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, episode.show.author)
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, episode.length)
+                    .putLong(
+                        MediaMetadataCompat.METADATA_KEY_DURATION,
+                        episode.lengthInSeconds * 1000
+                    )
                     .putString(
                         MediaMetadataCompat.METADATA_KEY_GENRE,
                         TextUtils.join(" ", episode.show.genres)
                     )
                     .putString(
                         MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
-                        episode.show.artworkUrl
+                        episode.artworkUrl ?: episode.show.artworkUrl
                     )
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
                     .build()
@@ -566,7 +587,10 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
             createNotificationChannel()
         }
 
-        val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        val notificationBuilder = NotificationCompat.Builder(
+            this,
+            NOTIFICATION_CHANNEL_ID
+        )
 
         val playPauseButtonPosition = addNotificationActions(notificationBuilder)
         notificationBuilder
@@ -633,7 +657,8 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         )
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(
-            this, NOTIFICATION_REQUEST_CODE, openUI,
+            this,
+            NOTIFICATION_REQUEST_CODE, openUI,
             PendingIntent.FLAG_CANCEL_CURRENT
         )
     }
@@ -733,9 +758,7 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
                     currentMediaBitmap = null
 
                     serviceScope.launch {
-                        getEpisode(mediaType.id)?.let { episode ->
-                            playEpisode(mediaId, episode)
-                        }
+                        playEpisode(mediaId, getEpisode(mediaType.id))
                     }
 
                 } else {
@@ -762,11 +785,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
         }
 
         private suspend fun getEpisode(id: Long) =
-            withContext(Dispatchers.IO) { episodeRepository.getById(id) }
+            withContext(Dispatchers.IO) { myLibraryService.getEpisode(id) }
     }
 
-    class DelayedStopHandler(service: MPOMediaService) : Handler() {
-        private val weakRefService: WeakReference<MPOMediaService> = WeakReference(service)
+    class DelayedStopHandler(service: MPOMediaBrowserService) : Handler() {
+        private val weakRefService: WeakReference<MPOMediaBrowserService> = WeakReference(service)
 
         override fun handleMessage(msg: Message) {
             val service = weakRefService.get()
@@ -784,11 +807,11 @@ class MPOMediaService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListen
 
 
     private class ArtworkTarget(
-        service: MPOMediaService,
+        service: MPOMediaBrowserService,
         var artworkUrl: String,
         var notificationBuilder: NotificationCompat.Builder
     ) : SimpleTarget<Bitmap>(500, 500) {
-        var serviceRef: WeakReference<MPOMediaService> = WeakReference(service)
+        var serviceRef: WeakReference<MPOMediaBrowserService> = WeakReference(service)
 
         override fun onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation<in Bitmap>) {
             val service = serviceRef.get()
