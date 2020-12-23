@@ -9,7 +9,6 @@ java {
 }
 
 dependencies {
-    implementation project(':my-library-domain')
     implementation libraries.coroutines
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }
