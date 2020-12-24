@@ -53,7 +53,7 @@ class DefaultNavigationController : NavigationController {
     @Suppress("UNCHECKED_CAST")
     override fun <P : NavigationParams> getParams(navigationOrigin: NavigationOrigin<P>): P {
         if (navigationOrigin !is Activity) {
-            throw IllegalArgumentException("navigationSource needs to be an Activity!")
+            throw IllegalArgumentException("navigationOrigin needs to be an Activity!")
         }
         return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
     }
