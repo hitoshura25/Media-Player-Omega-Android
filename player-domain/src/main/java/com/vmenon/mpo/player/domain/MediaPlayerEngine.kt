@@ -2,7 +2,7 @@ package com.vmenon.mpo.player.domain
 
 import kotlinx.coroutines.flow.Flow
 
-interface PlayerEngine {
+interface MediaPlayerEngine {
     suspend fun connectClient(playerClient: PlayerClient): Boolean
     suspend fun play(mediaId: String)
     suspend fun resume()
@@ -12,5 +12,5 @@ interface PlayerEngine {
     suspend fun disconnectClient(playerClient: PlayerClient)
     suspend fun getCurrentPlaybackState(): PlaybackState?
 
-    val playbackState: Flow<PlaybackState>
+    val playbackStateChanges: Flow<PlaybackState>
 }

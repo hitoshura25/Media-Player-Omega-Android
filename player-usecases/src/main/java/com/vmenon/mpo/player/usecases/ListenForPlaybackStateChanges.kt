@@ -1,12 +1,12 @@
 package com.vmenon.mpo.player.usecases
 
 import com.vmenon.mpo.player.domain.PlaybackState
-import com.vmenon.mpo.player.domain.PlayerEngine
-import kotlinx.coroutines.delay
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.transformLatest
 
-class ListenForPlaybackStateChanges(private val playerEngine: PlayerEngine) {
-    private val estimatedPositionFlow = playerEngine.playbackState.transformLatest{ playbackState ->
+class ListenForPlaybackStateChanges(private val playerEngine: MediaPlayerEngine) {
+    operator fun invoke() = playerEngine.playbackStateChanges.transformLatest{ playbackState ->
         emit(playbackState)
         val comparisonTime = System.currentTimeMillis()
         delay(100) // Initial delay
@@ -23,6 +23,4 @@ class ListenForPlaybackStateChanges(private val playerEngine: PlayerEngine) {
             delay(1000L)
         }
     }
-
-    operator fun invoke() = estimatedPositionFlow
 }

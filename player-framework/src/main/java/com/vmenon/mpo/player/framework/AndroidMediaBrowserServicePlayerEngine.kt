@@ -22,7 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 class AndroidMediaBrowserServicePlayerEngine(
     private val context: Context,
     configuration: MPOMediaBrowserService.Configuration
-) : PlayerEngine {
+) : MediaPlayerEngine {
     init {
         MPOMediaBrowserService.configuration = configuration
     }
@@ -146,7 +146,7 @@ class AndroidMediaBrowserServicePlayerEngine(
             return null
         }
 
-    override val playbackState: Flow<PlaybackState>
+    override val playbackStateChanges: Flow<PlaybackState>
         get() = playbackStateFlow.asSharedFlow()
 
     private suspend fun sendPlaybackState() {

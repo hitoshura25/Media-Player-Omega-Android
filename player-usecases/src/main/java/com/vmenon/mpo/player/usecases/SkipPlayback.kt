@@ -1,9 +1,9 @@
 package com.vmenon.mpo.player.usecases
 
 import com.vmenon.mpo.player.domain.PlaybackState.*
-import com.vmenon.mpo.player.domain.PlayerEngine
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
 
-class SkipPlayback(private val playerEngine: PlayerEngine) {
+class SkipPlayback(private val playerEngine: MediaPlayerEngine) {
     suspend operator fun invoke(amountMillis: Long) {
         val playbackState = playerEngine.getCurrentPlaybackState()
         if (playbackState != null) {

@@ -9,7 +9,7 @@ import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.R
-import com.vmenon.mpo.player.domain.PlayerEngine
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
 import com.vmenon.mpo.player.domain.PlayerRequestMapper
 import com.vmenon.mpo.player.framework.exo.MPOExoPlayer
 import com.vmenon.mpo.player.framework.AndroidMediaBrowserServicePlayerEngine
@@ -29,7 +29,7 @@ class PlayerModule {
         MPOExoPlayer(application)
 
     @Provides
-    fun providePlayerInteractors(playerEngine: PlayerEngine): PlayerInteractors =
+    fun providePlayerInteractors(playerEngine: MediaPlayerEngine): PlayerInteractors =
         PlayerInteractors(
             ConnectPlayerClient(playerEngine),
             DisconnectPlayerClient(playerEngine),
@@ -50,7 +50,7 @@ class PlayerModule {
     fun providePlayerEngine(
         application: Application,
         configuration: MPOMediaBrowserService.Configuration
-    ): PlayerEngine = AndroidMediaBrowserServicePlayerEngine(application, configuration)
+    ): MediaPlayerEngine = AndroidMediaBrowserServicePlayerEngine(application, configuration)
 
     @Provides
     fun providesMPOMediaBrowserServiceConfiguration(

@@ -1,9 +1,9 @@
 package com.vmenon.mpo.player.usecases
 
-import com.vmenon.mpo.player.domain.PlayerEngine
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
 import com.vmenon.mpo.player.domain.PlaybackState.*
 
-class TogglePlaybackState(private val playerEngine: PlayerEngine) {
+class TogglePlaybackState(private val playerEngine: MediaPlayerEngine) {
     suspend operator fun invoke() {
         val playbackState = playerEngine.getCurrentPlaybackState()
         when (playbackState?.state) {
