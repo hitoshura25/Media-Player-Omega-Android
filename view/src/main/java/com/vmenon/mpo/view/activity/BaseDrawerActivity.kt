@@ -6,12 +6,17 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.widget.Toolbar
 import android.view.MenuItem
 import android.view.ViewGroup
-
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.navigation.domain.NavigationController.Location
+import com.vmenon.mpo.navigation.domain.NavigationParams
+
+import com.vmenon.mpo.navigation.domain.NavigationSource
+import com.vmenon.mpo.view.DrawerNavigationDestination
+import com.vmenon.mpo.view.DrawerNavigationParams
+import com.vmenon.mpo.view.DrawerNavigationRequest
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerActivity<COMPONENT: Any> : BaseActivity<COMPONENT>(), com.vmenon.mpo.navigation.domain.NavigationView {
+abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
+    BaseActivity<COMPONENT>(), NavigationSource<PARAMS> {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -44,11 +49,16 @@ abstract class BaseDrawerActivity<COMPONENT: Any> : BaseActivity<COMPONENT>(), c
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             val location = when (menuItem.itemId) {
-                R.id.nav_downloads -> Location.DOWNLOADS
-                R.id.nav_library -> Location.LIBRARY
-                else -> Location.HOME
+                R.id.nav_downloads -> DrawerNavigationDestination(R.id.nav_downloads)
+                R.id.nav_library -> DrawerNavigationDestination(R.id.nav_library)
+                else -> DrawerNavigationDestination(R.id.nav_home)
             }
-            navigationController.onNavigationSelected(location, this, null)
+            navigationController.onNavigationSelected(
+                DrawerNavigationRequest(
+                    location,
+                    DrawerNavigationParams()
+                ), this
+            )
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true

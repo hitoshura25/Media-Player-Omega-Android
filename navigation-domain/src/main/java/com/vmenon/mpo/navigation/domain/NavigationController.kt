@@ -1,18 +1,10 @@
 package com.vmenon.mpo.navigation.domain
 
 interface NavigationController {
-    enum class Location {
-        HOME,
-        LIBRARY,
-        DOWNLOADS,
-        PLAYER
-    }
-
     fun onNavigationSelected(
-        location: Location,
-        navigationView: NavigationView,
-        navigationParams: Map<String, Any>? = null
+        request: NavigationRequest<*, *>,
+        navigationSource: NavigationSource<*>
     )
 
-    fun getParams(navigationView: NavigationView): Map<String, Any>?
+    fun <P: NavigationParams> getParams(navigationSource: NavigationSource<P>): P
 }

@@ -16,10 +16,11 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_library.*
 
-class LibraryActivity : BaseDrawerActivity<LibraryComponent>(),
+class LibraryActivity : BaseDrawerActivity<LibraryComponent, NoNavigationParams>(),
     LibraryAdapter.LibrarySelectedListener {
     private val viewModel: LibraryViewModel by viewModel()
 

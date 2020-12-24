@@ -1,3 +1,4 @@
+include ':navigation-framework'
 include ':navigation-domain'
 include ':player-domain'
 include ':player-usecases'

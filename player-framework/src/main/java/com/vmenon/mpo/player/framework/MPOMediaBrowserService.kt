@@ -27,10 +27,9 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.player.R
-import com.vmenon.mpo.player.framework.util.MediaHelper
+import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import kotlinx.coroutines.*
 
 import java.io.File
@@ -44,7 +43,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         val myLibraryService: MyLibraryService,
         val player: MPOPlayer,
         val mediaPlayerActivity: Class<*>,
-        val notificationIntentProcessor: (Intent, MediaSessionCompat) -> Unit,
+        val notificationIntentProcessor: (Intent, PlaybackMediaRequest?) -> Unit,
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
@@ -60,7 +59,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     private var playbackState: Int = 0
     private var playOnFocusGain: Boolean = false
     private var audioNoisyReceiverRegistered: Boolean = false
-    private var requestedMediaId = ""
+    private var requestedMedia: PlaybackMediaRequest? = null
     private var currentMediaBitmap: Bitmap? = null
     private var placeholderMediaBitmap: Bitmap? = null
 
@@ -75,10 +74,6 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             this
         )
     private val audioNoisyIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-
-    private val serviceJob = Job()
-    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
-
     private val audioNoisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.action) {
@@ -215,7 +210,6 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         // and notify associated MediaController(s).
         mediaSession.release()
         configuration.player.setListener(null)
-        serviceJob.cancel()
     }
 
     override fun onGetRoot(
@@ -471,13 +465,14 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
                         "MPO",
                         "configMediaPlayerState startMediaPlayer. seeking to $currentPosition"
                     )
-                    playbackState = if (currentPosition == configuration.player.getCurrentPosition()) {
-                        configuration.player.play()
-                        PlaybackStateCompat.STATE_PLAYING
-                    } else {
-                        configuration.player.seekTo(currentPosition)
-                        PlaybackStateCompat.STATE_BUFFERING
-                    }
+                    playbackState =
+                        if (currentPosition == configuration.player.getCurrentPosition()) {
+                            configuration.player.play()
+                            PlaybackStateCompat.STATE_PLAYING
+                        } else {
+                            configuration.player.seekTo(currentPosition)
+                            PlaybackStateCompat.STATE_BUFFERING
+                        }
                 }
                 playOnFocusGain = false
             }
@@ -541,34 +536,34 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
     }
 
-    private fun playEpisode(mediaId: String, episode: EpisodeModel) {
-        if (requestedMediaId == mediaId) {
-            episode.filename?.let { filename ->
+    private fun playMedia(request: PlaybackMediaRequest) {
+        if (requestedMedia == request) {
+            request.mediaFile?.let { filename ->
                 val mediaFile = File(filename)
                 val metadata = MediaMetadataCompat.Builder().putString(
-                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId
+                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID, request.media.mediaId
                 )
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, episode.show.name)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, episode.show.author)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, request.media.album)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, request.media.author)
                     .putLong(
                         MediaMetadataCompat.METADATA_KEY_DURATION,
-                        episode.lengthInSeconds * 1000
+                        request.media.durationInMillis
                     )
                     .putString(
                         MediaMetadataCompat.METADATA_KEY_GENRE,
-                        TextUtils.join(" ", episode.show.genres)
+                        TextUtils.join(" ", request.media.genres ?: emptyList<String>())
                     )
                     .putString(
                         MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
-                        episode.artworkUrl ?: episode.show.artworkUrl
+                        request.media.artworkUrl
                     )
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, episode.name)
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, request.media.title)
                     .build()
                 handlePlayRequest(mediaFile)
                 mediaSession.setMetadata(metadata)
             }
         } else {
-            Log.w("MPO", "Cannot play incorrect media request: $mediaId")
+            Log.w("MPO", "Cannot play incorrect media request: ${request.media.mediaId}")
             return
         }
     }
@@ -645,7 +640,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     private fun createNotificationContentIntent(): PendingIntent {
         val openUI = Intent(this, configuration.mediaPlayerActivity)
-        configuration.notificationIntentProcessor(openUI, mediaSession)
+        configuration.notificationIntentProcessor(openUI, requestedMedia)
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(
             this,
@@ -737,25 +732,21 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-            if (requestedMediaId == mediaId && (playbackState == PlaybackStateCompat.STATE_PLAYING || playbackState == PlaybackStateCompat.STATE_BUFFERING)) {
+            val playbackMediaRequest =
+                extras?.getSerializable(PLAYBACK_MEDIA_REQUEST_EXTRA) as? PlaybackMediaRequest
+
+            if (requestedMedia == playbackMediaRequest &&
+                (playbackState == PlaybackStateCompat.STATE_PLAYING
+                        || playbackState == PlaybackStateCompat.STATE_BUFFERING)
+            ) {
                 updatePlaybackState(null)
                 return
             }
 
-            mediaId?.let {
-                val mediaType = MediaHelper.getMediaTypeFromMediaId(mediaId)
-                if (MediaHelper.MEDIA_TYPE_EPISODE == mediaType?.mediaType) {
-                    requestedMediaId = mediaId
-                    currentMediaBitmap = null
-
-                    serviceScope.launch {
-                        playEpisode(mediaId, getEpisode(mediaType.id))
-                    }
-
-                } else {
-                    Log.w("MPO", "Unable to determine how to play media id: $mediaId")
-                    return
-                }
+            playbackMediaRequest?.let { request ->
+                requestedMedia = request
+                currentMediaBitmap = null
+                playMedia(request)
             }
         }
 
@@ -820,6 +811,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
          * by the platform
          */
         lateinit var configuration: Configuration
+
+        const val PLAYBACK_MEDIA_REQUEST_EXTRA = "playbackMediaRequest"
 
         // The action of the incoming Intent indicating that it contains a command
         // to be executed (see {@link #onStartCommand})

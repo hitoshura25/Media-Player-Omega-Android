@@ -15,6 +15,7 @@ import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
+import com.vmenon.mpo.player.domain.PlayerNavigationDestination
 import com.vmenon.mpo.player.domain.PlayerRequestMapper
 import dagger.Module
 import dagger.Provides
@@ -50,13 +51,19 @@ class LibraryModule {
         myLibraryService: MyLibraryService,
         downloadService: DownloadsService,
         navigationController: NavigationController,
-        requestMapper: PlayerRequestMapper<EpisodeModel>
+        requestMapper: PlayerRequestMapper<EpisodeModel>,
+        playerNavigationDestination: PlayerNavigationDestination
     ): MyLibraryInteractors =
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
             GetEpisodeDetails(myLibraryService),
             UpdateAllShows(myLibraryService, downloadService),
             GetSubscribedShows(myLibraryService),
-            PlayEpisode(myLibraryService, requestMapper, navigationController)
+            PlayEpisode(
+                myLibraryService,
+                requestMapper,
+                navigationController,
+                playerNavigationDestination
+            )
         )
 }
