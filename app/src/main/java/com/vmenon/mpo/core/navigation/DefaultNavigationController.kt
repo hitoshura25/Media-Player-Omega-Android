@@ -18,7 +18,7 @@ class DefaultNavigationController : NavigationController {
         navigationOrigin: NavigationOrigin<*>
     ) {
         if (navigationOrigin !is Context) {
-            throw IllegalArgumentException("navigationView needs to be a Context!")
+            throw IllegalArgumentException("navigationOrigin needs to be a Context!")
         }
 
         if (request is DrawerNavigationRequest) {
