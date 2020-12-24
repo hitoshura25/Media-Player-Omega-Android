@@ -3,7 +3,7 @@ package com.vmenon.mpo.my_library.usecases
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.navigation.domain.NavigationController
-import com.vmenon.mpo.navigation.domain.NavigationSource
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.domain.PlayerNavigationDestination
 import com.vmenon.mpo.player.domain.PlayerNavigationParams
 import com.vmenon.mpo.player.domain.PlayerNavigationRequest
@@ -15,7 +15,7 @@ class PlayEpisode(
     private val navigationController: NavigationController,
     private val playerNavigationDestination: PlayerNavigationDestination
 ) {
-    suspend operator fun invoke(episodeId: Long, libraryView: NavigationSource<*>) {
+    suspend operator fun invoke(episodeId: Long, libraryView: NavigationOrigin<*>) {
         val episodeModel = myLibraryService.getEpisode(episodeId)
         navigationController.onNavigationSelected(
             PlayerNavigationRequest(

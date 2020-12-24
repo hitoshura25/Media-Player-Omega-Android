@@ -15,25 +15,25 @@ import java.io.Serializable
 class DefaultNavigationController : NavigationController {
     override fun onNavigationSelected(
         request: NavigationRequest<*, *>,
-        navigationSource: NavigationSource<*>
+        navigationOrigin: NavigationOrigin<*>
     ) {
-        if (navigationSource !is Context) {
+        if (navigationOrigin !is Context) {
             throw IllegalArgumentException("navigationView needs to be a Context!")
         }
 
         if (request is DrawerNavigationRequest) {
             when (request.destination.menuId) {
                 R.id.nav_downloads -> startActivityForNavigation(
-                    Intent(navigationSource, DownloadsActivity::class.java),
-                    navigationSource
+                    Intent(navigationOrigin, DownloadsActivity::class.java),
+                    navigationOrigin
                 )
                 R.id.nav_library -> startActivityForNavigation(
-                    Intent(navigationSource, LibraryActivity::class.java),
-                    navigationSource
+                    Intent(navigationOrigin, LibraryActivity::class.java),
+                    navigationOrigin
                 )
                 R.id.nav_home -> startActivityForNavigation(
-                    Intent(navigationSource, HomeActivity::class.java),
-                    navigationSource
+                    Intent(navigationOrigin, HomeActivity::class.java),
+                    navigationOrigin
                 )
             }
             return
@@ -44,18 +44,18 @@ class DefaultNavigationController : NavigationController {
         }
 
         val intent = Intent(
-            navigationSource,
+            navigationOrigin,
             (request.destination as ActivityDestination).activityClass
         )
-        startActivityForNavigation(intent, navigationSource, request.params)
+        startActivityForNavigation(intent, navigationOrigin, request.params)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <P : NavigationParams> getParams(navigationSource: NavigationSource<P>): P {
-        if (navigationSource !is Activity) {
+    override fun <P : NavigationParams> getParams(navigationOrigin: NavigationOrigin<P>): P {
+        if (navigationOrigin !is Activity) {
             throw IllegalArgumentException("navigationSource needs to be an Activity!")
         }
-        return navigationSource.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
+        return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
     }
 
     private fun startActivityForNavigation(

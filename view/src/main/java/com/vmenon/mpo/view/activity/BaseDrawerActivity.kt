@@ -9,14 +9,14 @@ import android.view.ViewGroup
 import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.navigation.domain.NavigationParams
 
-import com.vmenon.mpo.navigation.domain.NavigationSource
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.view.DrawerNavigationDestination
 import com.vmenon.mpo.view.DrawerNavigationParams
 import com.vmenon.mpo.view.DrawerNavigationRequest
 import com.vmenon.mpo.view.R
 
 abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
-    BaseActivity<COMPONENT>(), NavigationSource<PARAMS> {
+    BaseActivity<COMPONENT>(), NavigationOrigin<PARAMS> {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView

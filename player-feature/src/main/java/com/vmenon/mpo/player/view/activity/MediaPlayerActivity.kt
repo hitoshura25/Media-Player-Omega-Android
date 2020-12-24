@@ -11,7 +11,7 @@ import android.widget.SeekBar
 import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.navigation.domain.NavigationSource
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.player.R
@@ -29,7 +29,7 @@ const val REPLAY_DURATION_SECONDS = -10
 const val SKIP_DURATION_SECONDS = 30
 
 class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
-    VideoSizeListener, PlayerClient, NavigationSource<PlayerNavigationParams> {
+    VideoSizeListener, PlayerClient, NavigationOrigin<PlayerNavigationParams> {
     @Inject
     lateinit var player: MPOPlayer
 
