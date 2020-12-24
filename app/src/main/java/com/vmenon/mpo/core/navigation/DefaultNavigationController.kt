@@ -7,10 +7,10 @@ import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
 import com.vmenon.mpo.library.view.activity.LibraryActivity
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
+import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
 import com.vmenon.mpo.view.DrawerNavigationRequest
 import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.HomeActivity
-import java.io.Serializable
 
 class DefaultNavigationController : NavigationController {
     override fun onNavigationSelected(
@@ -39,15 +39,13 @@ class DefaultNavigationController : NavigationController {
             return
         }
 
-        if (request.destination !is ActivityDestination) {
+        val destination = request.destination
+        if (destination is ActivityDestination) {
+            val intent = destination.createIntent(navigationOrigin, request.params)
+            startActivityForNavigation(intent, navigationOrigin)
+        } else {
             throw IllegalArgumentException("request.destination needs to be an ActivityDestination!")
         }
-
-        val intent = Intent(
-            navigationOrigin,
-            (request.destination as ActivityDestination).activityClass
-        )
-        startActivityForNavigation(intent, navigationOrigin, request.params)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -58,20 +56,9 @@ class DefaultNavigationController : NavigationController {
         return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
     }
 
-    private fun startActivityForNavigation(
-        intent: Intent,
-        context: Context,
-        navigationParams: NavigationParams? = null
-    ) {
-        navigationParams?.let { params ->
-            intent.putExtra(EXTRA_NAVIGATION_BUNDLE, params as Serializable)
-        }
+    private fun startActivityForNavigation(intent: Intent, context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
-    }
-
-    companion object {
-        const val EXTRA_NAVIGATION_BUNDLE = "extraNavigationBundle"
     }
 }

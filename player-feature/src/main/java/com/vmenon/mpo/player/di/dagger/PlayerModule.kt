@@ -1,7 +1,6 @@
 package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
-import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
@@ -64,19 +63,12 @@ class PlayerModule {
     @Provides
     fun providesMPOMediaBrowserServiceConfiguration(
         application: Application,
-        myLibraryService: MyLibraryService,
         player: MPOPlayer
     ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
-        myLibraryService,
         player,
-        MediaPlayerActivity::class.java,
-        { intent: Intent, request: PlaybackMediaRequest? ->
-            request?.let {
-                intent.putExtra(
-                    MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
-                    request
-                )
-            }
+        { request: PlaybackMediaRequest? ->
+            val navigationDestination = MediaPlayerActivityDestination()
+            navigationDestination.createIntent(application, PlayerNavigationParams(request))
         },
         { builder ->
             builder.color = ContextCompat.getColor(application, R.color.colorPrimary)

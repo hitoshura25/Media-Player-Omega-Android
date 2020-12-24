@@ -30,7 +30,6 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
-import kotlinx.coroutines.*
 
 import java.io.File
 import java.lang.ref.WeakReference
@@ -40,10 +39,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     AudioManager.OnAudioFocusChangeListener {
 
     data class Configuration(
-        val myLibraryService: MyLibraryService,
         val player: MPOPlayer,
-        val mediaPlayerActivity: Class<*>,
-        val notificationIntentProcessor: (Intent, PlaybackMediaRequest?) -> Unit,
+        val playerUiIntentCreator: (PlaybackMediaRequest?) -> Intent,
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
@@ -174,7 +171,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         configuration.player.setListener(this)
 
         val context = applicationContext
-        val intent = Intent(context, configuration.mediaPlayerActivity)
+        val intent = configuration.playerUiIntentCreator(null)
         val pi = PendingIntent.getActivity(
             context, 99 /*request code*/,
             intent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -639,8 +636,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     }
 
     private fun createNotificationContentIntent(): PendingIntent {
-        val openUI = Intent(this, configuration.mediaPlayerActivity)
-        configuration.notificationIntentProcessor(openUI, requestedMedia)
+        val openUI = configuration.playerUiIntentCreator(requestedMedia)
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(
             this,
@@ -765,9 +761,6 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             }
             updatePlaybackState(null)
         }
-
-        private suspend fun getEpisode(id: Long) =
-            withContext(Dispatchers.IO) { configuration.myLibraryService.getEpisode(id) }
     }
 
     class DelayedStopHandler(service: MPOMediaBrowserService) : Handler() {

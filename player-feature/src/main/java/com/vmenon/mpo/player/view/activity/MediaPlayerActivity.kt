@@ -1,7 +1,6 @@
 package com.vmenon.mpo.player.view.activity
 
 import android.content.Context
-import android.content.Intent
 import android.os.*
 import android.text.format.DateUtils
 import android.util.Log
@@ -38,25 +37,19 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
     private var lastPlaybackState: PlaybackState? = null
 
     private var playOnStart = false
-    private var fromNotification = false
-    private lateinit var playbackMediaRequest: PlaybackMediaRequest
+    private var playbackMediaRequest: PlaybackMediaRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_player)
 
-        if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
-            fromNotification = true
-            playbackMediaRequest =
-                intent.getSerializableExtra(EXTRA_NOTIFICATION_MEDIA_ID) as PlaybackMediaRequest
-        } else {
-            playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
-        }
-
+        playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
         playOnStart = savedInstanceState == null
 
         actionButton.setOnClickListener {
-            viewModel.togglePlaybackState(playbackMediaRequest)
+            playbackMediaRequest?.let {
+                viewModel.togglePlaybackState(it)
+            }
         }
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -83,10 +76,8 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
 
         viewModel.connected.observe(this, Observer {
             updateMediaDisplay()
-            if (!fromNotification) {
-                playbackMediaRequest.let {
-                    viewModel.playMedia(it)
-                }
+            playbackMediaRequest?.let {
+                viewModel.playMedia(it)
             }
         })
         viewModel.playBackState.observe(this, Observer { playbackState ->
@@ -111,16 +102,6 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
     override fun onDestroy() {
         super.onDestroy()
         player.setVideoSizeListener(null)
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (intent.hasExtra(EXTRA_NOTIFICATION_MEDIA_ID)) {
-            fromNotification = true
-            playbackMediaRequest =
-                intent.getSerializableExtra(EXTRA_NOTIFICATION_MEDIA_ID) as PlaybackMediaRequest
-            intent.removeExtra(EXTRA_NOTIFICATION_MEDIA_ID)
-        }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
@@ -208,9 +189,5 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
     override fun inject(component: PlayerComponent) {
         component.inject(this)
         component.inject(viewModel)
-    }
-
-    companion object {
-        const val EXTRA_NOTIFICATION_MEDIA_ID = "extraNotificationMediaId"
     }
 }
