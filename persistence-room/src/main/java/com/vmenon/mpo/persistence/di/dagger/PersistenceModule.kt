@@ -2,41 +2,17 @@ package com.vmenon.mpo.persistence.di.dagger
 
 import android.app.Application
 import androidx.room.Room
-import com.vmenon.mpo.shows.persistence.EpisodePersistence
 import com.vmenon.mpo.persistence.room.*
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.search.persistence.ShowSearchPersistence
-import com.vmenon.mpo.shows.persistence.ShowPersistence
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
 class PersistenceModule {
-    @Provides
-    @Singleton
-    fun provideShowSearchPersistence(
-        showSearchResultDao: ShowSearchResultDao
-    ) : ShowSearchPersistence =
-        ShowSearchPersistenceRoom(showSearchResultDao)
-
-    @Provides
-    @Singleton
-    fun provideShowPersistence(showDao: ShowDao): ShowPersistence = ShowPersistenceRoom(showDao)
-
-    @Provides
-    @Singleton
-    fun provideEpisodePersistence(episodeDao: EpisodeDao): EpisodePersistence =
-        EpisodePersistenceRoom(episodeDao)
-
-    @Provides
-    @Singleton
-    fun provideDownloadPersistence(downloadDao: DownloadDao): com.vmenon.mpo.downloads.persistence.DownloadPersistence =
-        DownloadPersistenceRoom(downloadDao)
-
     @Provides
     @Singleton
     fun provideMPODatabase(application: Application): MPODatabase {

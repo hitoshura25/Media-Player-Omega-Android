@@ -1,0 +1,8 @@
+<resources>
+    <!-- Notification Channel -->
+    <string name="notification_channel">MPO_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for MPO</string>
+
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+</resources>

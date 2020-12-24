@@ -28,52 +28,6 @@
                 android:name="android.app.default_searchable"
                 android:value="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity" />
         </activity>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
-            android:theme="@style/AppThemeNoActionBar"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/show_searchable" />
-        </activity>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowDetailsActivity"
-            android:label=""
-            android:parentActivityName="com.vmenon.mpo.view.activity.HomeActivity"
-            android:theme="@style/AppThemeNoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmenon.mpo.view.activity.HomeActivity" />
-        </activity>
-        <activity
-            android:name="com.vmenon.mpo.downloads.view.activity.DownloadsActivity"
-            android:label="@string/downloads"
-            android:theme="@style/AppThemeNoActionBar" />
-        <activity
-            android:name="com.vmenon.mpo.library.view.activity.LibraryActivity"
-            android:label="@string/library"
-            android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name="com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity"
-                  android:theme="@style/AppThemeNoActionBar"
-                  android:parentActivityName="com.vmenon.mpo.library.view.activity.LibraryActivity"
-                  android:label="">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmenon.mpo.library.view.activity.LibraryActivity" />
-        </activity>
-        
-        <activity android:name="com.vmenon.mpo.view.activity.MediaPlayerActivity"
-                  android:theme="@style/AppThemeNoActionBar"/>
-
-        <service android:name=".core.MPOMediaService">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
 
         <receiver android:name=".core.receiver.DownloadReceiver">
             <intent-filter>

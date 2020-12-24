@@ -33,5 +33,5 @@ abstract class EpisodeDao :
         WHERE episode.episodeId = :id
         """
     )
-    abstract suspend fun getWithShowDetailsById(id: Long): EpisodeWithShowDetailsEntity?
+    abstract suspend fun getWithShowDetailsById(id: Long): EpisodeWithShowDetailsEntity
 }

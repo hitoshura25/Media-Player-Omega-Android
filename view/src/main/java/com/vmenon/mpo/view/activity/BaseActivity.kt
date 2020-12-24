@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.vmenon.mpo.navigation.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationController
 
 import javax.inject.Inject
 
