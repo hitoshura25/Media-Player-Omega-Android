@@ -9,6 +9,7 @@ java {
 }
 
 dependencies {
+    implementation project(':navigation-domain')
     implementation libraries.coroutines
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }

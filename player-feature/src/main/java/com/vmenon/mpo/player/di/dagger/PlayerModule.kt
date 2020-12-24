@@ -1,20 +1,16 @@
 package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
-import android.content.Intent
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
+import com.vmenon.mpo.player.MediaPlayerActivityDestination
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.R
-import com.vmenon.mpo.player.domain.MediaPlayerEngine
-import com.vmenon.mpo.player.domain.PlayerRequestMapper
+import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.framework.exo.MPOExoPlayer
 import com.vmenon.mpo.player.framework.AndroidMediaBrowserServicePlayerEngine
 import com.vmenon.mpo.player.framework.MPOMediaBrowserService
-import com.vmenon.mpo.player.framework.util.MediaHelper
 import com.vmenon.mpo.player.usecases.*
 import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
 import dagger.Module
@@ -43,7 +39,19 @@ class PlayerModule {
     @Provides
     fun provideEpisodeRequestMapper(): PlayerRequestMapper<EpisodeModel> =
         object : PlayerRequestMapper<EpisodeModel> {
-            override fun createMediaId(item: EpisodeModel): String = MediaHelper.createMediaId(item)
+            override fun createMediaId(item: EpisodeModel): PlaybackMediaRequest =
+                PlaybackMediaRequest(
+                    PlaybackMedia(
+                        mediaId = "episode:${item.id}",
+                        author = item.show.author,
+                        album = item.show.name,
+                        title = item.name,
+                        artworkUrl = item.artworkUrl ?: item.show.artworkUrl,
+                        genres = item.show.genres,
+                        durationInMillis = item.lengthInSeconds * 1000
+                    ),
+                    item.filename
+                )
         }
 
     @Provides
@@ -55,21 +63,18 @@ class PlayerModule {
     @Provides
     fun providesMPOMediaBrowserServiceConfiguration(
         application: Application,
-        myLibraryService: MyLibraryService,
         player: MPOPlayer
     ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
-        myLibraryService,
         player,
-        MediaPlayerActivity::class.java,
-        { intent: Intent, mediaSession: MediaSessionCompat ->
-            intent.putExtra(
-                MediaPlayerActivity.EXTRA_NOTIFICATION_MEDIA_ID,
-                mediaSession.controller.metadata?.getString(
-                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-                )
-            )
+        { request: PlaybackMediaRequest? ->
+            val navigationDestination = MediaPlayerActivityDestination()
+            navigationDestination.createIntent(application, PlayerNavigationParams(request))
         },
         { builder ->
             builder.color = ContextCompat.getColor(application, R.color.colorPrimary)
         })
+
+    @Provides
+    fun providePlayerNavigationDestination(): PlayerNavigationDestination =
+        MediaPlayerActivityDestination()
 }

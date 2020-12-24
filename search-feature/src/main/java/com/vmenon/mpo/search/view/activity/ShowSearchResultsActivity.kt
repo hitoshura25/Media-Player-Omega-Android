@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
@@ -26,7 +27,7 @@ import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 import kotlinx.coroutines.launch
 
-class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent>(),
+class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent, NoNavigationParams>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 

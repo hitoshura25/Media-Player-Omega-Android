@@ -3,52 +3,62 @@ package com.vmenon.mpo.core.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
-import com.vmenon.mpo.view.activity.HomeActivity
 import com.vmenon.mpo.library.view.activity.LibraryActivity
-import com.vmenon.mpo.navigation.domain.NavigationController.Location
-import com.vmenon.mpo.navigation.domain.NavigationView
-import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
-import java.io.Serializable
+import com.vmenon.mpo.navigation.domain.*
+import com.vmenon.mpo.navigation.framework.ActivityDestination
+import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
+import com.vmenon.mpo.view.DrawerNavigationRequest
+import com.vmenon.mpo.view.R
+import com.vmenon.mpo.view.activity.HomeActivity
 
 class DefaultNavigationController : NavigationController {
     override fun onNavigationSelected(
-        location: Location,
-        navigationView: NavigationView,
-        navigationParams: Map<String, Any>?
+        request: NavigationRequest<*, *>,
+        navigationOrigin: NavigationOrigin<*>
     ) {
-        if (navigationView !is Context) {
-            throw IllegalArgumentException("navigationView needs to be a Context!")
-        }
-        val intent = when (location) {
-            Location.PLAYER -> Intent(navigationView, MediaPlayerActivity::class.java)
-            Location.DOWNLOADS -> Intent(navigationView, DownloadsActivity::class.java)
-            Location.HOME -> Intent(navigationView, HomeActivity::class.java)
-            Location.LIBRARY ->Intent(navigationView, LibraryActivity::class.java)
+        if (navigationOrigin !is Context) {
+            throw IllegalArgumentException("navigationOrigin needs to be a Context!")
         }
 
-        startActivityForNavigation(intent, navigationView, navigationParams)
+        if (request is DrawerNavigationRequest) {
+            when (request.destination.menuId) {
+                R.id.nav_downloads -> startActivityForNavigation(
+                    Intent(navigationOrigin, DownloadsActivity::class.java),
+                    navigationOrigin
+                )
+                R.id.nav_library -> startActivityForNavigation(
+                    Intent(navigationOrigin, LibraryActivity::class.java),
+                    navigationOrigin
+                )
+                R.id.nav_home -> startActivityForNavigation(
+                    Intent(navigationOrigin, HomeActivity::class.java),
+                    navigationOrigin
+                )
+            }
+            return
+        }
+
+        val destination = request.destination
+        if (destination is ActivityDestination) {
+            val intent = destination.createIntent(navigationOrigin, request.params)
+            startActivityForNavigation(intent, navigationOrigin)
+        } else {
+            throw IllegalArgumentException("request.destination needs to be an ActivityDestination!")
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun getParams(navigationView: NavigationView): Map<String, Any>? =
-        (navigationView as Activity).intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as? Map<String, Any>
-
-    private fun startActivityForNavigation(
-        intent: Intent,
-        context: Context,
-        navigationParams: Map<String, Any>?
-    ) {
-        navigationParams?.let { params ->
-            intent.putExtra(EXTRA_NAVIGATION_BUNDLE, params as Serializable)
+    override fun <P : NavigationParams> getParams(navigationOrigin: NavigationOrigin<P>): P {
+        if (navigationOrigin !is Activity) {
+            throw IllegalArgumentException("navigationOrigin needs to be an Activity!")
         }
+        return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
+    }
+
+    private fun startActivityForNavigation(intent: Intent, context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
-    }
-
-    companion object {
-        const val EXTRA_NAVIGATION_BUNDLE = "extraNavigationBundle"
     }
 }

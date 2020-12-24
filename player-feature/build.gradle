@@ -39,6 +39,7 @@ dependencies {
     implementation project(':view')
     implementation project(':my-library-domain')
     implementation project(':navigation-domain')
+    implementation project(':navigation-framework')
     implementation project(':player-domain')
     api project(':player-usecases')
 

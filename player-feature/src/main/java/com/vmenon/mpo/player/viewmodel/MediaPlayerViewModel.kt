@@ -1,6 +1,7 @@
 package com.vmenon.mpo.player.viewmodel
 
 import androidx.lifecycle.*
+import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
 import com.vmenon.mpo.player.usecases.PlayerInteractors
@@ -31,9 +32,9 @@ class MediaPlayerViewModel : ViewModel() {
         }
     }
 
-    fun togglePlaybackState() {
+    fun togglePlaybackState(requestedMedia: PlaybackMediaRequest) {
         viewModelScope.launch {
-            playerInteractors.togglePlaybackState()
+            playerInteractors.togglePlaybackState(requestedMedia)
         }
     }
 
@@ -43,7 +44,7 @@ class MediaPlayerViewModel : ViewModel() {
         }
     }
 
-    fun playMedia(requestedMedia: String) {
+    fun playMedia(requestedMedia: PlaybackMediaRequest) {
         viewModelScope.launch {
             playerInteractors.playMedia(requestedMedia)
         }

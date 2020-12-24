@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MediaPlayerEngine {
     suspend fun connectClient(playerClient: PlayerClient): Boolean
-    suspend fun play(mediaId: String)
+    suspend fun play(request: PlaybackMediaRequest)
     suspend fun resume()
     suspend fun pause()
     suspend fun stop()

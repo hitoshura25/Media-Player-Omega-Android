@@ -3,6 +3,7 @@ package com.vmenon.mpo.player.framework
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
@@ -79,12 +80,14 @@ class AndroidMediaBrowserServicePlayerEngine(
         return connected
     }
 
-    override suspend fun play(mediaId: String) {
+    override suspend fun play(request: PlaybackMediaRequest) {
         if (!connected) {
             throw IllegalStateException("Cannot play media before connected")
         }
 
-        mediaController?.transportControls?.playFromMediaId(mediaId, null)
+        val bundle = Bundle()
+        bundle.putSerializable(MPOMediaBrowserService.PLAYBACK_MEDIA_REQUEST_EXTRA, request)
+        mediaController?.transportControls?.playFromMediaId(request.media.mediaId, bundle)
     }
 
     override suspend fun resume() {
@@ -125,9 +128,9 @@ class AndroidMediaBrowserServicePlayerEngine(
                         artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
                         title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
                         album = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM),
-                        author = metadata.getString(MediaMetadataCompat.METADATA_KEY_AUTHOR)
+                        author = metadata.getString(MediaMetadataCompat.METADATA_KEY_AUTHOR),
+                        durationInMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
                     ),
-                    durationInMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION),
                     positionInMillis = playbackState.position,
                     playbackSpeed = playbackState.playbackSpeed,
                     state = when (playbackState.state) {

@@ -6,10 +6,11 @@ import android.view.ViewStub
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.vmenon.mpo.navigation.domain.NavigationParams
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerCollapsingToolbarActivity<COMPONENT : Any> :
-    BaseDrawerActivity<COMPONENT>(), AppBarLayout.OnOffsetChangedListener {
+abstract class BaseDrawerCollapsingToolbarActivity<COMPONENT : Any, PARAMS: NavigationParams> :
+    BaseDrawerActivity<COMPONENT, PARAMS>(), AppBarLayout.OnOffsetChangedListener {
 
     private lateinit var fab: FloatingActionButton
     private lateinit var collapsingToolbar: CollapsingToolbarLayout

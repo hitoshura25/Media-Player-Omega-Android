@@ -15,9 +15,10 @@ import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
 import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import kotlinx.android.synthetic.main.activity_downloads.*
 
-class DownloadsActivity : BaseDrawerActivity<DownloadsComponent>() {
+class DownloadsActivity : BaseDrawerActivity<DownloadsComponent, NoNavigationParams>() {
     private val viewModel: DownloadsViewModel by viewModel()
 
     override val layoutResourceId: Int

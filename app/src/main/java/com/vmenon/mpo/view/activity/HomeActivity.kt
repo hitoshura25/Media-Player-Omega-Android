@@ -9,8 +9,9 @@ import com.vmenon.mpo.MPOApplication
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.di.ActivityComponent
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 
-class HomeActivity : BaseDrawerActivity<ActivityComponent>() {
+class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>() {
     override val layoutResourceId: Int
         get() = R.layout.activity_main
 
