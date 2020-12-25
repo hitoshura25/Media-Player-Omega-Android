@@ -50,7 +50,7 @@ class EpisodeDetailsActivity :
         get() = R.layout.activity_episode_details
 
     override val navMenuId: Int
-        get() = R.id.nav_library
+        get() = R.id.nav_home // TODO: Fix
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

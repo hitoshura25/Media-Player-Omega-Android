@@ -15,7 +15,7 @@ class LibraryActivity : BaseDrawerActivity<LibraryComponent, NoNavigationParams>
         get() = R.layout.activity_library
 
     override val navMenuId: Int
-        get() = R.id.nav_library
+        get() = R.id.nav_home // TODO: Remove
 
     override val isRootActivity: Boolean
         get() = true

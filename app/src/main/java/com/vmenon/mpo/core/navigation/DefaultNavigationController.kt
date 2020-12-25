@@ -3,8 +3,6 @@ package com.vmenon.mpo.core.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
-import com.vmenon.mpo.library.view.activity.LibraryActivity
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
@@ -23,14 +21,6 @@ class DefaultNavigationController : NavigationController {
 
         if (request is DrawerNavigationRequest) {
             when (request.destination.menuId) {
-                R.id.nav_downloads -> startActivityForNavigation(
-                    Intent(navigationOrigin, DownloadsActivity::class.java),
-                    navigationOrigin
-                )
-                R.id.nav_library -> startActivityForNavigation(
-                    Intent(navigationOrigin, LibraryActivity::class.java),
-                    navigationOrigin
-                )
                 R.id.nav_home -> startActivityForNavigation(
                     Intent(navigationOrigin, HomeActivity::class.java),
                     navigationOrigin

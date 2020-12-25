@@ -49,8 +49,6 @@ abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             val location = when (menuItem.itemId) {
-                R.id.nav_downloads -> DrawerNavigationDestination(R.id.nav_downloads)
-                R.id.nav_library -> DrawerNavigationDestination(R.id.nav_library)
                 else -> DrawerNavigationDestination(R.id.nav_home)
             }
             navigationController.onNavigationSelected(
