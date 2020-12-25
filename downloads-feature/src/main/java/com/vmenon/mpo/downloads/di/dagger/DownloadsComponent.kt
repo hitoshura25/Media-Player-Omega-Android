@@ -1,6 +1,7 @@
 package com.vmenon.mpo.downloads.di.dagger
 
 import com.vmenon.mpo.downloads.view.activity.DownloadsActivity
+import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import dagger.Subcomponent
 
@@ -12,5 +13,6 @@ interface DownloadsComponent {
     }
 
     fun inject(activity: DownloadsActivity)
+    fun inject(fragment: DownloadsFragment)
     fun inject(viewModel: DownloadsViewModel)
 }
