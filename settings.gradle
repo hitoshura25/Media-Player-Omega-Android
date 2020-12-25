@@ -1,3 +1,4 @@
+include ':common-converters'
 include ':navigation-framework'
 include ':navigation-domain'
 include ':player-domain'

@@ -39,7 +39,7 @@ class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val download = downloads[position]
         holder.download = download
-        holder.nameText.text = download.download.episode.name
+        holder.nameText.text = download.download.name
 
         var progress: Double =
             if (download.total == 0) 0.0
@@ -49,7 +49,7 @@ class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
         holder.progressText.text = "${progress.roundToLong()}%"
 
         Glide.with(holder.itemView.context)
-            .load(download.download.episode.artworkUrl ?: download.download.episode.show.artworkUrl)
+            .load(download.download.imageUrl)
             .centerCrop()
             .crossFade()
             .into(holder.imageView)

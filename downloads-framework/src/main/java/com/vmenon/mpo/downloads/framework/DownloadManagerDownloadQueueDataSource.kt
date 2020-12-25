@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import com.vmenon.mpo.downloads.data.DownloadQueueItem
 import com.vmenon.mpo.downloads.data.DownloadsQueueDataSource
-import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.downloads.domain.DownloadRequest
 
 class DownloadManagerDownloadQueueDataSource(
     context: Context
@@ -38,9 +38,9 @@ class DownloadManagerDownloadQueueDataSource(
         return downloadQueueItems
     }
 
-    override suspend fun queueDownloadAndGetQueueId(episode: EpisodeModel): Long =
+    override suspend fun queueDownloadAndGetQueueId(downloadRequest: DownloadRequest): Long =
         downloadManager.enqueue(
-            DownloadManager.Request(Uri.parse(episode.downloadUrl))
-                .setTitle(episode.name)
+            DownloadManager.Request(Uri.parse(downloadRequest.downloadUrl))
+                .setTitle(downloadRequest.name)
         )
 }

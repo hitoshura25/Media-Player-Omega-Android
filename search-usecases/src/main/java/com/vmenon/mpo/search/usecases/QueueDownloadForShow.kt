@@ -1,6 +1,9 @@
 package com.vmenon.mpo.search.usecases
 
+import com.vmenon.mpo.common.converters.toDownloadRequest
 import com.vmenon.mpo.downloads.domain.DownloadModel
+import com.vmenon.mpo.downloads.domain.DownloadRequest
+import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
@@ -44,6 +47,6 @@ class QueueDownloadForShow(
                     filename = null
                 )
             )
-        return downloadsService.queueDownload(savedEpisode)
+        return downloadsService.queueDownload(savedEpisode.toDownloadRequest())
     }
 }

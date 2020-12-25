@@ -1,5 +1,7 @@
 package com.vmenon.mpo.search.usecases
 
+import com.vmenon.mpo.common.converters.toDownloadRequest
+import com.vmenon.mpo.downloads.domain.DownloadRequest
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.my_library.domain.ShowModel
@@ -15,11 +17,11 @@ class SubscribeToShow(
         val showUpdate = myLibraryService.getShowUpdate(addedShow)
         if (showUpdate != null) {
             val savedEpisode = myLibraryService.saveEpisode(showUpdate.newEpisode)
-            val savedDownload = downloadsService.queueDownload(savedEpisode)
+            downloadsService.queueDownload(savedEpisode.toDownloadRequest())
             myLibraryService.saveShow(
-                savedDownload.episode.show.copy(
+                savedEpisode.show.copy(
                     lastUpdate = Date().time,
-                    lastEpisodePublished = savedDownload.episode.published
+                    lastEpisodePublished = savedEpisode.published
                 )
             )
         }

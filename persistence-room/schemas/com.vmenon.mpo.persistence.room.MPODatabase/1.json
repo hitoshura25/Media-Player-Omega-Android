@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "643c04d0b526c1f003ec184aa7d2e681",
+    "identityHash": "7bdf9fd5a91c6e916b2ea4e976ad7a00",
     "entities": [
       {
         "tableName": "show",
@@ -328,7 +328,7 @@
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeId` INTEGER NOT NULL, `downloadManagerId` INTEGER NOT NULL, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`episodeId`) REFERENCES `episode`(`episodeId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `requesterId` INTEGER NOT NULL, `downloadRequestType` TEXT NOT NULL, `downloadQueueId` INTEGER NOT NULL, `downloadUrl` TEXT NOT NULL, `name` TEXT NOT NULL, `imageUrl` TEXT)",
         "fields": [
           {
             "fieldPath": "downloadId",
@@ -337,22 +337,40 @@
             "notNull": true
           },
           {
-            "fieldPath": "showId",
-            "columnName": "showId",
+            "fieldPath": "requesterId",
+            "columnName": "requesterId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "episodeId",
-            "columnName": "episodeId",
+            "fieldPath": "downloadRequestType",
+            "columnName": "downloadRequestType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "downloadQueueId",
+            "columnName": "downloadQueueId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "details.downloadManagerId",
-            "columnName": "downloadManagerId",
-            "affinity": "INTEGER",
+            "fieldPath": "downloadUrl",
+            "columnName": "downloadUrl",
+            "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -361,54 +379,14 @@
           ],
           "autoGenerate": true
         },
-        "indices": [
-          {
-            "name": "index_downloads_showId",
-            "unique": false,
-            "columnNames": [
-              "showId"
-            ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_showId` ON `${TABLE_NAME}` (`showId`)"
-          },
-          {
-            "name": "index_downloads_episodeId",
-            "unique": false,
-            "columnNames": [
-              "episodeId"
-            ],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_downloads_episodeId` ON `${TABLE_NAME}` (`episodeId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "show",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "showId"
-            ],
-            "referencedColumns": [
-              "showId"
-            ]
-          },
-          {
-            "table": "episode",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "episodeId"
-            ],
-            "referencedColumns": [
-              "episodeId"
-            ]
-          }
-        ]
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643c04d0b526c1f003ec184aa7d2e681')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7bdf9fd5a91c6e916b2ea4e976ad7a00')"
     ]
   }
 }

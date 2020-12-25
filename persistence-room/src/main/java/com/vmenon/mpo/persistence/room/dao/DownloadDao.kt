@@ -3,29 +3,24 @@ package com.vmenon.mpo.persistence.room.dao
 import androidx.room.*
 import com.vmenon.mpo.persistence.room.base.dao.BaseDao
 import com.vmenon.mpo.persistence.room.entity.DownloadEntity
-import com.vmenon.mpo.persistence.room.entity.DownloadWithShowAndEpisodeDetailsEntity
 
 @Dao
 abstract class DownloadDao :
     BaseDao<DownloadEntity> {
     @Query(
         """
-        SELECT * from downloads 
-        INNER JOIN episode on downloads.episodeId = episode.episodeId
-        INNER JOIN show on downloads.showId = show.showId
-        WHERE downloadManagerId = :id
+        SELECT * from downloads
+        WHERE downloadQueueId = :id
         """
     )
-    abstract suspend fun getWithShowAndEpisodeDetailsByDownloadManagerId(id: Long): DownloadWithShowAndEpisodeDetailsEntity
+    abstract suspend fun getByDownloadManagerId(id: Long): DownloadEntity
 
     @Query(
         """
-        SELECT * from downloads 
-        INNER JOIN episode on downloads.episodeId = episode.episodeId
-        INNER JOIN show on downloads.showId = show.showId
+        SELECT * from downloads
         """
     )
-    abstract suspend fun getAllWithShowAndEpisodeDetails(): List<DownloadWithShowAndEpisodeDetailsEntity>
+    abstract suspend fun getAll(): List<DownloadEntity>
 
     @Query("DELETE FROM downloads WHERE downloadId = :id")
     abstract suspend fun delete(id: Long)

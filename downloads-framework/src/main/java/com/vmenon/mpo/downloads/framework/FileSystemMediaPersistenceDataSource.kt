@@ -20,14 +20,14 @@ class FileSystemMediaPersistenceDataSource(context: Context) : MediaPersistenceD
     override suspend fun storeMediaAndGetPath(download: DownloadModel): String =
         withContext(Dispatchers.IO) {
             val filename = URLUtil.guessFileName(
-                download.episode.downloadUrl,
+                download.downloadUrl,
                 null,
                 null
             )
-            val showDir = File(filesDir, download.episode.show.name)
+            val showDir = File(filesDir, download.name)
             showDir.mkdir()
             val episodeFile = File(showDir, filename)
-            downloadManager.openDownloadedFile(download.downloadManagerId).writeToFile(episodeFile)
+            downloadManager.openDownloadedFile(download.downloadQueueId).writeToFile(episodeFile)
             episodeFile.path
         }
 }

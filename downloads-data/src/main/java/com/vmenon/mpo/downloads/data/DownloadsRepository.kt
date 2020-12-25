@@ -1,21 +1,21 @@
 package com.vmenon.mpo.downloads.data
 
-import com.vmenon.mpo.downloads.domain.CompletedDownloadModel
-import com.vmenon.mpo.downloads.domain.DownloadModel
-import com.vmenon.mpo.downloads.domain.DownloadsService
-import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
-import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.downloads.domain.*
 
 class DownloadsRepository(
     private val queueDataSource: DownloadsQueueDataSource,
     private val persistenceDataSource: DownloadsPersistenceDataSource,
     private val mediaPersistenceDataSource: MediaPersistenceDataSource
-): DownloadsService {
-    override suspend fun queueDownload(episode: EpisodeModel): DownloadModel {
-        val queueId = queueDataSource.queueDownloadAndGetQueueId(episode)
+) : DownloadsService {
+    override suspend fun queueDownload(downloadRequest: DownloadRequest): DownloadModel {
+        val queueId = queueDataSource.queueDownloadAndGetQueueId(downloadRequest)
         val download = DownloadModel(
-            episode = episode,
-            downloadManagerId = queueId
+            name = downloadRequest.name,
+            downloadUrl = downloadRequest.downloadUrl,
+            downloadQueueId = queueId,
+            requesterId = downloadRequest.requesterId,
+            downloadRequestType = downloadRequest.downloadRequestType,
+            imageUrl = downloadRequest.imageUrl
         )
         return persistenceDataSource.insertOrUpdate(download)
     }
@@ -24,7 +24,7 @@ class DownloadsRepository(
         val savedDownloads = persistenceDataSource.getAll()
         val downloadListItems = ArrayList<QueuedDownloadModel>()
         val savedDownloadMap = savedDownloads.map {
-            it.downloadManagerId to it
+            it.downloadQueueId to it
         }.toMap()
         val downloadManagerIds = savedDownloadMap.keys
         val downloadQueueItems = queueDataSource.getAllQueued(downloadManagerIds)

@@ -15,6 +15,8 @@ dependencies {
     api project(':navigation-domain')
     api project(':player-domain')
 
+    implementation project(':common-converters')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation libraries.coroutines
 }
