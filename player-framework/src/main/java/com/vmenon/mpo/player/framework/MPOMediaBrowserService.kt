@@ -27,7 +27,6 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 
