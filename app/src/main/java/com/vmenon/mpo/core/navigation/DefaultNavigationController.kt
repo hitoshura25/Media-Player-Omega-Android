@@ -3,6 +3,7 @@ package com.vmenon.mpo.core.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
@@ -15,15 +16,18 @@ class DefaultNavigationController : NavigationController {
         request: NavigationRequest<*, *>,
         navigationOrigin: NavigationOrigin<*>
     ) {
-        if (navigationOrigin !is Context) {
-            throw IllegalArgumentException("navigationOrigin needs to be a Context!")
+        val context = when (navigationOrigin) {
+            is Context -> navigationOrigin
+            is Fragment -> navigationOrigin.activity
+            else -> null
         }
+            ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
 
         if (request is DrawerNavigationRequest) {
             when (request.destination.menuId) {
                 R.id.nav_home -> startActivityForNavigation(
-                    Intent(navigationOrigin, HomeActivity::class.java),
-                    navigationOrigin
+                    Intent(context, HomeActivity::class.java),
+                    context
                 )
             }
             return
@@ -31,8 +35,8 @@ class DefaultNavigationController : NavigationController {
 
         val destination = request.destination
         if (destination is ActivityDestination) {
-            val intent = destination.createIntent(navigationOrigin, request.params)
-            startActivityForNavigation(intent, navigationOrigin)
+            val intent = destination.createIntent(context, request.params)
+            startActivityForNavigation(intent, context)
         } else {
             throw IllegalArgumentException("request.destination needs to be an ActivityDestination!")
         }

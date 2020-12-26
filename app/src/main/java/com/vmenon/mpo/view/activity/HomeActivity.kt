@@ -1,10 +1,7 @@
 package com.vmenon.mpo.view.activity
 
-import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.Menu
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -17,7 +14,6 @@ import com.vmenon.mpo.library.view.fragment.LibraryFragment
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.internal.artificialFrame
 
 class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>() {
     override val layoutResourceId: Int
@@ -28,21 +24,6 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>()
 
     override val isRootActivity: Boolean
         get() = true
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.subscribed_shows_options_menu, menu)
-
-        // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val menuItem = menu.findItem(R.id.search)
-        val searchView = menuItem.actionView as SearchView
-        searchView.setSearchableInfo(
-            searchManager.getSearchableInfo(componentName)
-        )
-
-        return true
-    }
 
     override fun setupComponent(context: Context): ActivityComponent =
         (context as MPOApplication).appComponent.activityComponent().create()

@@ -1,8 +1,10 @@
 package com.vmenon.mpo.library.view.fragment
 
+import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
@@ -13,10 +15,13 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
 
-class SubscribedShowsFragment : BaseFragment<LibraryComponent>() {
+class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
+    NavigationOrigin<NoNavigationParams> {
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreateView(
@@ -38,7 +43,8 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>() {
 
         viewModel.subscribedShows.observe(this, Observer { result ->
             when (result) {
-                LoadingState -> {}
+                LoadingState -> {
+                }
                 is SuccessState -> {
                     showList.adapter = SubscriptionGalleryAdapter(result.result)
                 }
@@ -46,6 +52,40 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>() {
                 }
             }
         })
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        activity?.let { activity ->
+            inflater.inflate(R.menu.subscribed_shows_options_menu, menu)
+
+            // Associate searchable configuration with the SearchView
+            val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+            val menuItem = menu.findItem(R.id.search)
+            val searchView = menuItem.actionView as SearchView
+            searchView.setOnQueryTextListener(
+                object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        // TODO:
+                        //  1. Implement use case for "Adding Show".
+                        //  2. That will call navigationController.onNavigationSelected -> ShowSearchResults Activity
+                        //  3. Refactor UI so SubscribedShowsFragment will just do this with the "+" icon and
+                        //     ShowSearchResultsActivity handles search and showing the results
+                        query?.let {
+                            viewModel.searchForShows(query, this@SubscribedShowsFragment)
+                        }
+                        return true
+                    }
+
+                    override fun onQueryTextChange(newText: String?): Boolean = false
+                }
+            )
+        }
     }
 
     override fun onResume() {

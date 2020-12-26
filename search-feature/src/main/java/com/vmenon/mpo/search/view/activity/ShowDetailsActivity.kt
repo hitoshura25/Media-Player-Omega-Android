@@ -28,7 +28,8 @@ import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
 import kotlinx.android.synthetic.main.show_details_panel_content.*
 import kotlinx.android.synthetic.main.show_details_content.*
 
-class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent, NoNavigationParams>(),
+class ShowDetailsActivity :
+    BaseDrawerCollapsingToolbarActivity<SearchComponent, NoNavigationParams>(),
     AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
@@ -46,7 +47,9 @@ class ShowDetailsActivity : BaseDrawerCollapsingToolbarActivity<SearchComponent,
             .observe(this, Observer { showDetails ->
                 when (showDetails) {
                     LoadingState -> loadingStateHelper.showLoadingState()
-                    ErrorState -> TODO()
+                    ErrorState -> {
+
+                    }
                     is SuccessState -> displayDetails(showDetails.result)
                 }
 

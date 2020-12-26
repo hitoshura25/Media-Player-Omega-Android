@@ -4,9 +4,14 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.vmenon.mpo.navigation.domain.NavigationController
+import javax.inject.Inject
 
 abstract class BaseFragment<COMPONENT : Any> : Fragment() {
     lateinit var component: COMPONENT
+
+    @Inject
+    protected lateinit var navigationController: NavigationController
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

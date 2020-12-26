@@ -1,6 +1,5 @@
 package com.vmenon.mpo.search.view.activity
 
-import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.domain.SearchNavigationParams
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
@@ -27,7 +26,7 @@ import com.vmenon.mpo.view.activity.BaseDrawerActivity
 import kotlinx.android.synthetic.main.activity_show_search_results.*
 import kotlinx.coroutines.launch
 
-class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent, NoNavigationParams>(),
+class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent, SearchNavigationParams>(),
     ShowSearchResultsAdapter.ShowSelectedListener {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
@@ -75,43 +74,42 @@ class ShowSearchResultsActivity : BaseDrawerActivity<SearchComponent, NoNavigati
     }
 
     private fun handleIntent(intent: Intent) {
-        if (Intent.ACTION_SEARCH == intent.action) {
-            intent.getStringExtra(SearchManager.QUERY)?.let { query ->
-                title = this.getString(R.string.show_search_title, query)
-                showSearchResultsViewModel.searchShows(query)
-                showSearchResultsViewModel.getShowSearchResultsForTerm().observe(this,
-                    Observer { results ->
-                        when (results) {
-                            LoadingState -> {
-                                loadingStateHelper.showLoadingState()
-                            }
-                            ErrorState -> TODO()
-                            is SuccessState -> {
-                                lifecycleScope.launch {
-                                    val diff = showSearchResultsViewModel.calculateDiff(
-                                        results.result,
-                                        ShowSearchResultsDiff(searchResults, results.result)
-                                    )
-                                    this@ShowSearchResultsActivity.searchResults = diff.first
-                                    adapter.update(
-                                        this@ShowSearchResultsActivity.searchResults,
-                                        diff.second
-                                    )
-                                    if (searchResults.isEmpty()) {
-                                        noShowsText.visibility = View.VISIBLE
-                                        showList.visibility = View.GONE
-                                    } else {
-                                        showList.visibility = View.VISIBLE
-                                        noShowsText.visibility = View.GONE
-                                    }
-                                    loadingStateHelper.showContentState()
-                                }                            }
-                        }
+        val query = navigationController.getParams(this).query
 
+        title = this.getString(R.string.show_search_title, query)
+        showSearchResultsViewModel.searchShows(query)
+        showSearchResultsViewModel.getShowSearchResultsForTerm().observe(this,
+            Observer { results ->
+                when (results) {
+                    LoadingState -> {
+                        loadingStateHelper.showLoadingState()
                     }
-                )
+                    ErrorState -> TODO()
+                    is SuccessState -> {
+                        lifecycleScope.launch {
+                            val diff = showSearchResultsViewModel.calculateDiff(
+                                results.result,
+                                ShowSearchResultsDiff(searchResults, results.result)
+                            )
+                            this@ShowSearchResultsActivity.searchResults = diff.first
+                            adapter.update(
+                                this@ShowSearchResultsActivity.searchResults,
+                                diff.second
+                            )
+                            if (searchResults.isEmpty()) {
+                                noShowsText.visibility = View.VISIBLE
+                                showList.visibility = View.GONE
+                            } else {
+                                showList.visibility = View.VISIBLE
+                                noShowsText.visibility = View.GONE
+                            }
+                            loadingStateHelper.showContentState()
+                        }
+                    }
+                }
             }
-        }
+        )
+
     }
 
     override fun setupComponent(context: Context): SearchComponent =

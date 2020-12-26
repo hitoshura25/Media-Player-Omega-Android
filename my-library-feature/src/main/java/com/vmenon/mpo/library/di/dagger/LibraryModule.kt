@@ -17,6 +17,7 @@ import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.player.domain.PlayerNavigationDestination
 import com.vmenon.mpo.player.domain.PlayerRequestMapper
+import com.vmenon.mpo.search.domain.SearchNavigationDestination
 import dagger.Module
 import dagger.Provides
 
@@ -52,7 +53,8 @@ class LibraryModule {
         downloadService: DownloadsService,
         navigationController: NavigationController,
         requestMapper: PlayerRequestMapper<EpisodeModel>,
-        playerNavigationDestination: PlayerNavigationDestination
+        playerNavigationDestination: PlayerNavigationDestination,
+        searchNavigationDestination: SearchNavigationDestination
     ): MyLibraryInteractors =
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
@@ -64,6 +66,7 @@ class LibraryModule {
                 requestMapper,
                 navigationController,
                 playerNavigationDestination
-            )
+            ),
+            SearchForShows(navigationController, searchNavigationDestination)
         )
 }

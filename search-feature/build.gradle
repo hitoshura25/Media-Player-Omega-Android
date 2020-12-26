@@ -33,7 +33,7 @@ dependencies {
     api project(':search-data')
     api project(':search-framework')
 
-
+    implementation project(':navigation-framework')
     implementation project(':view')
 
 

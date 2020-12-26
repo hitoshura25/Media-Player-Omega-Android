@@ -1,12 +1,3 @@
 <resources>
-    <string name="shows">Shows</string>
-    <string name="search_title">Search</string>
-    <string name="search_hint">Search term or feed url</string>
-    <string name="recent_episodes">Recent Episodes</string>
 
-    <string name="download">Download</string>
-    <string name="downloads">Downloads</string>
-    <string name="home">Home</string>
-    <string name="library">Library</string>
-    <string name="show_notes">Show Notes</string>
 </resources>
