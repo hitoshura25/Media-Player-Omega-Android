@@ -2,9 +2,7 @@ package com.vmenon.mpo.library.view.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
@@ -19,11 +17,6 @@ import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
 
 class SubscribedShowsFragment : BaseFragment<LibraryComponent>() {
-
-    companion object {
-        fun newInstance() = SubscribedShowsFragment()
-    }
-
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreateView(
@@ -53,6 +46,11 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>() {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.shows)
     }
 
     override fun setupComponent(context: Context) =

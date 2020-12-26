@@ -1,17 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vmenon.mpo.library">
     <application>
-        <activity
-            android:name="com.vmenon.mpo.library.view.activity.LibraryActivity"
-            android:label="@string/library"
-            android:theme="@style/AppThemeNoActionBar" />
         <activity android:name="com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity"
             android:theme="@style/AppThemeNoActionBar"
-            android:parentActivityName="com.vmenon.mpo.library.view.activity.LibraryActivity"
             android:label="">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmenon.mpo.library.view.activity.LibraryActivity" />
         </activity>
     </application>
 </manifest>

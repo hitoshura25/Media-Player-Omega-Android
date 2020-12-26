@@ -17,6 +17,7 @@ import com.vmenon.mpo.library.view.fragment.LibraryFragment
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.internal.artificialFrame
 
 class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>() {
     override val layoutResourceId: Int
@@ -30,7 +31,7 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.options_menu, menu)
+        inflater.inflate(R.menu.subscribed_shows_options_menu, menu)
 
         // Associate searchable configuration with the SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
@@ -55,9 +56,9 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>()
         viewPager.adapter = FragmentAdapter(this)
         navigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_library -> viewPager.currentItem = 1
-                R.id.nav_downloads -> viewPager.currentItem = 2
-                else -> viewPager.currentItem = 0
+                R.id.nav_library -> viewPager.setCurrentItem(1, false)
+                R.id.nav_downloads -> viewPager.setCurrentItem(2, false)
+                else -> viewPager.setCurrentItem(0, false)
             }
             true
         }
@@ -70,6 +71,7 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>()
                 }
             }
         })
+        viewPager.isUserInputEnabled = false
     }
 
     class FragmentAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {

@@ -24,6 +24,7 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         downloadsList.layoutManager = LinearLayoutManager(context)
         downloadsList.setHasFixedSize(true)
         downloadsList.addItemDecoration(
@@ -49,6 +50,10 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.downloads)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

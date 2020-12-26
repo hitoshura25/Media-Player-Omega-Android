@@ -27,6 +27,7 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         val layoutManager = LinearLayoutManager(context)
         libraryList.setHasFixedSize(true)
         libraryList.layoutManager = layoutManager
@@ -48,6 +49,11 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
                 }
             }
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.library)
     }
 
     override fun onCreateView(
