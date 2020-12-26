@@ -1,6 +1,5 @@
 package com.vmenon.mpo.library.view.fragment
 
-import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -61,21 +60,15 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        activity?.let { activity ->
+        activity?.let {
             inflater.inflate(R.menu.subscribed_shows_options_menu, menu)
 
             // Associate searchable configuration with the SearchView
-            val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
             val menuItem = menu.findItem(R.id.search)
             val searchView = menuItem.actionView as SearchView
             searchView.setOnQueryTextListener(
                 object : SearchView.OnQueryTextListener {
                     override fun onQueryTextSubmit(query: String?): Boolean {
-                        // TODO:
-                        //  1. Implement use case for "Adding Show".
-                        //  2. That will call navigationController.onNavigationSelected -> ShowSearchResults Activity
-                        //  3. Refactor UI so SubscribedShowsFragment will just do this with the "+" icon and
-                        //     ShowSearchResultsActivity handles search and showing the results
                         query?.let {
                             viewModel.searchForShows(query, this@SubscribedShowsFragment)
                         }
