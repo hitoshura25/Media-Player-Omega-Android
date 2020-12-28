@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import javax.inject.Inject
 
 abstract class BaseFragment<COMPONENT : Any> : Fragment() {
@@ -19,7 +20,6 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         println("${javaClass.name} onDestroyView")
-
     }
 
     override fun onStop() {
@@ -33,7 +33,6 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
         component = setupComponent(context.applicationContext)
         inject(component)
         println("${javaClass.name} onAttach")
-
     }
 
     override fun onPause() {
@@ -62,7 +61,9 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
     override fun onResume() {
         super.onResume()
         println("${javaClass.name} onResume")
-
+        if (this is NavigationOrigin<*>) {
+            navigationController.setOrigin(this)
+        }
     }
 
     override fun onDetach() {

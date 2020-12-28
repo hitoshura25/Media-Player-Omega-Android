@@ -11,7 +11,7 @@ class SearchForShows(
     private val searchDestination: SearchNavigationDestination
 ) {
     suspend operator fun invoke(query: String, origin: NavigationOrigin<*>) {
-        navigationController.onNavigationSelected(
+        navigationController.navigate(
             SearchNavigationRequest(searchDestination, SearchNavigationParams(query)),
             origin
         )

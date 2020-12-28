@@ -19,10 +19,13 @@ import com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
 
-class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener {
+class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
+    NavigationOrigin<NoNavigationParams> {
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -31,10 +34,15 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
         val layoutManager = LinearLayoutManager(context)
         libraryList.setHasFixedSize(true)
         libraryList.layoutManager = layoutManager
-        libraryList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        libraryList.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
 
         viewModel.allEpisodes().observe(
-            this,
+            viewLifecycleOwner,
             Observer { episodes ->
                 when (episodes) {
                     is SuccessState -> {
@@ -69,6 +77,7 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
         (context as LibraryComponentProvider).libraryComponent()
 
     override fun inject(component: LibraryComponent) {
+        component.inject(this)
         component.inject(viewModel)
     }
 

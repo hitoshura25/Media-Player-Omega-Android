@@ -42,7 +42,7 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         super.onActivityCreated(savedInstanceState)
         activity?.setTitle(R.string.shows)
 
-        viewModel.subscribedShows.observe(this, Observer { result ->
+        viewModel.subscribedShows.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 LoadingState -> {
                 }
@@ -92,6 +92,7 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         (context as LibraryComponentProvider).libraryComponent()
 
     override fun inject(component: LibraryComponent) {
+        component.inject(this)
         component.inject(viewModel)
     }
 }

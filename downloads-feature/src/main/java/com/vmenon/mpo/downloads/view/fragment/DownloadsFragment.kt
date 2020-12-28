@@ -16,10 +16,12 @@ import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_downloads.*
 
-class DownloadsFragment : BaseFragment<DownloadsComponent>() {
+class DownloadsFragment : BaseFragment<DownloadsComponent>(), NavigationOrigin<NoNavigationParams> {
     private val viewModel: DownloadsViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

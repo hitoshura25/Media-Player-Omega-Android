@@ -37,10 +37,6 @@ class ShowSearchResultsAdapter :
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun clear() {
-        this.shows.clear()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(
             R.layout.show_result, parent,

@@ -17,7 +17,7 @@ class PlayEpisode(
 ) {
     suspend operator fun invoke(episodeId: Long, libraryView: NavigationOrigin<*>) {
         val episodeModel = myLibraryService.getEpisode(episodeId)
-        navigationController.onNavigationSelected(
+        navigationController.navigate(
             PlayerNavigationRequest(
                 playerNavigationDestination,
                 PlayerNavigationParams(requestMapper.createMediaId(episodeModel))

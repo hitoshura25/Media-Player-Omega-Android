@@ -7,6 +7,7 @@ import com.vmenon.mpo.navigation.domain.NavigationController
 
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class AppModule(private val application: Application) {
@@ -14,5 +15,6 @@ class AppModule(private val application: Application) {
     fun providesApplication(): Application = application
 
     @Provides
+    @Singleton
     fun providesNavigationController(): NavigationController = DefaultNavigationController()
 }

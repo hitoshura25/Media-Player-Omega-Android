@@ -51,7 +51,7 @@ abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
             val location = when (menuItem.itemId) {
                 else -> DrawerNavigationDestination(R.id.nav_home)
             }
-            navigationController.onNavigationSelected(
+            navigationController.navigate(
                 DrawerNavigationRequest(
                     location,
                     DrawerNavigationParams()

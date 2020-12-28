@@ -13,17 +13,20 @@ import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.view.DrawerNavigationRequest
 import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.HomeActivity
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 class DefaultNavigationController : NavigationController {
     private val origin: MutableSharedFlow<NavigationOrigin<*>> = MutableSharedFlow()
-    override fun onNavigationSelected(
+    private val mainScope = MainScope()
+
+    override fun navigate(
         request: NavigationRequest<*, *>,
         navigationOrigin: NavigationOrigin<*>
     ) {
-
         if (request is DrawerNavigationRequest) {
             handleDrawerNavigationRequest(request, navigationOrigin)
             return
@@ -43,6 +46,12 @@ class DefaultNavigationController : NavigationController {
             else -> {
                 throw IllegalArgumentException("request.destination is invalid or unsupported!")
             }
+        }
+    }
+
+    override fun setOrigin(navigationOrigin: NavigationOrigin<*>) {
+        mainScope.launch {
+            origin.emit(navigationOrigin)
         }
     }
 
