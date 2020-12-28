@@ -60,7 +60,8 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        println("${javaClass.name} onCreateView")
+
         return inflater.inflate(R.layout.fragment_library, container, false)
     }
 

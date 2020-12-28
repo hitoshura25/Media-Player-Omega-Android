@@ -14,26 +14,14 @@ class ShowSearchResultsViewModel : ViewModel() {
     @Inject
     lateinit var searchInteractors: SearchInteractors
 
-    private val searchTerm = MutableLiveData<String>()
-
-    private val searchResults = searchTerm.switchMap { keyword ->
-        liveData<ResultState<List<ShowSearchResultModel>>> {
-            emitSource(searchInteractors.searchForShows(keyword).asLiveData())
-        }
+    fun searchShows(keyword: String) = liveData<ResultState<List<ShowSearchResultModel>>> {
+        emitSource(searchInteractors.searchForShows(keyword).asLiveData())
     }
-
-    fun searchShows(keyword: String) {
-        searchTerm.postValue(keyword)
-    }
-
-    fun getShowSearchResultsForTerm(): LiveData<ResultState<List<ShowSearchResultModel>>> =
-        searchResults
 
     suspend fun calculateDiff(
         newSearchResults: List<ShowSearchResultModel>,
         callback: DiffUtil.Callback
     ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> {
-        println("Thread ${Thread.currentThread().name}")
         return getDiff(newSearchResults, callback)
     }
 
@@ -42,8 +30,6 @@ class ShowSearchResultsViewModel : ViewModel() {
         callback: DiffUtil.Callback
     ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> =
         withContext(Dispatchers.Default) {
-            println("Thread ${Thread.currentThread().name}")
             Pair(newSearchResults, DiffUtil.calculateDiff(callback))
         }
-
 }

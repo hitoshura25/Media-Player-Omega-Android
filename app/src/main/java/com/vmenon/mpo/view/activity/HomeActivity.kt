@@ -2,20 +2,27 @@ package com.vmenon.mpo.view.activity
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.di.ActivityComponent
-import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
-import com.vmenon.mpo.library.view.fragment.LibraryFragment
-import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
+import com.vmenon.mpo.downloads.domain.DownloadsDestination
+import com.vmenon.mpo.my_library.domain.MyLibraryNavigationDestination
+import com.vmenon.mpo.my_library.domain.SubscribedShowsDestination
+import com.vmenon.mpo.navigation.domain.NavigationRequest
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>() {
+    @Inject
+    lateinit var libraryDestination: MyLibraryNavigationDestination
+
+    @Inject
+    lateinit var showsDestination: SubscribedShowsDestination
+
+    @Inject
+    lateinit var downloadsDestination: DownloadsDestination
+
     override val layoutResourceId: Int
         get() = R.layout.activity_main
 
@@ -34,35 +41,57 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, NoNavigationParams>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewPager.adapter = FragmentAdapter(this)
         navigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_library -> viewPager.setCurrentItem(1, false)
-                R.id.nav_downloads -> viewPager.setCurrentItem(2, false)
-                else -> viewPager.setCurrentItem(0, false)
+                R.id.nav_library -> navigationController.onNavigationSelected(
+                    object :
+                        NavigationRequest<MyLibraryNavigationDestination, NoNavigationParams> {
+                        override val destination: MyLibraryNavigationDestination
+                            get() = libraryDestination
+                        override val params: NoNavigationParams
+                            get() = NoNavigationParams
+
+                    },
+                    this
+                )
+                R.id.nav_downloads -> navigationController.onNavigationSelected(
+                    object :
+                        NavigationRequest<DownloadsDestination, NoNavigationParams> {
+                        override val destination: DownloadsDestination
+                            get() = downloadsDestination
+                        override val params: NoNavigationParams
+                            get() = NoNavigationParams
+
+                    },
+                    this
+                )
+                else -> navigationController.onNavigationSelected(
+                    object :
+                        NavigationRequest<SubscribedShowsDestination, NoNavigationParams> {
+                        override val destination: SubscribedShowsDestination
+                            get() = showsDestination
+                        override val params: NoNavigationParams
+                            get() = NoNavigationParams
+
+                    },
+                    this
+                )
             }
             true
         }
-        viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                navigation.selectedItemId = when (position) {
-                    1 -> R.id.nav_library
-                    2 -> R.id.nav_downloads
-                    else -> R.id.nav_home
-                }
-            }
-        })
-        viewPager.isUserInputEnabled = false
-    }
 
-    class FragmentAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
-        override fun getItemCount(): Int = 3
-        override fun createFragment(position: Int): Fragment {
-            return when (position) {
-                1 -> LibraryFragment()
-                2 -> DownloadsFragment()
-                else -> SubscribedShowsFragment()
-            }
+        if (savedInstanceState == null) {
+            navigationController.onNavigationSelected(
+                object :
+                    NavigationRequest<SubscribedShowsDestination, NoNavigationParams> {
+                    override val destination: SubscribedShowsDestination
+                        get() = showsDestination
+                    override val params: NoNavigationParams
+                        get() = NoNavigationParams
+
+                },
+                this
+            )
         }
     }
 }

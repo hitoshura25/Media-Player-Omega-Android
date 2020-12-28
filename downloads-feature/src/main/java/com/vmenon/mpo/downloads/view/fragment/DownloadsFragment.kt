@@ -59,6 +59,8 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        println("${javaClass.name} onCreateView")
+
         return inflater.inflate(R.layout.fragment_downloads, container, false)
     }
 

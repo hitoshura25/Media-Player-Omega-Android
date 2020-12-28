@@ -30,8 +30,8 @@ dependencies {
     api project(':downloads-usecases')
 
 
+    implementation project(':navigation-framework')
     implementation project(':view')
-
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"

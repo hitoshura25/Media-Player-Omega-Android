@@ -45,6 +45,7 @@ interface AppComponent {
     fun thirdPartyIntegrator(): ThirdPartyIntegrator
 
     fun activityComponent(): ActivityComponent.Factory
+    fun fragmentComponent(): FragmentComponent.Factory
     fun searchComponent(): SearchComponent.Factory
     fun downloadsComponent(): DownloadsComponent.Factory
     fun libraryComponent(): LibraryComponent.Factory

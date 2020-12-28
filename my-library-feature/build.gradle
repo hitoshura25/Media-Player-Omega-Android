@@ -28,6 +28,8 @@ dependencies {
 
     implementation project(':downloads-domain')
     implementation project(':navigation-domain')
+    implementation project(':navigation-framework')
+
     api project(':my-library-data')
     api project(':my-library-framework')
     api project(':my-library-usecases')

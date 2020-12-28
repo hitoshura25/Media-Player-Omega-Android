@@ -27,6 +27,8 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        println("${javaClass.name} onCreateView")
+
         return inflater.inflate(R.layout.subscribed_shows_fragment, container, false)
     }
 
