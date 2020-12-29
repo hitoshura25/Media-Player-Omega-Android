@@ -1,6 +1,5 @@
 package com.vmenon.mpo.library.di.dagger
 
-import androidx.fragment.app.Fragment
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.library.R
@@ -11,20 +10,21 @@ import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
 import com.vmenon.mpo.my_library.data.ShowUpdateDataSource
 import com.vmenon.mpo.my_library.domain.EpisodeModel
-import com.vmenon.mpo.my_library.domain.MyLibraryNavigationDestination
+import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.my_library.domain.MyLibraryService
-import com.vmenon.mpo.my_library.domain.SubscribedShowsDestination
+import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.my_library.framework.MpoRetrofitApiShowUpdateDataSource
 import com.vmenon.mpo.my_library.framework.RoomEpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
 import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
-import com.vmenon.mpo.player.domain.PlayerNavigationDestination
+import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.player.domain.PlayerRequestMapper
-import com.vmenon.mpo.search.domain.SearchNavigationDestination
+import com.vmenon.mpo.search.domain.SearchNavigationLocation
 import dagger.Module
 import dagger.Provides
 
@@ -60,8 +60,8 @@ class LibraryModule {
         downloadService: DownloadsService,
         navigationController: NavigationController,
         requestMapper: PlayerRequestMapper<EpisodeModel>,
-        playerNavigationDestination: PlayerNavigationDestination,
-        searchNavigationDestination: SearchNavigationDestination
+        playerNavigationDestination: NavigationDestination<PlayerNavigationLocation>,
+        searchNavigationDestination: NavigationDestination<SearchNavigationLocation>
     ): MyLibraryInteractors =
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
@@ -78,22 +78,18 @@ class LibraryModule {
         )
 
     @Provides
-    fun provideLibraryNavigationDestination(): MyLibraryNavigationDestination =
-        object : FragmentDestination, MyLibraryNavigationDestination {
-            override val fragmentCreator: () -> Fragment
-                get() = { LibraryFragment() }
-            override val containerId: Int = R.id.fragmentContainerLayout
-            override val tag: String
-                get() = LibraryFragment::class.java.name
-        }
+    fun provideLibraryNavigationDestination(): NavigationDestination<MyLibraryNavigationLocation> =
+        FragmentDestination(
+            fragmentCreator = { LibraryFragment() },
+            containerId = R.id.fragmentContainerLayout,
+            tag = LibraryFragment::class.java.name
+        )
 
     @Provides
-    fun provideShowsNavigationDestination(): SubscribedShowsDestination =
-        object : FragmentDestination, SubscribedShowsDestination {
-            override val fragmentCreator: () -> Fragment
-                get() = { SubscribedShowsFragment() }
-            override val containerId: Int = R.id.fragmentContainerLayout
-            override val tag: String
-                get() = SubscribedShowsFragment::class.java.name
-        }
+    fun provideShowsNavigationDestination(): NavigationDestination<SubscribedShowsLocation> =
+        FragmentDestination(
+            fragmentCreator = { SubscribedShowsFragment() },
+            containerId = R.id.fragmentContainerLayout,
+            tag = SubscribedShowsFragment::class.java.name
+        )
 }

@@ -7,16 +7,15 @@ import androidx.appcompat.widget.Toolbar
 import android.view.MenuItem
 import android.view.ViewGroup
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.navigation.domain.NavigationParams
+import com.vmenon.mpo.navigation.domain.NavigationLocation
 
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.view.DrawerNavigationDestination
-import com.vmenon.mpo.view.DrawerNavigationParams
-import com.vmenon.mpo.view.DrawerNavigationRequest
+import com.vmenon.mpo.view.DrawerNavigationLocation
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
-    BaseActivity<COMPONENT>(), NavigationOrigin<PARAMS> {
+abstract class BaseDrawerActivity<COMPONENT : Any, LOCATION : NavigationLocation<*>> :
+    BaseActivity<COMPONENT>(), NavigationOrigin<LOCATION> {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
@@ -49,13 +48,11 @@ abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             val location = when (menuItem.itemId) {
-                else -> DrawerNavigationDestination(R.id.nav_home)
+                else -> DrawerNavigationLocation(R.id.nav_home)
             }
             navigationController.navigate(
-                DrawerNavigationRequest(
-                    location,
-                    DrawerNavigationParams()
-                ), this
+                this,
+                DrawerNavigationDestination(location)
             )
             menuItem.isChecked = true
             drawerLayout.closeDrawers()

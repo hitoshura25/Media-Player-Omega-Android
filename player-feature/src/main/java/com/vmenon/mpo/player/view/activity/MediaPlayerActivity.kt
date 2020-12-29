@@ -28,7 +28,7 @@ const val REPLAY_DURATION_SECONDS = -10
 const val SKIP_DURATION_SECONDS = 30
 
 class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
-    VideoSizeListener, PlayerClient, NavigationOrigin<PlayerNavigationParams> {
+    VideoSizeListener, PlayerClient, NavigationOrigin<PlayerNavigationLocation> {
     @Inject
     lateinit var player: MPOPlayer
 
@@ -190,4 +190,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         component.inject(this)
         component.inject(viewModel)
     }
+
+    override val location: PlayerNavigationLocation
+        get() = PlayerNavigationLocation
 }

@@ -10,7 +10,7 @@ import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
 import com.vmenon.mpo.navigation.framework.FragmentDestination
-import com.vmenon.mpo.view.DrawerNavigationRequest
+import com.vmenon.mpo.view.DrawerNavigationDestination
 import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.HomeActivity
 import kotlinx.coroutines.MainScope
@@ -20,28 +20,29 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class DefaultNavigationController : NavigationController {
-    private val origin: MutableSharedFlow<NavigationOrigin<*>> = MutableSharedFlow()
+    private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
     private val mainScope = MainScope()
 
-    override fun navigate(
-        request: NavigationRequest<*, *>,
-        navigationOrigin: NavigationOrigin<*>
+    override fun <P : NavigationParams, L : NavigationLocation<P>> navigate(
+        navigationOrigin: NavigationOrigin<*>,
+        navigationDestination: NavigationDestination<L>,
+        navigationParams: P
     ) {
-        if (request is DrawerNavigationRequest) {
-            handleDrawerNavigationRequest(request, navigationOrigin)
+        if (navigationDestination is DrawerNavigationDestination) {
+            handleDrawerNavigationRequest(navigationDestination, navigationOrigin)
             return
         }
 
-        when (val destination = request.destination) {
+        when (navigationDestination) {
             is ActivityDestination -> handleActivityDestination(
                 navigationOrigin,
-                destination,
-                request.params
+                navigationDestination,
+                navigationParams
             )
             is FragmentDestination -> handleFragmentDestination(
                 navigationOrigin,
-                destination,
-                request.params
+                navigationDestination,
+                navigationParams
             )
             else -> {
                 throw IllegalArgumentException("request.destination is invalid or unsupported!")
@@ -51,12 +52,14 @@ class DefaultNavigationController : NavigationController {
 
     override fun setOrigin(navigationOrigin: NavigationOrigin<*>) {
         mainScope.launch {
-            origin.emit(navigationOrigin)
+            origin.emit(navigationOrigin.location)
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <P : NavigationParams> getParams(navigationOrigin: NavigationOrigin<P>): P {
+    override fun <P : NavigationParams, L : NavigationLocation<P>> getParams(
+        navigationOrigin: NavigationOrigin<L>
+    ): P {
         if (navigationOrigin is Activity) {
             return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
         }
@@ -67,11 +70,11 @@ class DefaultNavigationController : NavigationController {
         throw IllegalArgumentException("navigationOrigin is invalid!")
     }
 
-    override val currentLocation: Flow<NavigationOrigin<*>>
+    override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
 
     private fun handleDrawerNavigationRequest(
-        request: DrawerNavigationRequest,
+        navigationDestination: DrawerNavigationDestination,
         navigationOrigin: NavigationOrigin<*>
     ) {
         val context = when (navigationOrigin) {
@@ -80,7 +83,7 @@ class DefaultNavigationController : NavigationController {
             else -> null
         } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
 
-        when (request.destination.menuId) {
+        when (navigationDestination.location.menuId) {
             R.id.nav_home -> startActivityForNavigation(
                 Intent(context, HomeActivity::class.java),
                 context
@@ -90,7 +93,7 @@ class DefaultNavigationController : NavigationController {
 
     private fun handleActivityDestination(
         navigationOrigin: NavigationOrigin<*>,
-        destination: ActivityDestination,
+        navigationDestination: ActivityDestination<*>,
         params: NavigationParams
     ) {
         val context = when (navigationOrigin) {
@@ -98,13 +101,13 @@ class DefaultNavigationController : NavigationController {
             is Fragment -> navigationOrigin.activity
             else -> null
         } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
-        val intent = destination.createIntent(context, params)
+        val intent = navigationDestination.createIntent(context, params)
         startActivityForNavigation(intent, context)
     }
 
     private fun handleFragmentDestination(
         navigationOrigin: NavigationOrigin<*>,
-        destination: FragmentDestination,
+        navigationDestination: FragmentDestination<*>,
         params: NavigationParams
     ) {
         val fragmentManager = when (navigationOrigin) {
@@ -114,10 +117,12 @@ class DefaultNavigationController : NavigationController {
         }
             ?: throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
         val fragment =
-            fragmentManager.findFragmentByTag(destination.tag) ?: destination.fragmentCreator()
+            fragmentManager.findFragmentByTag(navigationDestination.tag)
+                ?: navigationDestination.fragmentCreator()
         fragment.arguments = Bundle().apply { putSerializable(EXTRA_NAVIGATION_BUNDLE, params) }
         fragmentManager.beginTransaction()
-            .replace(destination.containerId, fragment, destination.tag).addToBackStack(null)
+            .replace(navigationDestination.containerId, fragment, navigationDestination.tag)
+            .addToBackStack(null)
             .commit()
     }
 

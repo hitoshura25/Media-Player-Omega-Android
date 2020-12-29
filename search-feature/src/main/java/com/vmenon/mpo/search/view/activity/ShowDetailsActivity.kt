@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.show_details_panel_content.*
 import kotlinx.android.synthetic.main.show_details_content.*
 
 class ShowDetailsActivity :
-    BaseDrawerCollapsingToolbarActivity<SearchComponent, NoNavigationParams>(),
+    BaseDrawerCollapsingToolbarActivity<SearchComponent, ShowDetailsLocation>(),
     AppBarLayout.OnOffsetChangedListener,
     EpisodesAdapter.EpisodeSelectedListener {
 
@@ -143,4 +143,7 @@ class ShowDetailsActivity :
     companion object {
         const val EXTRA_SHOW = "extraShow"
     }
+
+    override val location: ShowDetailsLocation
+        get() = ShowDetailsLocation
 }

@@ -3,8 +3,8 @@ package com.vmenon.mpo.player.di.dagger
 import android.app.Application
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.my_library.domain.EpisodeModel
-import com.vmenon.mpo.my_library.domain.MyLibraryService
-import com.vmenon.mpo.player.MediaPlayerActivityDestination
+import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.*
@@ -63,18 +63,23 @@ class PlayerModule {
     @Provides
     fun providesMPOMediaBrowserServiceConfiguration(
         application: Application,
-        player: MPOPlayer
+        player: MPOPlayer,
+        playerDestination: NavigationDestination<PlayerNavigationLocation>
     ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
         player,
         { request: PlaybackMediaRequest? ->
-            val navigationDestination = MediaPlayerActivityDestination()
-            navigationDestination.createIntent(application, PlayerNavigationParams(request))
+            (playerDestination as ActivityDestination<PlayerNavigationLocation>).createIntent(
+                application,
+                PlayerNavigationParams(request)
+            )
         },
         { builder ->
             builder.color = ContextCompat.getColor(application, R.color.colorPrimary)
         })
 
     @Provides
-    fun providePlayerNavigationDestination(): PlayerNavigationDestination =
-        MediaPlayerActivityDestination()
+    fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
+        ActivityDestination(
+            activityClass = MediaPlayerActivity::class.java
+        )
 }
