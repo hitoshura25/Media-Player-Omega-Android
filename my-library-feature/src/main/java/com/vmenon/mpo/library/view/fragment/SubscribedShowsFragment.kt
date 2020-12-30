@@ -3,6 +3,7 @@ package com.vmenon.mpo.library.view.fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,12 +17,12 @@ import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.navigation.framework.FragmentOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
 
 class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
-    NavigationOrigin<SubscribedShowsLocation> by FragmentOrigin.create() {
+    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(SubscribedShowsLocation) {
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreateView(
@@ -33,16 +34,18 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         return inflater.inflate(R.layout.subscribed_shows_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        showList.setHasFixedSize(true)
-        showList.layoutManager = GridLayoutManager(context, 3)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        activity?.setTitle(R.string.shows)
-
+        (requireActivity() as AppCompatActivity).let { activity ->
+            activity.setSupportActionBar(toolbar)
+            activity.setTitle(R.string.shows)
+            activity.supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
+            }
+        }
+        showList.setHasFixedSize(true)
+        showList.layoutManager = GridLayoutManager(context, 3)
         viewModel.subscribedShows.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 LoadingState -> {
@@ -75,18 +78,13 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
                         query?.let {
                             viewModel.searchForShows(query, this@SubscribedShowsFragment)
                         }
-                        return true
+                        return false
                     }
 
                     override fun onQueryTextChange(newText: String?): Boolean = false
                 }
             )
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        activity?.setTitle(R.string.shows)
     }
 
     override fun setupComponent(context: Context) =

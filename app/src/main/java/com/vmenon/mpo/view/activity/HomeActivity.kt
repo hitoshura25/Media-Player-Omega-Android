@@ -2,6 +2,8 @@ package com.vmenon.mpo.view.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.MPOApplication
@@ -11,11 +13,16 @@ import com.vmenon.mpo.downloads.domain.DownloadsLocation
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
+import com.vmenon.mpo.view.DrawerNavigationDestination
+import com.vmenon.mpo.view.DrawerNavigationLocation
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class HomeActivity : BaseDrawerActivity<ActivityComponent, HomeLocation>() {
+class HomeActivity : BaseActivity<ActivityComponent>(),
+    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(HomeLocation) {
     @Inject
     lateinit var libraryDestination: NavigationDestination<MyLibraryNavigationLocation>
 
@@ -27,15 +34,6 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, HomeLocation>() {
 
     private val viewModel: HomeViewModel by viewModel()
 
-    override val layoutResourceId: Int
-        get() = R.layout.activity_main
-
-    override val navMenuId: Int
-        get() = R.id.nav_home
-
-    override val isRootActivity: Boolean
-        get() = true
-
     override fun setupComponent(context: Context): ActivityComponent =
         (context as MPOApplication).appComponent.activityComponent().create()
 
@@ -46,6 +44,26 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, HomeLocation>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        supportActionBar?.let { ab ->
+            ab.setDisplayHomeAsUpEnabled(true)
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu)
+        }
+
+        nav_drawer_view.setNavigationItemSelectedListener { menuItem ->
+            val location = when (menuItem.itemId) {
+                else -> DrawerNavigationLocation(com.vmenon.mpo.view.R.id.nav_home)
+            }
+            navigationController.navigate(
+                this,
+                DrawerNavigationDestination(location)
+            )
+            menuItem.isChecked = true
+            drawer_layout.closeDrawers()
+            true
+        }
+
         navigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_library -> navigationController.navigate(this, libraryDestination)
@@ -77,6 +95,16 @@ class HomeActivity : BaseDrawerActivity<ActivityComponent, HomeLocation>() {
                 navigation.selectedItemId = newItemId
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                drawer_layout.openDrawer(GravityCompat.START)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override val location: HomeLocation

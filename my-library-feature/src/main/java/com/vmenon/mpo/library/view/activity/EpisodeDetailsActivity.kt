@@ -18,6 +18,7 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
 import com.vmenon.mpo.my_library.domain.ShowModel
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.activity.BaseDrawerCollapsingToolbarActivity
 import kotlinx.android.synthetic.main.activity_episode_details.*
 
@@ -26,7 +27,7 @@ import java.text.DateFormat
 import java.util.Date
 
 class EpisodeDetailsActivity :
-    BaseDrawerCollapsingToolbarActivity<LibraryComponent, EpisodeDetailsLocation>() {
+    BaseDrawerCollapsingToolbarActivity<LibraryComponent, NoNavigationParams>() {
     private val viewModel: EpisodeDetailsViewModel by viewModel()
 
     private var episodeId: Long = -1

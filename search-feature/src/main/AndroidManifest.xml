@@ -1,15 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vmenon.mpo.search">
-    <application>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
-            android:theme="@style/AppThemeNoActionBar"
-            android:launchMode="singleTop">
-        </activity>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowDetailsActivity"
-            android:label=""
-            android:theme="@style/AppThemeNoActionBar">
-        </activity>
-    </application>
-</manifest>
+    package="com.vmenon.mpo.search"/>

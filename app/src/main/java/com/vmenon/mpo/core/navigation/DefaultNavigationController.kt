@@ -57,8 +57,8 @@ class DefaultNavigationController : NavigationController {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <P : NavigationParams, L : NavigationLocation<P>> getParams(
-        navigationOrigin: NavigationOrigin<L>
+    override fun <P : NavigationParams> getParams(
+        navigationOrigin: NavigationOrigin<P>
     ): P {
         if (navigationOrigin is Activity) {
             return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P

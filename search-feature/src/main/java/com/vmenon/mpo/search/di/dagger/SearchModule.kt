@@ -11,10 +11,12 @@ import com.vmenon.mpo.search.data.SearchApiDataSource
 import com.vmenon.mpo.search.data.SearchCacheDataSource
 import com.vmenon.mpo.search.data.SearchRepository
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowSearchService
 import com.vmenon.mpo.search.framework.MpoRetrofitApiSearchApiDataSource
 import com.vmenon.mpo.search.framework.RoomSearchCacheDataSource
 import com.vmenon.mpo.search.usecases.*
+import com.vmenon.mpo.search.view.fragment.ShowDetailsFragment
 import com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment
 import dagger.Module
 import dagger.Provides
@@ -53,5 +55,13 @@ class SearchModule {
             fragmentCreator = { ShowSearchResultsFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = ShowSearchResultsFragment::class.java.name
+        )
+
+    @Provides
+    fun provideShowDetailsNavigationDestination(): NavigationDestination<ShowDetailsLocation> =
+        FragmentDestination(
+            fragmentCreator = { ShowDetailsFragment()},
+            containerId = R.id.fragmentContainerLayout,
+            tag = ShowDetailsFragment::class.java.name
         )
 }

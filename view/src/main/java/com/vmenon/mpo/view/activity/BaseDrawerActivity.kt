@@ -10,12 +10,13 @@ import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.navigation.domain.NavigationLocation
 
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NavigationParams
 import com.vmenon.mpo.view.DrawerNavigationDestination
 import com.vmenon.mpo.view.DrawerNavigationLocation
 import com.vmenon.mpo.view.R
 
-abstract class BaseDrawerActivity<COMPONENT : Any, LOCATION : NavigationLocation<*>> :
-    BaseActivity<COMPONENT>(), NavigationOrigin<LOCATION> {
+abstract class BaseDrawerActivity<COMPONENT : Any, PARAMS : NavigationParams> :
+    BaseActivity<COMPONENT>(), NavigationOrigin<PARAMS> {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView

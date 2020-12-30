@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.navigation.framework.ActivityOrigin
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.player.R
@@ -30,7 +29,7 @@ const val SKIP_DURATION_SECONDS = 30
 
 class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
     VideoSizeListener, PlayerClient,
-    NavigationOrigin<PlayerNavigationLocation> by ActivityOrigin.create() {
+    NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation) {
     @Inject
     lateinit var player: MPOPlayer
 

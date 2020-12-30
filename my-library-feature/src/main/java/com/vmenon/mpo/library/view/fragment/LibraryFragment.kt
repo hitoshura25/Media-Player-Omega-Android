@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,16 +22,26 @@ import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.navigation.framework.FragmentOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
+import kotlinx.android.synthetic.main.fragment_library.toolbar
 
 class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
-    NavigationOrigin<MyLibraryNavigationLocation> by FragmentOrigin.create() {
+    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(MyLibraryNavigationLocation) {
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        (requireActivity() as AppCompatActivity).let { activity ->
+            activity.setSupportActionBar(toolbar)
+            activity.setTitle(R.string.library)
+            activity.supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
+            }
+        }
 
         val layoutManager = LinearLayoutManager(context)
         libraryList.setHasFixedSize(true)
@@ -58,11 +69,6 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
                 }
             }
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        activity?.setTitle(R.string.library)
     }
 
     override fun onCreateView(

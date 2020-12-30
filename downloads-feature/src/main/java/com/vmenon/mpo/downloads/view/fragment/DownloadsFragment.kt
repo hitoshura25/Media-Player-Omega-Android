@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,17 +19,24 @@ import com.vmenon.mpo.downloads.domain.DownloadsLocation
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.navigation.framework.FragmentOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_downloads.*
 
 class DownloadsFragment : BaseFragment<DownloadsComponent>(),
-    NavigationOrigin<DownloadsLocation> by FragmentOrigin.create() {
+    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(DownloadsLocation) {
     private val viewModel: DownloadsViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        (requireActivity() as AppCompatActivity).let { activity ->
+            activity.setSupportActionBar(toolbar)
+            activity.setTitle(R.string.downloads)
+            activity.supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
+            }
+        }
         downloadsList.layoutManager = LinearLayoutManager(context)
         downloadsList.setHasFixedSize(true)
         downloadsList.addItemDecoration(
@@ -52,11 +60,6 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>(),
                 }
             }
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        activity?.setTitle(R.string.downloads)
     }
 
     override fun onCreateView(

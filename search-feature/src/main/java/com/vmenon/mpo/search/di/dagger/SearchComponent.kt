@@ -1,6 +1,5 @@
 package com.vmenon.mpo.search.di.dagger
 
-import com.vmenon.mpo.search.view.activity.ShowDetailsActivity
 import com.vmenon.mpo.search.view.fragment.ShowDetailsFragment
 import com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
@@ -15,7 +14,6 @@ interface SearchComponent {
         fun create(): SearchComponent
     }
 
-    fun inject(activity: ShowDetailsActivity)
     fun inject(fragment: ShowSearchResultsFragment)
     fun inject(fragment: ShowDetailsFragment)
 

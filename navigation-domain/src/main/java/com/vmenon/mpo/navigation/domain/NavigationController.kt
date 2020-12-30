@@ -18,8 +18,8 @@ interface NavigationController {
 
     fun setOrigin(navigationOrigin: NavigationOrigin<*>)
 
-    fun <P : NavigationParams, L: NavigationLocation<P>> getParams(
-        navigationOrigin: NavigationOrigin<L>
+    fun <P : NavigationParams> getParams(
+        navigationOrigin: NavigationOrigin<P>
     ): P
 
     val currentLocation: Flow<NavigationLocation<*>>
