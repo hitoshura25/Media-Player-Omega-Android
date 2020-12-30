@@ -1,7 +1,6 @@
 package com.vmenon.mpo.library.view.fragment
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,19 +15,26 @@ import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
-import com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
+import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
+import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
+import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
 import kotlinx.android.synthetic.main.fragment_library.toolbar
+import javax.inject.Inject
 
 class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(MyLibraryNavigationLocation) {
+
+    @Inject
+    lateinit var episodeDetailsDestination: NavigationDestination<EpisodeDetailsLocation>
+
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -89,9 +95,10 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
     }
 
     override fun onEpisodeSelected(episodeWithShowDetails: EpisodeModel) {
-        val intent = Intent(context, EpisodeDetailsActivity::class.java)
-        intent.putExtra(EpisodeDetailsActivity.EXTRA_EPISODE, episodeWithShowDetails.id)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        navigationController.navigate(
+            this,
+            episodeDetailsDestination,
+            EpisodeDetailsParams(episodeWithShowDetails.id)
+        )
     }
 }

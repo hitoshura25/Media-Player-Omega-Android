@@ -1,9 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vmenon.mpo.library">
-    <application>
-        <activity android:name="com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity"
-            android:theme="@style/AppThemeNoActionBar"
-            android:label="">
-        </activity>
-    </application>
-</manifest>
+    package="com.vmenon.mpo.library"/>

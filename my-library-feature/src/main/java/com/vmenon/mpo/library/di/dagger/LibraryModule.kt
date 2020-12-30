@@ -3,16 +3,14 @@ package com.vmenon.mpo.library.di.dagger
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment
 import com.vmenon.mpo.library.view.fragment.LibraryFragment
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.my_library.data.EpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
 import com.vmenon.mpo.my_library.data.ShowUpdateDataSource
-import com.vmenon.mpo.my_library.domain.EpisodeModel
-import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
-import com.vmenon.mpo.my_library.domain.MyLibraryService
-import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
+import com.vmenon.mpo.my_library.domain.*
 import com.vmenon.mpo.my_library.framework.MpoRetrofitApiShowUpdateDataSource
 import com.vmenon.mpo.my_library.framework.RoomEpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
@@ -91,5 +89,13 @@ class LibraryModule {
             fragmentCreator = { SubscribedShowsFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = SubscribedShowsFragment::class.java.name
+        )
+
+    @Provides
+    fun provideEpisodeDetailsDestination(): NavigationDestination<EpisodeDetailsLocation> =
+        FragmentDestination(
+            fragmentCreator = { EpisodeDetailsFragment() },
+            containerId = R.id.fragmentContainerLayout,
+            tag = EpisodeDetailsFragment::class.java.name
         )
 }

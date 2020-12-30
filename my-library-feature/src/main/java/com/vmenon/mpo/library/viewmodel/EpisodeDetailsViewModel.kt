@@ -5,9 +5,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.common.domain.ResultState
-import com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.usecases.MyLibraryInteractors
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,9 +20,9 @@ class EpisodeDetailsViewModel : ViewModel() {
         emitSource(myLibraryInteractors.getEpisodeDetails(id).asLiveData())
     }
 
-    fun playEpisode(id: Long, activity: EpisodeDetailsActivity) {
+    fun playEpisode(id: Long, origin: NavigationOrigin<*>) {
         viewModelScope.launch {
-            myLibraryInteractors.playEpisode(id, activity)
+            myLibraryInteractors.playEpisode(id, origin)
         }
     }
 }
