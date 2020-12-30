@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener,
-    NavigationOrigin<SearchNavigationLocation> by FragmentOrigin(SearchNavigationLocation) {
+    NavigationOrigin<SearchNavigationLocation> by FragmentOrigin.create() {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
     private lateinit var adapter: ShowSearchResultsAdapter

@@ -21,7 +21,7 @@ import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
 
 class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
-    NavigationOrigin<SubscribedShowsLocation> by FragmentOrigin(SubscribedShowsLocation) {
+    NavigationOrigin<SubscribedShowsLocation> by FragmentOrigin.create() {
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreateView(

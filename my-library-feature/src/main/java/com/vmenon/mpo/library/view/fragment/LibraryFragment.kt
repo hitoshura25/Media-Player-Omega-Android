@@ -26,9 +26,7 @@ import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
 
 class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
-    NavigationOrigin<MyLibraryNavigationLocation> by FragmentOrigin(
-        MyLibraryNavigationLocation
-    ) {
+    NavigationOrigin<MyLibraryNavigationLocation> by FragmentOrigin.create() {
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

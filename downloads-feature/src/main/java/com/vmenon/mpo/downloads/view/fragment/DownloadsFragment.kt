@@ -23,7 +23,7 @@ import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_downloads.*
 
 class DownloadsFragment : BaseFragment<DownloadsComponent>(),
-    NavigationOrigin<DownloadsLocation> by FragmentOrigin(DownloadsLocation) {
+    NavigationOrigin<DownloadsLocation> by FragmentOrigin.create() {
     private val viewModel: DownloadsViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

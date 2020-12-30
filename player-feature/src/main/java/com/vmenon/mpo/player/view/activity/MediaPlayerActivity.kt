@@ -30,7 +30,7 @@ const val SKIP_DURATION_SECONDS = 30
 
 class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
     VideoSizeListener, PlayerClient,
-    NavigationOrigin<PlayerNavigationLocation> by ActivityOrigin(PlayerNavigationLocation) {
+    NavigationOrigin<PlayerNavigationLocation> by ActivityOrigin.create() {
     @Inject
     lateinit var player: MPOPlayer
 
