@@ -16,13 +16,12 @@ import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
 
-class SubscribedShowsFragment(
-    override val location: SubscribedShowsLocation = SubscribedShowsLocation
-) : BaseFragment<LibraryComponent>(),
-    NavigationOrigin<SubscribedShowsLocation> {
+class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
+    NavigationOrigin<SubscribedShowsLocation> by FragmentOrigin(SubscribedShowsLocation) {
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreateView(

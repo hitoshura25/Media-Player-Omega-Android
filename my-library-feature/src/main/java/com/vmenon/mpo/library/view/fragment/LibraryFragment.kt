@@ -21,13 +21,14 @@ import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
 
-class LibraryFragment(
-    override val location: MyLibraryNavigationLocation = MyLibraryNavigationLocation
-) : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
-    NavigationOrigin<MyLibraryNavigationLocation> {
+class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
+    NavigationOrigin<MyLibraryNavigationLocation> by FragmentOrigin(
+        MyLibraryNavigationLocation
+    ) {
     private val viewModel: LibraryViewModel by viewModel()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

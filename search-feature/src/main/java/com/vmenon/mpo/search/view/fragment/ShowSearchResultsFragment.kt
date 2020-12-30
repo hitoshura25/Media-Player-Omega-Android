@@ -14,11 +14,11 @@ import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
-import com.vmenon.mpo.search.domain.SearchNavigationParams
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import com.vmenon.mpo.search.view.activity.ShowDetailsActivity
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
@@ -30,7 +30,8 @@ import kotlinx.android.synthetic.main.fragment_show_search_results.*
 import kotlinx.coroutines.launch
 
 class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
-    ShowSearchResultsAdapter.ShowSelectedListener, NavigationOrigin<SearchNavigationLocation> {
+    ShowSearchResultsAdapter.ShowSelectedListener,
+    NavigationOrigin<SearchNavigationLocation> by FragmentOrigin(SearchNavigationLocation) {
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
     private lateinit var adapter: ShowSearchResultsAdapter
@@ -116,7 +117,4 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
         component.inject(this)
         component.inject(showSearchResultsViewModel)
     }
-
-    override val location: SearchNavigationLocation
-        get() = SearchNavigationLocation
 }
