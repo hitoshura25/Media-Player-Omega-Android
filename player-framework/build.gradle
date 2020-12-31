@@ -31,6 +31,7 @@ dependencies {
     implementation libraries.coroutines
     implementation libraries.glide
 
+    implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
 

@@ -1,10 +1,9 @@
 package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
-import androidx.core.content.ContextCompat
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.navigation.domain.NavigationDestination
-import com.vmenon.mpo.navigation.framework.ActivityDestination
+import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.*
@@ -12,7 +11,7 @@ import com.vmenon.mpo.player.framework.exo.MPOExoPlayer
 import com.vmenon.mpo.player.framework.AndroidMediaBrowserServicePlayerEngine
 import com.vmenon.mpo.player.framework.MPOMediaBrowserService
 import com.vmenon.mpo.player.usecases.*
-import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.player.view.fragment.MediaPlayerFragment
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -61,25 +60,10 @@ class PlayerModule {
     ): MediaPlayerEngine = AndroidMediaBrowserServicePlayerEngine(application, configuration)
 
     @Provides
-    fun providesMPOMediaBrowserServiceConfiguration(
-        application: Application,
-        player: MPOPlayer,
-        playerDestination: NavigationDestination<PlayerNavigationLocation>
-    ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
-        player,
-        { request: PlaybackMediaRequest? ->
-            (playerDestination as ActivityDestination<PlayerNavigationLocation>).createIntent(
-                application,
-                PlayerNavigationParams(request)
-            )
-        },
-        { builder ->
-            builder.color = ContextCompat.getColor(application, R.color.colorPrimary)
-        })
-
-    @Provides
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
-        ActivityDestination(
-            activityClass = MediaPlayerActivity::class.java
+        FragmentDestination(
+            fragmentCreator = { MediaPlayerFragment() },
+            containerId = R.id.fragmentContainerLayout,
+            tag = MediaPlayerFragment::class.java.name
         )
 }

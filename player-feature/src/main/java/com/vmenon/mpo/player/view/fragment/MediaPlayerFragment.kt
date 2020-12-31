@@ -1,48 +1,58 @@
-package com.vmenon.mpo.player.view.activity
+package com.vmenon.mpo.player.view.fragment
 
 import android.content.Context
-import android.os.*
+import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.SurfaceHolder
 import android.view.View
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.lifecycle.Observer
-
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.player.framework.MPOPlayer
-import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.player.domain.*
-import com.vmenon.mpo.player.domain.PlaybackState.*
+import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
-import com.vmenon.mpo.view.activity.BaseActivity
-import kotlinx.android.synthetic.main.activity_media_player.*
-
+import com.vmenon.mpo.view.BaseFragment
+import kotlinx.android.synthetic.main.fragment_media_player.*
 import javax.inject.Inject
 
-const val REPLAY_DURATION_SECONDS = -10
-const val SKIP_DURATION_SECONDS = 30
+class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
+    NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation),
+    SurfaceHolder.Callback, MPOPlayer.VideoSizeListener, PlayerClient {
 
-class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callback,
-    VideoSizeListener, PlayerClient,
-    NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation) {
     @Inject
     lateinit var player: MPOPlayer
 
-    val viewModel: MediaPlayerViewModel by viewModel()
+    private val viewModel: MediaPlayerViewModel by viewModel()
 
     private var lastPlaybackState: PlaybackState? = null
 
     private var playOnStart = false
     private var playbackMediaRequest: PlaybackMediaRequest? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media_player)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_media_player, container, false)
+    }
+
+    override fun setupComponent(context: Context): PlayerComponent =
+        (context as PlayerComponentProvider).playerComponent()
+
+    override fun inject(component: PlayerComponent) {
+        component.inject(this)
+        component.inject(viewModel)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
         playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
         playOnStart = savedInstanceState == null
@@ -73,15 +83,8 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         skipButton.setOnClickListener { viewModel.skipPlayback(SKIP_DURATION_SECONDS.toLong()) }
 
         surfaceView.holder.addCallback(this)
-        player.setVideoSizeListener(this@MediaPlayerActivity)
-
-        viewModel.connected.observe(this, Observer {
-            updateMediaDisplay()
-            playbackMediaRequest?.let {
-                viewModel.playMedia(it)
-            }
-        })
-        viewModel.playBackState.observe(this, Observer { playbackState ->
+        player.setVideoSizeListener(this)
+        viewModel.playBackState.observe(viewLifecycleOwner, Observer { playbackState ->
             updatePlaybackState(playbackState.state)
             updateProgress(playbackState)
             updateDuration(playbackState)
@@ -90,9 +93,15 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         })
     }
 
+
     override fun onStart() {
         super.onStart()
-        viewModel.connectClient(this)
+        viewModel.connectClient(this).observe(viewLifecycleOwner, Observer {
+            updateMediaDisplay()
+            playbackMediaRequest?.let {
+                viewModel.playMedia(it)
+            }
+        })
     }
 
     override fun onStop() {
@@ -124,7 +133,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
 
     private fun updateUIFromMedia(playbackMedia: PlaybackMedia) {
         if (playbackMedia != lastPlaybackState?.media) {
-            Glide.with(this)
+            Glide.with(requireActivity())
                 .load(playbackMedia.artworkUrl)
                 .fitCenter()
                 .into(artworkImage)
@@ -132,18 +141,18 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         }
     }
 
-    private fun updatePlaybackState(state: State) {
+    private fun updatePlaybackState(state: PlaybackState.State) {
         when (state) {
-            State.PLAYING -> {
+            PlaybackState.State.PLAYING -> {
                 actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp)
             }
-            State.PAUSED -> {
+            PlaybackState.State.PAUSED -> {
                 actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
             }
-            State.NONE, State.STOPPED -> {
+            PlaybackState.State.NONE, PlaybackState.State.STOPPED -> {
                 actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
             }
-            State.BUFFERING -> {
+            PlaybackState.State.BUFFERING -> {
             }
             else -> Log.d("MPO", "Unhandled state $state")
         }
@@ -167,7 +176,7 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
             episodeImageContainer.visibility = View.VISIBLE
             surfaceView.visibility = View.GONE
         } else {
-            val surfaceWidth = findViewById<View>(R.id.playerContent).width
+            val surfaceWidth = playerContent.width
 
             val lp = surfaceView.layoutParams
             // Set the height of the SurfaceView to match the aspect ratio of the video
@@ -184,11 +193,8 @@ class MediaPlayerActivity : BaseActivity<PlayerComponent>(), SurfaceHolder.Callb
         }
     }
 
-    override fun setupComponent(context: Context): PlayerComponent =
-        (context as PlayerComponentProvider).playerComponent()
-
-    override fun inject(component: PlayerComponent) {
-        component.inject(this)
-        component.inject(viewModel)
+    companion object {
+        private const val REPLAY_DURATION_SECONDS = 10
+        private const val SKIP_DURATION_SECONDS = 30
     }
 }

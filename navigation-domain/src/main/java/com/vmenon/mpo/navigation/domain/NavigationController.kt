@@ -22,5 +22,9 @@ interface NavigationController {
         navigationOrigin: NavigationOrigin<P>
     ): P
 
+    fun <P : NavigationParams> getOptionalParams(
+        navigationOrigin: NavigationOrigin<P>
+    ): P?
+
     val currentLocation: Flow<NavigationLocation<*>>
 }

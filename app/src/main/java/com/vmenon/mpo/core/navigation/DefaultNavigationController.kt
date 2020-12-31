@@ -70,6 +70,17 @@ class DefaultNavigationController : NavigationController {
         throw IllegalArgumentException("navigationOrigin is invalid!")
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <P : NavigationParams> getOptionalParams(navigationOrigin: NavigationOrigin<P>): P? {
+        if (navigationOrigin is Activity) {
+            return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P?
+        }
+        if (navigationOrigin is Fragment) {
+            return navigationOrigin.requireArguments().getSerializable(EXTRA_NAVIGATION_BUNDLE) as P?
+        }
+
+        throw IllegalArgumentException("navigationOrigin is invalid!")    }
+
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
 

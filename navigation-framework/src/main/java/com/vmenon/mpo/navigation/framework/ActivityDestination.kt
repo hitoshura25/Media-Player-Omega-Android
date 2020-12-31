@@ -9,7 +9,7 @@ import com.vmenon.mpo.navigation.domain.NavigationParams
 data class ActivityDestination<L : NavigationLocation<*>>(
     val activityClass: Class<*>
 ) : NavigationDestination<L> {
-    fun createIntent(context: Context, params: NavigationParams): Intent =
+    fun <P: NavigationParams> createIntent(context: Context, params: P): Intent =
         Intent(context, activityClass).apply {
             putExtra(
                 EXTRA_NAVIGATION_BUNDLE, params
