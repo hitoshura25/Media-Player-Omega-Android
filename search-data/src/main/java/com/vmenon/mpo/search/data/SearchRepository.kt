@@ -50,22 +50,18 @@ class SearchRepository(
             }
         }
 
-    override suspend fun searchShows(keyword: String): Flow<ResultState<List<ShowSearchResultModel>>> =
-        flow {
-            emit(LoadingState)
-            val showSearchResults = apiDataSource.searchShows(keyword).map { show ->
-                ShowSearchResultModel(
-                    author = show.author,
-                    artworkUrl = show.artworkUrl,
-                    feedUrl = show.feedUrl ?: "",
-                    genres = show.genres,
-                    name = show.name,
-                    description = ""
-                )
-            }
-            cacheDataSource.store(keyword, showSearchResults)
-            cacheDataSource.loadSearchResultsForTerm(keyword)?.let { results ->
-                emit(SuccessState(results))
-            }
+    override suspend fun searchShows(keyword: String): List<ShowSearchResultModel>? {
+        val showSearchResults = apiDataSource.searchShows(keyword).map { show ->
+            ShowSearchResultModel(
+                author = show.author,
+                artworkUrl = show.artworkUrl,
+                feedUrl = show.feedUrl ?: "",
+                genres = show.genres,
+                name = show.name,
+                description = ""
+            )
         }
+        cacheDataSource.store(keyword, showSearchResults)
+        return cacheDataSource.loadSearchResultsForTerm(keyword)
+    }
 }

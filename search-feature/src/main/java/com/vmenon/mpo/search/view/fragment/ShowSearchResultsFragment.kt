@@ -7,25 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.vmenon.mpo.common.domain.ErrorState
-import com.vmenon.mpo.common.domain.LoadingState
-import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.domain.*
+import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
-import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
 import com.vmenon.mpo.view.BaseFragment
 import com.vmenon.mpo.view.LoadingStateHelper
 import kotlinx.android.synthetic.main.fragment_show_search_results.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
@@ -70,39 +65,28 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        showSearchResultsViewModel.searchShows(query).observe(
-            viewLifecycleOwner,
-            Observer { results ->
-                when (results) {
-                    LoadingState -> {
-                        loadingStateHelper.showLoadingState()
-                    }
-                    ErrorState -> {
-                    }
-                    is SuccessState -> {
-                        lifecycleScope.launch {
-                            val diff = showSearchResultsViewModel.calculateDiff(
-                                results.result,
-                                ShowSearchResultsDiff(searchResults, results.result)
-                            )
-                            this@ShowSearchResultsFragment.searchResults = diff.first
-                            adapter.update(
-                                this@ShowSearchResultsFragment.searchResults,
-                                diff.second
-                            )
-                            if (searchResults.isEmpty()) {
-                                noShowsText.visibility = View.VISIBLE
-                                showList.visibility = View.GONE
-                            } else {
-                                showList.visibility = View.VISIBLE
-                                noShowsText.visibility = View.GONE
-                            }
-                            loadingStateHelper.showContentState()
-                        }
-                    }
+        showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query, searchResults))
+        showSearchResultsViewModel.state().observe(viewLifecycleOwner, Observer { state ->
+            state.unhandledContent()?.let { stateContent ->
+                if (stateContent.loading) {
+                    loadingStateHelper.showLoadingState()
+                } else {
+                    loadingStateHelper.showContentState()
+                }
+
+                if (stateContent.currentResults.isEmpty()) {
+                    noShowsText.visibility = View.VISIBLE
+                    showList.visibility = View.GONE
+                } else {
+                    showList.visibility = View.VISIBLE
+                    noShowsText.visibility = View.GONE
+                }
+
+                if (stateContent.diffResult != null) {
+                    adapter.update(stateContent.currentResults, stateContent.diffResult)
                 }
             }
-        )
+        })
     }
 
     override fun onCreateView(

@@ -2,10 +2,13 @@ package com.vmenon.mpo.search.viewmodel
 
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.DiffUtil
-import com.vmenon.mpo.common.domain.ResultState
-import com.vmenon.mpo.search.domain.ShowSearchResultModel
+import com.vmenon.mpo.common.domain.ContentEvent
+import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
+import com.vmenon.mpo.search.mvi.ShowSearchViewState
 import com.vmenon.mpo.search.usecases.SearchInteractors
+import com.vmenon.mpo.search.view.adapter.diff.ShowSearchResultsDiff
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -14,22 +17,52 @@ class ShowSearchResultsViewModel : ViewModel() {
     @Inject
     lateinit var searchInteractors: SearchInteractors
 
-    fun searchShows(keyword: String) = liveData<ResultState<List<ShowSearchResultModel>>> {
-        emitSource(searchInteractors.searchForShows(keyword).asLiveData())
+    private val states = MutableLiveData<ContentEvent<ShowSearchViewState>>()
+    private lateinit var currentState: ShowSearchViewState
+
+    init {
+        setCurrentState(
+            ShowSearchViewState(
+                previousResults = emptyList(),
+                currentResults = emptyList(),
+                loading = true
+            )
+        )
     }
 
-    suspend fun calculateDiff(
-        newSearchResults: List<ShowSearchResultModel>,
-        callback: DiffUtil.Callback
-    ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> {
-        return getDiff(newSearchResults, callback)
+    fun state(): LiveData<ContentEvent<ShowSearchViewState>> = states
+
+    fun send(event: ShowSearchViewEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is ShowSearchViewEvent.SearchRequestedEvent -> searchShows(event.keyword)
+            }
+        }
     }
 
-    private suspend fun getDiff(
-        newSearchResults: List<ShowSearchResultModel>,
-        callback: DiffUtil.Callback
-    ): Pair<List<ShowSearchResultModel>, DiffUtil.DiffResult> =
+    private fun setCurrentState(state: ShowSearchViewState) {
+        currentState = state
+        states.postValue(ContentEvent(currentState))
+    }
+
+    private suspend fun searchShows(keyword: String) {
+        val newResults = searchInteractors.searchForShows(keyword) ?: emptyList()
+        val diffResult = getDiff(
+            ShowSearchResultsDiff(currentState.currentResults, newResults)
+        )
+
+        setCurrentState(
+            currentState.copy(
+                previousResults = currentState.currentResults,
+                currentResults = newResults,
+                diffResult = diffResult,
+                loading = false
+            )
+        )
+    }
+
+    private suspend fun getDiff(callback: DiffUtil.Callback): DiffUtil.DiffResult =
         withContext(Dispatchers.Default) {
-            Pair(newSearchResults, DiffUtil.calculateDiff(callback))
+            DiffUtil.calculateDiff(callback)
         }
 }
