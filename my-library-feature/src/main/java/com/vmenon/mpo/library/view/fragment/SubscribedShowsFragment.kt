@@ -46,7 +46,7 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         }
         showList.setHasFixedSize(true)
         showList.layoutManager = GridLayoutManager(context, 3)
-        viewModel.subscribedShows.observe(viewLifecycleOwner, Observer { result ->
+        viewModel.subscribedShows().observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 LoadingState -> {
                 }

@@ -18,7 +18,7 @@ class SubscribedShowsViewModel : ViewModel() {
         }
     }
 
-    val subscribedShows: LiveData<ResultState<List<ShowModel>>> = liveData {
+    fun subscribedShows(): LiveData<ResultState<List<ShowModel>>> = liveData {
         emitSource(myLibraryInteractors.getSubscribedShows().asLiveData())
     }
 }
