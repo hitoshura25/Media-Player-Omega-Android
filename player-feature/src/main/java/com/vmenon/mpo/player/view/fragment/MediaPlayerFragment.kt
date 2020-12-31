@@ -53,9 +53,9 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
         playOnStart = savedInstanceState == null
+        lastPlaybackState = null
 
         actionButton.setOnClickListener {
             playbackMediaRequest?.let {
