@@ -60,14 +60,8 @@ class DefaultNavigationController : NavigationController {
     override fun <P : NavigationParams> getParams(
         navigationOrigin: NavigationOrigin<P>
     ): P {
-        if (navigationOrigin is Activity) {
-            return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P
-        }
-        if (navigationOrigin is Fragment) {
-            return navigationOrigin.requireArguments().getSerializable(EXTRA_NAVIGATION_BUNDLE) as P
-        }
-
-        throw IllegalArgumentException("navigationOrigin is invalid!")
+        return getOptionalParams(navigationOrigin)
+            ?: throw IllegalArgumentException("required parameters were not set!")
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -76,10 +70,12 @@ class DefaultNavigationController : NavigationController {
             return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P?
         }
         if (navigationOrigin is Fragment) {
-            return navigationOrigin.requireArguments().getSerializable(EXTRA_NAVIGATION_BUNDLE) as P?
+            return navigationOrigin.arguments
+                ?.getSerializable(EXTRA_NAVIGATION_BUNDLE) as P?
         }
 
-        throw IllegalArgumentException("navigationOrigin is invalid!")    }
+        throw IllegalArgumentException("navigationOrigin is invalid!")
+    }
 
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
