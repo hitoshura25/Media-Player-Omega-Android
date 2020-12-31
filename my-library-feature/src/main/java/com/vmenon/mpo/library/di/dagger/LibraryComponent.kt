@@ -1,7 +1,7 @@
 package com.vmenon.mpo.library.di.dagger
 
-import com.vmenon.mpo.library.view.activity.EpisodeDetailsActivity
-import com.vmenon.mpo.library.view.activity.LibraryActivity
+import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment
+import com.vmenon.mpo.library.view.fragment.LibraryFragment
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
@@ -16,10 +16,10 @@ interface LibraryComponent {
         fun create(): LibraryComponent
     }
 
-    fun inject(activity: LibraryActivity)
+    fun inject(fragment: LibraryFragment)
     fun inject(viewModel: LibraryViewModel)
 
-    fun inject(activity: EpisodeDetailsActivity)
+    fun inject(fragment: EpisodeDetailsFragment)
     fun inject(viewModel: EpisodeDetailsViewModel)
 
     fun inject(fragment: SubscribedShowsFragment)

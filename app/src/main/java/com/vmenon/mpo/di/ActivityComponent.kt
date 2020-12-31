@@ -1,6 +1,7 @@
 package com.vmenon.mpo.di
 
 import com.vmenon.mpo.view.activity.*
+import com.vmenon.mpo.viewmodel.HomeViewModel
 import dagger.Subcomponent
 
 @Subcomponent
@@ -12,4 +13,5 @@ interface ActivityComponent {
     }
 
     fun inject(activity: HomeActivity)
+    fun inject(viewModel: HomeViewModel)
 }

@@ -8,6 +8,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.fragment.app.Fragment
 import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.domain.PlaybackState.*
 import kotlinx.coroutines.MainScope
@@ -63,14 +64,12 @@ class AndroidMediaBrowserServicePlayerEngine(
     }
 
     override suspend fun connectClient(playerClient: PlayerClient): Boolean {
-        if (playerClient !is Activity) {
-            throw IllegalArgumentException("playerClient needs to be an activity!")
-        }
+        val activity = getActivityFromClient(playerClient)
         connected = connectToSession()
         if (connected) {
             mediaBrowser?.let { mediaBrowser ->
                 val mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken)
-                MediaControllerCompat.setMediaController(playerClient, mediaController)
+                MediaControllerCompat.setMediaController(activity, mediaController)
                 mediaController.registerCallback(controllerCallback)
                 this.mediaController = mediaController
             }
@@ -107,8 +106,9 @@ class AndroidMediaBrowserServicePlayerEngine(
     }
 
     override suspend fun disconnectClient(playerClient: PlayerClient) {
-        if (MediaControllerCompat.getMediaController(playerClient as Activity) != null) {
-            MediaControllerCompat.getMediaController(playerClient)
+        val activity = getActivityFromClient(playerClient)
+        if (MediaControllerCompat.getMediaController(activity) != null) {
+            MediaControllerCompat.getMediaController(activity)
                 .unregisterCallback(controllerCallback)
         }
 
@@ -154,5 +154,11 @@ class AndroidMediaBrowserServicePlayerEngine(
 
     private suspend fun sendPlaybackState() {
         getCurrentPlaybackState()?.let { playbackStateFlow.emit(it) }
+    }
+
+    private fun getActivityFromClient(playerClient: PlayerClient) = when (playerClient) {
+        is Activity -> playerClient
+        is Fragment -> playerClient.requireActivity()
+        else -> throw IllegalArgumentException("playerClient needs to be an activity or fragment!")
     }
 }

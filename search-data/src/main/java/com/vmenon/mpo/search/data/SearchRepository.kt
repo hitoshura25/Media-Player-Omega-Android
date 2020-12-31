@@ -15,9 +15,6 @@ class SearchRepository(
     private val apiDataSource: SearchApiDataSource,
     private val cacheDataSource: SearchCacheDataSource
 ) : ShowSearchService {
-    suspend fun getShowSearchResultsForTerm(term: String): List<ShowSearchResultModel>? {
-        return cacheDataSource.loadSearchResultsForTerm(term)
-    }
 
     override suspend fun getShowDetails(showSearchResultId: Long): Flow<ResultState<ShowSearchResultDetailsModel>> =
         flow {

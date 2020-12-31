@@ -44,6 +44,7 @@ dependencies {
     api project(':player-usecases')
 
     implementation libraries.dagger
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt libraries.dagger_annotations
 
     implementation libraries.glide

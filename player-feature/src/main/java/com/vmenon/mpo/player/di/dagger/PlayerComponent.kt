@@ -1,7 +1,7 @@
 package com.vmenon.mpo.player.di.dagger
 
 import com.vmenon.mpo.player.framework.MPOMediaBrowserService
-import com.vmenon.mpo.player.view.activity.MediaPlayerActivity
+import com.vmenon.mpo.player.view.fragment.MediaPlayerFragment
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
 import dagger.Subcomponent
 
@@ -13,7 +13,7 @@ interface PlayerComponent {
         fun create(): PlayerComponent
     }
 
-    fun inject(activity: MediaPlayerActivity)
+    fun inject(fragment: MediaPlayerFragment)
     fun inject(viewModel: MediaPlayerViewModel)
     fun inject(service: MPOMediaBrowserService)
 }

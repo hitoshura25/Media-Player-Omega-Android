@@ -18,6 +18,8 @@ buildscript {
         rxJavaVersion = '2.2.9'
         rxJavaAndroidVersion = '2.1.0'
         coroutinesVersion = '1.4.2'
+        appCompatVersion = '1.1.0'
+        fragmentVersion = '1.2.5'
 
         libraries = [
                 androidx_media: [

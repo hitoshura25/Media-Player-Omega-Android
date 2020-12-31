@@ -1,28 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vmenon.mpo.search">
-    <application>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowSearchResultsActivity"
-            android:theme="@style/AppThemeNoActionBar"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/show_searchable" />
-        </activity>
-        <activity
-            android:name="com.vmenon.mpo.search.view.activity.ShowDetailsActivity"
-            android:label=""
-            android:parentActivityName="com.vmenon.mpo.view.activity.HomeActivity"
-            android:theme="@style/AppThemeNoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmenon.mpo.view.activity.HomeActivity" />
-        </activity>
-
-    </application>
-
-</manifest>
+    package="com.vmenon.mpo.search"/>

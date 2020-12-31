@@ -1,10 +1,30 @@
 package com.vmenon.mpo.navigation.domain
 
+import kotlinx.coroutines.flow.Flow
+
 interface NavigationController {
-    fun onNavigationSelected(
-        request: NavigationRequest<*, *>,
-        navigationOrigin: NavigationOrigin<*>
+    fun <P: NavigationParams, L: NavigationLocation<P>> navigate(
+        navigationOrigin: NavigationOrigin<*>,
+        navigationDestination: NavigationDestination<L>,
+        navigationParams: P
     )
 
-    fun <P: NavigationParams> getParams(navigationOrigin: NavigationOrigin<P>): P
+    fun <L: NavigationLocation<NoNavigationParams>> navigate(
+        navigationOrigin: NavigationOrigin<*>,
+        navigationDestination: NavigationDestination<L>
+    ) {
+        navigate(navigationOrigin, navigationDestination, NoNavigationParams)
+    }
+
+    fun setOrigin(navigationOrigin: NavigationOrigin<*>)
+
+    fun <P : NavigationParams> getParams(
+        navigationOrigin: NavigationOrigin<P>
+    ): P
+
+    fun <P : NavigationParams> getOptionalParams(
+        navigationOrigin: NavigationOrigin<P>
+    ): P?
+
+    val currentLocation: Flow<NavigationLocation<*>>
 }

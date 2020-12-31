@@ -16,13 +16,9 @@ class MediaPlayerViewModel : ViewModel() {
         emitSource(playerInteractors.listenForPlayBackStateChanges().asLiveData())
     }
 
-    val connected: LiveData<Unit> = MutableLiveData()
-
-    fun connectClient(client: PlayerClient) {
-        viewModelScope.launch {
-            if (playerInteractors.connectPlayerClient(client)) {
-                (connected as MutableLiveData).postValue(Unit)
-            }
+    fun connectClient(client: PlayerClient) = liveData {
+        if (playerInteractors.connectPlayerClient(client)) {
+            emit(Unit)
         }
     }
 

@@ -5,5 +5,6 @@ data class MyLibraryInteractors(
     val getEpisodeDetails: GetEpisodeDetails,
     val updateAllShows: UpdateAllShows,
     val getSubscribedShows: GetSubscribedShows,
-    val playEpisode: PlayEpisode
+    val playEpisode: PlayEpisode,
+    val searchForShows: SearchForShows
 )
