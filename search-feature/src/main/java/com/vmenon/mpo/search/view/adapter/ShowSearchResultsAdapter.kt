@@ -11,15 +11,16 @@ import androidx.recyclerview.widget.DiffUtil
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.search.R
+import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import kotlinx.android.synthetic.main.show_result.view.*
 
 class ShowSearchResultsAdapter :
     RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
     private var listener: ShowSelectedListener? = null
-    private val shows = ArrayList<com.vmenon.mpo.search.domain.ShowSearchResultModel>()
+    private val shows = ArrayList<ShowSearchResultModel>()
 
     interface ShowSelectedListener {
-        fun onShowSelected(show: com.vmenon.mpo.search.domain.ShowSearchResultModel)
+        fun onShowSelected(show: ShowSearchResultModel)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -31,7 +32,7 @@ class ShowSearchResultsAdapter :
         this.listener = listener
     }
 
-    fun update(searchResults: List<com.vmenon.mpo.search.domain.ShowSearchResultModel>, diffResult: DiffUtil.DiffResult) {
+    fun update(searchResults: List<ShowSearchResultModel>, diffResult: DiffUtil.DiffResult) {
         this.shows.clear()
         this.shows.addAll(searchResults)
         diffResult.dispatchUpdatesTo(this)

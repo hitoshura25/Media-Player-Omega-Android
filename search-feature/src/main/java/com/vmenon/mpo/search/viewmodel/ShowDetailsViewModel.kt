@@ -1,15 +1,17 @@
 package com.vmenon.mpo.search.viewmodel
 
 import androidx.lifecycle.*
-import com.vmenon.mpo.common.domain.ResultState
-import com.vmenon.mpo.downloads.domain.DownloadModel
-import com.vmenon.mpo.my_library.domain.ShowModel
+import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEffect
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEvent
+import com.vmenon.mpo.search.mvi.ShowDetailsViewState
 import com.vmenon.mpo.search.usecases.SearchInteractors
 
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 class ShowDetailsViewModel : ViewModel() {
@@ -17,30 +19,72 @@ class ShowDetailsViewModel : ViewModel() {
     @Inject
     lateinit var searchInteractors: SearchInteractors
 
-    private val showSubscribed = MutableLiveData<ShowModel>()
-    private val downloadQueued = MutableLiveData<DownloadModel>()
+    private val initialState = ShowDetailsViewState(loading = true)
+    private val states =
+        MutableLiveData<ContentEvent<ShowDetailsViewState>>(ContentEvent(initialState))
+    private val effects = MutableLiveData<ContentEvent<ShowDetailsViewEffect>>()
 
-    fun showSubscribed(): LiveData<ShowModel> = showSubscribed
-
-    fun downloadQueued(): LiveData<DownloadModel> = downloadQueued
-
-    fun getShowDetails(showSearchResultId: Long): LiveData<ResultState<ShowSearchResultDetailsModel>> =
-        liveData {
-            emitSource(searchInteractors.getShowDetails(showSearchResultId).asLiveData())
+    private var currentState: ShowDetailsViewState
+        get() = states.value?.anyContent() ?: initialState
+        set(value) {
+            states.postValue(ContentEvent(value))
         }
 
-    fun subscribeToShow(showDetails: ShowSearchResultDetailsModel) {
+    fun states(): LiveData<ContentEvent<ShowDetailsViewState>> = states
+    fun effects(): LiveData<ContentEvent<ShowDetailsViewEffect>> = effects
+
+    fun send(event: ShowDetailsViewEvent) {
         viewModelScope.launch {
-            showSubscribed.postValue(searchInteractors.subscribeToShow(showDetails))
+            when (event) {
+                is ShowDetailsViewEvent.LoadShowDetailsEvent -> getShowDetails(
+                    event.showSearchResultId
+                )
+                is ShowDetailsViewEvent.SubscribeToShowEvent -> subscribeToShow(event.showDetails)
+                is ShowDetailsViewEvent.QueueDownloadEvent -> queueDownload(
+                    event.show,
+                    event.episode
+                )
+            }
         }
     }
 
-    fun queueDownload(
+    private suspend fun getShowDetails(showSearchResultId: Long) {
+        currentState = try {
+            val details = searchInteractors.getShowDetails(showSearchResultId)
+            currentState.copy(
+                showDetails = details,
+                loading = false,
+                error = false
+            )
+        } catch (e: Exception) {
+            currentState.copy(
+                loading = false,
+                error = true
+            )
+        }
+    }
+
+    private suspend fun subscribeToShow(showDetails: ShowSearchResultDetailsModel) {
+        effects.postValue(
+            ContentEvent(
+                ShowDetailsViewEffect.ShowSubscribedViewEffect(
+                    searchInteractors.subscribeToShow(showDetails)
+                )
+            )
+        )
+        currentState = currentState.copy(showDetails = showDetails.copy(subscribed = true))
+    }
+
+    private suspend fun queueDownload(
         show: ShowSearchResultModel,
         episode: ShowSearchResultEpisodeModel
     ) {
-        viewModelScope.launch {
-            downloadQueued.postValue(searchInteractors.queueDownloadForShow(show, episode))
-        }
+        effects.postValue(
+            ContentEvent(
+                ShowDetailsViewEffect.DownloadQueuedViewEffect(
+                    searchInteractors.queueDownloadForShow(show, episode)
+                )
+            )
+        )
     }
 }

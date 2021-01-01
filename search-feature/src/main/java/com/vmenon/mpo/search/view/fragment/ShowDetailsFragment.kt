@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.vmenon.mpo.common.domain.ErrorState
-import com.vmenon.mpo.common.domain.LoadingState
-import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
@@ -24,6 +21,8 @@ import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowDetailsParams
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEffect
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEvent
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
 import com.vmenon.mpo.view.BaseFragment
@@ -35,20 +34,16 @@ import kotlinx.android.synthetic.main.fragment_show_details.detailsContainer
 import kotlinx.android.synthetic.main.fragment_show_details.toolbar
 
 class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
-    NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation),
-    EpisodesAdapter.EpisodeSelectedListener {
+    NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation) {
     private lateinit var loadingStateHelper: LoadingStateHelper
 
     private var collapsed = false
     private var scrollRange = -1
 
-    private val collapsedToolbarTitle: CharSequence
-        get() = show?.show?.name ?: ""
-    private val expandedToolbarTitle: CharSequence
-        get() = ""
+    private var collapsedToolbarTitle: CharSequence = ""
+    private val expandedToolbarTitle: CharSequence = ""
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
-    private var show: ShowSearchResultDetailsModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,45 +68,54 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
         fab.setImageResource(R.drawable.ic_add_white_48dp)
-        fab.setOnClickListener {
-            show?.let { showDetails ->
-                showDetailsViewModel.subscribeToShow(showDetails)
-            }
-        }
-
         appbar.addOnOffsetChangedListener(this)
 
         loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
         val showId = navigationController.getParams(this).showSearchResultId
-        showDetailsViewModel.getShowDetails(showId)
-            .observe(viewLifecycleOwner, Observer { showDetails ->
-                when (showDetails) {
-                    LoadingState -> loadingStateHelper.showLoadingState()
-                    ErrorState -> {
-
-                    }
-                    is SuccessState -> displayDetails(showDetails.result)
+        showDetailsViewModel.send(ShowDetailsViewEvent.LoadShowDetailsEvent(showId))
+        showDetailsViewModel.states().observe(viewLifecycleOwner, Observer { event ->
+            event.unhandledContent()?.let { state ->
+                if (state.loading) {
+                    loadingStateHelper.showLoadingState()
+                } else {
+                    loadingStateHelper.showContentState()
                 }
-
-            })
-
-        showDetailsViewModel.showSubscribed().observe(viewLifecycleOwner, Observer {
-            Snackbar.make(
-                detailsContainer, "You have subscribed to this show",
-                Snackbar.LENGTH_LONG
-            )
-                .setAction("UNDO", undoListener)
-                .show()
+                if (state.showDetails != null) {
+                    collapsedToolbarTitle = state.showDetails.show.name
+                    displayDetails(state.showDetails)
+                    fab.setOnClickListener {
+                        showDetailsViewModel.send(
+                            ShowDetailsViewEvent.SubscribeToShowEvent(state.showDetails)
+                        )
+                    }
+                } else {
+                    fab.setOnClickListener(null)
+                    collapsedToolbarTitle = ""
+                }
+            }
         })
-
-        showDetailsViewModel.downloadQueued().observe(viewLifecycleOwner, Observer {
-            Snackbar.make(
-                detailsContainer,
-                "Episode download has been queued",
-                Snackbar.LENGTH_LONG
-            ).show()
+        showDetailsViewModel.effects().observe(viewLifecycleOwner, Observer { event ->
+            event.unhandledContent()?.let { effect ->
+                when (effect) {
+                    is ShowDetailsViewEffect.ShowSubscribedViewEffect -> {
+                        Snackbar.make(
+                            detailsContainer, "You have subscribed to this show",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .setAction("UNDO", undoListener)
+                            .show()
+                    }
+                    is ShowDetailsViewEffect.DownloadQueuedViewEffect -> {
+                        Snackbar.make(
+                            detailsContainer,
+                            "Episode download has been queued",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
         })
     }
 
@@ -128,22 +132,7 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
         }
     }
 
-    override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
-        Snackbar.make(
-            detailsContainer,
-            "Not Implemented yet",
-            Snackbar.LENGTH_LONG
-        ).show()
-    }
-
-    override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
-        show?.let { details ->
-            showDetailsViewModel.queueDownload(details.show, episode)
-        }
-    }
-
     private fun displayDetails(showDetails: ShowSearchResultDetailsModel) {
-        show = showDetails
         @Suppress("DEPRECATION")
         showDescription.text = Html.fromHtml(showDetails.show.description)
         Glide.with(requireActivity()).load(showDetails.show.artworkUrl).fitCenter().into(showImage)
@@ -152,7 +141,24 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
         val layoutManager = LinearLayoutManager(requireContext())
         episodesList.layoutManager = layoutManager
         episodesList.adapter = EpisodesAdapter(showDetails).apply {
-            setListener(this@ShowDetailsFragment)
+            setListener(object : EpisodesAdapter.EpisodeSelectedListener {
+                override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
+                    Snackbar.make(
+                        detailsContainer,
+                        "Not Implemented yet",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+
+                override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
+                    showDetailsViewModel.send(
+                        ShowDetailsViewEvent.QueueDownloadEvent(
+                            showDetails.show,
+                            episode
+                        )
+                    )
+                }
+            })
         }
         loadingStateHelper.showContentState()
         toggleSubscribeButton(showDetails.subscribed)
