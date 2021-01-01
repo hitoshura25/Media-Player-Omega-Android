@@ -17,18 +17,15 @@ class ShowSearchResultsViewModel : ViewModel() {
     @Inject
     lateinit var searchInteractors: SearchInteractors
 
-    private val states = MutableLiveData<ContentEvent<ShowSearchViewState>>()
-    private lateinit var currentState: ShowSearchViewState
+    private val initialState = ShowSearchViewState(
+        previousResults = emptyList(),
+        currentResults = emptyList(),
+        loading = true
+    )
+    private val states =
+        MutableLiveData<ContentEvent<ShowSearchViewState>>(ContentEvent(initialState))
 
-    init {
-        setCurrentState(
-            ShowSearchViewState(
-                previousResults = emptyList(),
-                currentResults = emptyList(),
-                loading = true
-            )
-        )
-    }
+    private var currentState: ShowSearchViewState = initialState
 
     fun state(): LiveData<ContentEvent<ShowSearchViewState>> = states
 

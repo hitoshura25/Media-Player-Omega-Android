@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.vmenon.mpo.common.domain.ErrorState
-import com.vmenon.mpo.common.domain.LoadingState
-import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
@@ -24,6 +21,8 @@ import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowDetailsParams
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEffect
+import com.vmenon.mpo.search.mvi.ShowDetailsViewEvent
 import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
 import com.vmenon.mpo.view.BaseFragment
@@ -75,7 +74,7 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
         fab.setImageResource(R.drawable.ic_add_white_48dp)
         fab.setOnClickListener {
             show?.let { showDetails ->
-                showDetailsViewModel.subscribeToShow(showDetails)
+                showDetailsViewModel.send(ShowDetailsViewEvent.SubscribeToShowEvent(showDetails))
             }
         }
 
@@ -85,33 +84,39 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
         val showId = navigationController.getParams(this).showSearchResultId
-        showDetailsViewModel.getShowDetails(showId)
-            .observe(viewLifecycleOwner, Observer { showDetails ->
-                when (showDetails) {
-                    LoadingState -> loadingStateHelper.showLoadingState()
-                    ErrorState -> {
-
-                    }
-                    is SuccessState -> displayDetails(showDetails.result)
+        showDetailsViewModel.send(ShowDetailsViewEvent.LoadShowDetailsEvent(showId))
+        showDetailsViewModel.states().observe(viewLifecycleOwner, Observer { event ->
+            event.unhandledContent()?.let { state ->
+                if (state.loading) {
+                    loadingStateHelper.showLoadingState()
+                } else {
+                    loadingStateHelper.showContentState()
                 }
-
-            })
-
-        showDetailsViewModel.showSubscribed().observe(viewLifecycleOwner, Observer {
-            Snackbar.make(
-                detailsContainer, "You have subscribed to this show",
-                Snackbar.LENGTH_LONG
-            )
-                .setAction("UNDO", undoListener)
-                .show()
+                if (state.showDetails != null) {
+                    displayDetails(state.showDetails)
+                }
+            }
         })
-
-        showDetailsViewModel.downloadQueued().observe(viewLifecycleOwner, Observer {
-            Snackbar.make(
-                detailsContainer,
-                "Episode download has been queued",
-                Snackbar.LENGTH_LONG
-            ).show()
+        showDetailsViewModel.effects().observe(viewLifecycleOwner, Observer { event ->
+            event.unhandledContent()?.let { effect ->
+                when (effect) {
+                    is ShowDetailsViewEffect.ShowSubscribedViewEffect -> {
+                        Snackbar.make(
+                            detailsContainer, "You have subscribed to this show",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .setAction("UNDO", undoListener)
+                            .show()
+                    }
+                    is ShowDetailsViewEffect.DownloadQueuedViewEffect -> {
+                        Snackbar.make(
+                            detailsContainer,
+                            "Episode download has been queued",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
         })
     }
 
@@ -138,7 +143,12 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
 
     override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
         show?.let { details ->
-            showDetailsViewModel.queueDownload(details.show, episode)
+            showDetailsViewModel.send(
+                ShowDetailsViewEvent.QueueDownloadEvent(
+                    details.show,
+                    episode
+                )
+            )
         }
     }
 
