@@ -25,7 +25,11 @@ class ShowSearchResultsViewModel : ViewModel() {
     private val states =
         MutableLiveData<ContentEvent<ShowSearchViewState>>(ContentEvent(initialState))
 
-    private var currentState: ShowSearchViewState = initialState
+    private var currentState: ShowSearchViewState
+        get() = states.value?.anyContent() ?: initialState
+        set(value) {
+            states.postValue(ContentEvent(value))
+        }
 
     fun state(): LiveData<ContentEvent<ShowSearchViewState>> = states
 
@@ -37,24 +41,17 @@ class ShowSearchResultsViewModel : ViewModel() {
         }
     }
 
-    private fun setCurrentState(state: ShowSearchViewState) {
-        currentState = state
-        states.postValue(ContentEvent(currentState))
-    }
-
     private suspend fun searchShows(keyword: String) {
         val newResults = searchInteractors.searchForShows(keyword) ?: emptyList()
         val diffResult = getDiff(
             ShowSearchResultsDiff(currentState.currentResults, newResults)
         )
 
-        setCurrentState(
-            currentState.copy(
-                previousResults = currentState.currentResults,
-                currentResults = newResults,
-                diffResult = diffResult,
-                loading = false
-            )
+        currentState = currentState.copy(
+            previousResults = currentState.currentResults,
+            currentResults = newResults,
+            diffResult = diffResult,
+            loading = false
         )
     }
 
