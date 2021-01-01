@@ -34,20 +34,16 @@ import kotlinx.android.synthetic.main.fragment_show_details.detailsContainer
 import kotlinx.android.synthetic.main.fragment_show_details.toolbar
 
 class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
-    NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation),
-    EpisodesAdapter.EpisodeSelectedListener {
+    NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation) {
     private lateinit var loadingStateHelper: LoadingStateHelper
 
     private var collapsed = false
     private var scrollRange = -1
 
-    private val collapsedToolbarTitle: CharSequence
-        get() = show?.show?.name ?: ""
-    private val expandedToolbarTitle: CharSequence
-        get() = ""
+    private var collapsedToolbarTitle: CharSequence = ""
+    private val expandedToolbarTitle: CharSequence = ""
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
-    private var show: ShowSearchResultDetailsModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,12 +68,6 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
         fab.setImageResource(R.drawable.ic_add_white_48dp)
-        fab.setOnClickListener {
-            show?.let { showDetails ->
-                showDetailsViewModel.send(ShowDetailsViewEvent.SubscribeToShowEvent(showDetails))
-            }
-        }
-
         appbar.addOnOffsetChangedListener(this)
 
         loadingStateHelper = LoadingStateHelper(contentProgressBar, detailsContainer)
@@ -93,7 +83,16 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
                     loadingStateHelper.showContentState()
                 }
                 if (state.showDetails != null) {
+                    collapsedToolbarTitle = state.showDetails.show.name
                     displayDetails(state.showDetails)
+                    fab.setOnClickListener {
+                        showDetailsViewModel.send(
+                            ShowDetailsViewEvent.SubscribeToShowEvent(state.showDetails)
+                        )
+                    }
+                } else {
+                    fab.setOnClickListener(null)
+                    collapsedToolbarTitle = ""
                 }
             }
         })
@@ -133,27 +132,7 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
         }
     }
 
-    override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
-        Snackbar.make(
-            detailsContainer,
-            "Not Implemented yet",
-            Snackbar.LENGTH_LONG
-        ).show()
-    }
-
-    override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
-        show?.let { details ->
-            showDetailsViewModel.send(
-                ShowDetailsViewEvent.QueueDownloadEvent(
-                    details.show,
-                    episode
-                )
-            )
-        }
-    }
-
     private fun displayDetails(showDetails: ShowSearchResultDetailsModel) {
-        show = showDetails
         @Suppress("DEPRECATION")
         showDescription.text = Html.fromHtml(showDetails.show.description)
         Glide.with(requireActivity()).load(showDetails.show.artworkUrl).fitCenter().into(showImage)
@@ -162,7 +141,24 @@ class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffs
         val layoutManager = LinearLayoutManager(requireContext())
         episodesList.layoutManager = layoutManager
         episodesList.adapter = EpisodesAdapter(showDetails).apply {
-            setListener(this@ShowDetailsFragment)
+            setListener(object : EpisodesAdapter.EpisodeSelectedListener {
+                override fun onPlayEpisode(episode: ShowSearchResultEpisodeModel) {
+                    Snackbar.make(
+                        detailsContainer,
+                        "Not Implemented yet",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+
+                override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
+                    showDetailsViewModel.send(
+                        ShowDetailsViewEvent.QueueDownloadEvent(
+                            showDetails.show,
+                            episode
+                        )
+                    )
+                }
+            })
         }
         loadingStateHelper.showContentState()
         toggleSubscribeButton(showDetails.subscribed)
