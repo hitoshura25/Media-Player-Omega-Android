@@ -31,7 +31,7 @@ class ShowSearchResultsViewModel : ViewModel() {
             states.postValue(ContentEvent(value))
         }
 
-    fun state(): LiveData<ContentEvent<ShowSearchViewState>> = states
+    fun states(): LiveData<ContentEvent<ShowSearchViewState>> = states
 
     fun send(event: ShowSearchViewEvent) {
         viewModelScope.launch {

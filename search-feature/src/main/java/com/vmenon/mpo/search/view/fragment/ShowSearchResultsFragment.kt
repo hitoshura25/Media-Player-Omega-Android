@@ -34,7 +34,6 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
 
     private lateinit var adapter: ShowSearchResultsAdapter
     private lateinit var loadingStateHelper: LoadingStateHelper
-    private lateinit var searchResults: List<ShowSearchResultModel>
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -52,7 +51,6 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
                 DividerItemDecoration.VERTICAL
             )
         )
-        searchResults = emptyList()
         adapter = ShowSearchResultsAdapter()
         adapter.setListener(this)
         showList.adapter = adapter
@@ -65,8 +63,8 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query, searchResults))
-        showSearchResultsViewModel.state().observe(viewLifecycleOwner, Observer { state ->
+        showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query))
+        showSearchResultsViewModel.states().observe(viewLifecycleOwner, Observer { state ->
             state.unhandledContent()?.let { stateContent ->
                 if (stateContent.loading) {
                     loadingStateHelper.showLoadingState()
