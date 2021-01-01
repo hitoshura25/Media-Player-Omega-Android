@@ -22,8 +22,7 @@ class ShowSearchResultsViewModel : ViewModel() {
         currentResults = emptyList(),
         loading = true
     )
-    private val states =
-        MutableLiveData<ContentEvent<ShowSearchViewState>>(ContentEvent(initialState))
+    private val states = MutableLiveData(ContentEvent(initialState))
 
     private var currentState: ShowSearchViewState
         get() = states.value?.anyContent() ?: initialState

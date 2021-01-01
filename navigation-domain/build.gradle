@@ -1,6 +1,29 @@
 plugins {
-    id 'java-library'
-    id 'kotlin'
+    id 'kotlin-multiplatform'
+    id('com.android.library')
+}
+
+kotlin {
+    android()
+    ios()
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+            }
+        }
+    }
+}
+
+android {
+    compileSdkVersion rootProject.ext.targetSDKVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSDKVersion
+        targetSdkVersion rootProject.ext.targetSDKVersion
+    }
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 }
 
 java {
@@ -8,7 +31,3 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dependencies {
-    implementation libraries.coroutines
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-}

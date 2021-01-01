@@ -1,6 +1,20 @@
 plugins {
-    id 'java-library'
-    id 'kotlin'
+    id 'kotlin-multiplatform'
+    id('com.android.library')
+}
+
+kotlin {
+    android()
+    ios()
+}
+
+android {
+    compileSdkVersion rootProject.ext.targetSDKVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSDKVersion
+        targetSdkVersion rootProject.ext.targetSDKVersion
+    }
 }
 
 java {

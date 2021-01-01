@@ -2,6 +2,8 @@
 
 buildscript {
     ext {
+        minSDKVersion = 16
+        targetSDKVersion = 29
         kotlinVersion = '1.4.0'
         supportLibraryVersion = '28.1.0'
         retrofitVersion = '2.3.0'
