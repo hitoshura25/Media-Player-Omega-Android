@@ -1,6 +1,0 @@
-framework module app_shared {
-    umbrella header "app_shared.h"
-
-    export *
-    module * { export * }
-}
