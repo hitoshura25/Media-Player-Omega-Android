@@ -37,6 +37,13 @@ buildscript {
                 dagger_annotations: [
                         "com.google.dagger:dagger-compiler:$daggerVersion"
                 ],
+                dagger_android: [
+                        "com.google.dagger:dagger-android:$daggerVersion",
+                        "com.google.dagger:dagger-android-support:$daggerVersion"
+                ],
+                dagger_android_annotations: [
+                        "com.google.dagger:dagger-android-processor:$daggerVersion"
+                ],
                 reactive: [
                         "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
                 ],
