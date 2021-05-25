@@ -15,7 +15,7 @@ buildscript {
         coreKtxVersion = '1.2.0'
         coroutinesVersion = '1.4.2'
         daggerVersion = '2.27'
-        exoPlayerVersion = '2.11.4'
+        exoPlayerVersion = '2.14.0'
         fragmentVersion = '1.2.5'
         glideVersion = '3.7.0'
         gsonVersion = '2.8.5'
@@ -89,7 +89,6 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter() // TODO: Remove
         mavenCentral()
         google()
     }

@@ -8,6 +8,7 @@ import android.view.SurfaceHolder
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -94,14 +95,15 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
         )
         val extractorsFactory = DefaultExtractorsFactory()
         val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory)
-            .createMediaSource(Uri.fromFile(file))
+            .createMediaSource(MediaItem.Builder().setUri(Uri.fromFile(file)).build())
         exoPlayer?.playWhenReady = false
 
         file.useFileDescriptor { fileDescriptor ->
             mediaMetadataRetriever.setDataSource(fileDescriptor)
         }
         prepareRequested = true
-        exoPlayer?.prepare(videoSource)
+        exoPlayer?.setMediaSource(videoSource)
+        exoPlayer?.prepare()
     }
 
     override fun doCleanUp() {
@@ -113,13 +115,14 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
     private fun createMediaPlayerIfNeeded() {
         Log.d("MPO", "createMediaPlayerIfNeeded. needed? " + (exoPlayer == null))
         if (exoPlayer == null) {
-            exoPlayer = SimpleExoPlayer.Builder(appContext).build()
-            exoPlayer?.addListener(ExoPlayerEventListener())
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(CONTENT_TYPE_SPEECH)
                 .setUsage(USAGE_MEDIA)
                 .build()
-            exoPlayer?.audioAttributes = audioAttributes
+            exoPlayer = SimpleExoPlayer.Builder(appContext)
+                .setAudioAttributes(audioAttributes, false)
+                .build()
+            exoPlayer?.addListener(ExoPlayerEventListener())
 
             /** TODO
              * // Make sure the media player will acquire a wake-lock while
@@ -135,7 +138,7 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
         }
     }
 
-    private inner class ExoPlayerEventListener : Player.EventListener {
+    private inner class ExoPlayerEventListener : Player.Listener {
         override fun onTracksChanged(
             trackGroups: TrackGroupArray,
             trackSelections: TrackSelectionArray
