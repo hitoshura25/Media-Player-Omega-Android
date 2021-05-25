@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vmenon.mpo.player">
+    package="com.vmenon.mpo.player.framework">
     <application>
         <service android:name="com.vmenon.mpo.player.framework.MPOMediaBrowserService" >
             <intent-filter>

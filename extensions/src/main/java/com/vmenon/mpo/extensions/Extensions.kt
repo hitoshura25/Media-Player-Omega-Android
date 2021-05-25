@@ -1,9 +1,8 @@
 package com.vmenon.mpo.extensions
 
 import android.os.ParcelFileDescriptor
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.lang.IllegalArgumentException
 
 fun ParcelFileDescriptor.writeToFile(file: File) {
     val inputStream = ParcelFileDescriptor.AutoCloseInputStream(this)
@@ -35,5 +34,17 @@ fun FileOutputStream.closeQuietly() {
         close()
     } catch (e: IOException) {
 
+    }
+}
+
+fun File.useFileDescriptor(usage: (fd: FileDescriptor) -> Unit) {
+    try {
+        FileInputStream(this).use { fileInputStream ->
+            usage(fileInputStream.fd)
+        }
+    } catch (fileEx: FileNotFoundException) {
+        throw IllegalArgumentException("$path does not exist")
+    } catch (ioEx: IOException) {
+        throw IllegalArgumentException("couldn't open $path")
     }
 }

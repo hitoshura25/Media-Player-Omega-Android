@@ -8,11 +8,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioManager
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Message
-import android.os.SystemClock
+import android.os.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.media.MediaBrowserServiceCompat
@@ -27,7 +23,6 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 
 import java.io.File
@@ -762,7 +757,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
     }
 
-    class DelayedStopHandler(service: MPOMediaBrowserService) : Handler() {
+    class DelayedStopHandler(service: MPOMediaBrowserService) : Handler(Looper.getMainLooper()) {
         private val weakRefService: WeakReference<MPOMediaBrowserService> = WeakReference(service)
 
         override fun handleMessage(msg: Message) {
