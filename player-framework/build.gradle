@@ -3,6 +3,7 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':extensions')
     implementation project(':my-library-domain')
     implementation project(':player-domain')
 
@@ -11,7 +12,7 @@ dependencies {
 
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"

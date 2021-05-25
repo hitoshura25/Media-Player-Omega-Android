@@ -3,11 +3,10 @@ package com.vmenon.mpo.player.framework
 import android.media.MediaMetadataRetriever
 import android.os.Handler
 import android.os.Looper
-import com.vmenon.mpo.player.framework.MPOPlayer
+import com.vmenon.mpo.extensions.useFileDescriptor
 import com.vmenon.mpo.player.framework.MPOPlayer.MediaPlayerListener
 import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
-
-import java.io.File
+import java.io.*
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 
@@ -30,7 +29,7 @@ abstract class BaseMPOPlayer : MPOPlayer {
     override fun prepareForPlayback(file: File) {
         videoSizeCalculated = false
         doPrepareForPlayback(file)
-        executor.execute(MediaMetadataRetrieverTask(file.path, mVideoSizeListener))
+        executor.execute(MediaMetadataRetrieverTask(file, mVideoSizeListener))
     }
 
     override fun setListener(listener: MediaPlayerListener?) {
@@ -58,14 +57,17 @@ abstract class BaseMPOPlayer : MPOPlayer {
     protected abstract fun doPrepareForPlayback(file: File)
 
     private inner class MediaMetadataRetrieverTask internal constructor(
-        private val filePath: String,
+        private val file: File,
         listener: VideoSizeListener?
     ) : Runnable {
         private val listenerRef = if (listener != null) WeakReference(listener) else null
 
         override fun run() {
             val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(filePath)
+            file.useFileDescriptor { fileDescriptor ->
+                retriever.setDataSource(fileDescriptor)
+            }
+
             val widthStr = retriever.extractMetadata(
                 MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH
             )
