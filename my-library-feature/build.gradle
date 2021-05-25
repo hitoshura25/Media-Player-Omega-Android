@@ -12,8 +12,6 @@ dependencies {
     api project(':my-library-framework')
     api project(':my-library-usecases')
 
-
-
     implementation project(':view')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
@@ -22,10 +20,10 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.media:media:$mediaVersion"
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation libraries.glide
 
     implementation libraries.dagger
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewModelKtxVersion"
     kapt libraries.dagger_annotations
 }

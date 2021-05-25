@@ -75,23 +75,23 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycleVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     implementation libraries.dagger_android
     kapt libraries.dagger_android_annotations
 
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation libraries.glide
 
-    implementation 'javax.annotation:jsr250-api:1.0'
+    implementation "javax.annotation:jsr250-api:$jsr250Version"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$jUnitVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation "com.android.support:multidex:$multiDexVersion"
     implementation "androidx.work:work-runtime-ktx:$workVersion"
 
-    debugImplementation 'com.facebook.stetho:stetho:1.5.1'
+    debugImplementation "com.facebook.stetho:stetho:$stethoVersion"
 }
 repositories {
     mavenCentral()
