@@ -24,13 +24,14 @@ import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_library.*
 import kotlinx.android.synthetic.main.fragment_library.toolbar
 import javax.inject.Inject
 
 class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
-    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(MyLibraryNavigationLocation) {
+    NavigationOrigin<NoNavigationParams> by FragmentOrigin.from(MyLibraryNavigationLocation) {
 
     @Inject
     lateinit var episodeDetailsDestination: NavigationDestination<EpisodeDetailsLocation>

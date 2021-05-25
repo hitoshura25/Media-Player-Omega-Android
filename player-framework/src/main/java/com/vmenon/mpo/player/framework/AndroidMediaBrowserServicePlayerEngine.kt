@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import kotlin.coroutines.resume
@@ -85,7 +87,10 @@ class AndroidMediaBrowserServicePlayerEngine(
         }
 
         val bundle = Bundle()
-        bundle.putSerializable(MPOMediaBrowserService.PLAYBACK_MEDIA_REQUEST_EXTRA, request)
+        bundle.putSerializable(
+            MPOMediaBrowserService.PLAYBACK_MEDIA_REQUEST_EXTRA,
+            Json.encodeToString(request)
+        )
         mediaController?.transportControls?.playFromMediaId(request.media.mediaId, bundle)
     }
 

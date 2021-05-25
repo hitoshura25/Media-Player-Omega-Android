@@ -1,3 +1,4 @@
+include ':home-domain'
 include ':app-shared'
 include ':shared'
 include ':common-converters'

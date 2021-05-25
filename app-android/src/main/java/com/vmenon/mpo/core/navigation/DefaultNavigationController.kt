@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class DefaultNavigationController : NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
@@ -56,6 +59,10 @@ class DefaultNavigationController : NavigationController {
         }
     }
 
+    override fun <P : NavigationParams> parseParams(navigationOrigin: NavigationOrigin<P>): P? {
+        TODO("Not yet implemented")
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <P : NavigationParams> getParams(
         navigationOrigin: NavigationOrigin<P>
@@ -67,6 +74,9 @@ class DefaultNavigationController : NavigationController {
     @Suppress("UNCHECKED_CAST")
     override fun <P : NavigationParams> getOptionalParams(navigationOrigin: NavigationOrigin<P>): P? {
         if (navigationOrigin is Activity) {
+            val json = navigationOrigin.intent.getStringExtra(EXTRA_NAVIGATION_BUNDLE)
+            Json.decodeFromString(json)
+
             return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P?
         }
         if (navigationOrigin is Fragment) {
@@ -126,7 +136,8 @@ class DefaultNavigationController : NavigationController {
         val fragment =
             fragmentManager.findFragmentByTag(navigationDestination.tag)
                 ?: navigationDestination.fragmentCreator()
-        fragment.arguments = Bundle().apply { putSerializable(EXTRA_NAVIGATION_BUNDLE, params) }
+        fragment.arguments =
+            Bundle().apply { putString(EXTRA_NAVIGATION_BUNDLE, Json.encodeToString(params)) }
         fragmentManager.beginTransaction()
             .replace(navigationDestination.containerId, fragment, navigationDestination.tag)
             .addToBackStack(null)

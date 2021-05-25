@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
@@ -23,7 +24,7 @@ import kotlinx.android.synthetic.main.fragment_media_player.*
 import javax.inject.Inject
 
 class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
-    NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation),
+    NavigationOrigin<PlayerNavigationParams> by FragmentOrigin.from(PlayerNavigationLocation),
     SurfaceHolder.Callback, MPOPlayer.VideoSizeListener, PlayerClient {
 
     @Inject

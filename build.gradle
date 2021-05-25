@@ -5,6 +5,7 @@ buildscript {
         minSDKVersion = 16
         targetSDKVersion = 29
         kotlinVersion = '1.4.0'
+        kotlinSerializationVersion = '1.0.1'
         supportLibraryVersion = '28.1.0'
         retrofitVersion = '2.3.0'
         roomVersion = '2.2.5'

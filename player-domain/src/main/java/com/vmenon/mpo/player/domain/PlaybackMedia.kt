@@ -1,7 +1,8 @@
 package com.vmenon.mpo.player.domain
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class PlaybackMedia(
     val mediaId: String,
     val durationInMillis: Long,
@@ -10,4 +11,4 @@ data class PlaybackMedia(
     val artworkUrl: String? = null,
     val album: String? = null,
     val genres: List<String>? = null
-) : Serializable
+)

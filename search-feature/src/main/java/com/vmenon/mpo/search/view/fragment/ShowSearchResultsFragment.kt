@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
     ShowSearchResultsAdapter.ShowSelectedListener,
-    NavigationOrigin<SearchNavigationParams> by NavigationOrigin.from(SearchNavigationLocation) {
+    NavigationOrigin<SearchNavigationParams> by FragmentOrigin.from(SearchNavigationLocation) {
 
     @Inject
     lateinit var showDetailsDestination: NavigationDestination<ShowDetailsLocation>

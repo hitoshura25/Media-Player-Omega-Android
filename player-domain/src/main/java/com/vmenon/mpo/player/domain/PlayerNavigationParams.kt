@@ -1,5 +1,9 @@
 package com.vmenon.mpo.player.domain
 
 import com.vmenon.mpo.navigation.domain.NavigationParams
+import kotlinx.serialization.Serializable
 
-data class PlayerNavigationParams(val playbackMediaRequest: PlaybackMediaRequest?) : NavigationParams
+@Serializable
+data class PlayerNavigationParams(
+    val playbackMediaRequest: PlaybackMediaRequest?
+) : NavigationParams

@@ -2,10 +2,10 @@ package com.vmenon.mpo.di
 
 import android.app.Application
 import androidx.core.content.ContextCompat
-import com.vmenon.mpo.HomeLocation
-import com.vmenon.mpo.HomeNavigationParams
 
 import com.vmenon.mpo.core.navigation.DefaultNavigationController
+import com.vmenon.mpo.home.domain.HomeLocation
+import com.vmenon.mpo.home.domain.HomeNavigationParams
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination

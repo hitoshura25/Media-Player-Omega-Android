@@ -40,8 +40,6 @@ dependencies {
     api project(':my-library-framework')
     api project(':my-library-usecases')
 
-
-
     implementation project(':view')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"

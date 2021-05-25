@@ -1,6 +1,7 @@
 plugins {
     id 'kotlin-multiplatform'
     id('com.android.library')
+    id "org.jetbrains.kotlin.plugin.serialization" version "$kotlinVersion"
 }
 
 kotlin {
@@ -11,6 +12,7 @@ kotlin {
             dependencies {
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
                 implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+                implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion"
             }
         }
     }
@@ -24,10 +26,12 @@ android {
         targetSdkVersion rootProject.ext.targetSDKVersion
     }
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-}
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
-

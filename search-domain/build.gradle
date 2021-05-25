@@ -1,6 +1,7 @@
 plugins {
     id 'kotlin-multiplatform'
     id('com.android.library')
+    id "org.jetbrains.kotlin.plugin.serialization" version "$kotlinVersion"
 }
 
 kotlin {
@@ -26,5 +27,7 @@ dependencies {
     implementation project(':common-domain')
     implementation project(':navigation-domain')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinSerializationVersion"
+
     implementation libraries.coroutines
 }

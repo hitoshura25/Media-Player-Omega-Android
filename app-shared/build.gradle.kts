@@ -19,6 +19,7 @@ kotlin {
             dependencies {
                 implementation(project(":common-domain"))
                 implementation(project(":navigation-domain"))
+                implementation(project(":home-domain"))
 
                 implementation(project(":my-library-domain"))
                 implementation(project(":my-library-data"))

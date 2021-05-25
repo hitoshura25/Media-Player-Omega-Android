@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
@@ -34,7 +35,7 @@ import kotlinx.android.synthetic.main.fragment_show_details.detailsContainer
 import kotlinx.android.synthetic.main.fragment_show_details.toolbar
 
 class ShowDetailsFragment : BaseFragment<SearchComponent>(), AppBarLayout.OnOffsetChangedListener,
-    NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation) {
+    NavigationOrigin<ShowDetailsParams> by FragmentOrigin.from(ShowDetailsLocation) {
     private lateinit var loadingStateHelper: LoadingStateHelper
 
     private var collapsed = false

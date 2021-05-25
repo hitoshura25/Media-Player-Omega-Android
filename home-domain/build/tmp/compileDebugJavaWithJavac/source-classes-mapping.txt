@@ -1,0 +1,2 @@
+com/vmenon/mpo/home/domain/BuildConfig.java
+ com.vmenon.mpo.home.domain.BuildConfig

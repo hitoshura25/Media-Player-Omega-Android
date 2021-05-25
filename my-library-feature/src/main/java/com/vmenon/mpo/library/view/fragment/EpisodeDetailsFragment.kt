@@ -21,6 +21,7 @@ import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.ShowModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.framework.FragmentOrigin
 import com.vmenon.mpo.view.BaseFragment
 import kotlinx.android.synthetic.main.fragment_episode_details.*
 import kotlinx.android.synthetic.main.fragment_episode_details.episodeDate
@@ -31,7 +32,7 @@ import java.text.DateFormat
 import java.util.*
 
 class EpisodeDetailsFragment : BaseFragment<LibraryComponent>(),
-    NavigationOrigin<EpisodeDetailsParams> by NavigationOrigin.from(EpisodeDetailsLocation),
+    NavigationOrigin<EpisodeDetailsParams> by FragmentOrigin.from(EpisodeDetailsLocation),
     AppBarLayout.OnOffsetChangedListener {
 
     private val viewModel: EpisodeDetailsViewModel by viewModel()

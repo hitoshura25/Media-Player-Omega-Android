@@ -29,6 +29,8 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 import java.io.File
 import java.lang.ref.WeakReference
@@ -727,8 +729,10 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-            val playbackMediaRequest =
-                extras?.getSerializable(PLAYBACK_MEDIA_REQUEST_EXTRA) as? PlaybackMediaRequest
+            val playbackMediaRequest: PlaybackMediaRequest? =
+                extras?.getString(PLAYBACK_MEDIA_REQUEST_EXTRA)?.let { json ->
+                    Json.decodeFromString(json)
+                }
 
             if (requestedMedia == playbackMediaRequest &&
                 (playbackState == PlaybackStateCompat.STATE_PLAYING

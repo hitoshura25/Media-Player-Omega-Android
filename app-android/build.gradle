@@ -1,8 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
+    id "org.jetbrains.kotlin.plugin.serialization" version "$kotlinVersion"
+}
 android {
     compileSdkVersion rootProject.ext.targetSDKVersion
 
@@ -43,12 +45,14 @@ dependencies {
 
     implementation project(':navigation-framework')
     implementation project(':view')
+    implementation project(':home-domain')
     implementation project(':search-feature')
     implementation project(':downloads-feature')
     implementation project(':my-library-feature')
     implementation project(':player-feature')
     implementation project(':persistence-room')
 
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.cardview:cardview:$cardViewVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"

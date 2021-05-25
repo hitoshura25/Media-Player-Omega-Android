@@ -6,26 +6,27 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
-import com.vmenon.mpo.HomeLocation
-import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
+import com.vmenon.mpo.home.domain.HomeLocation
+import com.vmenon.mpo.home.domain.HomeNavigationParams
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
+import com.vmenon.mpo.navigation.domain.NavController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.getOptionalParams
+import com.vmenon.mpo.navigation.framework.ActivityOrigin
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.player.domain.PlayerNavigationParams
-import com.vmenon.mpo.view.DrawerNavigationDestination
-import com.vmenon.mpo.view.DrawerNavigationLocation
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class HomeActivity : BaseActivity<ActivityComponent>(),
-    NavigationOrigin<HomeNavigationParams> by NavigationOrigin.from(HomeLocation) {
+    NavigationOrigin<HomeNavigationParams> by ActivityOrigin.from(HomeLocation) {
     @Inject
     lateinit var libraryDestination: NavigationDestination<MyLibraryNavigationLocation>
 
@@ -37,6 +38,9 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
 
     @Inject
     lateinit var playerDestination: NavigationDestination<PlayerNavigationLocation>
+
+    @Inject
+    lateinit var homeDestination: NavigationDestination<HomeLocation>
 
     private val viewModel: HomeViewModel by viewModel()
 
@@ -58,13 +62,13 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         }
 
         nav_drawer_view.setNavigationItemSelectedListener { menuItem ->
-            val location = when (menuItem.itemId) {
-                else -> DrawerNavigationLocation(com.vmenon.mpo.view.R.id.nav_home)
+            when (menuItem.itemId) {
+                else -> navigationController.navigate(
+                    this,
+                    homeDestination,
+                    HomeNavigationParams())
             }
-            navigationController.navigate(
-                this,
-                DrawerNavigationDestination(location)
-            )
+
             menuItem.isChecked = true
             drawer_layout.closeDrawers()
             true
@@ -86,7 +90,8 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         }
 
         if (savedInstanceState == null) {
-            navigationController.navigate(this, showsDestination)
+            NavController.navigate(this, showsDestination)
+            //navigationController.navigate(this, showsDestination)
         }
 
         viewModel.currentLocation.observe(this, Observer { location ->
