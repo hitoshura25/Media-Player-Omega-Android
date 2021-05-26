@@ -17,7 +17,7 @@ dependencies {
 
     implementation project(':common-converters')
 
-    implementation libraries.coroutines
+    implementation Libs.kotlinx_coroutines_core
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation Libs.kotlin_stdlib
 }

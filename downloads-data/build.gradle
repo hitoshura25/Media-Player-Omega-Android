@@ -12,5 +12,5 @@ dependencies {
     api project(':downloads-domain')
     api project(':my-library-domain')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation Libs.kotlin_stdlib
 }

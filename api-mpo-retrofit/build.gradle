@@ -7,14 +7,14 @@ sourceSets.main.kotlin.srcDirs += 'build/generated/source'
 dependencies {
     api project(':api-mpo')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation Libs.kotlin_stdlib_jdk8
 
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation Libs.retrofit
+    implementation Libs.adapter_rxjava2
+    implementation Libs.converter_gson
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
 }
 
 sourceCompatibility = "8"

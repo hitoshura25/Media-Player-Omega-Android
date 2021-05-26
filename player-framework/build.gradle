@@ -7,15 +7,15 @@ dependencies {
     implementation project(':my-library-domain')
     implementation project(':player-domain')
 
-    implementation libraries.coroutines
-    implementation libraries.glide
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.glide
 
-    implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
+    implementation Libs.fragment_ktx
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.exoplayer_core
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
 
-    implementation libraries.androidx_media
+    implementation Libs.androidx_media_media
 }

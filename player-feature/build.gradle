@@ -10,20 +10,23 @@ dependencies {
     implementation project(':player-domain')
     api project(':player-usecases')
 
-    implementation libraries.dagger
-    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
-    kapt libraries.dagger_annotations
+    implementation Libs.dagger
+    implementation Libs.legacy_support_v4
+    kapt Libs.dagger_compiler
 
-    implementation libraries.glide
-    implementation libraries.lifeCycle_ktx
-    implementation libraries.coroutines
-    implementation libraries.androidx_media
+    implementation Libs.glide
+    implementation Libs.lifecycle_livedata_ktx
+    implementation Libs.lifecycle_runtime_ktx
+    implementation Libs.lifecycle_viewmodel_ktx
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "com.google.android.material:material:$materialVersion"
-    testImplementation "junit:junit:$jUnitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidXjUnitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.androidx_media_media
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.appcompat
+    implementation Libs.material
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
 }
