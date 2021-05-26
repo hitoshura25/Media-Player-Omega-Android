@@ -14,16 +14,16 @@ dependencies {
 
     implementation project(':view')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.lifecycle_livedata_ktx
 
-    implementation "com.google.android.material:material:$materialVersion"
-    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.media:media:$mediaVersion"
-    implementation libraries.glide
+    implementation Libs.material
+    implementation Libs.recyclerview
+    implementation Libs.androidx_media_media
+    implementation Libs.glide
 
-    implementation libraries.dagger
-    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewModelKtxVersion"
-    kapt libraries.dagger_annotations
+    implementation Libs.dagger
+    implementation Libs.legacy_support_v4
+    implementation Libs.lifecycle_viewmodel_ktx
+    kapt Libs.dagger_compiler
 }

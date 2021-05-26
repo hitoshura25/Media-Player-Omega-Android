@@ -10,5 +10,5 @@ java {
 
 dependencies {
     implementation project(':navigation-domain')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation Libs.kotlin_stdlib
 }

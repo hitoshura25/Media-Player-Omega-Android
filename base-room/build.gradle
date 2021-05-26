@@ -1,11 +1,10 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 
 dependencies {
-    implementation "androidx.room:room-runtime:$roomVersion"
-
+    implementation Libs.room_runtime
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.gson
     
-    testImplementation "androidx.room:room-testing:$roomVersion"
+    testImplementation Libs.room_testing
 }

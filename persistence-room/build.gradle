@@ -4,13 +4,13 @@ apply plugin: 'kotlin-kapt'
 dependencies {
     api project(':base-room')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation Libs.kotlin_stdlib_jdk8
 
-    api "androidx.room:room-runtime:$roomVersion"
-    implementation "androidx.room:room-rxjava2:$roomVersion"
-    implementation "androidx.room:room-ktx:$roomVersion"
-    kapt "androidx.room:room-compiler:$roomVersion"
+    api Libs.room_runtime
+    implementation Libs.room_rxjava2
+    implementation Libs.room_ktx
+    kapt Libs.room_compiler
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
 }

@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath Libs.kotlin_gradle_plugin
     }
 }
 repositories {
@@ -26,8 +26,8 @@ compileTestKotlin {
 }
 
 dependencies {
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation Libs.gson
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.rxjava
 }
 

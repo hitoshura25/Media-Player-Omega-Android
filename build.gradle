@@ -5,86 +5,19 @@ buildscript {
         compileSdkVersion = 30
         minSdkVersion = 16
         targetSdkVersion = 30
-
-        kotlinVersion = '1.4.0'
-        gradlePluginVersion = '4.2.1'
-
-        appCompatVersion = '1.1.0'
-        cardViewVersion = '1.0.0'
-        constraintLayoutVersion = '1.1.3'
-        coreKtxVersion = '1.2.0'
-        coroutinesVersion = '1.4.2'
-        daggerVersion = '2.27'
-        exoPlayerVersion = '2.14.0'
-        fragmentVersion = '1.2.5'
-        glideVersion = '3.7.0'
-        gsonVersion = '2.8.5'
-        jsr250Version = '1.0'
-        legacyVersion = '1.0.0'
-        lifecycleVersion = '2.2.0'
-        mediaVersion = '1.1.0'
-        materialVersion = '1.1.0'
-        multiDexVersion = '1.0.3'
-        recyclerViewVersion = '1.1.0'
-        retrofitVersion = '2.3.0'
-        roomVersion = '2.2.5'
-        rxJavaVersion = '2.2.9'
-        rxJavaAndroidVersion = '2.1.0'
-        stethoVersion = '1.5.1'
-        supportLibraryVersion = '28.1.0'
-        viewModelKtxVersion = '2.2.0'
-        workVersion = '2.3.4'
-
-        androidXjUnitVersion = '1.1.1'
-        espressoVersion = '3.2.0'
-        jUnitVersion = '4.12'
-
-        libraries = [
-                androidx_media: [
-                        "androidx.media:media:$mediaVersion"
-                ],
-                coroutines: [
-                        "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-                ],
-                dagger: [
-                        "com.google.dagger:dagger:$daggerVersion"
-                ],
-                dagger_annotations: [
-                        "com.google.dagger:dagger-compiler:$daggerVersion"
-                ],
-                dagger_android: [
-                        "com.google.dagger:dagger-android:$daggerVersion",
-                        "com.google.dagger:dagger-android-support:$daggerVersion"
-                ],
-                dagger_android_annotations: [
-                        "com.google.dagger:dagger-android-processor:$daggerVersion"
-                ],
-                reactive: [
-                        "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-                ],
-                glide: [
-                        "com.github.bumptech.glide:glide:$glideVersion"
-                ],
-                lifeCycle_ktx: [
-                        "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion",
-                        "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion",
-                        "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-                ]
-        ]
     }
     repositories {
-        mavenCentral()
+        gradlePluginPortal()
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$gradlePluginVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath Libs.de_fayard_buildsrcversions_gradle_plugin
+        classpath Libs.com_android_tools_build_gradle
+        classpath Libs.kotlin_gradle_plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
-
-
 }
 
 allprojects {

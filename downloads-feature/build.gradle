@@ -11,15 +11,15 @@ dependencies {
     implementation project(':navigation-framework')
     implementation project(':view')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_livedata_ktx
 
-    implementation "com.google.android.material:material:$materialVersion"
-    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation libraries.glide
+    implementation Libs.material
+    implementation Libs.recyclerview
+    implementation Libs.glide
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    implementation "androidx.legacy:legacy-support-v4:$legacyVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation Libs.dagger
+    implementation Libs.legacy_support_v4
+    kapt Libs.dagger_compiler
 }

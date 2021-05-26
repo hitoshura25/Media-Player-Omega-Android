@@ -9,6 +9,6 @@ java {
 }
 
 dependencies {
-    implementation libraries.coroutines
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.kotlin_stdlib
 }

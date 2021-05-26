@@ -6,12 +6,12 @@ dependencies {
 
     implementation project(':extensions')
 
-    implementation libraries.coroutines
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "com.google.android.material:material:$materialVersion"
-    testImplementation "junit:junit:$jUnitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidXjUnitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.appcompat
+    implementation Libs.material
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
 }
