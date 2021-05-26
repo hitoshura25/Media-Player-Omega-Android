@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import kotlinx.android.synthetic.main.show_result.view.*
@@ -52,8 +53,8 @@ class ShowSearchResultsAdapter :
 
         Glide.with(holder.itemView.context)
             .load(show.artworkUrl)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .centerCrop()
-            .crossFade()
             .into(holder.imageView)
 
         holder.itemView.setOnClickListener {

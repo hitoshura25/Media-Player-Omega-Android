@@ -12,33 +12,33 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-  const val appcompat: String = "1.1.0" // available: "1.3.0"
+  const val appcompat: String = "1.3.0"
 
   const val cardview: String = "1.0.0"
 
-  const val constraintlayout: String = "1.1.3" // available: "2.0.4"
+  const val constraintlayout: String = "2.0.4"
 
-  const val core_ktx: String = "1.2.0" // available: "1.5.0"
+  const val core_ktx: String = "1.5.0"
 
-  const val fragment_ktx: String = "1.2.5" // available: "1.3.4"
+  const val fragment_ktx: String = "1.3.4"
 
   const val legacy_support_v4: String = "1.0.0"
 
-  const val androidx_lifecycle: String = "2.2.0" // available: "2.3.1"
+  const val androidx_lifecycle: String = "2.3.1"
 
-  const val androidx_media_media: String = "1.1.0" // available: "1.3.1"
+  const val androidx_media_media: String = "1.3.1"
 
   const val androidx_multidex: String = "2.0.0"
 
-  const val recyclerview: String = "1.1.0" // available: "1.2.0"
+  const val recyclerview: String = "1.2.0"
 
-  const val androidx_room: String = "2.2.5" // available: "2.3.0"
+  const val androidx_room: String = "2.3.0"
 
-  const val espresso_core: String = "3.2.0" // available: "3.3.0"
+  const val espresso_core: String = "3.3.0"
 
-  const val androidx_test_ext_junit: String = "1.1.1" // available: "1.1.2"
+  const val androidx_test_ext_junit: String = "1.1.2"
 
-  const val work_runtime_ktx: String = "2.3.4" // available: "2.5.0"
+  const val work_runtime_ktx: String = "2.5.0"
 
   const val com_android_support_multidex: String = "1.0.3"
 
@@ -46,31 +46,31 @@ object Versions {
 
   const val lint_gradle: String = "27.2.1"
 
-  const val stetho: String = "1.5.1" // available: "1.6.0"
+  const val stetho: String = "1.6.0"
 
-  const val glide: String = "3.7.0" // available: "4.12.0"
+  const val glide: String = "4.12.0"
 
   const val exoplayer_core: String = "2.14.0"
 
-  const val material: String = "1.1.0" // available: "1.3.0"
+  const val material: String = "1.3.0"
 
-  const val gson: String = "2.8.5" // available: "2.8.7"
+  const val gson: String = "2.8.7"
 
-  const val com_google_dagger: String = "2.27" // available: "2.35.1"
+  const val com_google_dagger: String = "2.35.1"
 
-  const val com_squareup_retrofit2: String = "2.3.0" // available: "2.9.0"
+  const val com_squareup_retrofit2: String = "2.9.0"
 
-  const val de_fayard_buildsrcversions_gradle_plugin: String = "0.4.2" // available: "0.7.0"
+  const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-  const val rxjava: String = "2.2.9" // available: "2.2.21"
+  const val rxjava: String = "2.2.21"
 
   const val jsr250_api: String = "1.0"
 
-  const val junit_junit: String = "4.12" // available: "4.13.2"
+  const val junit_junit: String = "4.13.2"
 
-  const val org_jetbrains_kotlin: String = "1.4.0" // available: "1.5.10"
+  const val org_jetbrains_kotlin: String = "1.5.10"
 
-  const val kotlinx_coroutines_core: String = "1.4.2" // available: "1.5.0"
+  const val kotlinx_coroutines_core: String = "1.5.0"
 
   /**
    *

@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.vmenon.mpo.library.R
 
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.vmenon.mpo.my_library.domain.ShowModel
 import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
@@ -49,8 +50,8 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
 
         Glide.with(holder.itemView.context)
             .load(show.artworkUrl)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .fitCenter()
-            .crossFade()
             .into(holder.imageView)
     }
 

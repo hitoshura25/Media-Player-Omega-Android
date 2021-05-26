@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.vmenon.mpo.library.R
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import kotlinx.android.synthetic.main.library_item.view.*
@@ -50,8 +51,8 @@ class LibraryAdapter(private val episodes: List<EpisodeModel>) :
         Glide.with(holder.itemView.context)
             .load(episodeWithShowDetails.artworkUrl
                 ?: episodeWithShowDetails.show.artworkUrl)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .centerCrop()
-            .crossFade()
             .into(holder.imageView)
     }
 
