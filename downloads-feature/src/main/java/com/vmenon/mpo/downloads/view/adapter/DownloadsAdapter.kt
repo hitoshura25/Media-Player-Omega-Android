@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.vmenon.mpo.downloads.R
 import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
 import kotlinx.android.synthetic.main.download.view.*
@@ -50,8 +51,8 @@ class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
 
         Glide.with(holder.itemView.context)
             .load(download.download.imageUrl)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .centerCrop()
-            .crossFade()
             .into(holder.imageView)
 
     }

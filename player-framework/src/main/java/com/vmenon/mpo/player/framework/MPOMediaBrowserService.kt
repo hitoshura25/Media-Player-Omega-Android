@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.*
 import androidx.annotation.RequiresApi
@@ -21,8 +22,8 @@ import android.text.TextUtils
 import android.util.Log
 
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 
 import java.io.File
@@ -605,7 +606,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             }
             notificationBuilder.setLargeIcon(placeholderMediaBitmap)
             if (fetchArtUrl != null) {
-                Glide.with(this).load(fetchArtUrl).asBitmap().into(
+                Glide.with(this).asBitmap().load(fetchArtUrl).into(
                     ArtworkTarget(
                         this, fetchArtUrl,
                         notificationBuilder
@@ -779,12 +780,16 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         service: MPOMediaBrowserService,
         var artworkUrl: String,
         var notificationBuilder: NotificationCompat.Builder
-    ) : SimpleTarget<Bitmap>(500, 500) {
+    ) : CustomTarget<Bitmap>(500, 500) {
         var serviceRef: WeakReference<MPOMediaBrowserService> = WeakReference(service)
 
-        override fun onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation<in Bitmap>) {
+        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
             val service = serviceRef.get()
             service?.handleNotificationArtwork(artworkUrl, resource, notificationBuilder)
+        }
+
+        override fun onLoadCleared(placeholder: Drawable?) {
+
         }
     }
 
