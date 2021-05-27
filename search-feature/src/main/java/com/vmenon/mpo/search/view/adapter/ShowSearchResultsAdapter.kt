@@ -3,7 +3,6 @@ package com.vmenon.mpo.search.view.adapter
 import androidx.recyclerview.widget.RecyclerView
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,9 +10,8 @@ import androidx.recyclerview.widget.DiffUtil
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.vmenon.mpo.search.R
+import com.vmenon.mpo.search.databinding.ShowResultBinding
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
-import kotlinx.android.synthetic.main.show_result.view.*
 
 class ShowSearchResultsAdapter :
     RecyclerView.Adapter<ShowSearchResultsAdapter.ViewHolder>() {
@@ -24,9 +22,9 @@ class ShowSearchResultsAdapter :
         fun onShowSelected(show: ShowSearchResultModel)
     }
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val nameText: TextView = v.showName
-        val imageView: ImageView = v.showImage
+    class ViewHolder(binding: ShowResultBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameText: TextView = binding.showName
+        val imageView: ImageView = binding.showImage
     }
 
     fun setListener(listener: ShowSelectedListener) {
@@ -40,11 +38,12 @@ class ShowSearchResultsAdapter :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.show_result, parent,
+        val binding = ShowResultBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
             false
         )
-        return ViewHolder(v)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

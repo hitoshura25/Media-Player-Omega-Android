@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.databinding.FragmentEpisodeDetailsBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
@@ -21,16 +21,12 @@ import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.ShowModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.view.BaseFragment
-import kotlinx.android.synthetic.main.fragment_episode_details.*
-import kotlinx.android.synthetic.main.fragment_episode_details.episodeDate
-import kotlinx.android.synthetic.main.fragment_episode_details.episodeDescription
-import kotlinx.android.synthetic.main.fragment_episode_details.episodeImage
-import kotlinx.android.synthetic.main.fragment_episode_details.episodeName
+import com.vmenon.mpo.view.BaseViewBindingFragment
 import java.text.DateFormat
 import java.util.*
 
-class EpisodeDetailsFragment : BaseFragment<LibraryComponent>(),
+class EpisodeDetailsFragment :
+    BaseViewBindingFragment<LibraryComponent, FragmentEpisodeDetailsBinding>(),
     NavigationOrigin<EpisodeDetailsParams> by NavigationOrigin.from(EpisodeDetailsLocation),
     AppBarLayout.OnOffsetChangedListener {
 
@@ -47,13 +43,6 @@ class EpisodeDetailsFragment : BaseFragment<LibraryComponent>(),
     private val expandedToolbarTitle: CharSequence
         get() = ""
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_episode_details, container, false)
-    }
-
     override fun setupComponent(context: Context): LibraryComponent =
         (context as LibraryComponentProvider).libraryComponent()
 
@@ -62,58 +51,59 @@ class EpisodeDetailsFragment : BaseFragment<LibraryComponent>(),
         component.inject(viewModel)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val episodeId = navigationController.getParams(this).episodeId
 
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(binding.toolbar)
             activity.title = ""
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
-        fab.setImageResource(R.drawable.ic_play_arrow_white_48dp)
-        fab.setOnClickListener {
+        binding.fab.setImageResource(R.drawable.ic_play_arrow_white_48dp)
+        binding.fab.setOnClickListener {
             viewModel.playEpisode(episodeId, this)
         }
 
-        appbar.addOnOffsetChangedListener(this)
+        binding.appbar.addOnOffsetChangedListener(this)
 
         viewModel.getEpisodeDetails(episodeId)
             .observe(
                 viewLifecycleOwner,
-                Observer { episodeWithShowDetails ->
+                { episodeWithShowDetails ->
                     when (episodeWithShowDetails) {
                         is SuccessState -> {
                             val episode = episodeWithShowDetails.result
                             show = episode.show
-                            episodeName.text = episode.name
+                            binding.episodeName.text = episode.name
                             @Suppress("DEPRECATION")
-                            episodeDescription.text = Html.fromHtml(
+                            binding.episodeDescription.text = Html.fromHtml(
                                 episode.description?.replace(
                                     "(<(//)img>)|(<img.+?>)".toRegex(),
                                     ""
                                 ) ?: ""
                             )
-                            episodeDate.text = DateFormat.getDateInstance().format(
+                            binding.episodeDate.text = DateFormat.getDateInstance().format(
                                 Date(episode.published)
                             )
                             Glide.with(requireActivity())
                                 .load(episode.show.artworkUrl)
-                                .into(appBarImage)
+                                .into(binding.appBarImage)
 
                             if (episode.artworkUrl != null) {
-                                episodeImage.visibility = View.VISIBLE
+                                binding.episodeImage.visibility = View.VISIBLE
                                 Glide.with(requireActivity())
                                     .load(episode.artworkUrl).fitCenter()
-                                    .into(episodeImage)
+                                    .into(binding.episodeImage)
                             } else {
-                                episodeImage.visibility = View.GONE
+                                binding.episodeImage.visibility = View.GONE
                             }
                         }
                         LoadingState -> {
                         }
                         ErrorState -> {
                         }
+                        else -> {}
                     }
                 }
             )
@@ -124,11 +114,17 @@ class EpisodeDetailsFragment : BaseFragment<LibraryComponent>(),
             scrollRange = appBarLayout.totalScrollRange
         }
         if (scrollRange + verticalOffset == 0) {
-            collapsing_toolbar.title = collapsedToolbarTitle
+            binding.collapsingToolbar.title = collapsedToolbarTitle
             collapsed = true
         } else if (collapsed) {
-            collapsing_toolbar.title = expandedToolbarTitle
+            binding.collapsingToolbar.title = expandedToolbarTitle
             collapsed = false
         }
     }
+
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentEpisodeDetailsBinding =
+        FragmentEpisodeDetailsBinding.inflate(inflater, container, false)
 }

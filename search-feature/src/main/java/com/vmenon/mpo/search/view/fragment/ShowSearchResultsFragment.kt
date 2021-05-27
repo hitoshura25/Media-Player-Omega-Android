@@ -6,24 +6,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.R
+import com.vmenon.mpo.search.databinding.FragmentShowSearchResultsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.domain.*
 import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
-import com.vmenon.mpo.view.BaseFragment
+import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
-import kotlinx.android.synthetic.main.fragment_show_search_results.*
 import javax.inject.Inject
 
-class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
+class ShowSearchResultsFragment :
+    BaseViewBindingFragment<SearchComponent, FragmentShowSearchResultsBinding>(),
     ShowSearchResultsAdapter.ShowSelectedListener,
     NavigationOrigin<SearchNavigationParams> by NavigationOrigin.from(SearchNavigationLocation) {
 
@@ -34,18 +34,18 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
 
     private lateinit var adapter: ShowSearchResultsAdapter
     private lateinit var loadingStateHelper: LoadingStateHelper
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        loadingStateHelper = LoadingStateHelper(contentProgressBar, searchResultsContainer)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadingStateHelper =
+            LoadingStateHelper(binding.contentProgressBar, binding.searchResultsContainer)
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        showList.setHasFixedSize(true)
+        binding.showList.setHasFixedSize(true)
 
         // use a linear layout manager
         val layoutManager = LinearLayoutManager(requireContext())
-        showList.layoutManager = layoutManager
-        showList.addItemDecoration(
+        binding.showList.layoutManager = layoutManager
+        binding.showList.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
                 DividerItemDecoration.VERTICAL
@@ -53,18 +53,18 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
         )
         adapter = ShowSearchResultsAdapter()
         adapter.setListener(this)
-        showList.adapter = adapter
+        binding.showList.adapter = adapter
 
         val query = navigationController.getParams(this).query
 
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(binding.toolbar)
             activity.title = this.getString(R.string.show_search_title, query)
             activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
         showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query))
-        showSearchResultsViewModel.states().observe(viewLifecycleOwner, Observer { state ->
+        showSearchResultsViewModel.states().observe(viewLifecycleOwner, { state ->
             state.unhandledContent()?.let { stateContent ->
                 if (stateContent.loading) {
                     loadingStateHelper.showLoadingState()
@@ -73,11 +73,11 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
                 }
 
                 if (stateContent.currentResults.isEmpty()) {
-                    noShowsText.visibility = View.VISIBLE
-                    showList.visibility = View.GONE
+                    binding.noShowsText.visibility = View.VISIBLE
+                    binding.showList.visibility = View.GONE
                 } else {
-                    showList.visibility = View.VISIBLE
-                    noShowsText.visibility = View.GONE
+                    binding.showList.visibility = View.VISIBLE
+                    binding.noShowsText.visibility = View.GONE
                 }
 
                 if (stateContent.diffResult != null) {
@@ -85,13 +85,6 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
                 }
             }
         })
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_show_search_results, container, false)
     }
 
     override fun onShowSelected(show: ShowSearchResultModel) {
@@ -105,4 +98,7 @@ class ShowSearchResultsFragment : BaseFragment<SearchComponent>(),
         component.inject(this)
         component.inject(showSearchResultsViewModel)
     }
+
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentShowSearchResultsBinding.inflate(inflater, container, false)
 }

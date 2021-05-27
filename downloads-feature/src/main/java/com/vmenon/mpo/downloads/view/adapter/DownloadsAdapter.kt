@@ -11,29 +11,28 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.vmenon.mpo.downloads.R
+import com.vmenon.mpo.downloads.databinding.DownloadBinding
 import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
-import kotlinx.android.synthetic.main.download.view.*
 import kotlin.math.roundToLong
 
 class DownloadsAdapter(private val downloads: List<QueuedDownloadModel>) :
     RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val nameText: TextView = v.episodeName
-        val progressText: TextView = v.progress
-        val imageView: ImageView = v.showImage
+    class ViewHolder(binding: DownloadBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameText: TextView = binding.episodeName
+        val progressText: TextView = binding.progress
+        val imageView: ImageView = binding.showImage
         var download: QueuedDownloadModel? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.download, parent,
+        val binding: DownloadBinding = DownloadBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
             false
         )
-        val vh =
-            ViewHolder(v)
-        v.setOnClickListener { }
-
+        val vh = ViewHolder(binding)
+        binding.root.setOnClickListener { }
         return vh
     }
 

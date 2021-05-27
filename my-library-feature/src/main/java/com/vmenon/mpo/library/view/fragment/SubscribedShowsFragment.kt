@@ -11,6 +11,7 @@ import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.databinding.SubscribedShowsFragmentBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
@@ -18,50 +19,42 @@ import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
-import com.vmenon.mpo.view.BaseFragment
-import kotlinx.android.synthetic.main.subscribed_shows_fragment.*
+import com.vmenon.mpo.view.BaseViewBindingFragment
 
-class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
+class SubscribedShowsFragment :
+    BaseViewBindingFragment<LibraryComponent, SubscribedShowsFragmentBinding>(),
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(SubscribedShowsLocation) {
     private val viewModel: SubscribedShowsViewModel by viewModel()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        println("${javaClass.name} onCreateView")
-
-        return inflater.inflate(R.layout.subscribed_shows_fragment, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(binding.toolbar)
             activity.setTitle(R.string.shows)
             activity.supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(true)
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
             }
         }
-        showList.setHasFixedSize(true)
-        showList.layoutManager = GridLayoutManager(context, 3)
+        binding.showList.setHasFixedSize(true)
+        binding.showList.layoutManager = GridLayoutManager(context, 3)
         viewModel.subscribedShows().observe(viewLifecycleOwner, Observer { result ->
             when (result) {
                 LoadingState -> {
                 }
                 is SuccessState -> {
-                    showList.adapter = SubscriptionGalleryAdapter(result.result)
+                    binding.showList.adapter = SubscriptionGalleryAdapter(result.result)
                 }
                 ErrorState -> {
                 }
+                else -> {}
             }
         })
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -94,4 +87,7 @@ class SubscribedShowsFragment : BaseFragment<LibraryComponent>(),
         component.inject(this)
         component.inject(viewModel)
     }
+
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
+        SubscribedShowsFragmentBinding.inflate(inflater, container, false)
 }

@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.R
+import com.vmenon.mpo.library.databinding.FragmentLibraryBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
@@ -24,24 +24,22 @@ import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
-import com.vmenon.mpo.view.BaseFragment
-import kotlinx.android.synthetic.main.fragment_library.*
-import kotlinx.android.synthetic.main.fragment_library.toolbar
+import com.vmenon.mpo.view.BaseViewBindingFragment
 import javax.inject.Inject
 
-class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.LibrarySelectedListener,
+class LibraryFragment : BaseViewBindingFragment<LibraryComponent, FragmentLibraryBinding>(),
+    LibraryAdapter.LibrarySelectedListener,
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(MyLibraryNavigationLocation) {
 
     @Inject
     lateinit var episodeDetailsDestination: NavigationDestination<EpisodeDetailsLocation>
 
     private val viewModel: LibraryViewModel by viewModel()
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(binding.toolbar)
             activity.setTitle(R.string.library)
             activity.supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(true)
@@ -50,9 +48,9 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
         }
 
         val layoutManager = LinearLayoutManager(context)
-        libraryList.setHasFixedSize(true)
-        libraryList.layoutManager = layoutManager
-        libraryList.addItemDecoration(
+        binding.libraryList.setHasFixedSize(true)
+        binding.libraryList.layoutManager = layoutManager
+        binding.libraryList.addItemDecoration(
             DividerItemDecoration(
                 context,
                 DividerItemDecoration.VERTICAL
@@ -61,29 +59,22 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
 
         viewModel.allEpisodes().observe(
             viewLifecycleOwner,
-            Observer { episodes ->
+            { episodes ->
                 when (episodes) {
                     is SuccessState -> {
                         val adapter = LibraryAdapter(episodes.result)
                         adapter.setListener(this@LibraryFragment)
-                        libraryList.adapter = adapter
+                        binding.libraryList.adapter = adapter
                     }
                     LoadingState -> {
                     }
                     ErrorState -> {
                     }
+                    else -> {
+                    }
                 }
             }
         )
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        println("${javaClass.name} onCreateView")
-
-        return inflater.inflate(R.layout.fragment_library, container, false)
     }
 
     override fun setupComponent(context: Context) =
@@ -101,4 +92,7 @@ class LibraryFragment : BaseFragment<LibraryComponent>(), LibraryAdapter.Library
             EpisodeDetailsParams(episodeWithShowDetails.id)
         )
     }
+
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentLibraryBinding =
+        FragmentLibraryBinding.inflate(inflater, container, false)
 }
