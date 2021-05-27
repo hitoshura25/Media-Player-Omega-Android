@@ -1,12 +1,17 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':downloads-framework')
     api project(':downloads-usecases')
-
 
     implementation project(':navigation-framework')
     implementation project(':view')

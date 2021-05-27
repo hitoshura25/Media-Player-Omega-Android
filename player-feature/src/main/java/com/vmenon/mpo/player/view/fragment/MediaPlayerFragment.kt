@@ -13,16 +13,16 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.R
+import com.vmenon.mpo.player.databinding.FragmentMediaPlayerBinding
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
-import com.vmenon.mpo.view.BaseFragment
-import kotlinx.android.synthetic.main.fragment_media_player.*
+import com.vmenon.mpo.view.BaseViewBindingFragment
 import javax.inject.Inject
 
-class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
+class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMediaPlayerBinding>(),
     NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation),
     SurfaceHolder.Callback, MPOPlayer.VideoSizeListener, PlayerClient {
 
@@ -36,13 +36,6 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
     private var playOnStart = false
     private var playbackMediaRequest: PlaybackMediaRequest? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_media_player, container, false)
-    }
-
     override fun setupComponent(context: Context): PlayerComponent =
         (context as PlayerComponentProvider).playerComponent()
 
@@ -51,22 +44,22 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
         component.inject(viewModel)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
         playOnStart = savedInstanceState == null
         lastPlaybackState = null
 
-        actionButton.setOnClickListener {
+        binding.actionButton.setOnClickListener {
             playbackMediaRequest?.let {
                 viewModel.togglePlaybackState(it)
             }
         }
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                position.text = DateUtils.formatElapsedTime(seekBar.progress.toLong() / 1000)
-                remaining.text =
+                binding.position.text = DateUtils.formatElapsedTime(seekBar.progress.toLong() / 1000)
+                binding.remaining.text =
                     "-" + DateUtils.formatElapsedTime((seekBar.max - seekBar.progress).toLong() / 1000)
             }
 
@@ -79,10 +72,10 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
             }
         })
 
-        replayButton.setOnClickListener { viewModel.skipPlayback(REPLAY_DURATION_SECONDS.toLong()) }
-        skipButton.setOnClickListener { viewModel.skipPlayback(SKIP_DURATION_SECONDS.toLong()) }
+        binding.replayButton.setOnClickListener { viewModel.skipPlayback(REPLAY_DURATION_SECONDS.toLong()) }
+        binding.skipButton.setOnClickListener { viewModel.skipPlayback(SKIP_DURATION_SECONDS.toLong()) }
 
-        surfaceView.holder.addCallback(this)
+        binding.surfaceView.holder.addCallback(this)
         player.setVideoSizeListener(this)
         viewModel.playBackState.observe(viewLifecycleOwner, Observer { playbackState ->
             updatePlaybackState(playbackState.state)
@@ -92,7 +85,6 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
             lastPlaybackState = playbackState
         })
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -124,7 +116,7 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         player.setDisplay(null)
-        surfaceView.visibility = View.GONE
+        binding.surfaceView.visibility = View.GONE
     }
 
     override fun onMediaVideoSizeDetermined(width: Int, height: Int) {
@@ -136,21 +128,21 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
             Glide.with(requireActivity())
                 .load(playbackMedia.artworkUrl)
                 .fitCenter()
-                .into(artworkImage)
-            mediaTitle.text = playbackMedia.title
+                .into(binding.artworkImage)
+            binding.mediaTitle.text = playbackMedia.title
         }
     }
 
     private fun updatePlaybackState(state: PlaybackState.State) {
         when (state) {
             PlaybackState.State.PLAYING -> {
-                actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp)
+                binding.actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp)
             }
             PlaybackState.State.PAUSED -> {
-                actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
+                binding.actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
             }
             PlaybackState.State.NONE, PlaybackState.State.STOPPED -> {
-                actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
+                binding.actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
             }
             PlaybackState.State.BUFFERING -> {
             }
@@ -159,13 +151,13 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
     }
 
     private fun updateProgress(playbackState: PlaybackState) {
-        seekBar.progress = playbackState.positionInMillis.toInt()
+        binding.seekBar.progress = playbackState.positionInMillis.toInt()
     }
 
     private fun updateDuration(playbackState: PlaybackState) {
         Log.d("MPO", "updateDuration called ")
         val duration = playbackState.media.durationInMillis.toInt()
-        seekBar.max = duration
+        binding.seekBar.max = duration
     }
 
     private fun updateMediaDisplay() {
@@ -173,12 +165,12 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
         val videoHeight = player.getVideoHeight()
 
         if (videoWidth == 0) {
-            episodeImageContainer.visibility = View.VISIBLE
-            surfaceView.visibility = View.GONE
+            binding.episodeImageContainer.visibility = View.VISIBLE
+            binding.surfaceView.visibility = View.GONE
         } else {
-            val surfaceWidth = playerContent.width
+            val surfaceWidth = binding.playerContent.width
 
-            val lp = surfaceView.layoutParams
+            val lp = binding.surfaceView.layoutParams
             // Set the height of the SurfaceView to match the aspect ratio of the video
             // be sure to cast these as floats otherwise the calculation will likely be 0
             lp.height =
@@ -187,11 +179,14 @@ class MediaPlayerFragment : BaseFragment<PlayerComponent>(),
             Log.d("MPO", "surface view width: $surfaceWidth")
             Log.d("MPO", "surface view height: " + lp.height)
 
-            surfaceView.layoutParams = lp
-            surfaceView.visibility = View.VISIBLE
-            episodeImageContainer.visibility = View.INVISIBLE
+            binding.surfaceView.layoutParams = lp
+            binding.surfaceView.visibility = View.VISIBLE
+            binding.episodeImageContainer.visibility = View.INVISIBLE
         }
     }
+
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentMediaPlayerBinding =
+        FragmentMediaPlayerBinding.inflate(inflater, container, false)
 
     companion object {
         private const val REPLAY_DURATION_SECONDS = 10

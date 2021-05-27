@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.downloads.R
+import com.vmenon.mpo.downloads.databinding.FragmentDownloadsBinding
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
@@ -20,26 +20,24 @@ import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
-import com.vmenon.mpo.view.BaseFragment
-import kotlinx.android.synthetic.main.fragment_downloads.*
+import com.vmenon.mpo.view.BaseViewBindingFragment
 
-class DownloadsFragment : BaseFragment<DownloadsComponent>(),
+class DownloadsFragment : BaseViewBindingFragment<DownloadsComponent, FragmentDownloadsBinding>(),
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(DownloadsLocation) {
     private val viewModel: DownloadsViewModel by viewModel()
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(toolbar)
+            activity.setSupportActionBar(binding.toolbar)
             activity.setTitle(R.string.downloads)
             activity.supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(true)
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
             }
         }
-        downloadsList.layoutManager = LinearLayoutManager(context)
-        downloadsList.setHasFixedSize(true)
-        downloadsList.addItemDecoration(
+        binding.downloadsList.layoutManager = LinearLayoutManager(context)
+        binding.downloadsList.setHasFixedSize(true)
+        binding.downloadsList.addItemDecoration(
             DividerItemDecoration(
                 context,
                 DividerItemDecoration.VERTICAL
@@ -47,7 +45,7 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>(),
         )
         viewModel.downloads.observe(
             viewLifecycleOwner,
-            Observer { downloads ->
+            { downloads ->
                 when (downloads) {
                     LoadingState -> {
                     }
@@ -55,20 +53,13 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>(),
                     }
                     is SuccessState -> {
                         val adapter = DownloadsAdapter(downloads.result)
-                        downloadsList.adapter = adapter
+                        binding.downloadsList.adapter = adapter
+                    }
+                    else -> {
                     }
                 }
             }
         )
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        println("${javaClass.name} onCreateView")
-
-        return inflater.inflate(R.layout.fragment_downloads, container, false)
     }
 
     override fun setupComponent(context: Context): DownloadsComponent =
@@ -78,4 +69,7 @@ class DownloadsFragment : BaseFragment<DownloadsComponent>(),
         component.inject(this)
         component.inject(viewModel)
     }
+
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentDownloadsBinding =
+        FragmentDownloadsBinding.inflate(inflater, container, false)
 }

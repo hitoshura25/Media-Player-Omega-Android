@@ -1,6 +1,12 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
 dependencies {
     api project(':player-framework')
     implementation project(':view')

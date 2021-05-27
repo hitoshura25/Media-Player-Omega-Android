@@ -13,10 +13,10 @@ import android.widget.TextView
 
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.search.R
+import com.vmenon.mpo.search.databinding.RecentEpisodeBinding
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
-import kotlinx.android.synthetic.main.recent_episode.view.*
 import java.text.DateFormat
 
 import java.util.Date
@@ -31,12 +31,12 @@ class EpisodesAdapter(
         fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel)
     }
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val nameText: TextView = v.episodeName
-        val descriptionText: TextView = v.episodeDescription
-        val publishedText: TextView = v.episodeDate
-        val thumbnailImage: ImageView = v.episodeImage
-        val menuButton: ImageButton = v.episodeMenuButton
+    class ViewHolder(binding: RecentEpisodeBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameText: TextView = binding.episodeName
+        val descriptionText: TextView = binding.episodeDescription
+        val publishedText: TextView = binding.episodeDate
+        val thumbnailImage: ImageView = binding.episodeImage
+        val menuButton: ImageButton = binding.episodeMenuButton
         lateinit var episode: ShowSearchResultEpisodeModel
         lateinit var showDetails: ShowSearchResultModel
     }
@@ -46,11 +46,12 @@ class EpisodesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.recent_episode, parent,
+        val binding = RecentEpisodeBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
             false
         )
-        val vh = ViewHolder(v)
+        val vh = ViewHolder(binding)
         vh.menuButton.setOnClickListener {
             val popupMenu = PopupMenu(vh.menuButton.context, vh.menuButton)
             popupMenu.inflate(R.menu.episode_menu)

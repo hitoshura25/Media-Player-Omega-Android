@@ -1,17 +1,15 @@
 package com.vmenon.mpo.library.view.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 
 import com.bumptech.glide.Glide
-import com.vmenon.mpo.library.R
 
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.vmenon.mpo.library.databinding.SubscriptionGalleryItemBinding
 import com.vmenon.mpo.my_library.domain.ShowModel
-import kotlinx.android.synthetic.main.subscription_gallery_item.view.*
 
 class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
     RecyclerView.Adapter<SubscriptionGalleryAdapter.ViewHolder>() {
@@ -21,8 +19,9 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
         fun onShowSelected(show: ShowModel)
     }
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val imageView: ImageView = v.showImage
+    class ViewHolder(binding: SubscriptionGalleryItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        val imageView: ImageView = binding.showImage
         var show: ShowModel? = null
     }
 
@@ -31,11 +30,13 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(
-            R.layout.subscription_gallery_item, parent, false
+        val binding = SubscriptionGalleryItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
         )
-        val vh = ViewHolder(v)
-        v.setOnClickListener {
+        val vh = ViewHolder(binding)
+        binding.root.setOnClickListener {
             vh.show?.let {
                 listener?.onShowSelected(it)
             }

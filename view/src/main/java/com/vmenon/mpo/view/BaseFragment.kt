@@ -41,10 +41,10 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
 
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         println("${javaClass.name} onActivityCreated")
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
