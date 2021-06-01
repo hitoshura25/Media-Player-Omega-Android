@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Media Player Omega Android</string>
     <string name="home">Home</string>
+    <string name="title_feature_login">Login</string>
 </resources>

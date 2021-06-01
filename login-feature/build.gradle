@@ -1,0 +1,20 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(":view")
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.constraintlayout
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.annotation
+}

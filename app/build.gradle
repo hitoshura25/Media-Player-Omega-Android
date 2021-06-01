@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
     }
 
     compileOptions {
@@ -46,10 +47,11 @@ dependencies {
 
     implementation project(':view')
 
-    implementation project(':search-feature')
     implementation project(':downloads-feature')
+    implementation project(':login-feature')
     implementation project(':my-library-feature')
     implementation project(':player-feature')
+    implementation project(':search-feature')
 
     implementation project(':persistence-room')
 
@@ -94,6 +96,11 @@ dependencies {
     implementation Libs.work_runtime_ktx
 
     debugImplementation Libs.stetho
+
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.annotation
+    androidTestImplementation Libs.cucumber_android
 }
 repositories {
     mavenCentral()
