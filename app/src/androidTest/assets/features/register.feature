@@ -7,7 +7,15 @@ Feature: Register User Screen Shows Up
   Scenario Outline: Register UI Displayed
     Given I have launched the app
     When I click on the "nav_account" tab
-    Then I should see "register" on the display
+    And I click on "register_link"
+    And I enter "<First Name>" into the "first_name" field
+    And I enter "<Last Name>" into the "last_name" field
+    And I enter "<E-mail>" into the "e_mail" field
+    And I enter "<Password>" into the "password" field
+    And I enter "<Confirm Password>" into the "confirm_password" field
+    And I enter "<First Name>" into the "first_name" field
+    And I click on "register_user"
+    Then I should see "settings" on the display
     Examples:
-      |
-      |
+      | First Name | Last Name | E-mail | Password | Confirm Password |
+      | Vinayak    | Menon     | vviswana@gmail.com | test123 | test123 |

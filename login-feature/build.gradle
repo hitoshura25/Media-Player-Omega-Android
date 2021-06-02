@@ -17,6 +17,7 @@ dependencies {
     implementation Libs.constraintlayout
     implementation Libs.legacy_support_v4
     implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_livedata_ktx
 
     implementation Libs.dagger
     kapt Libs.dagger_compiler

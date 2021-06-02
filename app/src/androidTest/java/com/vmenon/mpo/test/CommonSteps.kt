@@ -41,6 +41,17 @@ class CommonSteps {
         ).perform(ViewActions.click())
     }
 
+    @When("I click on {string}")
+    fun i_click_on(resName: String) {
+        Espresso.onView(ViewMatchers.withResourceName(resName)).perform(ViewActions.click())
+    }
+
+    @When("I enter {string} into the {string} field")
+    fun i_enter_into_field(input: String, resName: String) {
+        Espresso.onView(ViewMatchers.withResourceName(resName))
+            .perform(ViewActions.typeTextIntoFocusedView(input))
+    }
+
     @Then("I should see {string} on the display")
     fun i_should_see_s_on_the_display(s: String?) {
         Espresso.onView(ViewMatchers.withResourceName(s)).check(

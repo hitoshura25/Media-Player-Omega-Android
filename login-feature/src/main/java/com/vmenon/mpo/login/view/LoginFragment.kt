@@ -9,6 +9,9 @@ import com.vmenon.mpo.login.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login.di.LoginComponent
 import com.vmenon.mpo.login.di.LoginComponentProvider
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
+import com.vmenon.mpo.login.model.LoggedInState
+import com.vmenon.mpo.login.model.LoginState
+import com.vmenon.mpo.login.model.RegisterState
 import com.vmenon.mpo.login.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
@@ -30,4 +33,26 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         component.inject(viewModel)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.loginState.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                LoginState -> {
+                    binding.loginForm.root.visibility = View.VISIBLE
+                    binding.registerForm.root.visibility = View.GONE
+                    binding.accountView.root.visibility = View.GONE
+                }
+                RegisterState -> {
+                    binding.registerForm.root.visibility = View.VISIBLE
+                    binding.loginForm.root.visibility = View.GONE
+                    binding.accountView.root.visibility = View.GONE
+                }
+                is LoggedInState -> {
+                    binding.accountView.root.visibility = View.VISIBLE
+                    binding.loginForm.root.visibility = View.GONE
+                    binding.registerForm.root.visibility = View.GONE
+                }
+            }
+        })
+    }
 }

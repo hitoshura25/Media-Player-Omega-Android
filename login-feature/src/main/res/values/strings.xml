@@ -2,5 +2,9 @@
     <string name="account">Account</string>
     <string name="e_mail">E-mail</string>
     <string name="password">Password</string>
-    <string name="register">Register?</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="settings">Settings</string>
 </resources>
