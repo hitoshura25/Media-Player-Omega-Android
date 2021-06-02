@@ -25,7 +25,8 @@
             android:layout_height="56dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/navigation_items" />
+            app:menu="@menu/navigation_items"
+            app:labelVisibilityMode="labeled"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

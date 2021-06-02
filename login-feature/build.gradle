@@ -1,4 +1,5 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
 
 android {
     buildFeatures {
@@ -7,12 +8,19 @@ android {
 }
 
 dependencies {
+    api project(':login-domain')
+    implementation project(':navigation-framework')
     implementation project(":view")
+
     implementation Libs.kotlin_stdlib
     implementation Libs.core_ktx
     implementation Libs.constraintlayout
+    implementation Libs.legacy_support_v4
+    implementation Libs.lifecycle_viewmodel_ktx
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
     testImplementation Libs.junit_junit
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core

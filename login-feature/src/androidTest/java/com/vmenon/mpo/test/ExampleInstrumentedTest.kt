@@ -1,4 +1,4 @@
-package com.vmenon.mpo.login
+package com.vmenon.mpo.test
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.vmenon.mpo.login.test", appContext.packageName)
+        assertEquals("com.vmenon.mpo.test.login.test", appContext.packageName)
     }
 }

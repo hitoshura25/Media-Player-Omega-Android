@@ -47,6 +47,10 @@ object Libs {
 
     const val multidex_instrumentation: String = "androidx.multidex:multidex-instrumentation:2.0.0"
 
+    const val androidx_test_ext_junit: String = "androidx.test.ext:junit:1.1.2"
+
+    const val junit_ktx: String = "androidx.test.ext:junit-ktx:1.1.2"
+
     const val dagger: String = "com.google.dagger:dagger:2.35.1"
 
     const val dagger_android: String = "com.google.dagger:dagger-android:2.35.1"
@@ -71,16 +75,12 @@ object Libs {
 
     const val com_android_support_multidex: String = "com.android.support:multidex:1.0.3"
 
-    const val androidx_test_ext_junit: String = "androidx.test.ext:junit:1.1.2"
-
     const val androidx_media_media: String = "androidx.media:media:1.3.1"
 
     const val junit_junit: String = "junit:junit:4.13.2"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String =
             "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:0.7.0"
-
-    const val cucumber_picocontainer: String = "io.cucumber:cucumber-picocontainer:6.10.4"
 
     const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:1.0.0"
 

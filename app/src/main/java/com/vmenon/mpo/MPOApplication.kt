@@ -13,6 +13,8 @@ import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.login.di.LoginComponent
+import com.vmenon.mpo.login.di.LoginComponentProvider
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.search.di.dagger.SearchComponent
@@ -21,7 +23,7 @@ import java.util.concurrent.TimeUnit
 
 class MPOApplication : MultiDexApplication(),
     SearchComponentProvider, DownloadsComponentProvider, LibraryComponentProvider,
-    PlayerComponentProvider {
+    PlayerComponentProvider, LoginComponentProvider {
     lateinit var appComponent: AppComponent
 
     override fun onCreate() {
@@ -50,4 +52,5 @@ class MPOApplication : MultiDexApplication(),
 
     override fun libraryComponent(): LibraryComponent = appComponent.libraryComponent().create()
     override fun playerComponent(): PlayerComponent = appComponent.playerComponent().create()
+    override fun loginComponent(): LoginComponent = appComponent.loginComponent().create()
 }

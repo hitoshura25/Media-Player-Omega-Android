@@ -6,8 +6,8 @@ Feature: Register User Screen Shows Up
 
   Scenario Outline: Register UI Displayed
     Given I have launched the app
-    When I click on the Accounts tab
-    Then I should see "<email>" and "<password>" on the display
+    When I click on the "nav_account" tab
+    Then I should see "register" on the display
     Examples:
-      | email              | password |
-      | vviswana@gmail.com | test123  |
+      |
+      |
