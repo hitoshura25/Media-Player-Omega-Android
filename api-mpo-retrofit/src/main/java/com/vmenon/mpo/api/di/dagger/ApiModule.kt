@@ -15,12 +15,11 @@ import java.util.concurrent.TimeUnit
 
 @Module
 object ApiModule {
-    private val retrofitApiInstance: MediaPlayerOmegaRetrofitService by lazy {
-        provideService(provideHttpClient())
-    }
 
     @Provides
-    fun provideMediaPlayerRetrofitApi(): MediaPlayerOmegaRetrofitService = retrofitApiInstance
+    fun provideMediaPlayerRetrofitApi(
+        baseUrl: String = "https://mpospboot.herokuapp.com"
+    ): MediaPlayerOmegaRetrofitService = provideService(baseUrl, provideHttpClient())
 
     private fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
@@ -30,13 +29,16 @@ object ApiModule {
             .build()
     }
 
-    private fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaRetrofitService {
+    private fun provideService(
+        baseUrl: String,
+        httpClient: OkHttpClient
+    ): MediaPlayerOmegaRetrofitService {
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl("https://mpospboot.herokuapp.com/")
+            .baseUrl(baseUrl)
             .client(httpClient)
             .build()
 
