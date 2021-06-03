@@ -10,7 +10,7 @@ Feature: Register User Screen Shows Up
     And I click on "register_link"
     And I enter "<First Name>" into the "first_name" field
     And I enter "<Last Name>" into the "last_name" field
-    And I enter "<E-mail>" into the "e_mail" field
+    And I enter "<E-mail>" into the "email" field
     And I enter "<Password>" into the "password" field
     And I enter "<Confirm Password>" into the "confirm_password" field
     And I enter "<First Name>" into the "first_name" field

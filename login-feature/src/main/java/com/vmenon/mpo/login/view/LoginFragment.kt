@@ -35,7 +35,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loginState.observe(viewLifecycleOwner, { state ->
+        viewModel.loginState().observe(viewLifecycleOwner, { state ->
             when (state) {
                 LoginState -> {
                     binding.loginForm.root.visibility = View.VISIBLE
@@ -54,5 +54,9 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                 }
             }
         })
+
+        binding.loginForm.registerLink.setOnClickListener {
+            viewModel.registerClicked()
+        }
     }
 }

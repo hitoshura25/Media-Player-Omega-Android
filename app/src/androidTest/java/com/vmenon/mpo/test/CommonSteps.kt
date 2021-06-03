@@ -49,7 +49,7 @@ class CommonSteps {
     @When("I enter {string} into the {string} field")
     fun i_enter_into_field(input: String, resName: String) {
         Espresso.onView(ViewMatchers.withResourceName(resName))
-            .perform(ViewActions.typeTextIntoFocusedView(input))
+            .perform(ViewActions.typeText(input))
     }
 
     @Then("I should see {string} on the display")
