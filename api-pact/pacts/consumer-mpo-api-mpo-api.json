@@ -7,6 +7,322 @@
   },
   "interactions": [
     {
+      "description": "Get Show Details",
+      "request": {
+        "method": "GET",
+        "path": "/podcastdetails",
+        "query": {
+          "maxEpisodes": [
+            "10"
+          ],
+          "feedUrl": [
+            "http://feeds.ign.com/ignfeeds/podcasts/video/gamescoop"
+          ]
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "description": "string",
+          "episodes": [
+            {
+              "artworkUrl": "string",
+              "author": "string",
+              "feedUrl": "string",
+              "genres": [
+                "string"
+              ],
+              "name": "string",
+              "smallArtworkUrl": "string"
+            }
+          ],
+          "imageUrl": "string",
+          "name": "string"
+        },
+        "matchingRules": {
+          "body": {
+            "$.name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.description": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.imageUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].artworkUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].feedUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].smallArtworkUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].author": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].genres": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.episodes[*].genres[*]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.name": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.description": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.imageUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].name": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].artworkUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].feedUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].smallArtworkUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].author": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.episodes[*].genres[*]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "description": "Get Show update",
+      "request": {
+        "method": "GET",
+        "path": "/podcastupdate",
+        "query": {
+          "feedUrl": [
+            "http://feeds.ign.com/ignfeeds/podcasts/video/gamescoop"
+          ],
+          "publishTimestamp": [
+            "1507661400000"
+          ]
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "artworkUrl": "string",
+          "name": "string",
+          "length": 100,
+          "description": "string",
+          "published": 100,
+          "type": "string"
+        },
+        "matchingRules": {
+          "body": {
+            "$.name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.artworkUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                },
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.description": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.type": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.published": {
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.length": {
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.name": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.artworkUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.description": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.type": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.published": {
+              "type": "RandomInt",
+              "min": 0,
+              "max": 2147483647
+            },
+            "$.length": {
+              "type": "RandomInt",
+              "min": 0,
+              "max": 2147483647
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
       "description": "Search for shows",
       "request": {
         "method": "GET",
@@ -19,20 +335,120 @@
       },
       "response": {
         "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
         "body": [
           {
-            "name": "IGN.com - Game Scoop! TV (Video)",
-            "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Features4/v4/d6/d5/98/d6d59873-2ee5-1f88-1e9d-224cc4a67b53/mza_1229187100463163224.jpg/600x600bb.jpg",
-            "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Features4/v4/d6/d5/98/d6d59873-2ee5-1f88-1e9d-224cc4a67b53/mza_1229187100463163224.jpg/100x100bb.jpg",
+            "artworkUrl": "string",
+            "author": "string",
+            "feedUrl": "string",
             "genres": [
-              "Video Games",
-              "Podcasts",
-              "Leisure"
+              "string"
             ],
-            "author": "IGN",
-            "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/video/gamescoop/"
+            "name": "string",
+            "smallArtworkUrl": "string"
           }
-        ]
+        ],
+        "matchingRules": {
+          "body": {
+            "$[0].name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].artworkUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].feedUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].smallArtworkUrl": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].author": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].genres": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$[0].genres[*]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$[0].name": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$[0].artworkUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$[0].feedUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$[0].smallArtworkUrl": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$[0].author": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$[0].genres[*]": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
       },
       "providerStates": [
         {
