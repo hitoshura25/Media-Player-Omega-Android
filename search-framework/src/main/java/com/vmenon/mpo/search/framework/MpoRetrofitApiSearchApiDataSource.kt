@@ -12,7 +12,12 @@ class MpoRetrofitApiSearchApiDataSource(
 ) : SearchApiDataSource {
     override suspend fun searchShows(searchTerm: String): List<Show> =
         withContext(Dispatchers.IO) {
-            retrofitApi.searchPodcasts(searchTerm).blockingGet()
+            try {
+                retrofitApi.searchPodcasts(searchTerm).blockingGet()
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                throw exception
+            }
         }
 
 

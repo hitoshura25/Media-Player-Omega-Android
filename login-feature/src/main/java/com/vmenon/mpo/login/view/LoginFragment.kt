@@ -58,5 +58,22 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         binding.loginForm.registerLink.setOnClickListener {
             viewModel.registerClicked()
         }
+        binding.loginForm.loginLink.setOnClickListener {
+            viewModel.loginClicked(requireActivity())
+        }
+
+        binding.registerForm.registerUser.setOnClickListener {
+            viewModel.performRegistration(
+                binding.registerForm.firstName.text.toString(),
+                binding.registerForm.lastName.text.toString(),
+                binding.registerForm.email.text.toString(),
+                requireActivity()
+            )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchLoginState()
     }
 }

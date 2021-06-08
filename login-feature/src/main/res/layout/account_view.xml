@@ -15,6 +15,17 @@
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/settings"/>
 
+    <TextView android:id="@+id/logout_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/sign_out"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

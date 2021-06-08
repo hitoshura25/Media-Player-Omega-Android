@@ -1,12 +1,12 @@
 package com.vmenon.mpo.api.retrofit
 
-import com.vmenon.mpo.api.model.Episode
-import com.vmenon.mpo.api.model.Show
-import com.vmenon.mpo.api.model.ShowDetails
+import com.vmenon.mpo.api.model.*
 import io.reactivex.Maybe
 import io.reactivex.Single
+import retrofit2.http.Body
 
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 // TODO: Should I Rename API endpoints to not be podcast specific?
@@ -25,4 +25,10 @@ interface MediaPlayerOmegaRetrofitService {
         @Query("feedUrl") feedUrl: String,
         @Query("publishTimestamp") lastEpisodePublishTime: Long
     ): Maybe<Episode>
+
+    @POST("/register_user")
+    fun registerUser(@Body request: RegisterUserRequest): Single<RegisterUserResponse>
+
+    @GET("/user")
+    fun getCurrentUser(): Single<UserDetails>
 }

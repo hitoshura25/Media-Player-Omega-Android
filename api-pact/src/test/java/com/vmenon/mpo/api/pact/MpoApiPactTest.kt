@@ -7,6 +7,7 @@ import au.com.dius.pact.consumer.junit.PactVerification
 import au.com.dius.pact.core.model.RequestResponsePact
 import au.com.dius.pact.core.model.annotations.Pact
 import com.vmenon.mpo.api.di.dagger.ApiModule
+import com.vmenon.mpo.api.model.RegisterUserRequest
 import io.pactfoundation.consumer.dsl.LambdaDsl
 import io.pactfoundation.consumer.dsl.LambdaDslObject
 import org.junit.Assert
@@ -97,6 +98,30 @@ class MpoApiPactTest {
             }.build()).toPact()
     }
 
+    @Pact(consumer = "consumer-mpo-api")
+    fun registerUserPact(builder: PactDslWithProvider): RequestResponsePact {
+        return builder
+            .given("default")
+            .uponReceiving("Register a User")
+            .path("/register_user")
+            .method("POST")
+            .body(LambdaDsl.newJsonBody { body ->
+                body.stringType(
+                    "firstName",
+                    "lastName",
+                    "email"
+                )
+            }.build())
+            .willRespondWith()
+            .status(200)
+            .body(LambdaDsl.newJsonBody { body ->
+                body.stringType(
+                    "firstName",
+                    "lastName",
+                    "email"
+                )
+            }.build()).toPact()
+    }
 
     @Test
     @PactVerification(fragment = "createSearchPact")
@@ -119,6 +144,20 @@ class MpoApiPactTest {
     fun `should fetch show update from provider`() {
         val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url)
         val response = client.getPodcastUpdate(FEED_URL, PUBLISH_TIMESTAMP).blockingGet()
+        Assert.assertNotNull(response)
+    }
+
+    @Test
+    @PactVerification(fragment = "registerUserPact")
+    fun `should register a User`() {
+        val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url)
+        val response = client.registerUser(
+            RegisterUserRequest(
+                firstName = "User First Name",
+                lastName = "User Last Name",
+                email = "User email"
+            )
+        ).blockingGet()
         Assert.assertNotNull(response)
     }
 

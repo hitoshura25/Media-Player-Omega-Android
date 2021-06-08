@@ -8,10 +8,12 @@ sourceSets.main.kotlin.srcDirs += 'build/generated/source'
 
 dependencies {
     api project(':api-mpo')
+    api project(':login-domain')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
 
-    implementation Libs.retrofit
+    api Libs.rxjava
+    api Libs.retrofit
     implementation Libs.adapter_rxjava2
     implementation Libs.converter_gson
 

@@ -9,6 +9,8 @@ android {
 
 dependencies {
     api project(':login-domain')
+    api project(':login-data')
+    api project(':login-framework')
     implementation project(':navigation-framework')
     implementation project(":view")
 

@@ -7,33 +7,25 @@
     android:paddingStart="8dp"
     android:paddingEnd="8dp">
 
-    <EditText android:id="@+id/email_login"
-        android:layout_width="match_parent"
+    <Button android:id="@+id/login_link"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/e_mail"
-        android:inputType="textEmailAddress"
-        android:importantForAutofill="no"
+        android:text="@string/login"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/password_login"
-        app:layout_constraintVertical_chainStyle="packed"/>
-
-    <EditText android:id="@+id/password_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:importantForAutofill="no"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_login"/>
+        app:layout_constraintBottom_toTopOf="@+id/register_link"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView android:id="@+id/register_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register"
         android:textColor="#0000EE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/password_login"
-        android:layout_marginTop="8dp"/>
+        app:layout_constraintStart_toStartOf="@+id/login_link"
+        app:layout_constraintTop_toBottomOf="@id/login_link"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        android:paddingStart="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

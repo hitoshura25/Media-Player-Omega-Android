@@ -2,6 +2,8 @@ package com.vmenon.mpo.api.di.dagger
 
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.api.retrofit.OAuthInterceptor
+import com.vmenon.mpo.login.domain.AuthService
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -12,17 +14,26 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 
 @Module
 object ApiModule {
 
     @Provides
     fun provideMediaPlayerRetrofitApi(
-        baseUrl: String = "https://mpospboot.herokuapp.com"
-    ): MediaPlayerOmegaRetrofitService = provideService(baseUrl, provideHttpClient())
+        @Named("mpoApiUrl") baseUrl: String,
+        httpClient: OkHttpClient
+    ): MediaPlayerOmegaRetrofitService = provideService(baseUrl, httpClient)
 
-    private fun provideHttpClient(): OkHttpClient {
+    @Provides
+    @Named("mpoApiUrl")
+    fun provideMpoApiUrl(): String = "http://10.0.0.208:8080/" // "https://mpospboot.herokuapp.com/"
+
+    @Provides
+    fun provideHttpClient(authService: AuthService): OkHttpClient {
+        val interceptor = OAuthInterceptor(authService)
         return OkHttpClient.Builder()
+            .addInterceptor(interceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

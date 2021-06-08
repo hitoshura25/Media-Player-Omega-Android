@@ -213,9 +213,9 @@
         },
         "body": {
           "artworkUrl": "string",
-          "name": "string",
-          "length": 100,
           "description": "string",
+          "length": 100,
+          "name": "string",
           "published": 100,
           "type": "string"
         },
@@ -312,6 +312,149 @@
               "type": "RandomInt",
               "min": 0,
               "max": 2147483647
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "description": "Register a User",
+      "request": {
+        "method": "POST",
+        "path": "/register_user",
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "firstName": "string",
+          "lastName": "string",
+          "password": "string",
+          "email": "string"
+        },
+        "matchingRules": {
+          "body": {
+            "$.firstName": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.lastName": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.email": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.password": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.firstName": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.lastName": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.email": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.password": {
+              "type": "RandomString",
+              "size": 20
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "firstName": "string",
+          "lastName": "string",
+          "email": "string"
+        },
+        "matchingRules": {
+          "body": {
+            "$.firstName": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.lastName": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.email": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.firstName": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.lastName": {
+              "type": "RandomString",
+              "size": 20
+            },
+            "$.email": {
+              "type": "RandomString",
+              "size": 20
             }
           }
         }

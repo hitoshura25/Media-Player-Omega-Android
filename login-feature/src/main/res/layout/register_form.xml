@@ -34,28 +34,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/last_name"/>
 
-    <EditText android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/password"
-        android:inputType="textPassword"
-        android:importantForAutofill="no"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email"/>
-
-    <EditText android:id="@+id/confirm_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/confirm_password"
-        android:inputType="textPassword"
-        android:importantForAutofill="no"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password"/>
-
     <Button android:id="@+id/register_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirm_password"/>
+        app:layout_constraintTop_toBottomOf="@+id/email"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,6 +11,8 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryModule
 import com.vmenon.mpo.login.di.LoginComponent
 import com.vmenon.mpo.login.di.LoginModule
+import com.vmenon.mpo.login.framework.di.AuthComponent
+import com.vmenon.mpo.login.framework.di.AuthModule
 import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerModule
@@ -31,7 +33,8 @@ import javax.inject.Singleton
         LibraryModule::class,
         DownloadsModule::class,
         PlayerModule::class,
-        LoginModule::class
+        LoginModule::class,
+        AuthModule::class
     ]
 )
 @Singleton
@@ -54,4 +57,5 @@ interface AppComponent {
     fun libraryComponent(): LibraryComponent.Factory
     fun playerComponent(): PlayerComponent.Factory
     fun loginComponent(): LoginComponent.Factory
+    fun authComponent(): AuthComponent.Factory
 }
