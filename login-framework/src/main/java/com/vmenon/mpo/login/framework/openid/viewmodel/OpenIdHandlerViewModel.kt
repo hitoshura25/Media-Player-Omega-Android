@@ -42,11 +42,9 @@ class OpenIdHandlerViewModel : ViewModel() {
     }
 
     fun handleResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                OpenIdAuthenticatorEngine.RC_AUTH -> handlePerformAuthOperationResult(data)
-                OpenIdAuthenticatorEngine.RC_LOGOUT -> handleEndSessionOperationResult(data)
-            }
+        when (requestCode) {
+            OpenIdAuthenticatorEngine.RC_AUTH -> handlePerformAuthOperationResult(resultCode, data)
+            OpenIdAuthenticatorEngine.RC_LOGOUT -> handleEndSessionOperationResult(resultCode, data)
         }
     }
 
@@ -66,8 +64,8 @@ class OpenIdHandlerViewModel : ViewModel() {
         }
     }
 
-    private fun handlePerformAuthOperationResult(data: Intent?) {
-        if (data != null) {
+    private fun handlePerformAuthOperationResult(resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 (authenticator as OpenIdAuthenticator).handleAuthResponse(
                     AuthorizationResponse.fromIntent(data),
@@ -75,18 +73,26 @@ class OpenIdHandlerViewModel : ViewModel() {
                 )
                 authenticated.postValue(true)
             }
+        } else {
+            println("Issue with handling auth result $resultCode $data")
+            authenticated.postValue(false)
         }
     }
 
-    private fun handleEndSessionOperationResult(data: Intent?) {
-        if (data != null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                (authenticator as OpenIdAuthenticator).handleEndSessionResponse(
-                    EndSessionResponse.fromIntent(data),
-                    AuthorizationException.fromIntent(data)
-                )
-                authenticated.postValue(false)
-            }
+    private fun handleEndSessionOperationResult(resultCode: Int, data: Intent?) {
+        var response: EndSessionResponse? = null
+        var exception: AuthorizationException? = null
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            response = EndSessionResponse.fromIntent(data)
+            exception = AuthorizationException.fromIntent(data)
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            (authenticator as OpenIdAuthenticator).handleEndSessionResponse(
+                response,
+                exception
+            )
+            authenticated.postValue(false)
         }
     }
 

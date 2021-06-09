@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.login.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.model.AccountState
+import com.vmenon.mpo.login.model.LoadingState
 import com.vmenon.mpo.login.model.LoggedInState
 import com.vmenon.mpo.login.model.LoginState
 import com.vmenon.mpo.login.model.RegisterState
@@ -29,6 +30,7 @@ class LoginViewModel : ViewModel() {
     fun fetchLoginState() {
         viewModelScope.launch(Dispatchers.IO) {
             if (authService.isAuthenticated()) {
+                loginState.postValue(LoadingState)
                 loginState.postValue(LoggedInState(loginService.getUser()))
             } else {
                 loginState.postValue(LoginState)
@@ -42,12 +44,14 @@ class LoginViewModel : ViewModel() {
 
     fun loginClicked(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
+            loginState.postValue(LoadingState)
             authService.startAuthentication(activity)
         }
     }
 
     fun logoutClicked(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
+            loginState.postValue(LoadingState)
             authService.logout(activity)
         }
     }
@@ -61,6 +65,7 @@ class LoginViewModel : ViewModel() {
         activity: Activity
     ) {
         viewModelScope.launch(Dispatchers.IO) {
+            loginState.postValue(LoadingState)
             loginService.registerUser(firstName, lastName, email, password)
             authService.startAuthentication(activity)
         }

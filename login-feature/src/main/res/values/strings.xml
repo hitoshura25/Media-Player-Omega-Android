@@ -9,4 +9,5 @@
     <string name="settings">Settings</string>
     <string name="login">Login with Email</string>
     <string name="sign_out">Sign Out</string>
+    <string name="hi_user">Hello %1$s!</string>
 </resources>

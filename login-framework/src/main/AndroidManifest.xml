@@ -5,7 +5,7 @@
 
     <application>
         <activity android:name=".openid.activity.OpenIdHandlerActivity"
-            android:theme="@style/AppThemeNoActionBar"/>
+            android:theme="@style/AppThemeTransparent"/>
         <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
             tools:node="replace">

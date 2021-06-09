@@ -27,7 +27,6 @@ class OpenIdHandlerActivity :
             finish()
             overridePendingTransition(0, 0)
         }
-        overridePendingTransition(0, 0)
     }
 
     override fun onResume() {
@@ -61,14 +60,15 @@ class OpenIdHandlerActivity :
         fun createPerformAuthIntent(activity: Activity) =
             Intent(activity, OpenIdHandlerActivity::class.java).apply {
                 putExtra(EXTRA_OPERATION, Operation.PERFORM_AUTH)
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 
-        fun createLogOutIntent(
-            activity: Activity) =
+        fun createLogOutIntent(activity: Activity) =
             Intent(activity, OpenIdHandlerActivity::class.java).apply {
                 putExtra(EXTRA_OPERATION, Operation.LOGOUT)
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 
         enum class Operation {

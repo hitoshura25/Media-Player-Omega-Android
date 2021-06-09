@@ -1,14 +1,18 @@
 package com.vmenon.mpo.login.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import com.vmenon.mpo.login.R
 import com.vmenon.mpo.login.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login.di.LoginComponent
 import com.vmenon.mpo.login.di.LoginComponentProvider
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
+import com.vmenon.mpo.login.model.LoadingState
 import com.vmenon.mpo.login.model.LoggedInState
 import com.vmenon.mpo.login.model.LoginState
 import com.vmenon.mpo.login.model.RegisterState
@@ -16,6 +20,7 @@ import com.vmenon.mpo.login.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
+import com.vmenon.mpo.view.LoadingStateHelper
 
 class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBinding>(),
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(LoginNavigationLocation) {
@@ -33,24 +38,44 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         component.inject(viewModel)
     }
 
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        println("OnActivityResult")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val activity = (requireActivity() as AppCompatActivity)
+        val loadingStateHelper =
+            LoadingStateHelper(binding.loadingOverlayView.root, binding.loginContainer)
+        activity.setSupportActionBar(binding.toolbar)
         viewModel.loginState().observe(viewLifecycleOwner, { state ->
             when (state) {
                 LoginState -> {
+                    loadingStateHelper.showContentState()
                     binding.loginForm.root.visibility = View.VISIBLE
                     binding.registerForm.root.visibility = View.GONE
                     binding.accountView.root.visibility = View.GONE
+                    activity.title = ""
                 }
                 RegisterState -> {
+                    loadingStateHelper.showContentState()
                     binding.registerForm.root.visibility = View.VISIBLE
                     binding.loginForm.root.visibility = View.GONE
                     binding.accountView.root.visibility = View.GONE
+                    activity.title = ""
                 }
+
                 is LoggedInState -> {
+                    loadingStateHelper.showContentState()
                     binding.accountView.root.visibility = View.VISIBLE
                     binding.loginForm.root.visibility = View.GONE
                     binding.registerForm.root.visibility = View.GONE
+                    activity.title = getString(R.string.hi_user, state.userDetails.firstName)
+                }
+                LoadingState -> {
+                    loadingStateHelper.showLoadingState()
                 }
             }
         })
