@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
@@ -139,4 +140,8 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             }
         }
     }
+
+    override fun getContentView(): View? = binding.homeContentRoot
+
+    override fun getLoadingView(): View? = binding.loadingOverlayView.root
 }

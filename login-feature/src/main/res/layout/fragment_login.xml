@@ -44,8 +44,4 @@
             layout="@layout/account_view"
             android:visibility="gone" />
     </RelativeLayout>
-    <include android:id="@+id/loading_overlay_view"
-        layout="@layout/loading_overlay"
-        android:visibility="gone"
-        tools:visibility="visible"/>
 </RelativeLayout>

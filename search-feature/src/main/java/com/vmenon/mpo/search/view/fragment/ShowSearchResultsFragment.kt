@@ -36,8 +36,10 @@ class ShowSearchResultsFragment :
     private lateinit var loadingStateHelper: LoadingStateHelper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingStateHelper =
-            LoadingStateHelper(binding.contentProgressBar, binding.searchResultsContainer)
+        loadingStateHelper = LoadingStateHelper.switchWithContent(
+            loadingView = binding.contentProgressBar,
+            contentView = binding.searchResultsContainer
+        )
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         binding.showList.setHasFixedSize(true)

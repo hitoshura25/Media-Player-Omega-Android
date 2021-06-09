@@ -21,6 +21,7 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
+import com.vmenon.mpo.view.activity.BaseActivity
 
 class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBinding>(),
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(LoginNavigationLocation) {
@@ -46,9 +47,8 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val activity = (requireActivity() as AppCompatActivity)
-        val loadingStateHelper =
-            LoadingStateHelper(binding.loadingOverlayView.root, binding.loginContainer)
+        val activity = (requireActivity() as BaseActivity<*>)
+        val loadingStateHelper = LoadingStateHelper.overlayContent(activity.requireLoadingView())
         activity.setSupportActionBar(binding.toolbar)
         viewModel.loginState().observe(viewLifecycleOwner, { state ->
             when (state) {

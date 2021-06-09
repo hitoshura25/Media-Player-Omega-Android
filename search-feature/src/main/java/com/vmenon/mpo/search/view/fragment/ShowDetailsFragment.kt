@@ -60,7 +60,10 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
         binding.fab.setImageResource(R.drawable.ic_add_white_48dp)
         binding.appbar.addOnOffsetChangedListener(this)
 
-        loadingStateHelper = LoadingStateHelper(binding.contentProgressBar, binding.detailsContainer)
+        loadingStateHelper = LoadingStateHelper.switchWithContent(
+            loadingView = binding.contentProgressBar,
+            contentView = binding.detailsContainer
+        )
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
         val showId = navigationController.getParams(this).showSearchResultId
@@ -125,7 +128,8 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
     private fun displayDetails(showDetails: ShowSearchResultDetailsModel) {
         @Suppress("DEPRECATION")
         binding.showDescription.text = Html.fromHtml(showDetails.show.description)
-        Glide.with(requireActivity()).load(showDetails.show.artworkUrl).fitCenter().into(binding.showImage)
+        Glide.with(requireActivity()).load(showDetails.show.artworkUrl).fitCenter()
+            .into(binding.showImage)
 
         binding.episodesList.setHasFixedSize(true)
         val layoutManager = LinearLayoutManager(requireContext())

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import com.vmenon.mpo.login.framework.databinding.ActivityOpenIdHandlerBinding
 import com.vmenon.mpo.login.framework.di.AuthComponent
 import com.vmenon.mpo.login.framework.di.AuthComponentProvider
@@ -78,4 +79,8 @@ class OpenIdHandlerActivity :
 
         const val EXTRA_OPERATION = "auth_operation"
     }
+
+    override fun getContentView(): View? = null
+
+    override fun getLoadingView(): View? = null
 }

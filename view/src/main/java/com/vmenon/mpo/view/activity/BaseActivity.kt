@@ -2,6 +2,7 @@ package com.vmenon.mpo.view.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,11 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
         inject(component)
     }
 
+    fun requireContentView() = getContentView()!!
+    fun requireLoadingView() = getLoadingView()!!
+
+    abstract fun getContentView(): View?
+    abstract fun getLoadingView(): View?
     protected abstract fun setupComponent(context: Context): COMPONENT
     protected abstract fun inject(component: COMPONENT)
 
