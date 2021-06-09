@@ -67,8 +67,14 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                 binding.registerForm.firstName.text.toString(),
                 binding.registerForm.lastName.text.toString(),
                 binding.registerForm.email.text.toString(),
+                binding.registerForm.password.text.toString(),
+                binding.registerForm.confirmPassword.text.toString(),
                 requireActivity()
             )
+        }
+
+        binding.accountView.logoutLink.setOnClickListener {
+            viewModel.logoutClicked(requireActivity())
         }
     }
 

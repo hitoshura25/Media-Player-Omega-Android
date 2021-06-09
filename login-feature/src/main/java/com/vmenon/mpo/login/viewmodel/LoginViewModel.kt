@@ -46,9 +46,9 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun logoutClicked() {
+    fun logoutClicked(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
-
+            authService.logout(activity)
         }
     }
 
@@ -56,10 +56,12 @@ class LoginViewModel : ViewModel() {
         firstName: String,
         lastName: String,
         email: String,
+        password: String,
+        confirmPassword: String,
         activity: Activity
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginService.registerUser(firstName, lastName, email)
+            loginService.registerUser(firstName, lastName, email, password)
             authService.startAuthentication(activity)
         }
     }

@@ -19,6 +19,7 @@ import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.view.R
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class LoginModule {
@@ -41,12 +42,19 @@ class LoginModule {
     ): AuthService = AuthRepository(authState, authenticator)
 
     @Provides
-    fun provideUserRegistry(api: MediaPlayerOmegaRetrofitService): UserRegistry =
-        MpoApiUserRegistry(api)
+    fun provideUserRegistry(
+        api: MediaPlayerOmegaRetrofitService,
+        authService: AuthService,
+    ): UserRegistry =
+        MpoApiUserRegistry(api, authService)
 
     @Provides
-    fun provideAuthenticator(): Authenticator = OpenIdAuthenticator()
+    fun provideAuthenticator(
+        application: Application,
+        authState: AuthState
+    ): Authenticator = OpenIdAuthenticator(application, authState)
 
     @Provides
+    @Singleton
     fun provideAuthState(application: Application): AuthState = SharedPrefsAuthState(application)
 }

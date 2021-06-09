@@ -27,7 +27,7 @@ object ApiModule {
 
     @Provides
     @Named("mpoApiUrl")
-    fun provideMpoApiUrl(): String = "http://10.0.0.208:8080/" // "https://mpospboot.herokuapp.com/"
+    fun provideMpoApiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
 
     @Provides
     fun provideHttpClient(authService: AuthService): OkHttpClient {

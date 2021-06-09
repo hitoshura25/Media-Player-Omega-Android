@@ -18,12 +18,16 @@ class OpenIdHandlerActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.onCreated(this)
-        binding.loadingIndicator.show()
-        viewModel.authenticated().observe(this) {
-            println("Authenticated!")
-            binding.loadingIndicator.hide()
+        viewModel.authenticated().observe(this) { authenticated ->
+            if (authenticated) {
+                println("Authenticated!")
+            } else {
+                println("Not Authenticated!")
+            }
             finish()
+            overridePendingTransition(0, 0)
         }
+        overridePendingTransition(0, 0)
     }
 
     override fun onResume() {
@@ -60,7 +64,8 @@ class OpenIdHandlerActivity :
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
 
-        fun createLogOutIntent(activity: Activity) =
+        fun createLogOutIntent(
+            activity: Activity) =
             Intent(activity, OpenIdHandlerActivity::class.java).apply {
                 putExtra(EXTRA_OPERATION, Operation.LOGOUT)
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

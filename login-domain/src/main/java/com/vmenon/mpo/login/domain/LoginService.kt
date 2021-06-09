@@ -4,7 +4,8 @@ interface LoginService {
     suspend fun registerUser(
         firstName: String,
         lastName: String,
-        email: String
+        email: String,
+        password: String
     ): User
 
     suspend fun getUser(): User

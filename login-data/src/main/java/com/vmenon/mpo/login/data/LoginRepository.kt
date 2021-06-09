@@ -9,8 +9,9 @@ class LoginRepository(
     override suspend fun registerUser(
         firstName: String,
         lastName: String,
-        email: String
-    ): User = registry.registerUser(firstName, lastName, email)
+        email: String,
+        password: String
+    ): User = registry.registerUser(firstName, lastName, email, password)
 
     override suspend fun getUser(): User = registry.getCurrentUser()
 }

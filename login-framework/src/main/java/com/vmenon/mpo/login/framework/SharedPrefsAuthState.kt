@@ -26,6 +26,11 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         this.credentials = credentials
     }
 
+    override suspend fun clearCredentials() {
+        sharedPreferences.edit().clear().apply()
+        this.credentials = null
+    }
+
     private fun readFromSharedPrefs(): Credentials? {
         val accessToken = sharedPreferences.getString(ACCESS_TOKEN, null)
         val refreshToken = sharedPreferences.getString(REFRESH_TOKEN, null)

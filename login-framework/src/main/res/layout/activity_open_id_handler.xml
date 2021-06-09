@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".openid.activity.OpenIdHandlerActivity">
 
-    <androidx.core.widget.ContentLoadingProgressBar android:id="@+id/loading_indicator"
+    <ProgressBar android:id="@+id/loading_indicator"
+        android:indeterminateOnly="true"
         android:layout_width="128dp"
         android:layout_height="128dp"
         android:indeterminate="true"

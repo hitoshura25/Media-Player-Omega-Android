@@ -1,8 +1,8 @@
 package com.vmenon.mpo.login.framework.openid
 
 import android.app.Activity
+import android.content.Context
 import android.net.Uri
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.vmenon.mpo.login.domain.Credentials
 import com.vmenon.mpo.login.framework.BuildConfig
 import net.openid.appauth.AuthorizationException
@@ -12,58 +12,57 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.EndSessionRequest
+import net.openid.appauth.EndSessionResponse
+import net.openid.appauth.GrantTypeValues
+import net.openid.appauth.NoClientAuthentication
 import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-
-class OpenIdAuthenticatorEngine {
+class OpenIdAuthenticatorEngine(context: Context) {
     private var serviceConfiguration: AuthorizationServiceConfiguration? = null
-    private var authorizationService: AuthorizationService? = null
+    private var authorizationService = AuthorizationService(context.applicationContext)
 
     fun initialize(context: Activity) {
-        authorizationService = AuthorizationService(context)
+
     }
 
     fun cleanup() {
-        authorizationService?.dispose()
-        authorizationService = null
+
     }
 
     suspend fun performAuthenticate(context: Activity) {
-        authorizationService?.let { authorizationService ->
-            val authRequest = AuthorizationRequest.Builder(
-                getServiceConfiguration(),
-                BuildConfig.OAUTH_CLIENT_ID,
-                ResponseTypeValues.CODE,
-                REDIRECT_URI
-            ).setScopes(
-                Scope.OPENID,
-                Scope.OFFLINE_ACCESS,
-                Scope.PROFILE
-            ).build()
+        val authRequest = AuthorizationRequest.Builder(
+            getServiceConfiguration(),
+            BuildConfig.OAUTH_CLIENT_ID,
+            ResponseTypeValues.CODE,
+            REDIRECT_URI
+        ).setScopes(
+            Scope.OPENID,
+            Scope.OFFLINE_ACCESS,
+            Scope.PROFILE
+        ).build()
 
-            context.startActivityForResult(
-                authorizationService.getAuthorizationRequestIntent(authRequest),
-                RC_AUTH
-            )
-        }
+        context.startActivityForResult(
+            authorizationService.getAuthorizationRequestIntent(authRequest),
+            RC_AUTH
+        )
     }
 
-    suspend fun performLogout(context: Activity, idToken:String) {
-        authorizationService?.let { authorizationService ->
-            val endSessionRequest = EndSessionRequest.Builder(getServiceConfiguration())
-                .setIdToken(idToken)
-                .setRedirectUri()
-                .build()
-            val endSessionIntent =
-                authorizationService.getEndSessionRequestIntent(endSessionRequest)
-            context.startActivityForResult(endSessionIntent, RC_LOGOUT)
-        }
-
+    suspend fun performLogout(context: Activity, idToken: String) {
+        val endSessionRequest = EndSessionRequest.Builder(
+            getServiceConfiguration(),
+            idToken,
+            LOGOUT_REDIRECT_URI
+        ).build()
+        val endSessionIntent =
+            authorizationService.getEndSessionRequestIntent(endSessionRequest)
+        context.startActivityForResult(endSessionIntent, RC_LOGOUT)
     }
+
 
     suspend fun handleAuthResponse(
         authorizationResponse: AuthorizationResponse?,
@@ -78,31 +77,66 @@ class OpenIdAuthenticatorEngine {
         throw IllegalStateException("No Auth response or exception")
     }
 
+    suspend fun handleEndSessionResponse(
+        endSessionResponse: EndSessionResponse?,
+        exception: AuthorizationException?
+    ) {
+        if (exception != null) {
+            println("End Session error: $exception")
+        }
+    }
+
+    suspend fun refreshToken(refreshToken: String): Credentials {
+        val request = TokenRequest.Builder(
+            getServiceConfiguration(),
+            BuildConfig.OAUTH_CLIENT_ID
+        )
+            .setGrantType(GrantTypeValues.REFRESH_TOKEN)
+            .setScope(null)
+            .setRefreshToken(refreshToken)
+            .build()
+
+        return performRefreshTokenRequest(request)
+    }
+
     private suspend fun performTokenRequest(
         authorizationResponse: AuthorizationResponse
     ): Credentials =
         suspendCoroutine { continuation ->
-            authorizationService?.let { authorizationService ->
-                authorizationService.performTokenRequest(
-                    authorizationResponse.createTokenExchangeRequest()
-                ) { response, exception ->
-                    when {
-                        response != null -> {
-                            continuation.resume(handleTokenResponse(response))
-                        }
-                        exception != null -> {
-                            handleTokenError(exception)
-                        }
-                        else -> {
-                            continuation.resumeWithException(
-                                IllegalStateException("No Auth response or exception")
-                            )
-                        }
+            authorizationService.performTokenRequest(
+                authorizationResponse.createTokenExchangeRequest()
+            ) { response, exception ->
+                when {
+                    response != null -> {
+                        continuation.resume(handleTokenResponse(response))
+                    }
+                    exception != null -> {
+                        handleTokenError(exception)
+                    }
+                    else -> {
+                        continuation.resumeWithException(
+                            IllegalStateException("No Auth response or exception")
+                        )
                     }
                 }
-            } ?: continuation.resumeWithException(
-                IllegalStateException("No AuthorizationService")
-            )
+            }
+        }
+
+
+    private suspend fun performRefreshTokenRequest(tokenRequest: TokenRequest): Credentials =
+        suspendCoroutine { continuation ->
+            authorizationService.performTokenRequest(
+                tokenRequest,
+                NoClientAuthentication.INSTANCE
+            ) { response, ex ->
+                if (ex != null) {
+                    handleTokenError(ex)
+                }
+
+                if (response != null) {
+                    continuation.resume(handleTokenResponse(response))
+                }
+            }
         }
 
     private fun handleTokenResponse(response: TokenResponse): Credentials {
@@ -126,7 +160,7 @@ class OpenIdAuthenticatorEngine {
                 tokenType = tokenType
             )
         } else {
-            throw IllegalStateException("Invalid auth response")
+            throw IllegalStateException("Invalid token response")
         }
     }
 
@@ -165,8 +199,8 @@ class OpenIdAuthenticatorEngine {
             Uri.parse("https://dev-00189988.okta.com/oauth2/default")
         private val REDIRECT_URI =
             Uri.parse("${BuildConfig.APP_AUTH_REDIRECT_SCHEME}:/oauth/callback")
-        private val LOREDIRECT_URI =
-            Uri.parse("${BuildConfig.APP_AUTH_REDIRECT_SCHEME}:/oauth/callback")
+        private val LOGOUT_REDIRECT_URI =
+            Uri.parse("${BuildConfig.APP_AUTH_REDIRECT_SCHEME}:/oauth/logoutCallback")
         const val RC_AUTH = 4000
         const val RC_LOGOUT = 4001
     }
