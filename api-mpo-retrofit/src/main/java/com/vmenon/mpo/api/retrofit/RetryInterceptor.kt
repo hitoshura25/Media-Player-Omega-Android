@@ -2,6 +2,7 @@ package com.vmenon.mpo.api.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class RetryInterceptor(private val maxRetries: Int) : Interceptor {
@@ -14,13 +15,20 @@ class RetryInterceptor(private val maxRetries: Int) : Interceptor {
         while (response == null) {
             try {
                 response = chain.proceed(chain.request())
-            } catch (timeoutException: SocketTimeoutException) {
-                currentAttempt++
-                if (currentAttempt < maxRetries) {
-                    Thread.sleep(currentDelay)
-                    currentDelay = (currentDelay * delayFactor)
-                } else {
-                    break
+            } catch (exception: Exception) {
+                when (exception) {
+                    is SocketTimeoutException, is ConnectException -> {
+                        currentAttempt++
+                        println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
+                        Thread.sleep(currentDelay)
+
+                        if (currentAttempt < maxRetries) {
+                            currentDelay = (currentDelay * delayFactor)
+                        } else {
+                            break
+                        }
+                    }
+                    else -> throw exception
                 }
             }
         }
