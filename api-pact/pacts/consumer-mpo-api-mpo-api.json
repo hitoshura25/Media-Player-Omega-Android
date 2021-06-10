@@ -213,9 +213,9 @@
         },
         "body": {
           "artworkUrl": "string",
-          "description": "string",
-          "length": 100,
           "name": "string",
+          "length": 100,
+          "description": "string",
           "published": 100,
           "type": "string"
         },
@@ -331,10 +331,10 @@
           "Content-Type": "application/json; charset=UTF-8"
         },
         "body": {
+          "email": "string",
           "firstName": "string",
           "lastName": "string",
-          "password": "string",
-          "email": "string"
+          "password": "string"
         },
         "matchingRules": {
           "body": {
@@ -399,9 +399,9 @@
           "Content-Type": "application/json; charset=UTF-8"
         },
         "body": {
+          "email": "string",
           "firstName": "string",
-          "lastName": "string",
-          "email": "string"
+          "lastName": "string"
         },
         "matchingRules": {
           "body": {
