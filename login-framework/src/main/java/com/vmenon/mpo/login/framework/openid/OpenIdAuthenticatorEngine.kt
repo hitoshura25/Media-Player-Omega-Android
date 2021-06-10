@@ -1,8 +1,9 @@
 package com.vmenon.mpo.login.framework.openid
 
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.ActivityResultLauncher
 import com.vmenon.mpo.login.domain.Credentials
 import com.vmenon.mpo.login.framework.BuildConfig
 import net.openid.appauth.AuthorizationException
@@ -26,15 +27,7 @@ class OpenIdAuthenticatorEngine(context: Context) {
     private var serviceConfiguration: AuthorizationServiceConfiguration? = null
     private var authorizationService = AuthorizationService(context.applicationContext)
 
-    fun initialize(context: Activity) {
-
-    }
-
-    fun cleanup() {
-
-    }
-
-    suspend fun performAuthenticate(context: Activity) {
+    suspend fun performAuthenticate(launcher: ActivityResultLauncher<Intent>) {
         val authRequest = AuthorizationRequest.Builder(
             getServiceConfiguration(),
             BuildConfig.OAUTH_CLIENT_ID,
@@ -46,13 +39,10 @@ class OpenIdAuthenticatorEngine(context: Context) {
             Scope.PROFILE
         ).build()
 
-        context.startActivityForResult(
-            authorizationService.getAuthorizationRequestIntent(authRequest),
-            RC_AUTH
-        )
+        launcher.launch(authorizationService.getAuthorizationRequestIntent(authRequest))
     }
 
-    suspend fun performLogout(context: Activity, idToken: String) {
+    suspend fun performLogout(launcher: ActivityResultLauncher<Intent>, idToken: String) {
         val endSessionRequest = EndSessionRequest.Builder(
             getServiceConfiguration(),
             idToken,
@@ -60,7 +50,7 @@ class OpenIdAuthenticatorEngine(context: Context) {
         ).build()
         val endSessionIntent =
             authorizationService.getEndSessionRequestIntent(endSessionRequest)
-        context.startActivityForResult(endSessionIntent, RC_LOGOUT)
+        launcher.launch(endSessionIntent)
     }
 
 

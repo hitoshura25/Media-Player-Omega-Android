@@ -102,9 +102,4 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             viewModel.logoutClicked(requireActivity())
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchLoginState()
-    }
 }

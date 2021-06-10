@@ -3,32 +3,31 @@ package com.vmenon.mpo.login.framework
 import android.content.Context
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.domain.Credentials
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SharedPrefsAuthState(context: Context) : AuthState {
     private val sharedPreferences =
         context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-
-    private var credentials: Credentials? = null
-
-    override fun getCredentials(): Credentials? {
-        return credentials.let { credentials ->
-            if (credentials != null) {
-                credentials
-            } else {
-                this.credentials = readFromSharedPrefs()
-                this.credentials
-            }
-        }
+    private var storedCredentials: Credentials? = readFromSharedPrefs()
+    private set(value) {
+        field = value
+        credentialState.value = value
     }
+
+    private val credentialState = MutableStateFlow(storedCredentials)
+
+    override fun getCredentials(): Credentials? = storedCredentials
+    override fun credentials(): Flow<Credentials?> = credentialState
 
     override suspend fun storeCredentials(credentials: Credentials) {
         storeToSharedPrefs(credentials)
-        this.credentials = credentials
+        this.storedCredentials = credentials
     }
 
     override suspend fun clearCredentials() {
         sharedPreferences.edit().clear().apply()
-        this.credentials = null
+        this.storedCredentials = null
     }
 
     private fun readFromSharedPrefs(): Credentials? {

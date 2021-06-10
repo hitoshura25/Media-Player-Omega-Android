@@ -2,12 +2,20 @@ package com.vmenon.mpo.login.data
 
 import com.vmenon.mpo.login.domain.AuthService
 import com.vmenon.mpo.login.domain.Credentials
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class AuthRepository(
     private val authState: AuthState,
     private val authenticator: Authenticator
 ) : AuthService {
+
     override fun getCredentials(): Credentials? = authState.getCredentials()
+
+    override fun authenticated(): Flow<Boolean> = authState.credentials().map { credentials ->
+        credentials != null
+    }
+
     override suspend fun logout(context: Any) {
         authenticator.logout(context)
     }

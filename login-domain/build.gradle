@@ -11,4 +11,5 @@ java {
 dependencies {
     implementation project(':navigation-domain')
     implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
 }

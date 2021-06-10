@@ -2,15 +2,17 @@ package com.vmenon.mpo.login.framework.openid.viewmodel
 
 import android.app.Activity
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.login.data.Authenticator
 import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticator
-import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticatorEngine
-import com.vmenon.mpo.login.framework.openid.activity.OpenIdHandlerActivity.Companion.EXTRA_OPERATION
-import com.vmenon.mpo.login.framework.openid.activity.OpenIdHandlerActivity.Companion.Operation
+import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment.Companion.EXTRA_OPERATION
+import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment.Companion.Operation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
@@ -23,42 +25,44 @@ class OpenIdHandlerViewModel : ViewModel() {
     lateinit var authenticator: Authenticator
 
     private val authenticated = MutableLiveData<Boolean>()
+    private var startAuthContract: ActivityResultLauncher<Intent>? = null
+    private var logoutContract: ActivityResultLauncher<Intent>? = null
 
     fun authenticated(): LiveData<Boolean> = authenticated
 
-    fun onCreated(activity: Activity) {
-        (authenticator as OpenIdAuthenticator).initialize(activity)
+    fun onCreated(fragment: Fragment) {
+        startAuthContract = fragment.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { activityResult ->
+            handlePerformAuthOperationResult(activityResult.resultCode, activityResult.data)
+        }
+        logoutContract = fragment.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { activityResult ->
+            handleEndSessionOperationResult(activityResult.resultCode, activityResult.data)
+        }
     }
 
-    fun onResume(activity: Activity) {
-        val operation = activity.intent.getSerializableExtra(EXTRA_OPERATION) as Operation?
-        println("Operation $operation")
+    fun onResume(fragment: Fragment) {
+        val operation = fragment.arguments?.getSerializable(EXTRA_OPERATION) as Operation?
         if (operation != null) {
+            fragment.arguments?.remove(EXTRA_OPERATION)
             when (operation) {
-                Operation.PERFORM_AUTH -> handlePerformAuthOperationRequest(activity)
-                Operation.LOGOUT -> handleEndSessionRequest(activity)
+                Operation.PERFORM_AUTH -> handlePerformAuthOperationRequest(startAuthContract!!)
+                Operation.LOGOUT -> handleEndSessionRequest(logoutContract!!)
             }
         }
     }
 
-    fun handleResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            OpenIdAuthenticatorEngine.RC_AUTH -> handlePerformAuthOperationResult(resultCode, data)
-            OpenIdAuthenticatorEngine.RC_LOGOUT -> handleEndSessionOperationResult(resultCode, data)
+    private fun handlePerformAuthOperationRequest(launcher: ActivityResultLauncher<Intent>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            (authenticator as OpenIdAuthenticator).performAuthenticate(launcher)
         }
     }
 
-    private fun handlePerformAuthOperationRequest(activity: Activity) {
+    private fun handleEndSessionRequest(launcher: ActivityResultLauncher<Intent>) {
         viewModelScope.launch(Dispatchers.IO) {
-            activity.intent.removeExtra(EXTRA_OPERATION)
-            (authenticator as OpenIdAuthenticator).performAuthenticate(activity)
-        }
-    }
-
-    private fun handleEndSessionRequest(activity: Activity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            activity.intent.removeExtra(EXTRA_OPERATION)
-            if (!(authenticator as OpenIdAuthenticator).performLogoutIfNecessary(activity)) {
+            if (!(authenticator as OpenIdAuthenticator).performLogoutIfNecessary(launcher)) {
                 authenticated.postValue(false) // Already logged out I Guess
             }
         }
@@ -94,9 +98,5 @@ class OpenIdHandlerViewModel : ViewModel() {
             )
             authenticated.postValue(false)
         }
-    }
-
-    fun onDestroyed() {
-        (authenticator as OpenIdAuthenticator).cleanup()
     }
 }

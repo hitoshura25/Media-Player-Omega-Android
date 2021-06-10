@@ -2,8 +2,10 @@ package com.vmenon.mpo.login.viewmodel
 
 import android.app.Activity
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.login.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
@@ -23,35 +25,38 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var loginService: LoginService
 
-    private val loginState = MutableLiveData<AccountState>()
+    private val loginStateFromUI = MutableLiveData<AccountState>()
 
-    fun loginState(): LiveData<AccountState> = loginState
-
-    fun fetchLoginState() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (authService.isAuthenticated()) {
-                loginState.postValue(LoadingState)
-                loginState.postValue(LoggedInState(loginService.getUser()))
+    fun loginState(): LiveData<AccountState> = MediatorLiveData<AccountState>().apply {
+        addSource(authService.authenticated().asLiveData()) { authenticated ->
+            if (authenticated) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    postValue(LoadingState)
+                    postValue(LoggedInState(loginService.getUser()))
+                }
             } else {
-                loginState.postValue(LoginState)
+                postValue(LoginState)
             }
+        }
+        addSource(loginStateFromUI) { value ->
+            postValue(value)
         }
     }
 
     fun registerClicked() {
-        loginState.postValue(RegisterState)
+        loginStateFromUI.postValue(RegisterState)
     }
 
     fun loginClicked(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginState.postValue(LoadingState)
+            loginStateFromUI.postValue(LoadingState)
             authService.startAuthentication(activity)
         }
     }
 
     fun logoutClicked(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginState.postValue(LoadingState)
+            loginStateFromUI.postValue(LoadingState)
             authService.logout(activity)
         }
     }
@@ -65,7 +70,7 @@ class LoginViewModel : ViewModel() {
         activity: Activity
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginState.postValue(LoadingState)
+            loginStateFromUI.postValue(LoadingState)
             loginService.registerUser(firstName, lastName, email, password)
             authService.startAuthentication(activity)
         }

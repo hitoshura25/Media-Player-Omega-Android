@@ -1,6 +1,6 @@
 package com.vmenon.mpo.login.framework.di
 
-import com.vmenon.mpo.login.framework.openid.activity.OpenIdHandlerActivity
+import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment
 import com.vmenon.mpo.login.framework.openid.viewmodel.OpenIdHandlerViewModel
 import dagger.Subcomponent
 
@@ -13,5 +13,5 @@ interface AuthComponent {
     }
 
     fun inject(viewModel: OpenIdHandlerViewModel)
-    fun inject(activity: OpenIdHandlerActivity)
+    fun inject(fragment: OpenIdHandlerFragment)
 }

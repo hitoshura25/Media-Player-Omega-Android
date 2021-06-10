@@ -11,4 +11,5 @@ java {
 dependencies {
     api project(':login-domain')
     implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
 }
