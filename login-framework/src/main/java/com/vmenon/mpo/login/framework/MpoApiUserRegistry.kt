@@ -36,7 +36,7 @@ class MpoApiUserRegistry(
 
     override suspend fun getCurrentUser(): User {
         val userFromApi: UserDetails =
-            authService.retryAndRefreshTokenIfNecessary(System.currentTimeMillis()) {
+            authService.runWithFreshCredentialsIfNecessary(System.currentTimeMillis()) {
                 api.getCurrentUser().blockingGet()
             }
 

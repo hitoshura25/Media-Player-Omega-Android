@@ -24,21 +24,21 @@ class AuthRepository(
         authenticator.startAuthentication(context)
     }
 
-    override suspend fun <T> retryAndRefreshTokenIfNecessary(
+    override suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
-        operation: () -> T
+        operation: (Boolean) -> T
     ): T {
         val credentials = getCredentials()
         return when {
             credentials == null -> {
-                operation()
+                operation(false)
             }
             credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS -> {
-                operation()
+                operation(false)
             }
             else -> {
                 authenticator.refreshToken(credentials.refreshToken)
-                operation()
+                operation(true)
             }
         }
     }

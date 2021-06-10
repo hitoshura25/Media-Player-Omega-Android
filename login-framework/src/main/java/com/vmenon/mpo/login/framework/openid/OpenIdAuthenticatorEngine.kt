@@ -191,7 +191,5 @@ class OpenIdAuthenticatorEngine(context: Context) {
             Uri.parse("${BuildConfig.APP_AUTH_REDIRECT_SCHEME}:/oauth/callback")
         private val LOGOUT_REDIRECT_URI =
             Uri.parse("${BuildConfig.APP_AUTH_REDIRECT_SCHEME}:/oauth/logoutCallback")
-        const val RC_AUTH = 4000
-        const val RC_LOGOUT = 4001
     }
 }
