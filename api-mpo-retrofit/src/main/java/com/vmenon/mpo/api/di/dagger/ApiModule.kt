@@ -3,6 +3,7 @@ package com.vmenon.mpo.api.di.dagger
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.api.retrofit.OAuthInterceptor
+import com.vmenon.mpo.api.retrofit.RetryInterceptor
 import com.vmenon.mpo.login.domain.AuthService
 import dagger.Module
 import dagger.Provides
@@ -13,7 +14,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
 import javax.inject.Named
 
 @Module
@@ -31,12 +31,9 @@ object ApiModule {
 
     @Provides
     fun provideHttpClient(authService: AuthService): OkHttpClient {
-        val interceptor = OAuthInterceptor(authService)
         return OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(OAuthInterceptor(authService))
+            .addInterceptor(RetryInterceptor(MAX_RETRIES))
             .build()
     }
 
@@ -74,4 +71,6 @@ object ApiModule {
             }
         }
     }
+
+    private const val MAX_RETRIES = 2
 }
