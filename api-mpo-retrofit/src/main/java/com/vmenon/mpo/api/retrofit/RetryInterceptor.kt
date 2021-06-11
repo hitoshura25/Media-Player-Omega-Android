@@ -9,7 +9,7 @@ class RetryInterceptor(private val maxRetries: Int) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         var currentAttempt = 0
         var response: Response? = null
-        var currentDelay = 1000L
+        var currentDelay = 3000L
         val delayFactor = 2
 
         while (response == null) {
