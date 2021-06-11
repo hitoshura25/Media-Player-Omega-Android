@@ -1,6 +1,9 @@
 package com.vmenon.mpo.search.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
@@ -22,8 +25,8 @@ class ShowSearchResultsViewModel : ViewModel() {
         currentResults = emptyList(),
         loading = true
     )
-    private val states =
-        MutableLiveData<ContentEvent<ShowSearchViewState>>(ContentEvent(initialState))
+
+    private val states = MutableLiveData(ContentEvent(initialState))
 
     private var currentState: ShowSearchViewState
         get() = states.value?.anyContent() ?: initialState
@@ -39,6 +42,10 @@ class ShowSearchResultsViewModel : ViewModel() {
                 is ShowSearchViewEvent.SearchRequestedEvent -> searchShows(event.keyword)
             }
         }
+    }
+
+    fun clearState() {
+        states.value = ContentEvent(initialState)
     }
 
     private suspend fun searchShows(keyword: String) {

@@ -14,7 +14,11 @@ import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.databinding.FragmentShowSearchResultsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
-import com.vmenon.mpo.search.domain.*
+import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.search.domain.SearchNavigationParams
+import com.vmenon.mpo.search.domain.ShowDetailsLocation
+import com.vmenon.mpo.search.domain.ShowDetailsParams
+import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter
 import com.vmenon.mpo.search.viewmodel.ShowSearchResultsViewModel
@@ -103,4 +107,9 @@ class ShowSearchResultsFragment :
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentShowSearchResultsBinding.inflate(inflater, container, false)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        showSearchResultsViewModel.clearState()
+    }
 }
