@@ -1,0 +1,43 @@
+plugins {
+    id "au.com.dius.pact" version "4.1.0"
+}
+
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+sourceSets.main.kotlin.srcDirs += 'build/generated/source'
+
+dependencies {
+    implementation project(':api-mpo-retrofit')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Libs.kotlin_stdlib_jdk8
+
+    implementation Libs.retrofit
+    implementation Libs.adapter_rxjava2
+    implementation Libs.converter_gson
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    testImplementation Libs.junit_junit
+    testImplementation Libs.au_com_dius_pact_consumer_junit
+    testImplementation Libs.au_com_dius_pact_consumer_java8
+    testImplementation Libs.logback_classic
+    testImplementation Libs.mockito_core
+}
+
+test {
+    systemProperty 'pact.rootDir', "$projectDir/pacts"
+}
+
+pact {
+    publish {
+        pactDirectory = '/pacts'
+        pactBrokerUrl = '/'
+        pactBrokerUsername = System.getenv('PACT_BROKER_USERNAME')
+        pactBrokerPassword = System.getenv('PACT_BROKER_PASSWORD')
+    }
+}

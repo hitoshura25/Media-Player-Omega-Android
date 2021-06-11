@@ -4,15 +4,19 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_dashboard"
-            android:title="@string/home" />
+            android:title="@string/home"/>
         <item
             android:id="@+id/nav_library"
             android:icon="@drawable/ic_headset"
-            android:title="@string/library" />
+            android:title="@string/library"/>
         <item
             android:id="@+id/nav_downloads"
             android:icon="@drawable/ic_file_download_black_48dp"
             android:title="@string/downloads" />
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_outline_account_circle_black_48"
+            android:title="@string/account"/>
         <item
             android:id="@+id/nav_none"
             android:visible="false"

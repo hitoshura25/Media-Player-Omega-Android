@@ -1,0 +1,33 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    api project(':common-domain')
+    api project(':login-domain')
+    api project(':login-data')
+    api project(':login-framework')
+    implementation project(':navigation-framework')
+    implementation project(":view")
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.constraintlayout
+    implementation Libs.legacy_support_v4
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_livedata_ktx
+    implementation Libs.material
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.annotation
+}

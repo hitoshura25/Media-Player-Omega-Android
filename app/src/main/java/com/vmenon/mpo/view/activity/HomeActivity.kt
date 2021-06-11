@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
@@ -12,6 +13,7 @@ import com.vmenon.mpo.R
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
+import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -36,6 +38,9 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
 
     @Inject
     lateinit var playerDestination: NavigationDestination<PlayerNavigationLocation>
+
+    @Inject
+    lateinit var loginDestination: NavigationDestination<LoginNavigationLocation>
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
@@ -75,6 +80,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             when (item.itemId) {
                 R.id.nav_library -> navigationController.navigate(this, libraryDestination)
                 R.id.nav_downloads -> navigationController.navigate(this, downloadsDestination)
+                R.id.nav_account -> navigationController.navigate(this, loginDestination)
                 R.id.nav_none -> {
                 }
                 else -> navigationController.navigate(this, showsDestination)
@@ -97,6 +103,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
                 is SubscribedShowsLocation -> R.id.nav_home
                 is MyLibraryNavigationLocation -> R.id.nav_library
                 is DownloadsLocation -> R.id.nav_downloads
+                is LoginNavigationLocation -> R.id.nav_account
                 else -> R.id.nav_none
             }
             if (newItemId != currentItemId) {
@@ -133,4 +140,8 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             }
         }
     }
+
+    override fun getContentView(): View? = binding.homeContentRoot
+
+    override fun getLoadingView(): View? = binding.loadingOverlayView.root
 }

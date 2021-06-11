@@ -5,9 +5,10 @@ import android.os.Looper
 import android.os.SystemClock
 import android.view.View
 
-class LoadingStateHelper(
+class LoadingStateHelper internal constructor(
     private val loadingView: View,
-    private val contentView: View
+    private val contentView: View?,
+    private val useOverlay: Boolean
 ) {
     private val handler = Handler(Looper.getMainLooper())
 
@@ -42,13 +43,16 @@ class LoadingStateHelper(
 
     private fun toggleLoadingState() {
         loadingView.visibility = View.VISIBLE
-        contentView.visibility = View.GONE
+
+        if (!useOverlay) {
+            contentView?.visibility = View.GONE
+        }
         timeLoadingStarted = SystemClock.elapsedRealtime()
     }
 
     private fun toggleContentState() {
         loadingView.visibility = View.GONE
-        contentView.visibility = View.VISIBLE
+        contentView?.visibility = View.VISIBLE
     }
 
     private fun hasLoadingStateBeenShowLongEnough(): Boolean = timeLoadingStarted == -1L ||
@@ -58,6 +62,18 @@ class LoadingStateHelper(
         MIN_DELAY_TO_SHOW_LOADING_MS - (SystemClock.elapsedRealtime() - timeLoadingStarted)
 
     companion object {
+        fun switchWithContent(contentView: View, loadingView: View) = LoadingStateHelper(
+            contentView = contentView,
+            loadingView = loadingView,
+            useOverlay = false
+        )
+
+        fun overlayContent(loadingView: View) = LoadingStateHelper(
+            loadingView = loadingView,
+            contentView = null,
+            useOverlay = true
+        )
+
         private const val MIN_DELAY_TO_SHOW_LOADING_MS = 500L
         private const val MIN_SHOW_LOADING_MS = 500L
     }

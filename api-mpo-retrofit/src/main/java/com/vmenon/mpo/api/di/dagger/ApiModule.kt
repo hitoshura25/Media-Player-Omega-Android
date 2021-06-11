@@ -2,6 +2,9 @@ package com.vmenon.mpo.api.di.dagger
 
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.api.retrofit.OAuthInterceptor
+import com.vmenon.mpo.api.retrofit.RetryInterceptor
+import com.vmenon.mpo.login.domain.AuthService
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -11,32 +14,39 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
+import javax.inject.Named
 
 @Module
 object ApiModule {
-    private val retrofitApiInstance: MediaPlayerOmegaRetrofitService by lazy {
-        provideService(provideHttpClient())
-    }
 
     @Provides
-    fun provideMediaPlayerRetrofitApi(): MediaPlayerOmegaRetrofitService = retrofitApiInstance
+    fun provideMediaPlayerRetrofitApi(
+        @Named("mpoApiUrl") baseUrl: String,
+        httpClient: OkHttpClient
+    ): MediaPlayerOmegaRetrofitService = provideService(baseUrl, httpClient)
 
-    private fun provideHttpClient(): OkHttpClient {
+    @Provides
+    @Named("mpoApiUrl")
+    fun provideMpoApiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
+
+    @Provides
+    fun provideHttpClient(authService: AuthService): OkHttpClient {
         return OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(OAuthInterceptor(authService))
+            .addInterceptor(RetryInterceptor(MAX_RETRIES))
             .build()
     }
 
-    private fun provideService(httpClient: OkHttpClient): MediaPlayerOmegaRetrofitService {
+    private fun provideService(
+        baseUrl: String,
+        httpClient: OkHttpClient
+    ): MediaPlayerOmegaRetrofitService {
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl("https://mpospboot.herokuapp.com/")
+            .baseUrl(baseUrl)
             .client(httpClient)
             .build()
 
@@ -61,4 +71,6 @@ object ApiModule {
             }
         }
     }
+
+    private const val MAX_RETRIES = 2
 }
