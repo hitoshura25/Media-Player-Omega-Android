@@ -9,7 +9,7 @@ Feature: Login successful
     And I have signed out of the app
     And I have launched sign in in the app
     And I have completed sign in with username "<E-mail>" and password "<Password>"
-    When I click on the "nav_account" tab
+    When I click on "nav_account"
     Then I should see "settings" on the display
     Examples:
       | E-mail | Password |

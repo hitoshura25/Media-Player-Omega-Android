@@ -7,7 +7,7 @@ Feature: Register User Screen Shows Up
   Scenario Outline: Register UI Displayed
     Given I have launched the app
     And I have signed out of the app
-    When I click on the "nav_account" tab
+    When I click on "nav_account"
     And I click on "register_link"
     And I enter "<First Name>" into the "first_name" field
     And I enter "<Last Name>" into the "last_name" field

@@ -6,7 +6,7 @@ Feature: Home tab is launched
 
   Scenario Outline: Subscribed Shows UI Displayed as Homepage
     Given I have launched the app
-    When I click on the "nav_home" tab
+    When I click on "nav_home"
     Then I should see "showList" on the display
     Examples:
       |

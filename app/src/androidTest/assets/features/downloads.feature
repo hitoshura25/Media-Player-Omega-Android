@@ -6,7 +6,7 @@ Feature: Downloads tab is launched
 
   Scenario Outline: Downloads UI Displayed when Downloads tab is launched
     Given I have launched the app
-    When I click on the "nav_downloads" tab
+    When I click on "nav_downloads"
     Then I should see "downloadsList" on the display
     Examples:
       |

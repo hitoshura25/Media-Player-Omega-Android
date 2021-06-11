@@ -1,5 +1,8 @@
 package com.vmenon.mpo.test
 
+import android.content.Context
+import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
@@ -20,6 +23,15 @@ open class BaseSteps {
             device = UiDevice.getInstance(this)
             appPackage = targetContext.packageName
         }
+    }
+
+    fun launchApp() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val intent = context.packageManager.getLaunchIntentForPackage(appPackage)!!.apply {
+            // Clear out any previous instances
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        context.startActivity(intent)
     }
 
     fun clickOn(resName: String, packageName: String = appPackage) {
@@ -68,12 +80,10 @@ open class BaseSteps {
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
     fun browserText(input: String, resName: String) {
         device.findObject(selector.resourceId(resName)).text = input
-        //text(input, resName, CHROME_STABLE)
     }
 
     fun browserClickOn(resName: String) {
         device.findObject(selector.resourceId(resName)).click()
-        //clickOn(resName, CHROME_STABLE)
     }
 
     @Throws(UiObjectNotFoundException::class)
