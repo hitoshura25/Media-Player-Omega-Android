@@ -12,7 +12,6 @@ import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.framework.MpoApiUserRegistry
 import com.vmenon.mpo.login.framework.SharedPrefsAuthState
-import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.login.view.LoginFragment
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
@@ -45,12 +44,6 @@ class LoginModule {
     fun provideUserRegistry(
         api: MediaPlayerOmegaRetrofitService
     ): UserRegistry = MpoApiUserRegistry(api)
-
-    @Provides
-    fun provideAuthenticator(
-        application: Application,
-        authState: AuthState
-    ): Authenticator = OpenIdAuthenticator(application, authState)
 
     @Provides
     @Singleton

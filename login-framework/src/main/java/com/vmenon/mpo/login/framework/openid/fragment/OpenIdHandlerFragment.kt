@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.vmenon.mpo.login.framework.di.AuthComponent
-import com.vmenon.mpo.login.framework.di.AuthComponentProvider
+import com.vmenon.mpo.login.framework.di.LoginFrameworkComponent
+import com.vmenon.mpo.login.framework.di.LoginFrameworkComponentProvider
 import com.vmenon.mpo.login.framework.openid.viewmodel.OpenIdHandlerViewModel
 import com.vmenon.mpo.view.BaseFragment
 
-class OpenIdHandlerFragment : BaseFragment<AuthComponent>() {
+class OpenIdHandlerFragment : BaseFragment<LoginFrameworkComponent>() {
     private val viewModel: OpenIdHandlerViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,10 +28,10 @@ class OpenIdHandlerFragment : BaseFragment<AuthComponent>() {
         return null
     }
 
-    override fun setupComponent(context: Context): AuthComponent =
-        (context as AuthComponentProvider).authComponent()
+    override fun setupComponent(context: Context): LoginFrameworkComponent =
+        (context as LoginFrameworkComponentProvider).loginFrameworkComponent()
 
-    override fun inject(component: AuthComponent) {
+    override fun inject(component: LoginFrameworkComponent) {
         component.inject(this)
         component.inject(viewModel)
     }

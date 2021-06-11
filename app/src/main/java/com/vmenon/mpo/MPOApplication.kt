@@ -15,8 +15,8 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.login.di.LoginComponent
 import com.vmenon.mpo.login.di.LoginComponentProvider
-import com.vmenon.mpo.login.framework.di.AuthComponent
-import com.vmenon.mpo.login.framework.di.AuthComponentProvider
+import com.vmenon.mpo.login.framework.di.LoginFrameworkComponent
+import com.vmenon.mpo.login.framework.di.LoginFrameworkComponentProvider
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 
 class MPOApplication : MultiDexApplication(),
     SearchComponentProvider, DownloadsComponentProvider, LibraryComponentProvider,
-    PlayerComponentProvider, LoginComponentProvider, AuthComponentProvider,
+    PlayerComponentProvider, LoginComponentProvider, LoginFrameworkComponentProvider,
     PlayerFrameworkComponentProvider {
     lateinit var appComponent: AppComponent
 
@@ -58,7 +58,7 @@ class MPOApplication : MultiDexApplication(),
     override fun libraryComponent(): LibraryComponent = appComponent.libraryComponent().create()
     override fun playerComponent(): PlayerComponent = appComponent.playerComponent().create()
     override fun loginComponent(): LoginComponent = appComponent.loginComponent().create()
-    override fun authComponent(): AuthComponent = appComponent.authComponent().create()
+    override fun loginFrameworkComponent(): LoginFrameworkComponent = appComponent.authComponent().create()
     override fun playerFrameworkComponent(): PlayerFrameworkComponent =
         appComponent.playerFrameworkComponent().create()
 }
