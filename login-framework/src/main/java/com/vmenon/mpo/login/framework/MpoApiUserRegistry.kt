@@ -4,12 +4,10 @@ import com.vmenon.mpo.api.model.RegisterUserRequest
 import com.vmenon.mpo.api.model.UserDetails
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.login.data.UserRegistry
-import com.vmenon.mpo.login.domain.AuthService
 import com.vmenon.mpo.login.domain.User
 
 class MpoApiUserRegistry(
-    private val api: MediaPlayerOmegaRetrofitService,
-    private val authService: AuthService
+    private val api: MediaPlayerOmegaRetrofitService
 ) : UserRegistry {
     override suspend fun registerUser(
         firstName: String,
@@ -35,11 +33,7 @@ class MpoApiUserRegistry(
     }
 
     override suspend fun getCurrentUser(): User {
-        val userFromApi: UserDetails =
-            authService.runWithFreshCredentialsIfNecessary(System.currentTimeMillis()) {
-                api.getCurrentUser().blockingGet()
-            }
-
+        val userFromApi: UserDetails = api.getCurrentUser().blockingGet()
         return User(
             firstName = userFromApi.firstName,
             lastName = userFromApi.lastName,

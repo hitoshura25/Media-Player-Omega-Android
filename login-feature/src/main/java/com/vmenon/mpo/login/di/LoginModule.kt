@@ -43,10 +43,8 @@ class LoginModule {
 
     @Provides
     fun provideUserRegistry(
-        api: MediaPlayerOmegaRetrofitService,
-        authService: AuthService,
-    ): UserRegistry =
-        MpoApiUserRegistry(api, authService)
+        api: MediaPlayerOmegaRetrofitService
+    ): UserRegistry = MpoApiUserRegistry(api)
 
     @Provides
     fun provideAuthenticator(
