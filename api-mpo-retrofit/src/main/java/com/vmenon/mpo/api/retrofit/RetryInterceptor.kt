@@ -11,24 +11,29 @@ class RetryInterceptor(private val maxRetries: Int) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         var currentAttempt = 0
         var response: Response? = null
-        var currentDelay = 3000L
+        var currentDelay = 2000L
         val delayFactor = 2
 
-        while (response == null) {
+        while (response?.isSuccessful != true) {
+            var doRetry: Boolean
             try {
                 response = chain.proceed(chain.request())
+                doRetry = !response.isSuccessful
+                        && response.code() != HttpURLConnection.HTTP_UNAUTHORIZED
             } catch (exception: Exception) {
-                if (shouldDoRetry(exception)) {
-                    currentAttempt++
-                    println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
-                    Thread.sleep(currentDelay)
+                doRetry = shouldDoRetry(exception)
+            }
 
-                    if (currentAttempt < maxRetries) {
-                        currentDelay = (currentDelay * delayFactor)
-                    } else {
-                        break
-                    }
-                } else throw exception
+            if (doRetry) {
+                currentAttempt++
+                println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
+                Thread.sleep(currentDelay)
+
+                if (currentAttempt < maxRetries) {
+                    currentDelay = (currentDelay * delayFactor)
+                } else {
+                    break
+                }
             }
         }
 
