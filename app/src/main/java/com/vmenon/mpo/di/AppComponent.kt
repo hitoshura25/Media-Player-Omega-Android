@@ -16,6 +16,7 @@ import com.vmenon.mpo.login.framework.di.AuthModule
 import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerModule
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchModule
 
@@ -58,4 +59,5 @@ interface AppComponent {
     fun playerComponent(): PlayerComponent.Factory
     fun loginComponent(): LoginComponent.Factory
     fun authComponent(): AuthComponent.Factory
+    fun playerFrameworkComponent(): PlayerFrameworkComponent.Factory
 }

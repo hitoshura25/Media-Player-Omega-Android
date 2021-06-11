@@ -16,18 +16,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class AndroidMediaBrowserServicePlayerEngine(
-    private val context: Context,
-    configuration: MPOMediaBrowserService.Configuration
+    private val context: Context
 ) : MediaPlayerEngine {
-    init {
-        MPOMediaBrowserService.configuration = configuration
-    }
 
     private var mediaBrowser: MediaBrowserCompat? = null
     private var mediaController: MediaControllerCompat? = null
