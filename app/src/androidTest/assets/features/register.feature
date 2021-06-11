@@ -13,9 +13,13 @@ Feature: Register User Screen Shows Up
     And I enter "<E-mail>" into the "email" field
     And I enter "<Password>" into the "password" field
     And I enter "<Confirm Password>" into the "confirm_password" field
-    And I enter "<First Name>" into the "first_name" field
     And I click on "register_user"
-    Then I should see "settings" on the display
+    And I see a webpage with the "okta-signin-username" element
+    And I enter "<E-mail>" into the "okta-signin-username" webpage element
+    And I enter "<Password>" into the "okta-signin-password" webpage element
+    And I click on the "okta-signin-submit" webpage element
+    Then I should return to the app
+    And I should see "settings" on the display
     Examples:
       | First Name | Last Name | E-mail | Password | Confirm Password |
-      | Vinayak    | Menon     | vviswana@gmail.com | test123 | test123 |
+      | Test    | Test     | test@test.com | IamGreat | IamGreat |

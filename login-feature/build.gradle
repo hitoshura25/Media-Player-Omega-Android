@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    api project(':common-domain')
     api project(':login-domain')
     api project(':login-data')
     api project(':login-framework')

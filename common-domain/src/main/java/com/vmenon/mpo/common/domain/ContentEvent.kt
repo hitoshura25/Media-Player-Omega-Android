@@ -16,3 +16,5 @@ class ContentEvent<T>(
 
     fun anyContent(): T = content
 }
+
+fun <T> T.toContentEvent() = ContentEvent(this)

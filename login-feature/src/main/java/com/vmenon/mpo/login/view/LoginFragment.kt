@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import com.vmenon.mpo.login.R
 import com.vmenon.mpo.login.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login.di.LoginComponent
@@ -50,32 +49,34 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         val activity = (requireActivity() as BaseActivity<*>)
         val loadingStateHelper = LoadingStateHelper.overlayContent(activity.requireLoadingView())
         activity.setSupportActionBar(binding.toolbar)
-        viewModel.loginState().observe(viewLifecycleOwner, { state ->
-            when (state) {
-                LoginState -> {
-                    loadingStateHelper.showContentState()
-                    binding.loginForm.root.visibility = View.VISIBLE
-                    binding.registerForm.root.visibility = View.GONE
-                    binding.accountView.root.visibility = View.GONE
-                    activity.title = ""
-                }
-                RegisterState -> {
-                    loadingStateHelper.showContentState()
-                    binding.registerForm.root.visibility = View.VISIBLE
-                    binding.loginForm.root.visibility = View.GONE
-                    binding.accountView.root.visibility = View.GONE
-                    activity.title = ""
-                }
+        viewModel.loginState().observe(viewLifecycleOwner, { event ->
+            event.unhandledContent()?.let { state ->
+                when (state) {
+                    LoginState -> {
+                        loadingStateHelper.showContentState()
+                        binding.loginForm.root.visibility = View.VISIBLE
+                        binding.registerForm.root.visibility = View.GONE
+                        binding.accountView.root.visibility = View.GONE
+                        activity.title = ""
+                    }
+                    RegisterState -> {
+                        loadingStateHelper.showContentState()
+                        binding.registerForm.root.visibility = View.VISIBLE
+                        binding.loginForm.root.visibility = View.GONE
+                        binding.accountView.root.visibility = View.GONE
+                        activity.title = ""
+                    }
 
-                is LoggedInState -> {
-                    loadingStateHelper.showContentState()
-                    binding.accountView.root.visibility = View.VISIBLE
-                    binding.loginForm.root.visibility = View.GONE
-                    binding.registerForm.root.visibility = View.GONE
-                    activity.title = getString(R.string.hi_user, state.userDetails.firstName)
-                }
-                LoadingState -> {
-                    loadingStateHelper.showLoadingState()
+                    is LoggedInState -> {
+                        loadingStateHelper.showContentState()
+                        binding.accountView.root.visibility = View.VISIBLE
+                        binding.loginForm.root.visibility = View.GONE
+                        binding.registerForm.root.visibility = View.GONE
+                        activity.title = getString(R.string.hi_user, state.userDetails.firstName)
+                    }
+                    LoadingState -> {
+                        loadingStateHelper.showLoadingState()
+                    }
                 }
             }
         })

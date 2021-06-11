@@ -7,8 +7,14 @@ Feature: Login User Screen Shows Up
   Scenario Outline: Login UI Displayed
     Given I have launched the app
     When I click on the "nav_account" tab
-    Then I should see "email_login" on the display
-    And I should see "password_login" on the display
+    And I click on "login_link"
+    And I see a webpage with the "okta-signin-username" element
+    And I enter "<E-mail>" into the "okta-signin-username" webpage element
+    And I enter "<Password>" into the "okta-signin-password" webpage element
+    And I click on the "okta-signin-submit" webpage element
+    Then I should return to the app
+    And I should see "settings" on the display
     Examples:
-      |
-      |
+      | E-mail | Password |
+      | test2@test.com | IamGreat |
+
