@@ -10,10 +10,14 @@ class LoginSteps : BaseSteps() {
         waitFor("login_link")
     }
 
-    @Given("I have signed into the app with username {string} and password {string}")
-    fun i_have_signed_in_with_username_password(username: String, password: String) {
+    @Given("I have launched sign in in the app")
+    fun i_have_launched_sign_in() {
         clickOn(nav_accounts)
         clickOn("login_link")
+    }
+
+    @Given("I have completed sign in with username {string} and password {string}")
+    fun i_have_signed_in_with_username_password(username: String, password: String) {
         waitForBrowser()
         browserText(username, "okta-signin-username")
         browserText(password, "okta-signin-password")

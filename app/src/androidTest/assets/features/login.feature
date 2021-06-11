@@ -7,7 +7,8 @@ Feature: Login successful
   Scenario Outline: Login UI Displayed
     Given I have launched the app
     And I have signed out of the app
-    And I have signed into the app with username "<E-mail>" and password "<Password>"
+    And I have launched sign in in the app
+    And I have completed sign in with username "<E-mail>" and password "<Password>"
     When I click on the "nav_account" tab
     Then I should see "settings" on the display
     Examples:
