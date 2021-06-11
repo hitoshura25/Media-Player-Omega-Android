@@ -4,7 +4,7 @@ Feature: Login successful
   @smoke
     @e2e
 
-  Scenario Outline: Login UI Displayed
+  Scenario Outline: Valid login is successful
     Given I have launched the app
     And I have signed out of the app
     And I have launched sign in in the app

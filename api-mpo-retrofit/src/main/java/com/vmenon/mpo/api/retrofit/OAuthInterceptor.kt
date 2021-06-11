@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.net.HttpURLConnection
 
 /**
  * Will ensure we have a fresh access token prior to making the request. And also will try
@@ -23,7 +24,9 @@ class OAuthInterceptor(private val authService: AuthService) : Interceptor {
 
     private fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
         val response = proceedWithCredentials(chain, request)
-        if (response.response.code() == 401 && !response.tokenRefreshed) {
+        if (response.response.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+            && !response.tokenRefreshed
+        ) {
             return proceedWithCredentials(chain, response.newRequest).response
         }
         return response.response

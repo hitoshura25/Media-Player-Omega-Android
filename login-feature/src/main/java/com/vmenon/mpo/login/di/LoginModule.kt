@@ -31,8 +31,8 @@ class LoginModule {
         )
 
     @Provides
-    fun provideLoginService(userRegistry: UserRegistry): LoginService =
-        LoginRepository(userRegistry)
+    fun provideLoginService(userRegistry: UserRegistry, authState: AuthState): LoginService =
+        LoginRepository(userRegistry, authState)
 
     @Provides
     fun provideAuthService(

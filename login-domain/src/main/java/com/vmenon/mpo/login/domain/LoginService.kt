@@ -8,5 +8,5 @@ interface LoginService {
         password: String
     ): User
 
-    suspend fun getUser(): User
+    suspend fun getUser(): Result<User>
 }
