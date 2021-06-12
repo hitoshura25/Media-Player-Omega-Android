@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.api.retrofit.OAuthInterceptor
 import com.vmenon.mpo.api.retrofit.RetryInterceptor
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.domain.AuthService
 import dagger.Module
 import dagger.Provides
@@ -30,10 +31,10 @@ object ApiModule {
     fun provideMpoApiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
 
     @Provides
-    fun provideHttpClient(authService: AuthService): OkHttpClient {
+    fun provideHttpClient(authService: AuthService, system: System): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(OAuthInterceptor(authService))
-            .addInterceptor(RetryInterceptor(MAX_RETRIES))
+            .addInterceptor(OAuthInterceptor(authService, system))
+            .addInterceptor(RetryInterceptor(MAX_RETRIES, system))
             .build()
     }
 

@@ -1,6 +1,7 @@
 package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
@@ -34,11 +35,14 @@ class PlayerModule {
         MPOExoPlayer(application)
 
     @Provides
-    fun providePlayerInteractors(playerEngine: MediaPlayerEngine): PlayerInteractors =
+    fun providePlayerInteractors(
+        playerEngine: MediaPlayerEngine,
+        system: System
+    ): PlayerInteractors =
         PlayerInteractors(
             ConnectPlayerClient(playerEngine),
             DisconnectPlayerClient(playerEngine),
-            ListenForPlaybackStateChanges(playerEngine),
+            ListenForPlaybackStateChanges(playerEngine, system),
             PlayMedia(playerEngine),
             TogglePlaybackState(playerEngine),
             SkipPlayback(playerEngine),

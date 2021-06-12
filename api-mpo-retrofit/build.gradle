@@ -9,6 +9,8 @@ sourceSets.main.kotlin.srcDirs += 'build/generated/source'
 dependencies {
     api project(':api-mpo')
     api project(':login-domain')
+    implementation project(':common-domain')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core

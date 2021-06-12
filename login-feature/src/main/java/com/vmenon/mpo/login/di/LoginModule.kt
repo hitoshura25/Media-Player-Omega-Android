@@ -2,6 +2,7 @@ package com.vmenon.mpo.login.di
 
 import android.app.Application
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.AuthRepository
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.data.Authenticator
@@ -31,8 +32,11 @@ class LoginModule {
         )
 
     @Provides
-    fun provideLoginService(userRegistry: UserRegistry, authState: AuthState): LoginService =
-        LoginRepository(userRegistry, authState)
+    fun provideLoginService(
+        userRegistry: UserRegistry,
+        authState: AuthState,
+        system: System
+    ): LoginService = LoginRepository(userRegistry, authState, system)
 
     @Provides
     fun provideAuthService(

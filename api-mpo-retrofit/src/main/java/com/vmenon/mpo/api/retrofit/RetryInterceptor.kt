@@ -1,5 +1,6 @@
 package com.vmenon.mpo.api.retrofit
 
+import com.vmenon.mpo.common.domain.System
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.HttpException
@@ -7,7 +8,7 @@ import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 
-class RetryInterceptor(private val maxRetries: Int) : Interceptor {
+class RetryInterceptor(private val maxRetries: Int, private val system: System) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         var currentAttempt = 0
         var response: Response? = null
@@ -26,8 +27,8 @@ class RetryInterceptor(private val maxRetries: Int) : Interceptor {
 
             if (doRetry) {
                 currentAttempt++
-                println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
-                Thread.sleep(currentDelay)
+                system.println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
+                system.sleep(currentDelay)
 
                 if (currentAttempt < maxRetries) {
                     currentDelay = (currentDelay * delayFactor)

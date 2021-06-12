@@ -1,6 +1,7 @@
 package com.vmenon.mpo.downloads.di.dagger
 
 import android.app.Application
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.R
 import com.vmenon.mpo.downloads.data.DownloadsRepository
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
@@ -24,21 +25,23 @@ class DownloadsModule {
     @Provides
     fun provideDownloadsService(
         application: Application,
-        downloadsDao: DownloadDao
+        downloadsDao: DownloadDao,
+        system: System
     ): DownloadsService =
         DownloadsRepository(
             DownloadManagerDownloadQueueDataSource(application),
-            RoomDownloadsPersistenceDataSource(downloadsDao),
+            RoomDownloadsPersistenceDataSource(downloadsDao, system),
             FileSystemMediaPersistenceDataSource(application)
         )
 
     @Provides
     fun provideDownloadsInteractors(
         downloadsService: DownloadsService,
-        myLibraryService: MyLibraryService
+        myLibraryService: MyLibraryService,
+        system: System
     ): DownloadsInteractors =
         DownloadsInteractors(
-            GetQueuedDownloads(downloadsService),
+            GetQueuedDownloads(downloadsService, system),
             NotifyDownloadCompleted(downloadsService, myLibraryService)
         )
 

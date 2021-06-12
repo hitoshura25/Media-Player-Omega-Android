@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.FragmentActivity
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.data.Authenticator
 import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment
@@ -13,9 +14,10 @@ import net.openid.appauth.EndSessionResponse
 
 class OpenIdAuthenticator(
     applicationContext: Context,
-    private val authState: AuthState
+    private val authState: AuthState,
+    system: System
 ) : Authenticator {
-    private val authenticatorEngine = OpenIdAuthenticatorEngine(applicationContext)
+    private val authenticatorEngine = OpenIdAuthenticatorEngine(applicationContext, system)
 
     override fun startAuthentication(context: Any) {
         if (context is FragmentActivity) {

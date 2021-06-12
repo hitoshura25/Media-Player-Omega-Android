@@ -1,6 +1,7 @@
 package com.vmenon.mpo.login.framework.di
 
 import android.app.Application
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.data.Authenticator
 import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticator
@@ -12,6 +13,7 @@ class LoginFrameworkModule {
     @Provides
     fun provideAuthenticator(
         application: Application,
-        authState: AuthState
-    ): Authenticator = OpenIdAuthenticator(application, authState)
+        authState: AuthState,
+        system: System
+    ): Authenticator = OpenIdAuthenticator(application, authState, system)
 }

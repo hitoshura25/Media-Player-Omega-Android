@@ -9,6 +9,7 @@ android {
 
 dependencies {
     api project(':player-framework')
+    implementation project(':common-domain')
     implementation project(':view')
     implementation project(':my-library-domain')
     implementation project(':navigation-domain')

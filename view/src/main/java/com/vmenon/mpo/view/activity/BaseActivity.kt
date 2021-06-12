@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.NavigationController
 
 import javax.inject.Inject
@@ -15,6 +16,9 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
 
     @Inject
     protected lateinit var navigationController: NavigationController
+
+    @Inject
+    protected lateinit var system: System
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
