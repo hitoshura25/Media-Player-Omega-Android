@@ -1,6 +1,10 @@
 package com.vmenon.mpo.player.framework
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,26 +13,30 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
-import android.os.*
-import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.media.MediaBrowserServiceCompat
-
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.os.SystemClock
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
 import android.util.Log
-
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
-
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
 import java.io.File
 import java.lang.ref.WeakReference
-import java.util.ArrayList
+import java.util.*
+import javax.inject.Inject
 
 class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlayerListener,
     AudioManager.OnAudioFocusChangeListener {
@@ -39,6 +47,9 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
+    @Inject
+    lateinit var configuration: Configuration
+
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
     private lateinit var audioManager: AudioManager
@@ -46,8 +57,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     private var serviceStarted = false
     private var notificationStarted = false
-    private var audioFocus =
-        AUDIO_NO_FOCUS_NO_DUCK
+    private var audioFocus = AUDIO_NO_FOCUS_NO_DUCK
     private var playbackState: Int = 0
     private var playOnFocusGain: Boolean = false
     private var audioNoisyReceiverRegistered: Boolean = false
@@ -61,10 +71,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     private var nextIntent: PendingIntent? = null
     private var stopIntent: PendingIntent? = null
 
-    private val delayedStopHandler =
-        DelayedStopHandler(
-            this
-        )
+    private val delayedStopHandler = DelayedStopHandler(this)
     private val audioNoisyIntentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val audioNoisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -72,12 +79,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
                 Log.d(TAG, "Headphones disconnected.")
                 if (playOnFocusGain && configuration.player.isPlaying) {
                     val i = Intent(context, MPOMediaBrowserService::class.java)
-                    i.action =
-                        ACTION_CMD
-                    i.putExtra(
-                        CMD_NAME,
-                        CMD_PAUSE
-                    )
+                    i.action = ACTION_CMD
+                    i.putExtra(CMD_NAME, CMD_PAUSE)
                     startService(i)
                 }
             }
@@ -114,6 +117,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     override fun onCreate() {
         super.onCreate()
+        (applicationContext as PlayerFrameworkComponentProvider).playerFrameworkComponent()
+            .inject(this)
         playbackState = PlaybackStateCompat.STATE_NONE
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -758,13 +763,14 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
     }
 
-    class DelayedStopHandler(service: MPOMediaBrowserService) : Handler(Looper.getMainLooper()) {
+    inner class DelayedStopHandler(service: MPOMediaBrowserService) :
+        Handler(Looper.getMainLooper()) {
         private val weakRefService: WeakReference<MPOMediaBrowserService> = WeakReference(service)
 
         override fun handleMessage(msg: Message) {
             val service = weakRefService.get()
             if (service != null) {
-                if (configuration.player.isPlaying) {
+                if (this@MPOMediaBrowserService.configuration.player.isPlaying) {
                     Log.d(TAG, "Ignoring delayed stop since the media player is in use.")
                     return
                 }
@@ -794,16 +800,6 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     }
 
     companion object {
-
-        /**
-         * Not very elegant, but want to keep this service in the framework layer as much as
-         * possible, and not put it into the presentation layer. This allows customization via the
-         * [com.vmenon.mpo.player.framework.AndroidMediaBrowserServicePlayerEngine], which is otherwise
-         * difficult to do as a [android.app.Service] need to have no constructors as it's created
-         * by the platform
-         */
-        lateinit var configuration: Configuration
-
         const val PLAYBACK_MEDIA_REQUEST_EXTRA = "playbackMediaRequest"
 
         // The action of the incoming Intent indicating that it contains a command

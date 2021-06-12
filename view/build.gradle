@@ -11,6 +11,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':navigation-domain')
+    implementation project(':common-domain')
 
     implementation Libs.kotlin_stdlib_jdk8
     implementation Libs.lifecycle_viewmodel_ktx

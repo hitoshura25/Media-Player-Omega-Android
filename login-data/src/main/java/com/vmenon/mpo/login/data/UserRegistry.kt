@@ -10,5 +10,6 @@ interface UserRegistry {
         password: String
     ): User
 
+    @Throws(GetUserException::class)
     suspend fun getCurrentUser(): User
 }

@@ -1,17 +1,22 @@
 package com.vmenon.mpo.api.retrofit
 
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.domain.AuthService
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.net.HttpURLConnection
 
 /**
  * Will ensure we have a fresh access token prior to making the request. And also will try
  * refreshing again in the event the server says not valid, although locally we think we're
  * valid
  */
-class OAuthInterceptor(private val authService: AuthService) : Interceptor {
+class OAuthInterceptor(
+    private val authService: AuthService,
+    private val system: System
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         return if (authService.isAuthenticated()) {
@@ -23,7 +28,9 @@ class OAuthInterceptor(private val authService: AuthService) : Interceptor {
 
     private fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
         val response = proceedWithCredentials(chain, request)
-        if (response.response.code() == 401 && !response.tokenRefreshed) {
+        if (response.response.code() == HttpURLConnection.HTTP_UNAUTHORIZED
+            && !response.tokenRefreshed
+        ) {
             return proceedWithCredentials(chain, response.newRequest).response
         }
         return response.response
@@ -33,8 +40,8 @@ class OAuthInterceptor(private val authService: AuthService) : Interceptor {
         chain: Interceptor.Chain,
         request: Request
     ): ResponseWithCredentials = runBlocking {
-        authService.runWithFreshCredentialsIfNecessary(System.currentTimeMillis()) { refreshed ->
-            println("Refreshed token $refreshed")
+        authService.runWithFreshCredentialsIfNecessary(system.currentTimeMillis()) { refreshed ->
+            system.println("Refreshed token $refreshed")
             val credentials = authService.getCredentials()
             val newRequest = if (credentials != null) {
                 request.newBuilder().addHeader(

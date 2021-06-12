@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
+import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.core.SystemImpl
 
 import com.vmenon.mpo.core.navigation.DefaultNavigationController
 import com.vmenon.mpo.navigation.domain.NavigationController
@@ -50,4 +52,7 @@ class AppModule(private val application: Application) {
         { builder ->
             builder.color = ContextCompat.getColor(application, R.color.colorPrimary)
         })
+
+    @Provides
+    fun provideSystem(): System = SystemImpl()
 }

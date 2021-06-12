@@ -1,10 +1,10 @@
-Feature: Register User Screen Shows Up
-  Register a new user UI is visible when going to the Account tab and not logged in
+Feature: Register User Successful
+  Register a new user is successful
 
   @smoke
   @e2e
 
-  Scenario Outline: Register UI Displayed
+  Scenario Outline: Valid Registration is successful
     Given I have launched the app
     And I have signed out of the app
     When I click on "nav_account"

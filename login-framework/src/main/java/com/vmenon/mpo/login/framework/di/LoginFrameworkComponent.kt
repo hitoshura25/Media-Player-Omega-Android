@@ -5,11 +5,11 @@ import com.vmenon.mpo.login.framework.openid.viewmodel.OpenIdHandlerViewModel
 import dagger.Subcomponent
 
 @Subcomponent
-@AuthScope
-interface AuthComponent {
+@LoginFrameworkScope
+interface LoginFrameworkComponent {
     @Subcomponent.Factory
     interface Factory {
-        fun create(): AuthComponent
+        fun create(): LoginFrameworkComponent
     }
 
     fun inject(viewModel: OpenIdHandlerViewModel)

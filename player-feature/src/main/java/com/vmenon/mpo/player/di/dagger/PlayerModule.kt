@@ -1,16 +1,27 @@
 package com.vmenon.mpo.player.di.dagger
 
 import android.app.Application
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
-import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.R
-import com.vmenon.mpo.player.domain.*
-import com.vmenon.mpo.player.framework.exo.MPOExoPlayer
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
+import com.vmenon.mpo.player.domain.PlaybackMedia
+import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.player.domain.PlayerRequestMapper
 import com.vmenon.mpo.player.framework.AndroidMediaBrowserServicePlayerEngine
-import com.vmenon.mpo.player.framework.MPOMediaBrowserService
-import com.vmenon.mpo.player.usecases.*
+import com.vmenon.mpo.player.framework.MPOPlayer
+import com.vmenon.mpo.player.framework.exo.MPOExoPlayer
+import com.vmenon.mpo.player.usecases.ConnectPlayerClient
+import com.vmenon.mpo.player.usecases.DisconnectPlayerClient
+import com.vmenon.mpo.player.usecases.ListenForPlaybackStateChanges
+import com.vmenon.mpo.player.usecases.PlayMedia
+import com.vmenon.mpo.player.usecases.PlayerInteractors
+import com.vmenon.mpo.player.usecases.SeekToPosition
+import com.vmenon.mpo.player.usecases.SkipPlayback
+import com.vmenon.mpo.player.usecases.TogglePlaybackState
 import com.vmenon.mpo.player.view.fragment.MediaPlayerFragment
 import dagger.Module
 import dagger.Provides
@@ -24,11 +35,14 @@ class PlayerModule {
         MPOExoPlayer(application)
 
     @Provides
-    fun providePlayerInteractors(playerEngine: MediaPlayerEngine): PlayerInteractors =
+    fun providePlayerInteractors(
+        playerEngine: MediaPlayerEngine,
+        system: System
+    ): PlayerInteractors =
         PlayerInteractors(
             ConnectPlayerClient(playerEngine),
             DisconnectPlayerClient(playerEngine),
-            ListenForPlaybackStateChanges(playerEngine),
+            ListenForPlaybackStateChanges(playerEngine, system),
             PlayMedia(playerEngine),
             TogglePlaybackState(playerEngine),
             SkipPlayback(playerEngine),
@@ -54,10 +68,8 @@ class PlayerModule {
         }
 
     @Provides
-    fun providePlayerEngine(
-        application: Application,
-        configuration: MPOMediaBrowserService.Configuration
-    ): MediaPlayerEngine = AndroidMediaBrowserServicePlayerEngine(application, configuration)
+    fun providePlayerEngine(application: Application): MediaPlayerEngine =
+        AndroidMediaBrowserServicePlayerEngine(application)
 
     @Provides
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =

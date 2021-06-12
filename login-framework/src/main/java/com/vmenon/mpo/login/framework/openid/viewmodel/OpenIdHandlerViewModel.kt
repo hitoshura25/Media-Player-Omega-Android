@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.Authenticator
 import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment.Companion.EXTRA_OPERATION
@@ -23,6 +24,9 @@ import javax.inject.Inject
 class OpenIdHandlerViewModel : ViewModel() {
     @Inject
     lateinit var authenticator: Authenticator
+
+    @Inject
+    lateinit var system: System
 
     private val authenticated = MutableLiveData<Boolean>()
     private var startAuthContract: ActivityResultLauncher<Intent>? = null
@@ -78,7 +82,7 @@ class OpenIdHandlerViewModel : ViewModel() {
                 authenticated.postValue(true)
             }
         } else {
-            println("Issue with handling auth result $resultCode $data")
+            system.println("Issue with handling auth result $resultCode $data")
             authenticated.postValue(false)
         }
     }

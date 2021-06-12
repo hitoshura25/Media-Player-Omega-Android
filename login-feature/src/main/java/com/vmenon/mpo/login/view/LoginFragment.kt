@@ -1,7 +1,6 @@
 package com.vmenon.mpo.login.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,12 +35,6 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
     override fun inject(component: LoginComponent) {
         component.inject(this)
         component.inject(viewModel)
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        println("OnActivityResult")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,5 +95,10 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         binding.accountView.logoutLink.setOnClickListener {
             viewModel.logoutClicked(requireActivity())
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchState()
     }
 }

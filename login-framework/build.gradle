@@ -1,5 +1,6 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     defaultConfig {
@@ -25,14 +26,17 @@ android {
 dependencies {
     api project(':login-data')
     api project(':api-mpo-retrofit')
+
+    implementation project(':common-domain')
     implementation project(':view')
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
 
     implementation Libs.kotlinx_coroutines_core
     implementation Libs.kotlin_stdlib
     implementation Libs.core_ktx
-    implementation Libs.dagger
     implementation Libs.lifecycle_viewmodel_ktx
-
     implementation Libs.appauth
     implementation Libs.appcompat
     implementation Libs.material

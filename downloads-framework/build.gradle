@@ -4,6 +4,7 @@ dependencies {
     api project(':downloads-data')
     api project(':persistence-room')
 
+    implementation project(':common-domain')
     implementation project(':extensions')
 
     implementation Libs.kotlinx_coroutines_core

@@ -13,6 +13,7 @@ dependencies {
     api project(':downloads-framework')
     api project(':downloads-usecases')
 
+    implementation project(':common-domain')
     implementation project(':navigation-framework')
     implementation project(':view')
 

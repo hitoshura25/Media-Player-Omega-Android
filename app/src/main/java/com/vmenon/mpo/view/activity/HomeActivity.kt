@@ -97,7 +97,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         }
 
         viewModel.currentLocation.observe(this, { location ->
-            println("Emitted location $location")
+            system.println("Emitted location $location")
             val currentItemId = binding.navigation.selectedItemId
             val newItemId = when (location) {
                 is SubscribedShowsLocation -> R.id.nav_home

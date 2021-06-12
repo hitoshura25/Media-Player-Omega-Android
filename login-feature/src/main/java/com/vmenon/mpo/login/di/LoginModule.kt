@@ -2,6 +2,7 @@ package com.vmenon.mpo.login.di
 
 import android.app.Application
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.AuthRepository
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.data.Authenticator
@@ -12,7 +13,6 @@ import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.framework.MpoApiUserRegistry
 import com.vmenon.mpo.login.framework.SharedPrefsAuthState
-import com.vmenon.mpo.login.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.login.view.LoginFragment
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
@@ -32,8 +32,11 @@ class LoginModule {
         )
 
     @Provides
-    fun provideLoginService(userRegistry: UserRegistry): LoginService =
-        LoginRepository(userRegistry)
+    fun provideLoginService(
+        userRegistry: UserRegistry,
+        authState: AuthState,
+        system: System
+    ): LoginService = LoginRepository(userRegistry, authState, system)
 
     @Provides
     fun provideAuthService(
@@ -43,16 +46,8 @@ class LoginModule {
 
     @Provides
     fun provideUserRegistry(
-        api: MediaPlayerOmegaRetrofitService,
-        authService: AuthService,
-    ): UserRegistry =
-        MpoApiUserRegistry(api, authService)
-
-    @Provides
-    fun provideAuthenticator(
-        application: Application,
-        authState: AuthState
-    ): Authenticator = OpenIdAuthenticator(application, authState)
+        api: MediaPlayerOmegaRetrofitService
+    ): UserRegistry = MpoApiUserRegistry(api)
 
     @Provides
     @Singleton

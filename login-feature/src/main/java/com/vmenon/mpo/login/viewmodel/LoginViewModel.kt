@@ -28,21 +28,22 @@ class LoginViewModel : ViewModel() {
     lateinit var loginService: LoginService
 
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
+    private val refreshState = MutableLiveData<Unit>()
+
+    fun fetchState() {
+        refreshState.postValue(Unit)
+    }
 
     fun loginState(): LiveData<ContentEvent<AccountState>> =
         MediatorLiveData<ContentEvent<AccountState>>().apply {
             addSource(authService.authenticated().asLiveData()) { authenticated ->
-                if (authenticated) {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        postValue(LoadingState.toContentEvent())
-                        postValue(LoggedInState(loginService.getUser()).toContentEvent())
-                    }
-                } else {
-                    postValue(LoginState.toContentEvent())
-                }
+                postState(authenticated, this)
             }
             addSource(loginStateFromUI) { value ->
                 postValue(value)
+            }
+            addSource(refreshState) {
+                postState(authService.isAuthenticated(), this)
             }
         }
 
@@ -76,6 +77,22 @@ class LoginViewModel : ViewModel() {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             loginService.registerUser(firstName, lastName, email, password)
             authService.startAuthentication(activity)
+        }
+    }
+
+    private fun postState(
+        authenticated: Boolean,
+        mutableLiveData: MutableLiveData<ContentEvent<AccountState>>
+    ) {
+        if (authenticated) {
+            viewModelScope.launch(Dispatchers.IO) {
+                mutableLiveData.postValue(LoadingState.toContentEvent())
+                loginService.getUser().onSuccess { user ->
+                    mutableLiveData.postValue(LoggedInState(user).toContentEvent())
+                }
+            }
+        } else {
+            mutableLiveData.postValue(LoginState.toContentEvent())
         }
     }
 }
