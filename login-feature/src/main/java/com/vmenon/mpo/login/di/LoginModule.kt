@@ -7,6 +7,7 @@ import com.vmenon.mpo.login.data.AuthRepository
 import com.vmenon.mpo.login.data.AuthState
 import com.vmenon.mpo.login.data.Authenticator
 import com.vmenon.mpo.login.data.LoginRepository
+import com.vmenon.mpo.login.data.UserCache
 import com.vmenon.mpo.login.data.UserRegistry
 import com.vmenon.mpo.login.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
@@ -35,14 +36,16 @@ class LoginModule {
     fun provideLoginService(
         userRegistry: UserRegistry,
         authState: AuthState,
+        userCache: UserCache,
         system: System
-    ): LoginService = LoginRepository(userRegistry, authState, system)
+    ): LoginService = LoginRepository(userRegistry, authState, userCache, system)
 
     @Provides
     fun provideAuthService(
         authState: AuthState,
-        authenticator: Authenticator
-    ): AuthService = AuthRepository(authState, authenticator)
+        authenticator: Authenticator,
+        userCache: UserCache
+    ): AuthService = AuthRepository(authState, authenticator, userCache)
 
     @Provides
     fun provideUserRegistry(

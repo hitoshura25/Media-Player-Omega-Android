@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.map
 
 class AuthRepository(
     private val authState: AuthState,
-    private val authenticator: Authenticator
+    private val authenticator: Authenticator,
+    private val userCache: UserCache
 ) : AuthService {
 
     override fun getCredentials(): Credentials? = authState.getCredentials()
@@ -18,6 +19,7 @@ class AuthRepository(
 
     override suspend fun logout(context: Any) {
         authenticator.logout(context)
+        userCache.clear()
     }
 
     override suspend fun startAuthentication(context: Any) {
