@@ -73,7 +73,7 @@ class OpenIdAuthenticatorEngine(context: Context, private val system: System) {
         exception: AuthorizationException?
     ) {
         if (exception != null) {
-            system.println("End Session error: $exception")
+            system.println("End Session error", exception)
         }
     }
 

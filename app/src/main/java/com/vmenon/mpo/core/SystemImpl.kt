@@ -3,9 +3,13 @@ package com.vmenon.mpo.core
 import com.vmenon.mpo.common.domain.System
 
 class SystemImpl : System {
-    override fun println(message: String) {
+    override fun println(message: String, exception: Exception?) {
         // TODO: Maybe send to a cloud provider?
-        kotlin.io.println(message)
+        if (exception != null) {
+            kotlin.io.println("$message: $exception")
+        } else {
+            kotlin.io.println(message)
+        }
     }
 
     override fun currentTimeMillis(): Long = java.lang.System.currentTimeMillis()

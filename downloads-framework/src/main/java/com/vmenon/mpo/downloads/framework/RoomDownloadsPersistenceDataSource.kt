@@ -42,7 +42,7 @@ class RoomDownloadsPersistenceDataSource(
         downloadRequestType = try {
             DownloadRequestType.valueOf(downloadRequestType)
         } catch (e: Exception) {
-            system.println("Error determining DownloadRequestType: $e")
+            system.println("Error determining DownloadRequestType", e)
             DownloadRequestType.UNKNOWN
         },
         requesterId = requesterId,

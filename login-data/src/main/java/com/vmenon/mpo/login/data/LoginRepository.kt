@@ -20,7 +20,7 @@ class LoginRepository(
         return try {
             Result.success(registry.getCurrentUser())
         } catch (exception: GetUserException) {
-            system.println("Clearing out credentials due to $exception")
+            system.println("Clearing out credentials", exception)
             authState.clearCredentials()
             Result.failure(exception)
         }
