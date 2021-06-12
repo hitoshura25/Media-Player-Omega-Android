@@ -5,4 +5,5 @@ interface DownloadsService {
     suspend fun getAllQueued(): List<QueuedDownloadModel>
     suspend fun getCompletedDownloadByQueueId(queueId: Long): CompletedDownloadModel
     suspend fun delete(id: Long)
+    suspend fun retryDownload(download: DownloadModel): DownloadModel
 }

@@ -2,11 +2,12 @@ package com.vmenon.mpo.persistence.di.dagger
 
 import android.app.Application
 import androidx.room.Room
-import com.vmenon.mpo.persistence.room.*
+import com.vmenon.mpo.persistence.room.MPODatabase
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
+import com.vmenon.mpo.persistence.room.migrations.Migrations
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -17,9 +18,11 @@ class PersistenceModule {
     @Singleton
     fun provideMPODatabase(application: Application): MPODatabase {
         return Room.databaseBuilder(
-            application.applicationContext, MPODatabase::class.java,
+            application.applicationContext,
+            MPODatabase::class.java,
             "mpo-database"
-        ).build()
+        ).addMigrations(Migrations.MIGRATION_1_2)
+            .build()
     }
 
     @Provides

@@ -5,6 +5,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.mpo.core.di.ThirdPartyIntegratorModule
+import com.vmenon.mpo.core.work.RetryDownloadWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.di.AppModule
@@ -45,6 +46,15 @@ class MPOApplication : MultiDexApplication(),
             "Update",
             ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequestBuilder<UpdateAllShowsWorker>(
+                repeatInterval = 15,
+                repeatIntervalTimeUnit = TimeUnit.MINUTES
+            ).build()
+        )
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "RetryDownloads",
+            ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<RetryDownloadWorker>(
                 repeatInterval = 15,
                 repeatIntervalTimeUnit = TimeUnit.MINUTES
             ).build()

@@ -6,6 +6,7 @@ import android.net.Uri
 import com.vmenon.mpo.downloads.data.DownloadQueueItem
 import com.vmenon.mpo.downloads.data.DownloadsQueueDataSource
 import com.vmenon.mpo.downloads.domain.DownloadRequest
+import com.vmenon.mpo.downloads.domain.QueuedDownloadStatus
 
 class DownloadManagerDownloadQueueDataSource(
     context: Context
@@ -26,11 +27,20 @@ class DownloadManagerDownloadQueueDataSource(
             val downloaded = cursor.getInt(
                 cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
             )
+            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
             downloadQueueItems.add(
                 DownloadQueueItem(
                     queueId = id,
                     totalSize = totalSize,
-                    downloaded = downloaded
+                    downloaded = downloaded,
+                    status = when(status) {
+                        DownloadManager.STATUS_FAILED -> QueuedDownloadStatus.FAILED
+                        DownloadManager.STATUS_PAUSED -> QueuedDownloadStatus.PAUSED
+                        DownloadManager.STATUS_PENDING -> QueuedDownloadStatus.PENDING
+                        DownloadManager.STATUS_RUNNING -> QueuedDownloadStatus.RUNNING
+                        DownloadManager.STATUS_SUCCESSFUL -> QueuedDownloadStatus.SUCCESSFUL
+                        else -> QueuedDownloadStatus.FAILED
+                    }
                 )
             )
         }

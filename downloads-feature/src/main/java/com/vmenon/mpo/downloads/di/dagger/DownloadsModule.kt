@@ -12,6 +12,7 @@ import com.vmenon.mpo.downloads.framework.RoomDownloadsPersistenceDataSource
 import com.vmenon.mpo.downloads.usecases.DownloadsInteractors
 import com.vmenon.mpo.downloads.usecases.GetQueuedDownloads
 import com.vmenon.mpo.downloads.usecases.NotifyDownloadCompleted
+import com.vmenon.mpo.downloads.usecases.RetryDownloads
 import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -42,7 +43,8 @@ class DownloadsModule {
     ): DownloadsInteractors =
         DownloadsInteractors(
             GetQueuedDownloads(downloadsService, system),
-            NotifyDownloadCompleted(downloadsService, myLibraryService)
+            NotifyDownloadCompleted(downloadsService, myLibraryService),
+            RetryDownloads(downloadsService, 3, system)
         )
 
     @Provides
