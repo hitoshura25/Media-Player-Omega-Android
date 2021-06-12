@@ -7,5 +7,6 @@ data class DownloadModel(
     val downloadQueueId: Long,
     val downloadRequestType: DownloadRequestType,
     val requesterId: Long,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val downloadAttempt: Int
 )

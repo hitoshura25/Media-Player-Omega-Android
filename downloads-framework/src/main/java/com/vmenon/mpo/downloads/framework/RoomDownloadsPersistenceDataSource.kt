@@ -32,7 +32,8 @@ class RoomDownloadsPersistenceDataSource(
         downloadRequestType = downloadRequestType.name,
         requesterId = requesterId,
         imageUrl = imageUrl,
-        name = name
+        name = name,
+        downloadAttempt = downloadAttempt
     )
 
     private fun DownloadEntity.toModel() = DownloadModel(
@@ -47,6 +48,7 @@ class RoomDownloadsPersistenceDataSource(
         },
         requesterId = requesterId,
         imageUrl = imageUrl,
-        name = name
+        name = name,
+        downloadAttempt = downloadAttempt
     )
 }

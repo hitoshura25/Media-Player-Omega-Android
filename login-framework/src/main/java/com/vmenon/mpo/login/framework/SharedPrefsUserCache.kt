@@ -48,6 +48,7 @@ class SharedPrefsUserCache(
             .putString(EMAIL, cachedUser.user.email)
             .putString(FIRST_NAME, cachedUser.user.firstName)
             .putString(LAST_NAME, cachedUser.user.lastName)
+            .putLong(LAST_UPDATED, cachedUser.lastUpdated)
             .apply()
     }
 
