@@ -7,6 +7,7 @@ import com.vmenon.mpo.login.domain.User
 class LoginRepository(
     private val registry: UserRegistry,
     private val authState: AuthState,
+    private val userCache: UserCache,
     private val system: System
 ) : LoginService {
     override suspend fun registerUser(
@@ -18,11 +19,20 @@ class LoginRepository(
 
     override suspend fun getUser(): Result<User> {
         return try {
-            Result.success(registry.getCurrentUser())
+            val user = userCache.getCachedUser()
+            if (user != null) {
+                Result.success(user)
+            } else {
+                val freshUser = registry.getCurrentUser()
+                userCache.cacheUser(freshUser)
+                Result.success(freshUser)
+            }
         } catch (exception: GetUserException) {
             system.println("Clearing out credentials", exception)
             authState.clearCredentials()
+            userCache.clear()
             Result.failure(exception)
         }
     }
+
 }
