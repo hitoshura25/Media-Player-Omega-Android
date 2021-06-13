@@ -7,7 +7,6 @@ import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
-import com.vmenon.mpo.persistence.room.migrations.Migrations
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -21,8 +20,7 @@ class PersistenceModule {
             application.applicationContext,
             MPODatabase::class.java,
             "mpo-database"
-        ).addMigrations(Migrations.MIGRATION_1_2)
-            .build()
+        ).build()
     }
 
     @Provides

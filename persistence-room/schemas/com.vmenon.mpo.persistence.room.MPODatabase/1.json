@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3fc45b5d528248f10e30f447bcdee576",
+    "identityHash": "8c572471ec2f21d3cd984de1eaf3dc39",
     "entities": [
       {
         "tableName": "show",
@@ -89,7 +89,7 @@
       },
       {
         "tableName": "episode",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER NOT NULL, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`episodeId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `showId` INTEGER NOT NULL, `episodeName` TEXT NOT NULL, `description` TEXT, `published` INTEGER NOT NULL, `type` TEXT NOT NULL, `downloadUrl` TEXT NOT NULL, `length` INTEGER, `episodeArtworkUrl` TEXT, `filename` TEXT, FOREIGN KEY(`showId`) REFERENCES `show`(`showId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "episodeId",
@@ -137,7 +137,7 @@
             "fieldPath": "details.length",
             "columnName": "length",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "details.episodeArtworkUrl",
@@ -328,7 +328,7 @@
       },
       {
         "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `requesterId` INTEGER NOT NULL, `downloadRequestType` TEXT NOT NULL, `downloadQueueId` INTEGER NOT NULL, `downloadUrl` TEXT NOT NULL, `name` TEXT NOT NULL, `imageUrl` TEXT, `downloadAttempt` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`downloadId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `requesterId` INTEGER NOT NULL, `downloadRequestType` TEXT NOT NULL, `downloadQueueId` INTEGER NOT NULL, `downloadUrl` TEXT NOT NULL, `name` TEXT NOT NULL, `imageUrl` TEXT, `downloadAttempt` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "downloadId",
@@ -376,7 +376,8 @@
             "fieldPath": "downloadAttempt",
             "columnName": "downloadAttempt",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -392,7 +393,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3fc45b5d528248f10e30f447bcdee576')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8c572471ec2f21d3cd984de1eaf3dc39')"
     ]
   }
 }

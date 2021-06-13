@@ -537,39 +537,24 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     private fun playMedia(request: PlaybackMediaRequest) {
         if (requestedMedia == request) {
-            request.mediaFile?.let { filename ->
-                val mediaFile = File(filename)
-                val duration = if (request.media.durationInMillis > 0) {
-                    request.media.durationInMillis
-                } else {
-                    val retriever = MediaMetadataRetriever()
-                    mediaFile.useFileDescriptor { fileDescriptor ->
-                        retriever.setDataSource(fileDescriptor)
-                    }
-
-                    retriever.extractMetadata(
-                        MediaMetadataRetriever.METADATA_KEY_DURATION
-                    )?.toLong() ?: 0L
-                }
-
-                val metadata = MediaMetadataCompat.Builder().putString(
-                    MediaMetadataCompat.METADATA_KEY_MEDIA_ID, request.media.mediaId
-                ).putString(MediaMetadataCompat.METADATA_KEY_ALBUM, request.media.album)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, request.media.author)
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-                    .putString(
-                        MediaMetadataCompat.METADATA_KEY_GENRE,
-                        TextUtils.join(" ", request.media.genres ?: emptyList<String>())
-                    )
-                    .putString(
-                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
-                        request.media.artworkUrl
-                    )
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, request.media.title)
-                    .build()
-                handlePlayRequest(mediaFile)
-                mediaSession.setMetadata(metadata)
-            }
+            val mediaFile = File(request.mediaFile)
+            val metadata = MediaMetadataCompat.Builder().putString(
+                MediaMetadataCompat.METADATA_KEY_MEDIA_ID, request.media.mediaId
+            ).putString(MediaMetadataCompat.METADATA_KEY_ALBUM, request.media.album)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, request.media.author)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, request.media.durationInMillis)
+                .putString(
+                    MediaMetadataCompat.METADATA_KEY_GENRE,
+                    TextUtils.join(" ", request.media.genres ?: emptyList<String>())
+                )
+                .putString(
+                    MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
+                    request.media.artworkUrl
+                )
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, request.media.title)
+                .build()
+            handlePlayRequest(mediaFile)
+            mediaSession.setMetadata(metadata)
         } else {
             Log.w("MPO", "Cannot play incorrect media request: ${request.media.mediaId}")
             return

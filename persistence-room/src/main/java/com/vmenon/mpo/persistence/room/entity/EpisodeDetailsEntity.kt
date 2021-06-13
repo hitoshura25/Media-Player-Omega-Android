@@ -6,7 +6,7 @@ data class EpisodeDetailsEntity(
     val published: Long,
     val type: String,
     val downloadUrl: String,
-    val length: Long,
+    val length: Long?,
     val episodeArtworkUrl: String?,
     val filename: String?
 )

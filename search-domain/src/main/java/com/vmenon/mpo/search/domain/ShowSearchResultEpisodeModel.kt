@@ -6,6 +6,6 @@ data class ShowSearchResultEpisodeModel(
     val published: Long,
     val type: String,
     val downloadUrl: String,
-    val length: Long,
+    val length: Long?,
     val artworkUrl: String?
 )
