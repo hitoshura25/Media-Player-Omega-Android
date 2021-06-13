@@ -22,7 +22,7 @@ import com.vmenon.mpo.persistence.room.entity.ShowSearchResultsEntity
         ShowSearchResultsEntity::class,
         DownloadEntity::class
     ],
-    version = 2
+    version = 1
 )
 @TypeConverters(Converters::class)
 abstract class MPODatabase : RoomDatabase() {
