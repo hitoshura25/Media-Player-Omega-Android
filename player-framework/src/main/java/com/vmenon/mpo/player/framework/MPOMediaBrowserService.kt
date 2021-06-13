@@ -13,6 +13,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
+import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -31,6 +32,7 @@ import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.vmenon.mpo.extensions.useFileDescriptor
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
 import java.io.File
@@ -537,15 +539,24 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         if (requestedMedia == request) {
             request.mediaFile?.let { filename ->
                 val mediaFile = File(filename)
+                val duration = if (request.media.durationInMillis > 0) {
+                    request.media.durationInMillis
+                } else {
+                    val retriever = MediaMetadataRetriever()
+                    mediaFile.useFileDescriptor { fileDescriptor ->
+                        retriever.setDataSource(fileDescriptor)
+                    }
+
+                    retriever.extractMetadata(
+                        MediaMetadataRetriever.METADATA_KEY_DURATION
+                    )?.toLong() ?: 0L
+                }
+
                 val metadata = MediaMetadataCompat.Builder().putString(
                     MediaMetadataCompat.METADATA_KEY_MEDIA_ID, request.media.mediaId
-                )
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, request.media.album)
+                ).putString(MediaMetadataCompat.METADATA_KEY_ALBUM, request.media.album)
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, request.media.author)
-                    .putLong(
-                        MediaMetadataCompat.METADATA_KEY_DURATION,
-                        request.media.durationInMillis
-                    )
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
                     .putString(
                         MediaMetadataCompat.METADATA_KEY_GENRE,
                         TextUtils.join(" ", request.media.genres ?: emptyList<String>())
