@@ -1,6 +1,7 @@
 package com.vmenon.mpo.di
 
 import android.app.Application
+import android.content.Context
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
@@ -28,12 +29,20 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun providesNavigationController(): NavigationController = DefaultNavigationController()
+    fun providesNavigationController(): NavigationController = DefaultNavigationController(
+        setOf(
+            com.vmenon.mpo.R.id.nav_home,
+            com.vmenon.mpo.R.id.nav_library,
+            com.vmenon.mpo.R.id.nav_account,
+            com.vmenon.mpo.R.id.nav_downloads
+        )
+    )
 
     @Provides
     fun provideHomeDestination(): NavigationDestination<HomeLocation> =
         ActivityDestination(
-            activityClass = HomeActivity::class.java
+            activityClass = HomeActivity::class.java,
+            location = HomeLocation
         )
 
     @Provides
@@ -43,9 +52,10 @@ class AppModule(private val application: Application) {
         homeDestination: NavigationDestination<HomeLocation>
     ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
         player,
-        { request: PlaybackMediaRequest? ->
+        { request: PlaybackMediaRequest?, context: Context ->
             (homeDestination as ActivityDestination<HomeLocation>).createIntent(
                 application,
+                DefaultNavigationController.NAVIGATION_PARAMS_NAME,
                 HomeNavigationParams(request)
             )
         },

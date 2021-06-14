@@ -36,7 +36,8 @@ import javax.inject.Singleton
         DownloadsModule::class,
         PlayerModule::class,
         LoginModule::class,
-        LoginFrameworkModule::class
+        LoginFrameworkModule::class,
+        NavigationModule::class
     ]
 )
 @Singleton

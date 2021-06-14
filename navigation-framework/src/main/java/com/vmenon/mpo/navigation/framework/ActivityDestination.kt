@@ -7,16 +7,10 @@ import com.vmenon.mpo.navigation.domain.NavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationParams
 
 data class ActivityDestination<L : NavigationLocation<*>>(
-    val activityClass: Class<*>
+    val activityClass: Class<*>, override val location: L
 ) : NavigationDestination<L> {
-    fun <P: NavigationParams> createIntent(context: Context, params: P): Intent =
+    fun <P : NavigationParams> createIntent(context: Context, key: String, params: P): Intent =
         Intent(context, activityClass).apply {
-            putExtra(
-                EXTRA_NAVIGATION_BUNDLE, params
-            )
+            putExtra(key, params)
         }
-
-    companion object {
-        const val EXTRA_NAVIGATION_BUNDLE = "extraNavigationBundle"
-    }
 }

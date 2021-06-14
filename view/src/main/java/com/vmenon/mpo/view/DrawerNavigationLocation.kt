@@ -5,5 +5,5 @@ import com.vmenon.mpo.navigation.domain.NavigationLocation
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 
 data class DrawerNavigationLocation(val menuId: Int) : NavigationLocation<NoNavigationParams>
-data class DrawerNavigationDestination(val location: DrawerNavigationLocation) :
+data class DrawerNavigationDestination(override val location: DrawerNavigationLocation) :
     NavigationDestination<DrawerNavigationLocation>

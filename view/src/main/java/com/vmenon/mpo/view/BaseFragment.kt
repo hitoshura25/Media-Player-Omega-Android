@@ -84,6 +84,11 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        system.println("${javaClass.name} onViewCreated")
+    }
+
     protected abstract fun setupComponent(context: Context): COMPONENT
     protected abstract fun inject(component: COMPONENT)
 

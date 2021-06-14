@@ -75,7 +75,7 @@ class LibraryModule {
             SearchForShows(navigationController, searchNavigationDestination)
         )
 
-    @Provides
+    /*@Provides
     fun provideLibraryNavigationDestination(): NavigationDestination<MyLibraryNavigationLocation> =
         FragmentDestination(
             fragmentCreator = { LibraryFragment() },
@@ -97,5 +97,5 @@ class LibraryModule {
             fragmentCreator = { EpisodeDetailsFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = EpisodeDetailsFragment::class.java.name
-        )
+        )*/
 }

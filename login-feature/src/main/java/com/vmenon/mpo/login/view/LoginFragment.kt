@@ -41,7 +41,8 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         super.onViewCreated(view, savedInstanceState)
         val activity = (requireActivity() as BaseActivity<*>)
         val loadingStateHelper = LoadingStateHelper.overlayContent(activity.requireLoadingView())
-        activity.setSupportActionBar(binding.toolbar)
+        //activity.setSupportActionBar(binding.toolbar)
+        navigationController.setupWith(binding.toolbar, this)
         viewModel.loginState().observe(viewLifecycleOwner, { event ->
             event.unhandledContent()?.let { state ->
                 when (state) {

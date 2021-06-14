@@ -40,6 +40,7 @@ class SubscribedShowsFragment :
                 actionBar.setDisplayHomeAsUpEnabled(true)
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
             }
+            navigationController.setupWith(binding.toolbar, this)
         }
         binding.showList.setHasFixedSize(true)
         binding.showList.layoutManager = GridLayoutManager(context, 3)
@@ -52,7 +53,8 @@ class SubscribedShowsFragment :
                 }
                 ErrorState -> {
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
     }

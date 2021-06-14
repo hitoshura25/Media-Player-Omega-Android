@@ -49,7 +49,7 @@ class SearchModule {
         queueDownloadForShow = QueueDownloadForShow(myLibraryService, downloadsService)
     )
 
-    @Provides
+    /*@Provides
     fun provideSearchNavigationDestination(): NavigationDestination<SearchNavigationLocation> =
         FragmentDestination(
             fragmentCreator = { ShowSearchResultsFragment() },
@@ -63,5 +63,5 @@ class SearchModule {
             fragmentCreator = { ShowDetailsFragment()},
             containerId = R.id.fragmentContainerLayout,
             tag = ShowDetailsFragment::class.java.name
-        )
+        )*/
 }

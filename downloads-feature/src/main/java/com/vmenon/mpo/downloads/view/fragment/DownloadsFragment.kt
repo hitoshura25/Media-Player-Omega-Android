@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.downloads.R
 import com.vmenon.mpo.downloads.databinding.FragmentDownloadsBinding
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
@@ -28,12 +27,13 @@ class DownloadsFragment : BaseViewBindingFragment<DownloadsComponent, FragmentDo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
+            /*activity.setSupportActionBar(binding.toolbar)
             activity.setTitle(R.string.downloads)
             activity.supportActionBar?.let { actionBar ->
                 actionBar.setDisplayHomeAsUpEnabled(true)
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
-            }
+            }*/
+            navigationController.setupWith(binding.toolbar, this)
         }
         binding.downloadsList.layoutManager = LinearLayoutManager(context)
         binding.downloadsList.setHasFixedSize(true)

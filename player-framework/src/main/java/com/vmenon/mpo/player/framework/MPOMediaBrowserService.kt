@@ -45,7 +45,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     data class Configuration(
         val player: MPOPlayer,
-        val playerUiIntentCreator: (PlaybackMediaRequest?) -> Intent,
+        val playerUiIntentCreator: (PlaybackMediaRequest?, Context) -> Intent,
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
@@ -173,7 +173,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         configuration.player.setListener(this)
 
         val context = applicationContext
-        val intent = configuration.playerUiIntentCreator(null)
+        val intent = configuration.playerUiIntentCreator(null, applicationContext)
         val pi = PendingIntent.getActivity(
             context, 99 /*request code*/,
             intent, PendingIntent.FLAG_UPDATE_CURRENT
@@ -632,7 +632,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     }
 
     private fun createNotificationContentIntent(): PendingIntent {
-        val openUI = configuration.playerUiIntentCreator(requestedMedia)
+        val openUI = configuration.playerUiIntentCreator(requestedMedia, applicationContext)
         openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         return PendingIntent.getActivity(
             this,

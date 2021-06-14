@@ -29,20 +29,9 @@ import javax.inject.Inject
 
 class HomeActivity : BaseActivity<ActivityComponent>(),
     NavigationOrigin<HomeNavigationParams> by NavigationOrigin.from(HomeLocation) {
-    @Inject
-    lateinit var libraryDestination: NavigationDestination<MyLibraryNavigationLocation>
-
-    @Inject
-    lateinit var showsDestination: NavigationDestination<SubscribedShowsLocation>
-
-    @Inject
-    lateinit var downloadsDestination: NavigationDestination<DownloadsLocation>
 
     @Inject
     lateinit var playerDestination: NavigationDestination<PlayerNavigationLocation>
-
-    @Inject
-    lateinit var loginDestination: NavigationDestination<LoginNavigationLocation>
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding

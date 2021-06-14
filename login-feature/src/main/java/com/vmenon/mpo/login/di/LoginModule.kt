@@ -24,13 +24,13 @@ import javax.inject.Singleton
 
 @Module
 class LoginModule {
-    @Provides
+    /*@Provides
     fun provideLoginNavigationDestination(): NavigationDestination<LoginNavigationLocation> =
         FragmentDestination(
             fragmentCreator = { LoginFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = LoginFragment::class.java.name
-        )
+        )*/
 
     @Provides
     fun provideLoginService(

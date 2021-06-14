@@ -7,5 +7,5 @@ import com.vmenon.mpo.navigation.domain.NavigationLocation
 data class FragmentDestination<L : NavigationLocation<*>>(
     val fragmentCreator: () -> Fragment,
     val containerId: Int,
-    val tag: String
+    val tag: String, override val location: L
 ) : NavigationDestination<L>

@@ -49,12 +49,12 @@ class PlayerModule {
     fun providePlayerEngine(application: Application): MediaPlayerEngine =
         AndroidMediaBrowserServicePlayerEngine(application)
 
-    @Provides
+    /*@Provides
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
         FragmentDestination(
             fragmentCreator = { MediaPlayerFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = MediaPlayerFragment::class.java.name
-        )
+        )*/
 }
 

@@ -4,14 +4,20 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
+import com.vmenon.mpo.R
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
-import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
+import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.view.DrawerNavigationDestination
-import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.HomeActivity
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +25,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class DefaultNavigationController : NavigationController {
+class DefaultNavigationController(private val topLevelItems: Set<Int>) : NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
     private val mainScope = MainScope()
 
@@ -40,6 +46,11 @@ class DefaultNavigationController : NavigationController {
                 navigationParams
             )
             is FragmentDestination -> handleFragmentDestination(
+                navigationOrigin,
+                navigationDestination,
+                navigationParams
+            )
+            is AndroidNavigationDestination -> handleAndroidNavigationDestination(
                 navigationOrigin,
                 navigationDestination,
                 navigationParams
@@ -67,18 +78,54 @@ class DefaultNavigationController : NavigationController {
     @Suppress("UNCHECKED_CAST")
     override fun <P : NavigationParams> getOptionalParams(navigationOrigin: NavigationOrigin<P>): P? {
         if (navigationOrigin is Activity) {
-            return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P?
+            return navigationOrigin.intent.getSerializableExtra(
+                NAVIGATION_PARAMS_NAME
+            ) as P?
         }
         if (navigationOrigin is Fragment) {
-            return navigationOrigin.arguments
-                ?.getSerializable(EXTRA_NAVIGATION_BUNDLE) as P?
+            return navigationOrigin.arguments?.getSerializable(
+                NAVIGATION_PARAMS_NAME
+            ) as P?
         }
 
         throw IllegalArgumentException("navigationOrigin is invalid!")
     }
 
+    override fun setupWith(component: Any, navigationOrigin: NavigationOrigin<*>) {
+        when (component) {
+            is Toolbar -> {
+                component.setupWithNavController(
+                    getNavController(navigationOrigin),
+                    AppBarConfiguration(topLevelDestinationIds = topLevelItems)
+                )
+            }
+            else -> throw IllegalArgumentException("component was not a supported type!")
+        }
+    }
+
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
+
+
+    private fun handleAndroidNavigationDestination(
+        navigationOrigin: NavigationOrigin<*>,
+        navigationDestination: AndroidNavigationDestination<*>,
+        params: NavigationParams
+    ) {
+        val navigationController = when (navigationOrigin) {
+            is Fragment -> navigationOrigin.findNavController()
+            is FragmentActivity -> {
+                val navHostFragment = navigationOrigin.supportFragmentManager.findFragmentById(
+                    R.id.nav_host_fragment
+                ) as NavHostFragment
+                navHostFragment.navController
+            }
+            else -> null
+        } ?: throw IllegalArgumentException(
+            "navigationOrigin needs to be an Activity or a Fragment!"
+        )
+        navigationController.navigate(navigationDestination.navDirectionMapper(params))
+    }
 
     private fun handleDrawerNavigationRequest(
         navigationDestination: DrawerNavigationDestination,
@@ -108,7 +155,11 @@ class DefaultNavigationController : NavigationController {
             is Fragment -> navigationOrigin.activity
             else -> null
         } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
-        val intent = navigationDestination.createIntent(context, params)
+        val intent = navigationDestination.createIntent(
+            context,
+            NAVIGATION_PARAMS_NAME,
+            params
+        )
         startActivityForNavigation(intent, context)
     }
 
@@ -117,16 +168,22 @@ class DefaultNavigationController : NavigationController {
         navigationDestination: FragmentDestination<*>,
         params: NavigationParams
     ) {
-        val fragmentManager = when (navigationOrigin) {
-            is FragmentActivity -> navigationOrigin.supportFragmentManager
-            is Fragment -> navigationOrigin.parentFragmentManager
-            else -> null
+        val fragmentManager: FragmentManager = when (navigationOrigin) {
+            is FragmentActivity -> {
+                navigationOrigin.supportFragmentManager
+            }
+            is Fragment -> {
+                navigationOrigin.parentFragmentManager
+            }
+            else -> {
+                throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
+            }
         }
-            ?: throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
+
         val fragment =
             fragmentManager.findFragmentByTag(navigationDestination.tag)
                 ?: navigationDestination.fragmentCreator()
-        fragment.arguments = Bundle().apply { putSerializable(EXTRA_NAVIGATION_BUNDLE, params) }
+        fragment.arguments = Bundle().apply { putSerializable(NAVIGATION_PARAMS_NAME, params) }
         fragmentManager.beginTransaction()
             .replace(navigationDestination.containerId, fragment, navigationDestination.tag)
             .addToBackStack(null)
@@ -137,5 +194,24 @@ class DefaultNavigationController : NavigationController {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+
+    private fun getNavController(navigationOrigin: NavigationOrigin<*>) =
+        when (navigationOrigin) {
+            is Fragment -> navigationOrigin.findNavController()
+            is FragmentActivity -> {
+                val navHostFragment = navigationOrigin.supportFragmentManager.findFragmentById(
+                    R.id.nav_host_fragment
+                ) as NavHostFragment
+                navHostFragment.navController
+            }
+            else -> null
+        } ?: throw IllegalArgumentException(
+            "navigationOrigin needs to be an Activity or a Fragment!"
+        )
+
+    companion object {
+        const val NAVIGATION_PARAMS_NAME = "params" // Should match nav_graph.xml
     }
 }

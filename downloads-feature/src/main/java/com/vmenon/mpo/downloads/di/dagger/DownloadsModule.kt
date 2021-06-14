@@ -16,6 +16,7 @@ import com.vmenon.mpo.downloads.usecases.RetryDownloads
 import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import dagger.Module
@@ -47,12 +48,12 @@ class DownloadsModule {
             RetryDownloads(downloadsService, 3, system)
         )
 
-    @Provides
+    /*@Provides
     fun provideDownloadsNavigationDestination(): NavigationDestination<DownloadsLocation> =
         FragmentDestination(
             fragmentCreator = { DownloadsFragment() },
             containerId = R.id.fragmentContainerLayout,
             tag = DownloadsFragment::class.java.name
-        )
+        )*/
 
 }
