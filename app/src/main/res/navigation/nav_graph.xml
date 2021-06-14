@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment"
+        android:label="SubscribedShowsFragment" >
+        <action
+            android:id="@+id/action_subscribedShowsFragment_to_showSearchResultsFragment"
+            app:destination="@id/showSearchResultsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_library"
+        android:name="com.vmenon.mpo.library.view.fragment.LibraryFragment"
+        android:label="LibraryFragment" >
+        <action
+            android:id="@+id/action_libraryFragment_to_episodeDetailsFragment"
+            app:destination="@id/episodeDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_downloads"
+        android:name="com.vmenon.mpo.downloads.view.fragment.DownloadsFragment"
+        android:label="DownloadsFragment" >
+    </fragment>
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.vmenon.mpo.login.view.LoginFragment"
+        android:label="LoginFragment" />
+    <fragment
+        android:id="@+id/showSearchResultsFragment"
+        android:name="com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment"
+        android:label="ShowSearchResultsFragment" >
+        <action
+            android:id="@+id/action_showSearchResultsFragment_to_showDetailsFragment"
+            app:destination="@id/showDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/showDetailsFragment"
+        android:name="com.vmenon.mpo.search.view.fragment.ShowDetailsFragment"
+        android:label="ShowDetailsFragment" />
+    <fragment
+        android:id="@+id/mediaPlayerFragment"
+        android:name="com.vmenon.mpo.player.view.fragment.MediaPlayerFragment"
+        android:label="MediaPlayerFragment" />
+    <fragment
+        android:id="@+id/episodeDetailsFragment"
+        android:name="com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment"
+        android:label="EpisodeDetailsFragment" >
+        <action
+            android:id="@+id/action_episodeDetailsFragment_to_mediaPlayerFragment"
+            app:destination="@id/mediaPlayerFragment" />
+    </fragment>
+</navigation>

@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
@@ -63,6 +65,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             ab.setHomeAsUpIndicator(R.drawable.ic_menu)
         }
 
+        binding.navigation.setupWithNavController(getNavController())
         binding.navDrawerView.setNavigationItemSelectedListener { menuItem ->
             val location = when (menuItem.itemId) {
                 else -> DrawerNavigationLocation(com.vmenon.mpo.view.R.id.nav_home)
@@ -76,7 +79,9 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             true
         }
 
-        binding.navigation.setOnNavigationItemSelectedListener { item ->
+        /*binding.navigation.setOnNavigationItemSelectedListener { item ->
+            val navController = findNavController(R.id.nav_host_fragment)
+
             when (item.itemId) {
                 R.id.nav_library -> navigationController.navigate(this, libraryDestination)
                 R.id.nav_downloads -> navigationController.navigate(this, downloadsDestination)
@@ -90,13 +95,13 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
 
         binding.navigation.setOnNavigationItemReselectedListener {
 
-        }
+        } */
 
         if (savedInstanceState == null) {
-            navigationController.navigate(this, showsDestination)
+            //navigationController.navigate(this, showsDestination)
         }
 
-        viewModel.currentLocation.observe(this, { location ->
+        /*viewModel.currentLocation.observe(this, { location ->
             system.println("Emitted location $location")
             val currentItemId = binding.navigation.selectedItemId
             val newItemId = when (location) {
@@ -110,13 +115,13 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
                 binding.navigation.selectedItemId = newItemId
             }
         })
-        handleHomeNavigationParams()
+        handleHomeNavigationParams()*/
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleHomeNavigationParams()
+        //handleHomeNavigationParams()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -141,7 +146,10 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         }
     }
 
-    override fun getContentView(): View? = binding.homeContentRoot
+    private fun getNavController() =
+        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
 
-    override fun getLoadingView(): View? = binding.loadingOverlayView.root
+    override fun getContentView(): View = binding.homeContentRoot
+
+    override fun getLoadingView(): View = binding.loadingOverlayView.root
 }
