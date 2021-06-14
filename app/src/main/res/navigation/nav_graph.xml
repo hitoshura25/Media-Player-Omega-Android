@@ -18,7 +18,7 @@
         android:label="@string/library">
         <action
             android:id="@+id/action_libraryFragment_to_episodeDetailsFragment"
-            app:destination="@id/episodeDetailsFragment"></action>
+            app:destination="@id/episodeDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_downloads"
@@ -27,22 +27,22 @@
     <fragment
         android:id="@+id/nav_account"
         android:name="com.vmenon.mpo.login.view.LoginFragment"
-        android:label="@string/account" />
+        android:label="" />
     <fragment
         android:id="@+id/showSearchResultsFragment"
         android:name="com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment"
-        android:label="@string/show_search_title">
+        android:label="">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
         <action
             android:id="@+id/action_showSearchResultsFragment_to_showDetailsFragment"
-            app:destination="@id/showDetailsFragment"></action>
+            app:destination="@id/showDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/showDetailsFragment"
         android:name="com.vmenon.mpo.search.view.fragment.ShowDetailsFragment"
-        android:label="ShowDetailsFragment">
+        android:label="">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.search.domain.ShowDetailsParams" />
@@ -50,7 +50,7 @@
     <fragment
         android:id="@+id/mediaPlayerFragment"
         android:name="com.vmenon.mpo.player.view.fragment.MediaPlayerFragment"
-        android:label="MediaPlayerFragment">
+        android:label="">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
@@ -59,7 +59,7 @@
     <fragment
         android:id="@+id/episodeDetailsFragment"
         android:name="com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment"
-        android:label="EpisodeDetailsFragment">
+        android:label="">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.my_library.domain.EpisodeDetailsParams" />

@@ -5,13 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.R
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
@@ -91,17 +96,67 @@ class DefaultNavigationController(private val topLevelItems: Set<Int>) : Navigat
         throw IllegalArgumentException("navigationOrigin is invalid!")
     }
 
-    override fun setupWith(component: Any, navigationOrigin: NavigationOrigin<*>) {
-        when (component) {
-            is Toolbar -> {
-                component.setupWithNavController(
-                    getNavController(navigationOrigin),
-                    AppBarConfiguration(topLevelDestinationIds = topLevelItems)
+    override fun setupWith(navigationOrigin: NavigationOrigin<*>, vararg component: Any?) {
+        var toolbar: Toolbar? = null
+        var bottomNavigationView: BottomNavigationView? = null
+        var drawerLayout: DrawerLayout? = null
+        var collapsingToolbarLayout: CollapsingToolbarLayout? = null
+        var navigationView: NavigationView? = null
+
+        component.forEach { element ->
+            when (element) {
+                is Toolbar -> toolbar = element
+                is CollapsingToolbarLayout -> collapsingToolbarLayout = element
+                is NavigationView -> navigationView = element
+                is BottomNavigationView -> bottomNavigationView = element
+                is DrawerLayout -> drawerLayout = element
+                else -> throw IllegalArgumentException("component was not a supported type!")
+            }
+        }
+
+        val navController = getNavController(navigationOrigin)
+        val appBarConfiguration = AppBarConfiguration(topLevelItems, drawerLayout)
+        setupWithToolbar(
+            navController,
+            toolbar,
+            collapsingToolbarLayout,
+            drawerLayout,
+            appBarConfiguration
+        )
+        navigationView?.setupWithNavController(navController)
+        bottomNavigationView?.setupWithNavController(navController)
+    }
+
+    private fun setupWithToolbar(
+        navController: NavController,
+        toolbar: Toolbar?,
+        collapsingToolbarLayout: CollapsingToolbarLayout?,
+        drawerLayout: DrawerLayout?,
+        appBarConfiguration: AppBarConfiguration
+    ) {
+        if (collapsingToolbarLayout != null && toolbar != null) {
+            if (drawerLayout != null) {
+                collapsingToolbarLayout.setupWithNavController(
+                    toolbar,
+                    navController,
+                    drawerLayout
+                )
+            } else {
+                collapsingToolbarLayout.setupWithNavController(
+                    toolbar,
+                    navController,
+                    appBarConfiguration
                 )
             }
-            else -> throw IllegalArgumentException("component was not a supported type!")
+        } else {
+            if (drawerLayout != null) {
+                toolbar?.setupWithNavController(navController, drawerLayout)
+            } else {
+                toolbar?.setupWithNavController(navController, appBarConfiguration)
+            }
         }
     }
+
 
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
@@ -195,7 +250,6 @@ class DefaultNavigationController(private val topLevelItems: Set<Int>) : Navigat
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
-
 
     private fun getNavController(navigationOrigin: NavigationOrigin<*>) =
         when (navigationOrigin) {

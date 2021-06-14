@@ -4,8 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.NavigationController
 
@@ -31,6 +33,9 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
 
     abstract fun getContentView(): View?
     abstract fun getLoadingView(): View?
+    abstract fun drawerLayout(): DrawerLayout?
+    abstract fun navigationView(): NavigationView?
+
     protected abstract fun setupComponent(context: Context): COMPONENT
     protected abstract fun inject(component: COMPONENT)
 

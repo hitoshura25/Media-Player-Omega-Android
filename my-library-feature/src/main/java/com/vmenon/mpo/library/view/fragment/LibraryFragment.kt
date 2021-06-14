@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
@@ -36,17 +35,12 @@ class LibraryFragment : BaseViewBindingFragment<LibraryComponent, FragmentLibrar
     private val viewModel: LibraryViewModel by viewModel()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (requireActivity() as AppCompatActivity).let { activity ->
-            /*activity.setSupportActionBar(binding.toolbar)
-            activity.setTitle(R.string.library)
-            activity.supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(true)
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
-            }*/
-            navigationController.setupWith(binding.toolbar, this)
-        }
-
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView()
+        )
         val layoutManager = LinearLayoutManager(context)
         binding.libraryList.setHasFixedSize(true)
         binding.libraryList.layoutManager = layoutManager

@@ -41,8 +41,12 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         super.onViewCreated(view, savedInstanceState)
         val activity = (requireActivity() as BaseActivity<*>)
         val loadingStateHelper = LoadingStateHelper.overlayContent(activity.requireLoadingView())
-        //activity.setSupportActionBar(binding.toolbar)
-        navigationController.setupWith(binding.toolbar, this)
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView()
+        )
         viewModel.loginState().observe(viewLifecycleOwner, { event ->
             event.unhandledContent()?.let { state ->
                 when (state) {
@@ -51,14 +55,14 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                         binding.loginForm.root.visibility = View.VISIBLE
                         binding.registerForm.root.visibility = View.GONE
                         binding.accountView.root.visibility = View.GONE
-                        activity.title = ""
+                        binding.toolbar.title = ""
                     }
                     RegisterState -> {
                         loadingStateHelper.showContentState()
                         binding.registerForm.root.visibility = View.VISIBLE
                         binding.loginForm.root.visibility = View.GONE
                         binding.accountView.root.visibility = View.GONE
-                        activity.title = ""
+                        binding.toolbar.title = ""
                     }
 
                     is LoggedInState -> {
@@ -66,7 +70,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                         binding.accountView.root.visibility = View.VISIBLE
                         binding.loginForm.root.visibility = View.GONE
                         binding.registerForm.root.visibility = View.GONE
-                        activity.title = getString(R.string.hi_user, state.userDetails.firstName)
+                        binding.toolbar.title = getString(R.string.hi_user, state.userDetails.firstName)
                     }
                     LoadingState -> {
                         loadingStateHelper.showLoadingState()

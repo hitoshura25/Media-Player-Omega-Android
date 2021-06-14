@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
@@ -18,8 +20,6 @@ import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.player.domain.PlayerNavigationParams
-import com.vmenon.mpo.view.DrawerNavigationDestination
-import com.vmenon.mpo.view.DrawerNavigationLocation
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import javax.inject.Inject
 
@@ -44,26 +44,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        supportActionBar?.let { ab ->
-            ab.setDisplayHomeAsUpEnabled(true)
-            ab.setHomeAsUpIndicator(R.drawable.ic_menu)
-        }
-
         binding.navigation.setupWithNavController(getNavController())
-        binding.navDrawerView.setNavigationItemSelectedListener { menuItem ->
-            val location = when (menuItem.itemId) {
-                else -> DrawerNavigationLocation(com.vmenon.mpo.view.R.id.nav_home)
-            }
-            navigationController.navigate(
-                this,
-                DrawerNavigationDestination(location)
-            )
-            menuItem.isChecked = true
-            binding.drawerLayout.closeDrawers()
-            true
-        }
-
         handleHomeNavigationParams()
     }
 
@@ -101,4 +82,6 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
     override fun getContentView(): View = binding.homeContentRoot
 
     override fun getLoadingView(): View = binding.loadingOverlayView.root
+    override fun drawerLayout(): DrawerLayout = binding.drawerLayout
+    override fun navigationView(): NavigationView = binding.navDrawerView
 }

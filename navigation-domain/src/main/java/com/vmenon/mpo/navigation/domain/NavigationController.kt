@@ -26,7 +26,7 @@ interface NavigationController {
         navigationOrigin: NavigationOrigin<P>
     ): P?
 
-    fun setupWith(component: Any, navigationOrigin: NavigationOrigin<*>)
+    fun setupWith(navigationOrigin: NavigationOrigin<*>, vararg component: Any?)
 
     val currentLocation: Flow<NavigationLocation<*>>
 }

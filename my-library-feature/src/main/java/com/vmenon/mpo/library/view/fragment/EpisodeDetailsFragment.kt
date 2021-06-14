@@ -54,12 +54,15 @@ class EpisodeDetailsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val episodeId = navigationController.getParams(this).episodeId
+        binding.toolbar.title = ""
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            binding.collapsingToolbar,
+            drawerLayout(),
+            navigationView()
+        )
 
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.title = ""
-            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
         binding.fab.setImageResource(R.drawable.ic_play_arrow_white_48dp)
         binding.fab.setOnClickListener {
             viewModel.playEpisode(episodeId, this)

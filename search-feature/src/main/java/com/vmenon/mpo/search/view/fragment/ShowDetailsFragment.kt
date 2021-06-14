@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -52,11 +51,14 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.title = ""
-            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
+        binding.toolbar.title = ""
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView(),
+            binding.collapsingToolbar
+        )
         binding.fab.setImageResource(R.drawable.ic_add_white_48dp)
         binding.appbar.addOnOffsetChangedListener(this)
 
