@@ -2,7 +2,6 @@ package com.vmenon.mpo.di
 
 import com.vmenon.mpo.R
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
-import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragmentDirections
 import com.vmenon.mpo.library.view.fragment.LibraryFragmentDirections
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragmentDirections
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
@@ -12,6 +11,7 @@ import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.player.view.fragment.MediaPlayerFragmentDirections
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
 import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragmentDirections
@@ -45,11 +45,8 @@ class NavigationModule {
     @Provides
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
         AndroidNavigationDestination.fromParams(PlayerNavigationLocation) { params ->
-            EpisodeDetailsFragmentDirections.actionEpisodeDetailsFragmentToMediaPlayerFragment(
-                params
-            )
+            MediaPlayerFragmentDirections.actionGlobalMediaPlayerFragment(params)
         }
-
 
     @Provides
     fun provideSearchNavigationDestination(): NavigationDestination<SearchNavigationLocation> =

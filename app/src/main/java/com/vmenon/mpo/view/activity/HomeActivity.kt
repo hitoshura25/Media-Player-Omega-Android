@@ -14,10 +14,6 @@ import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
-import com.vmenon.mpo.downloads.domain.DownloadsLocation
-import com.vmenon.mpo.login.domain.LoginNavigationLocation
-import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
-import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
@@ -68,49 +64,13 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             true
         }
 
-        /*binding.navigation.setOnNavigationItemSelectedListener { item ->
-            val navController = findNavController(R.id.nav_host_fragment)
-
-            when (item.itemId) {
-                R.id.nav_library -> navigationController.navigate(this, libraryDestination)
-                R.id.nav_downloads -> navigationController.navigate(this, downloadsDestination)
-                R.id.nav_account -> navigationController.navigate(this, loginDestination)
-                R.id.nav_none -> {
-                }
-                else -> navigationController.navigate(this, showsDestination)
-            }
-            true
-        }
-
-        binding.navigation.setOnNavigationItemReselectedListener {
-
-        } */
-
-        if (savedInstanceState == null) {
-            //navigationController.navigate(this, showsDestination)
-        }
-
-        /*viewModel.currentLocation.observe(this, { location ->
-            system.println("Emitted location $location")
-            val currentItemId = binding.navigation.selectedItemId
-            val newItemId = when (location) {
-                is SubscribedShowsLocation -> R.id.nav_home
-                is MyLibraryNavigationLocation -> R.id.nav_library
-                is DownloadsLocation -> R.id.nav_downloads
-                is LoginNavigationLocation -> R.id.nav_account
-                else -> R.id.nav_none
-            }
-            if (newItemId != currentItemId) {
-                binding.navigation.selectedItemId = newItemId
-            }
-        })
-        handleHomeNavigationParams()*/
+        handleHomeNavigationParams()
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        //handleHomeNavigationParams()
+        handleHomeNavigationParams()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

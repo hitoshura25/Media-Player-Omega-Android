@@ -18,8 +18,7 @@
         android:label="@string/library">
         <action
             android:id="@+id/action_libraryFragment_to_episodeDetailsFragment"
-            app:destination="@id/episodeDetailsFragment">
-        </action>
+            app:destination="@id/episodeDetailsFragment"></action>
     </fragment>
     <fragment
         android:id="@+id/nav_downloads"
@@ -38,8 +37,7 @@
             app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
         <action
             android:id="@+id/action_showSearchResultsFragment_to_showDetailsFragment"
-            app:destination="@id/showDetailsFragment">
-        </action>
+            app:destination="@id/showDetailsFragment"></action>
     </fragment>
     <fragment
         android:id="@+id/showDetailsFragment"
@@ -55,8 +53,8 @@
         android:label="MediaPlayerFragment">
         <argument
             android:name="params"
-            app:nullable="true"
-            app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams" />
+            app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/episodeDetailsFragment"
@@ -65,9 +63,9 @@
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.my_library.domain.EpisodeDetailsParams" />
-        <action
-            android:id="@+id/action_episodeDetailsFragment_to_mediaPlayerFragment"
-            app:destination="@id/mediaPlayerFragment">
-        </action>
     </fragment>
+
+    <action
+        android:id="@+id/action_global_mediaPlayerFragment"
+        app:destination="@id/mediaPlayerFragment" />
 </navigation>
