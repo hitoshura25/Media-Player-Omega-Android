@@ -2,10 +2,6 @@ package com.vmenon.mpo.library.di.dagger
 
 import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.downloads.domain.DownloadsService
-import com.vmenon.mpo.library.R
-import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment
-import com.vmenon.mpo.library.view.fragment.LibraryFragment
-import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.my_library.data.EpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
@@ -17,7 +13,6 @@ import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
 import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
-import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
@@ -74,28 +69,4 @@ class LibraryModule {
             ),
             SearchForShows(navigationController, searchNavigationDestination)
         )
-
-    /*@Provides
-    fun provideLibraryNavigationDestination(): NavigationDestination<MyLibraryNavigationLocation> =
-        FragmentDestination(
-            fragmentCreator = { LibraryFragment() },
-            containerId = R.id.fragmentContainerLayout,
-            tag = LibraryFragment::class.java.name
-        )
-
-    @Provides
-    fun provideShowsNavigationDestination(): NavigationDestination<SubscribedShowsLocation> =
-        FragmentDestination(
-            fragmentCreator = { SubscribedShowsFragment() },
-            containerId = R.id.fragmentContainerLayout,
-            tag = SubscribedShowsFragment::class.java.name
-        )
-
-    @Provides
-    fun provideEpisodeDetailsDestination(): NavigationDestination<EpisodeDetailsLocation> =
-        FragmentDestination(
-            fragmentCreator = { EpisodeDetailsFragment() },
-            containerId = R.id.fragmentContainerLayout,
-            tag = EpisodeDetailsFragment::class.java.name
-        )*/
 }

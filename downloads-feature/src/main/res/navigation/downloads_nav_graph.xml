@@ -8,7 +8,4 @@
         android:id="@+id/nav_downloads"
         android:name="com.vmenon.mpo.downloads.view.fragment.DownloadsFragment"
         android:label="@string/downloads" />
-    <action
-        android:id="@+id/action_global_nav_downloads"
-        app:destination="@id/nav_downloads" />
 </navigation>

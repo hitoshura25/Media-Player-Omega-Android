@@ -7,7 +7,4 @@
         android:id="@+id/nav_account"
         android:name="com.vmenon.mpo.login.view.LoginFragment"
         android:label="" />
-    <action
-        android:id="@+id/action_global_nav_account"
-        app:destination="@id/nav_account" />
 </navigation>
