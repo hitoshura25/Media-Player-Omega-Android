@@ -188,7 +188,8 @@ class DefaultNavigationController(
                     if (bottomNav == null) {
                         navController.removeOnDestinationChangedListener(this)
                     } else {
-                        bottomNav.menu.findItem(destination.id)?.isChecked = true
+                        val menuItemId = destination.parent?.id ?: destination.id
+                        bottomNav.menu.findItem(menuItemId)?.isChecked = true
                     }
                 }
             }

@@ -2,70 +2,26 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/nav_home">
-
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment"
-        android:label="@string/shows">
-        <action
-            android:id="@+id/action_nav_home_to_showSearchResultsFragment"
-            app:destination="@id/showSearchResultsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_library"
-        android:name="com.vmenon.mpo.library.view.fragment.LibraryFragment"
-        android:label="@string/library">
-        <action
-            android:id="@+id/action_libraryFragment_to_episodeDetailsFragment"
-            app:destination="@id/episodeDetailsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_downloads"
-        android:name="com.vmenon.mpo.downloads.view.fragment.DownloadsFragment"
-        android:label="@string/downloads" />
-    <fragment
-        android:id="@+id/nav_account"
-        android:name="com.vmenon.mpo.login.view.LoginFragment"
-        android:label="" />
-    <fragment
-        android:id="@+id/showSearchResultsFragment"
-        android:name="com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment"
-        android:label="">
-        <argument
-            android:name="params"
-            app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
-        <action
-            android:id="@+id/action_showSearchResultsFragment_to_showDetailsFragment"
-            app:destination="@id/showDetailsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/showDetailsFragment"
-        android:name="com.vmenon.mpo.search.view.fragment.ShowDetailsFragment"
-        android:label="">
-        <argument
-            android:name="params"
-            app:argType="com.vmenon.mpo.search.domain.ShowDetailsParams" />
-    </fragment>
-    <fragment
-        android:id="@+id/mediaPlayerFragment"
-        android:name="com.vmenon.mpo.player.view.fragment.MediaPlayerFragment"
-        android:label="">
+    app:startDestination="@+id/subscribed_shows_nav_graph">
+    <include app:graph="@navigation/subscribed_shows_nav_graph" />
+    <include app:graph="@navigation/search_nav_graph" />
+    <include app:graph="@navigation/my_library_nav_graph" />
+    <include app:graph="@navigation/downloads_nav_graph" />
+    <include app:graph="@navigation/login_nav_graph" />
+    <include app:graph="@navigation/player_nav_graph" />
+    <action
+        android:id="@+id/action_global_player_nav_graph"
+        app:destination="@id/player_nav_graph">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
             app:nullable="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/episodeDetailsFragment"
-        android:name="com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment"
-        android:label="">
+    </action>
+    <action
+        android:id="@+id/action_global_search_nav_graph"
+        app:destination="@id/search_nav_graph">
         <argument
             android:name="params"
-            app:argType="com.vmenon.mpo.my_library.domain.EpisodeDetailsParams" />
-    </fragment>
-
-    <action
-        android:id="@+id/action_global_mediaPlayerFragment"
-        app:destination="@id/mediaPlayerFragment" />
+            app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
+    </action>
 </navigation>

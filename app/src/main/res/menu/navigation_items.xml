@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/subscribed_shows_nav_graph"
             android:icon="@drawable/ic_dashboard"
             android:title="@string/home"/>
         <item
-            android:id="@+id/nav_library"
+            android:id="@+id/my_library_nav_graph"
             android:icon="@drawable/ic_headset"
             android:title="@string/library"/>
         <item
-            android:id="@+id/nav_downloads"
+            android:id="@+id/downloads_nav_graph"
             android:icon="@drawable/ic_file_download_black_48dp"
             android:title="@string/downloads" />
         <item
-            android:id="@+id/nav_account"
+            android:id="@+id/login_nav_graph"
             android:icon="@drawable/ic_outline_account_circle_black_48"
             android:title="@string/account"/>
         <item

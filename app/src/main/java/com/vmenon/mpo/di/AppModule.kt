@@ -42,10 +42,10 @@ class AppModule(private val application: Application) {
         system: System
     ): NavigationController = DefaultNavigationController(
         mapOf(
-            Pair(com.vmenon.mpo.R.id.nav_home, shows),
-            Pair(com.vmenon.mpo.R.id.nav_library, library),
-            Pair(com.vmenon.mpo.R.id.nav_account, account),
-            Pair(com.vmenon.mpo.R.id.nav_downloads, downloads)
+            Pair(com.vmenon.mpo.R.id.subscribed_shows_nav_graph, shows),
+            Pair(com.vmenon.mpo.R.id.my_library_nav_graph, library),
+            Pair(com.vmenon.mpo.R.id.login_nav_graph, account),
+            Pair(com.vmenon.mpo.R.id.downloads_nav_graph, downloads)
         ),
         system
     )
