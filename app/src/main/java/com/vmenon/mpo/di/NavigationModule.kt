@@ -26,7 +26,7 @@ class NavigationModule {
 
     @Provides
     fun provideLibraryNavigationDestination(): NavigationDestination<MyLibraryNavigationLocation> =
-        AndroidNavigationDestination.fromNoParams(MyLibraryNavigationLocation, R.id.nav_downloads)
+        AndroidNavigationDestination.fromNoParams(MyLibraryNavigationLocation, R.id.nav_library)
 
     @Provides
     fun provideShowsNavigationDestination(): NavigationDestination<SubscribedShowsLocation> =

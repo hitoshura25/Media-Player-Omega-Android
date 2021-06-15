@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -30,7 +31,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class DefaultNavigationController(private val topLevelItems: Set<Int>) : NavigationController {
+class DefaultNavigationController(
+    private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>
+) :
+    NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
     private val mainScope = MainScope()
 
@@ -115,7 +119,7 @@ class DefaultNavigationController(private val topLevelItems: Set<Int>) : Navigat
         }
 
         val navController = getNavController(navigationOrigin)
-        val appBarConfiguration = AppBarConfiguration(topLevelItems, drawerLayout)
+        val appBarConfiguration = AppBarConfiguration(topLevelItems.keys, drawerLayout)
         setupWithToolbar(
             navController,
             toolbar,
@@ -124,7 +128,12 @@ class DefaultNavigationController(private val topLevelItems: Set<Int>) : Navigat
             appBarConfiguration
         )
         navigationView?.setupWithNavController(navController)
-        bottomNavigationView?.setupWithNavController(navController)
+        bottomNavigationView?.setOnNavigationItemSelectedListener { menuItem ->
+            topLevelItems[menuItem.itemId]?.let { destination ->
+                navigate(navigationOrigin, destination)
+                true
+            } ?: false
+        }
     }
 
     private fun setupWithToolbar(
@@ -179,7 +188,15 @@ class DefaultNavigationController(private val topLevelItems: Set<Int>) : Navigat
         } ?: throw IllegalArgumentException(
             "navigationOrigin needs to be an Activity or a Fragment!"
         )
-        navigationController.navigate(navigationDestination.navDirectionMapper(params))
+        navigationController.navigate(
+            navigationDestination.navDirectionMapper(params),
+            NavOptions.Builder()
+                .setEnterAnim(0)
+                .setExitAnim(0)
+                .setPopEnterAnim(0)
+                .setPopExitAnim(0)
+                .build()
+        )
     }
 
     private fun handleDrawerNavigationRequest(

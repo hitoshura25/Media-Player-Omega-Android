@@ -9,6 +9,10 @@ import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.core.SystemImpl
 
 import com.vmenon.mpo.core.navigation.DefaultNavigationController
+import com.vmenon.mpo.downloads.domain.DownloadsLocation
+import com.vmenon.mpo.login.domain.LoginNavigationLocation
+import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
+import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination
@@ -29,12 +33,17 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun providesNavigationController(): NavigationController = DefaultNavigationController(
-        setOf(
-            com.vmenon.mpo.R.id.nav_home,
-            com.vmenon.mpo.R.id.nav_library,
-            com.vmenon.mpo.R.id.nav_account,
-            com.vmenon.mpo.R.id.nav_downloads
+    fun providesNavigationController(
+        shows: NavigationDestination<SubscribedShowsLocation>,
+        library: NavigationDestination<MyLibraryNavigationLocation>,
+        account: NavigationDestination<LoginNavigationLocation>,
+        downloads: NavigationDestination<DownloadsLocation>
+    ): NavigationController = DefaultNavigationController(
+        mapOf(
+            Pair(com.vmenon.mpo.R.id.nav_home, shows),
+            Pair(com.vmenon.mpo.R.id.nav_library, library),
+            Pair(com.vmenon.mpo.R.id.nav_account, account),
+            Pair(com.vmenon.mpo.R.id.nav_downloads, downloads)
         )
     )
 

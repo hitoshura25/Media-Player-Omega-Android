@@ -7,13 +7,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
-import com.vmenon.mpo.R
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -44,7 +41,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.navigation.setupWithNavController(getNavController())
+        navigationController.setupWith(this, binding.navigation)
         handleHomeNavigationParams()
     }
 
@@ -76,11 +73,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         }
     }
 
-    private fun getNavController() =
-        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
-
     override fun getContentView(): View = binding.homeContentRoot
-
     override fun getLoadingView(): View = binding.loadingOverlayView.root
     override fun drawerLayout(): DrawerLayout = binding.drawerLayout
     override fun navigationView(): NavigationView = binding.navDrawerView
