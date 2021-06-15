@@ -20,8 +20,8 @@ dependencies {
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
     kapt Libs.dagger_compiler
 
     implementation Libs.glide

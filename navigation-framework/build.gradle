@@ -9,8 +9,8 @@ dependencies {
     implementation Libs.appcompat
     implementation Libs.material
 
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
 
     testImplementation Libs.junit_junit
     androidTestImplementation Libs.androidx_test_ext_junit

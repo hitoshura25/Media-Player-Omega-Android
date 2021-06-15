@@ -24,7 +24,7 @@ dependencies {
 
     testImplementation Libs.junit_junit
     testImplementation Libs.au_com_dius_pact_consumer_junit
-    testImplementation Libs.au_com_dius_pact_consumer_java8
+    testImplementation Libs.java8
     testImplementation Libs.logback_classic
     testImplementation Libs.mockito_core
 }
