@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/subscribed_shows_nav_graph">
+    <include app:graph="@navigation/subscribed_shows_nav_graph" />
+    <include app:graph="@navigation/search_nav_graph" />
+    <include app:graph="@navigation/my_library_nav_graph" />
+    <include app:graph="@navigation/downloads_nav_graph" />
+    <include app:graph="@navigation/login_nav_graph" />
+    <include app:graph="@navigation/player_nav_graph" />
+    <action
+        android:id="@+id/action_global_player_nav_graph"
+        app:destination="@id/player_nav_graph">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
+            app:nullable="true" />
+    </action>
+    <action
+        android:id="@+id/action_global_search_nav_graph"
+        app:destination="@id/search_nav_graph">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
+    </action>
+</navigation>

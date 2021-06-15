@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.databinding.FragmentLibraryBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
@@ -37,16 +35,12 @@ class LibraryFragment : BaseViewBindingFragment<LibraryComponent, FragmentLibrar
     private val viewModel: LibraryViewModel by viewModel()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.setTitle(R.string.library)
-            activity.supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(true)
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
-            }
-        }
-
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView()
+        )
         val layoutManager = LinearLayoutManager(context)
         binding.libraryList.setHasFixedSize(true)
         binding.libraryList.layoutManager = layoutManager

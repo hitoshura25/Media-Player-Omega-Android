@@ -102,7 +102,7 @@ open class BaseSteps {
     }
 
     companion object {
-        const val nav_accounts = "nav_account"
+        const val nav_accounts = "login_nav_graph"
         const val CHROME_STABLE = "com.android.chrome"
         const val TRANSITION_TIMEOUT = 2000L
         const val NETWORK_TIMEOUT = 20000L

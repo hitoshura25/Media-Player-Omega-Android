@@ -1,5 +1,6 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
     buildFeatures {
@@ -27,5 +28,7 @@ dependencies {
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
     kapt Libs.dagger_compiler
 }

@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.downloads.R
 import com.vmenon.mpo.downloads.databinding.FragmentDownloadsBinding
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
@@ -27,14 +25,12 @@ class DownloadsFragment : BaseViewBindingFragment<DownloadsComponent, FragmentDo
     private val viewModel: DownloadsViewModel by viewModel()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.setTitle(R.string.downloads)
-            activity.supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(true)
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
-            }
-        }
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView()
+        )
         binding.downloadsList.layoutManager = LinearLayoutManager(context)
         binding.downloadsList.setHasFixedSize(true)
         binding.downloadsList.addItemDecoration(

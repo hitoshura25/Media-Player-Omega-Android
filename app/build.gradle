@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -94,6 +95,9 @@ dependencies {
 
     implementation Libs.com_android_support_multidex
     implementation Libs.work_runtime_ktx
+
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
 
     debugImplementation Libs.stetho
 

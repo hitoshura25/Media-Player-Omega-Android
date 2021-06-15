@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.view.activity.BaseActivity
 import javax.inject.Inject
 
 abstract class BaseFragment<COMPONENT : Any> : Fragment() {
@@ -83,6 +86,17 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
         system.println("${javaClass.name} onCreateView")
         return super.onCreateView(inflater, container, savedInstanceState)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        system.println("${javaClass.name} onViewCreated")
+    }
+
+    protected fun drawerLayout(): DrawerLayout? =
+        (requireActivity() as? BaseActivity<*>)?.drawerLayout()
+
+    protected fun navigationView(): NavigationView? =
+        (requireActivity() as? BaseActivity<*>)?.navigationView()
 
     protected abstract fun setupComponent(context: Context): COMPONENT
     protected abstract fun inject(component: COMPONENT)

@@ -61,13 +61,15 @@ class ShowSearchResultsFragment :
         adapter.setListener(this)
         binding.showList.adapter = adapter
 
-        val query = navigationController.getParams(this).query
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView(),
+        )
 
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.title = this.getString(R.string.show_search_title, query)
-            activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
+        val query = navigationController.getParams(this).query
+        binding.toolbar.title = this.getString(R.string.show_search_title, query)
 
         showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query))
         showSearchResultsViewModel.states().observe(viewLifecycleOwner, { state ->

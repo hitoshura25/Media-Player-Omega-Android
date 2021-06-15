@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
@@ -35,15 +34,17 @@ class SubscribedShowsFragment :
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).let { activity ->
             activity.setSupportActionBar(binding.toolbar)
-            activity.setTitle(R.string.shows)
-            activity.supportActionBar?.let { actionBar ->
-                actionBar.setDisplayHomeAsUpEnabled(true)
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
-            }
+            activity.title = getString(R.string.shows)
         }
+        navigationController.setupWith(
+            this,
+            binding.toolbar,
+            drawerLayout(),
+            navigationView()
+        )
         binding.showList.setHasFixedSize(true)
         binding.showList.layoutManager = GridLayoutManager(context, 3)
-        viewModel.subscribedShows().observe(viewLifecycleOwner, Observer { result ->
+        viewModel.subscribedShows().observe(viewLifecycleOwner, { result ->
             when (result) {
                 LoadingState -> {
                 }
@@ -52,7 +53,8 @@ class SubscribedShowsFragment :
                 }
                 ErrorState -> {
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
     }

@@ -4,22 +4,42 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import com.vmenon.mpo.R
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
-import com.vmenon.mpo.navigation.framework.ActivityDestination.Companion.EXTRA_NAVIGATION_BUNDLE
+import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.navigation.framework.FragmentDestination
 import com.vmenon.mpo.view.DrawerNavigationDestination
-import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.HomeActivity
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
-class DefaultNavigationController : NavigationController {
+class DefaultNavigationController(
+    private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>,
+    private val system: System
+) :
+    NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
     private val mainScope = MainScope()
 
@@ -40,6 +60,11 @@ class DefaultNavigationController : NavigationController {
                 navigationParams
             )
             is FragmentDestination -> handleFragmentDestination(
+                navigationOrigin,
+                navigationDestination,
+                navigationParams
+            )
+            is AndroidNavigationDestination -> handleAndroidNavigationDestination(
                 navigationOrigin,
                 navigationDestination,
                 navigationParams
@@ -67,18 +92,172 @@ class DefaultNavigationController : NavigationController {
     @Suppress("UNCHECKED_CAST")
     override fun <P : NavigationParams> getOptionalParams(navigationOrigin: NavigationOrigin<P>): P? {
         if (navigationOrigin is Activity) {
-            return navigationOrigin.intent.getSerializableExtra(EXTRA_NAVIGATION_BUNDLE) as P?
+            return navigationOrigin.intent.getSerializableExtra(
+                NAVIGATION_PARAMS_NAME
+            ) as P?
         }
         if (navigationOrigin is Fragment) {
-            return navigationOrigin.arguments
-                ?.getSerializable(EXTRA_NAVIGATION_BUNDLE) as P?
+            return navigationOrigin.arguments?.getSerializable(
+                NAVIGATION_PARAMS_NAME
+            ) as P?
         }
 
         throw IllegalArgumentException("navigationOrigin is invalid!")
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any, P : NavigationParams> createNavigationRequest(
+        context: Any,
+        params: P,
+        navigationDestination: NavigationDestination<out NavigationLocation<P>>
+    ): T {
+        if (context !is Context) {
+            throw IllegalArgumentException("context is not a Context!")
+        }
+
+        if (navigationDestination !is AndroidNavigationDestination) {
+            throw IllegalArgumentException("navigationDestination is not a AndroidNavigationDestination!")
+        }
+
+        val directions = navigationDestination.navDirectionMapper(params)
+        val pendingIntent = NavDeepLinkBuilder(context)
+            .setGraph(R.navigation.nav_graph)
+            .setDestination(navigationDestination.destinationId)
+            .setArguments(directions.arguments)
+            .createPendingIntent()
+        return pendingIntent as T
+    }
+
+    override fun setupWith(navigationOrigin: NavigationOrigin<*>, vararg component: Any?) {
+        var toolbar: Toolbar? = null
+        var bottomNavigationView: BottomNavigationView? = null
+        var drawerLayout: DrawerLayout? = null
+        var collapsingToolbarLayout: CollapsingToolbarLayout? = null
+        var navigationView: NavigationView? = null
+
+        component.forEach { element ->
+            when (element) {
+                is Toolbar -> toolbar = element
+                is CollapsingToolbarLayout -> collapsingToolbarLayout = element
+                is NavigationView -> navigationView = element
+                is BottomNavigationView -> bottomNavigationView = element
+                is DrawerLayout -> drawerLayout = element
+                else -> throw IllegalArgumentException("component was not a supported type!")
+            }
+        }
+
+        val navController = getNavController(navigationOrigin)
+        val appBarConfiguration = AppBarConfiguration(topLevelItems.keys, drawerLayout)
+        setupWithToolbar(
+            navController,
+            toolbar,
+            collapsingToolbarLayout,
+            drawerLayout,
+            appBarConfiguration
+        )
+        setupBottomNavigationView(bottomNavigationView, navController, navigationOrigin)
+        navigationView?.setupWithNavController(navController)
+    }
+
+    private fun setupBottomNavigationView(
+        bottomNavigationView: BottomNavigationView?,
+        navController: NavController,
+        navigationOrigin: NavigationOrigin<*>
+    ) {
+        if (bottomNavigationView != null) {
+            val originWeakReference = WeakReference(navigationOrigin)
+            bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+                topLevelItems[menuItem.itemId]?.let { destination ->
+                    val origin = originWeakReference.get()
+                    if (origin != null) {
+                        navigate(navigationOrigin, destination)
+                    }
+                    true
+                } ?: false
+            }
+            bottomNavigationView.setOnNavigationItemReselectedListener { }
+
+            val bottomNavigationRef = WeakReference(bottomNavigationView)
+            val listener = object : NavController.OnDestinationChangedListener {
+                override fun onDestinationChanged(
+                    controller: NavController,
+                    destination: NavDestination,
+                    arguments: Bundle?
+                ) {
+                    val bottomNav = bottomNavigationRef.get()
+                    if (bottomNav == null) {
+                        navController.removeOnDestinationChangedListener(this)
+                    } else {
+                        val menuItemId = destination.parent?.id ?: destination.id
+                        bottomNav.menu.findItem(menuItemId)?.isChecked = true
+                    }
+                }
+            }
+            navController.addOnDestinationChangedListener(listener)
+        }
+    }
+
+    private fun setupWithToolbar(
+        navController: NavController,
+        toolbar: Toolbar?,
+        collapsingToolbarLayout: CollapsingToolbarLayout?,
+        drawerLayout: DrawerLayout?,
+        appBarConfiguration: AppBarConfiguration
+    ) {
+        if (collapsingToolbarLayout != null && toolbar != null) {
+            if (drawerLayout != null) {
+                collapsingToolbarLayout.setupWithNavController(
+                    toolbar,
+                    navController,
+                    drawerLayout
+                )
+            } else {
+                collapsingToolbarLayout.setupWithNavController(
+                    toolbar,
+                    navController,
+                    appBarConfiguration
+                )
+            }
+        } else {
+            if (drawerLayout != null) {
+                toolbar?.setupWithNavController(navController, drawerLayout)
+            } else {
+                toolbar?.setupWithNavController(navController, appBarConfiguration)
+            }
+        }
+    }
+
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
+
+    private fun handleAndroidNavigationDestination(
+        navigationOrigin: NavigationOrigin<*>,
+        navigationDestination: AndroidNavigationDestination<*>,
+        params: NavigationParams
+    ) {
+        val navigationController = when (navigationOrigin) {
+            is Fragment -> navigationOrigin.findNavController()
+            is FragmentActivity -> {
+                val navHostFragment = navigationOrigin.supportFragmentManager.findFragmentById(
+                    R.id.nav_host_fragment
+                ) as NavHostFragment
+                navHostFragment.navController
+            }
+            else -> null
+        } ?: throw IllegalArgumentException(
+            "navigationOrigin needs to be an Activity or a Fragment!"
+        )
+        navigationController.navigate(
+            navigationDestination.navDirectionMapper(params),
+            NavOptions.Builder()
+                .setExitAnim(0)
+                .setEnterAnim(0)
+                .setPopExitAnim(0)
+                .setPopEnterAnim(0)
+                .setLaunchSingleTop(true)
+                .build()
+        )
+    }
 
     private fun handleDrawerNavigationRequest(
         navigationDestination: DrawerNavigationDestination,
@@ -108,7 +287,11 @@ class DefaultNavigationController : NavigationController {
             is Fragment -> navigationOrigin.activity
             else -> null
         } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
-        val intent = navigationDestination.createIntent(context, params)
+        val intent = navigationDestination.createIntent(
+            context,
+            NAVIGATION_PARAMS_NAME,
+            params
+        )
         startActivityForNavigation(intent, context)
     }
 
@@ -117,16 +300,22 @@ class DefaultNavigationController : NavigationController {
         navigationDestination: FragmentDestination<*>,
         params: NavigationParams
     ) {
-        val fragmentManager = when (navigationOrigin) {
-            is FragmentActivity -> navigationOrigin.supportFragmentManager
-            is Fragment -> navigationOrigin.parentFragmentManager
-            else -> null
+        val fragmentManager: FragmentManager = when (navigationOrigin) {
+            is FragmentActivity -> {
+                navigationOrigin.supportFragmentManager
+            }
+            is Fragment -> {
+                navigationOrigin.parentFragmentManager
+            }
+            else -> {
+                throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
+            }
         }
-            ?: throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
+
         val fragment =
             fragmentManager.findFragmentByTag(navigationDestination.tag)
                 ?: navigationDestination.fragmentCreator()
-        fragment.arguments = Bundle().apply { putSerializable(EXTRA_NAVIGATION_BUNDLE, params) }
+        fragment.arguments = Bundle().apply { putSerializable(NAVIGATION_PARAMS_NAME, params) }
         fragmentManager.beginTransaction()
             .replace(navigationDestination.containerId, fragment, navigationDestination.tag)
             .addToBackStack(null)
@@ -137,5 +326,23 @@ class DefaultNavigationController : NavigationController {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    private fun getNavController(navigationOrigin: NavigationOrigin<*>) =
+        when (navigationOrigin) {
+            is Fragment -> navigationOrigin.findNavController()
+            is FragmentActivity -> {
+                val navHostFragment = navigationOrigin.supportFragmentManager.findFragmentById(
+                    R.id.nav_host_fragment
+                ) as NavHostFragment
+                navHostFragment.navController
+            }
+            else -> null
+        } ?: throw IllegalArgumentException(
+            "navigationOrigin needs to be an Activity or a Fragment!"
+        )
+
+    companion object {
+        const val NAVIGATION_PARAMS_NAME = "params" // Should match nav_graph.xml
     }
 }

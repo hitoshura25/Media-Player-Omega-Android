@@ -7,7 +7,7 @@ Feature: Register User Successful
   Scenario Outline: Valid Registration is successful
     Given I have launched the app
     And I have signed out of the app
-    When I click on "nav_account"
+    When I click on "login_nav_graph"
     And I click on "register_link"
     And I enter "<First Name>" into the "first_name" field
     And I enter "<Last Name>" into the "last_name" field

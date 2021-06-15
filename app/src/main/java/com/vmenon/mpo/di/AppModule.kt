@@ -1,18 +1,24 @@
 package com.vmenon.mpo.di
 
 import android.app.Application
+import android.content.Context
 import androidx.core.content.ContextCompat
 import com.vmenon.mpo.HomeLocation
-import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.core.SystemImpl
 
 import com.vmenon.mpo.core.navigation.DefaultNavigationController
+import com.vmenon.mpo.downloads.domain.DownloadsLocation
+import com.vmenon.mpo.login.domain.LoginNavigationLocation
+import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
+import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.player.R
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.player.domain.PlayerNavigationParams
 import com.vmenon.mpo.player.framework.MPOMediaBrowserService
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.view.activity.HomeActivity
@@ -28,25 +34,42 @@ class AppModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun providesNavigationController(): NavigationController = DefaultNavigationController()
+    fun providesNavigationController(
+        shows: NavigationDestination<SubscribedShowsLocation>,
+        library: NavigationDestination<MyLibraryNavigationLocation>,
+        account: NavigationDestination<LoginNavigationLocation>,
+        downloads: NavigationDestination<DownloadsLocation>,
+        system: System
+    ): NavigationController = DefaultNavigationController(
+        mapOf(
+            Pair(com.vmenon.mpo.R.id.subscribed_shows_nav_graph, shows),
+            Pair(com.vmenon.mpo.R.id.my_library_nav_graph, library),
+            Pair(com.vmenon.mpo.R.id.login_nav_graph, account),
+            Pair(com.vmenon.mpo.R.id.downloads_nav_graph, downloads)
+        ),
+        system
+    )
 
     @Provides
     fun provideHomeDestination(): NavigationDestination<HomeLocation> =
         ActivityDestination(
-            activityClass = HomeActivity::class.java
+            activityClass = HomeActivity::class.java,
+            location = HomeLocation
         )
 
     @Provides
     fun providesMPOMediaBrowserServiceConfiguration(
         application: Application,
         player: MPOPlayer,
-        homeDestination: NavigationDestination<HomeLocation>
+        playerDestination: NavigationDestination<PlayerNavigationLocation>,
+        navigationController: NavigationController
     ): MPOMediaBrowserService.Configuration = MPOMediaBrowserService.Configuration(
         player,
-        { request: PlaybackMediaRequest? ->
-            (homeDestination as ActivityDestination<HomeLocation>).createIntent(
-                application,
-                HomeNavigationParams(request)
+        { request: PlaybackMediaRequest?, context: Context ->
+            navigationController.createNavigationRequest(
+                context,
+                PlayerNavigationParams(request),
+                playerDestination
             )
         },
         { builder ->
