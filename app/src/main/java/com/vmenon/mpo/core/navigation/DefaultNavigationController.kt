@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.vmenon.mpo.R
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.framework.ActivityDestination
 import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
@@ -30,9 +32,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 class DefaultNavigationController(
-    private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>
+    private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>,
+    private val system: System
 ) :
     NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
@@ -127,12 +131,44 @@ class DefaultNavigationController(
             drawerLayout,
             appBarConfiguration
         )
+        setupBottomNavigationView(bottomNavigationView, navController, navigationOrigin)
         navigationView?.setupWithNavController(navController)
-        bottomNavigationView?.setOnNavigationItemSelectedListener { menuItem ->
-            topLevelItems[menuItem.itemId]?.let { destination ->
-                navigate(navigationOrigin, destination)
-                true
-            } ?: false
+    }
+
+    private fun setupBottomNavigationView(
+        bottomNavigationView: BottomNavigationView?,
+        navController: NavController,
+        navigationOrigin: NavigationOrigin<*>
+    ) {
+        if (bottomNavigationView != null) {
+            val originWeakReference = WeakReference(navigationOrigin)
+            bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+                topLevelItems[menuItem.itemId]?.let { destination ->
+                    val origin = originWeakReference.get()
+                    if (origin != null) {
+                        navigate(navigationOrigin, destination)
+                    }
+                    true
+                } ?: false
+            }
+            bottomNavigationView.setOnNavigationItemReselectedListener { }
+
+            val bottomNavigationRef = WeakReference(bottomNavigationView)
+            val listener = object : NavController.OnDestinationChangedListener {
+                override fun onDestinationChanged(
+                    controller: NavController,
+                    destination: NavDestination,
+                    arguments: Bundle?
+                ) {
+                    val bottomNav = bottomNavigationRef.get()
+                    if (bottomNav == null) {
+                        navController.removeOnDestinationChangedListener(this)
+                    } else {
+                        bottomNav.menu.findItem(destination.id)?.isChecked = true
+                    }
+                }
+            }
+            navController.addOnDestinationChangedListener(listener)
         }
     }
 
@@ -166,10 +202,8 @@ class DefaultNavigationController(
         }
     }
 
-
     override val currentLocation: Flow<NavigationLocation<*>>
         get() = origin.asSharedFlow()
-
 
     private fun handleAndroidNavigationDestination(
         navigationOrigin: NavigationOrigin<*>,
@@ -190,7 +224,13 @@ class DefaultNavigationController(
         )
         navigationController.navigate(
             navigationDestination.navDirectionMapper(params),
-            NavOptions.Builder().build()
+            NavOptions.Builder()
+                .setExitAnim(0)
+                .setEnterAnim(0)
+                .setPopExitAnim(0)
+                .setPopEnterAnim(0)
+                .setLaunchSingleTop(true)
+                .build()
         )
     }
 

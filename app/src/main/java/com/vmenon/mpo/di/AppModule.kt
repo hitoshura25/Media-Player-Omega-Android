@@ -37,14 +37,16 @@ class AppModule(private val application: Application) {
         shows: NavigationDestination<SubscribedShowsLocation>,
         library: NavigationDestination<MyLibraryNavigationLocation>,
         account: NavigationDestination<LoginNavigationLocation>,
-        downloads: NavigationDestination<DownloadsLocation>
+        downloads: NavigationDestination<DownloadsLocation>,
+        system: System
     ): NavigationController = DefaultNavigationController(
         mapOf(
             Pair(com.vmenon.mpo.R.id.nav_home, shows),
             Pair(com.vmenon.mpo.R.id.nav_library, library),
             Pair(com.vmenon.mpo.R.id.nav_account, account),
             Pair(com.vmenon.mpo.R.id.nav_downloads, downloads)
-        )
+        ),
+        system
     )
 
     @Provides
