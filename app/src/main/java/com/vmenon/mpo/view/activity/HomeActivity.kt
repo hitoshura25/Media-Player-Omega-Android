@@ -16,7 +16,6 @@ import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
-import com.vmenon.mpo.player.domain.PlayerNavigationParams
 import com.vmenon.mpo.viewmodel.HomeViewModel
 import javax.inject.Inject
 
@@ -42,13 +41,11 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navigationController.setupWith(this, binding.navigation)
-        handleHomeNavigationParams()
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleHomeNavigationParams()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -59,18 +56,6 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun handleHomeNavigationParams() {
-        navigationController.getOptionalParams(this)?.let { params ->
-            params.playbackMediaRequest?.let { playbackMediaRequest ->
-                navigationController.navigate(
-                    this,
-                    playerDestination,
-                    PlayerNavigationParams(playbackMediaRequest)
-                )
-            }
-        }
     }
 
     override fun getContentView(): View = binding.homeContentRoot

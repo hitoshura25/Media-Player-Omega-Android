@@ -6,24 +6,31 @@ import com.vmenon.mpo.navigation.domain.*
 
 data class AndroidNavigationDestination<L : NavigationLocation<*>>(
     override val location: L,
+    val destinationId: Int,
     val navDirectionMapper: (params: NavigationParams) -> NavDirections
 ) : NavigationDestination<L> {
 
     companion object {
         @Suppress("UNCHECKED_CAST")
-        fun <P: NavigationParams, L: NavigationLocation<P>> fromParams(
+        fun <P : NavigationParams, L : NavigationLocation<P>> fromParams(
             location: L,
+            destinationId: Int,
             navDirectionMapper: (params: P) -> NavDirections
-        ) = AndroidNavigationDestination(location,
+        ) = AndroidNavigationDestination(
+            location,
+            destinationId,
             navDirectionMapper as (NavigationParams) -> NavDirections
         )
 
         fun <L : NavigationLocation<NoNavigationParams>> fromNoParams(
             location: L,
-            actionId: Int
-        ) = AndroidNavigationDestination(location) {
+            destinationId: Int
+        ) = AndroidNavigationDestination(
+            location,
+            destinationId
+        ) {
             object : NavDirections {
-                override fun getActionId(): Int = actionId
+                override fun getActionId(): Int = destinationId // DestinationId works for actionId
                 override fun getArguments(): Bundle = Bundle()
             }
         }

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
@@ -102,6 +103,29 @@ class DefaultNavigationController(
         }
 
         throw IllegalArgumentException("navigationOrigin is invalid!")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any, P : NavigationParams> createNavigationRequest(
+        context: Any,
+        params: P,
+        navigationDestination: NavigationDestination<out NavigationLocation<P>>
+    ): T {
+        if (context !is Context) {
+            throw IllegalArgumentException("context is not a Context!")
+        }
+
+        if (navigationDestination !is AndroidNavigationDestination) {
+            throw IllegalArgumentException("navigationDestination is not a AndroidNavigationDestination!")
+        }
+
+        val directions = navigationDestination.navDirectionMapper(params)
+        val pendingIntent = NavDeepLinkBuilder(context)
+            .setGraph(R.navigation.nav_graph)
+            .setDestination(navigationDestination.destinationId)
+            .setArguments(directions.arguments)
+            .createPendingIntent()
+        return pendingIntent as T
     }
 
     override fun setupWith(navigationOrigin: NavigationOrigin<*>, vararg component: Any?) {

@@ -13,7 +13,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
-import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -32,7 +31,6 @@ import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.vmenon.mpo.extensions.useFileDescriptor
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
 import java.io.File
@@ -45,7 +43,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     data class Configuration(
         val player: MPOPlayer,
-        val playerUiIntentCreator: (PlaybackMediaRequest?, Context) -> Intent,
+        val playerUiIntentCreator: (PlaybackMediaRequest?, Context) -> PendingIntent,
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
@@ -172,13 +170,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         sessionToken = mediaSession.sessionToken
         configuration.player.setListener(this)
 
-        val context = applicationContext
         val intent = configuration.playerUiIntentCreator(null, applicationContext)
-        val pi = PendingIntent.getActivity(
-            context, 99 /*request code*/,
-            intent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        mediaSession.setSessionActivity(pi)
+        mediaSession.setSessionActivity(intent)
         updatePlaybackState(null)
     }
 
@@ -215,7 +208,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         clientPackageName: String,
         clientUid: Int,
         rootHints: Bundle?
-    ): BrowserRoot? {
+    ): BrowserRoot {
         return if (allowBrowsing(clientPackageName, clientUid)) {
             BrowserRoot(MEDIA_ROOT_ID, null)
         } else {
@@ -632,13 +625,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     }
 
     private fun createNotificationContentIntent(): PendingIntent {
-        val openUI = configuration.playerUiIntentCreator(requestedMedia, applicationContext)
-        openUI.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        return PendingIntent.getActivity(
-            this,
-            NOTIFICATION_REQUEST_CODE, openUI,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
+        return configuration.playerUiIntentCreator(requestedMedia, applicationContext)
     }
 
     private fun addNotificationActions(notificationBuilder: NotificationCompat.Builder): Int {

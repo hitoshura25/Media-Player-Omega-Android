@@ -34,7 +34,10 @@ class NavigationModule {
 
     @Provides
     fun provideEpisodeDetailsDestination(): NavigationDestination<EpisodeDetailsLocation> =
-        AndroidNavigationDestination.fromParams(EpisodeDetailsLocation) { params ->
+        AndroidNavigationDestination.fromParams(
+            EpisodeDetailsLocation,
+            R.id.episodeDetailsFragment
+        ) { params ->
             LibraryFragmentDirections.actionLibraryFragmentToEpisodeDetailsFragment(params)
         }
 
@@ -44,13 +47,19 @@ class NavigationModule {
 
     @Provides
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
-        AndroidNavigationDestination.fromParams(PlayerNavigationLocation) { params ->
+        AndroidNavigationDestination.fromParams(
+            PlayerNavigationLocation,
+            R.id.mediaPlayerFragment
+        ) { params ->
             MediaPlayerFragmentDirections.actionGlobalMediaPlayerFragment(params)
         }
 
     @Provides
     fun provideSearchNavigationDestination(): NavigationDestination<SearchNavigationLocation> =
-        AndroidNavigationDestination.fromParams(SearchNavigationLocation) { params ->
+        AndroidNavigationDestination.fromParams(
+            SearchNavigationLocation,
+            R.id.showSearchResultsFragment
+        ) { params ->
             SubscribedShowsFragmentDirections.actionNavHomeToShowSearchResultsFragment(
                 params
             )
@@ -58,7 +67,10 @@ class NavigationModule {
 
     @Provides
     fun provideShowDetailsNavigationDestination(): NavigationDestination<ShowDetailsLocation> =
-        AndroidNavigationDestination.fromParams(ShowDetailsLocation) { params ->
+        AndroidNavigationDestination.fromParams(
+            ShowDetailsLocation,
+            R.id.showDetailsFragment
+        ) { params ->
             ShowSearchResultsFragmentDirections.actionShowSearchResultsFragmentToShowDetailsFragment(
                 params
             )
