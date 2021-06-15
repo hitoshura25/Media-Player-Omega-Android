@@ -10,7 +10,8 @@ public object Libs {
     public const val kotlinx_coroutines_core: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
 
-    public const val java8: String = "au.com.dius.pact.consumer:java8:4.1.21"
+    public const val au_com_dius_pact_consumer_java8: String =
+            "au.com.dius.pact.consumer:java8:4.1.21"
 
     public const val au_com_dius_pact_consumer_junit: String =
             "au.com.dius.pact.consumer:junit:4.1.21"
