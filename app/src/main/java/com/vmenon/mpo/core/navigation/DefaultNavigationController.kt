@@ -190,12 +190,7 @@ class DefaultNavigationController(
         )
         navigationController.navigate(
             navigationDestination.navDirectionMapper(params),
-            NavOptions.Builder()
-                .setEnterAnim(0)
-                .setExitAnim(0)
-                .setPopEnterAnim(0)
-                .setPopExitAnim(0)
-                .build()
+            NavOptions.Builder().build()
         )
     }
 
