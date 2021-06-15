@@ -34,3 +34,7 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+buildSrcVersions {
+    useFqdnFor('au.com.dius.pact.consumer')
+}
