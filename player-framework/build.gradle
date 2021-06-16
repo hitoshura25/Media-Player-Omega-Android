@@ -6,6 +6,7 @@ dependencies {
     implementation project(':extensions')
     implementation project(':my-library-domain')
     implementation project(':player-domain')
+    implementation project(':view')
 
     implementation Libs.kotlinx_coroutines_core
     implementation Libs.glide

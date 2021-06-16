@@ -1,0 +1,39 @@
+apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(':app')
+
+    api project(':common-domain')
+    implementation project(':login_domain_feature')
+    api project(':login-data')
+    api project(':login-framework')
+    implementation project(':navigation-framework')
+    implementation project(":view")
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.constraintlayout
+    implementation Libs.legacy_support_v4
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_livedata_ktx
+    implementation Libs.material
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
+
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.annotation
+}

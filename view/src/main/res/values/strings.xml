@@ -1,3 +1,7 @@
 <resources>
     <string name="home">Home</string>
+    <string name="downloads">Downloads</string>
+    <string name="library">Library</string>
+    <string name="account">Account</string>
+    <string name="title_shared_feature">SharedFeature</string>
 </resources>

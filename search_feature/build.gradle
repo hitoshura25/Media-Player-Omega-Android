@@ -1,0 +1,37 @@
+apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':app')
+
+    implementation project(':search_domain_feature')
+    api project(':search-usecases')
+    api project(':search-data')
+    api project(':search-framework')
+
+    implementation project(':navigation-framework')
+    implementation project(':view')
+
+    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_runtime_ktx
+    implementation Libs.lifecycle_livedata_ktx
+
+    implementation Libs.material
+    implementation Libs.recyclerview
+    implementation Libs.glide
+
+    implementation Libs.dagger
+    implementation Libs.legacy_support_v4
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
+    kapt Libs.dagger_compiler
+}

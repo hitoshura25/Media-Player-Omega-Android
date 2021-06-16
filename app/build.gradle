@@ -25,6 +25,18 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
     }
+    dynamicFeatures = [
+            ':downloads_feature',
+            ':login_feature',
+            ':my_library_feature',
+            ':player_feature',
+            ':search_feature',
+            ':downloads_domain_feature',
+            ':my_library_domain_feature',
+            ':player_domain_feature',
+            ':search_domain_feature',
+            ':login_domain_feature', ':shared_feature'
+    ]
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,18 +65,13 @@ dependencies {
 
     implementation project(':api-mpo')
     implementation project(':api-mpo-retrofit')
+    implementation project(':extensions')
+    implementation project(':common-converters')
 
-    implementation project(':navigation-domain')
+    api project(':navigation-domain')
     implementation project(':navigation-framework')
 
     implementation project(':view')
-
-    implementation project(':downloads-feature')
-    implementation project(':login-feature')
-    implementation project(':my-library-feature')
-    implementation project(':player-feature')
-    implementation project(':search-feature')
-
     implementation project(':persistence-room')
 
     implementation Libs.material
@@ -103,6 +110,7 @@ dependencies {
 
     testImplementation Libs.junit_junit
     implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.kotlinx_coroutines_core
 
     implementation Libs.com_android_support_multidex
     implementation Libs.work_runtime_ktx

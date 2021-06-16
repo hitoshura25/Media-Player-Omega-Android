@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Media Player Omega Android</string>
+    <string name="title_downloads_domain_feature">DownloadsDomain</string>
+    <string name="title_my_library_domain_feature">MyLibraryDomain</string>
+    <string name="title_player_domain_feature">PlayerDomainFeature</string>
+    <string name="title_search_domain_feature">SearchDomainFeature</string>
+    <string name="title_login_domain_feature">LoginDomainFeature</string>
 </resources>
