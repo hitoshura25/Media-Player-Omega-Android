@@ -16,6 +16,7 @@ class DownloadManagerDownloadQueueDataSource(
     ) as DownloadManager
 
     override suspend fun getAllQueued(queueIds: Collection<Long>): List<DownloadQueueItem> {
+        if (queueIds.isEmpty()) return emptyList()
         val downloadQueueItems = ArrayList<DownloadQueueItem>()
         val cursor = downloadManager.query(
             DownloadManager.Query().setFilterById(*queueIds.toLongArray())
