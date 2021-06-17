@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.databinding.FragmentShowDetailsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
@@ -59,7 +58,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
             navigationView(),
             binding.collapsingToolbar
         )
-        binding.fab.setImageResource(R.drawable.ic_add_white_48dp)
+        binding.fab.setImageResource(com.vmenon.mpo.view.R.drawable.ic_add_white_48dp)
         binding.appbar.addOnOffsetChangedListener(this)
 
         loadingStateHelper = LoadingStateHelper.switchWithContent(

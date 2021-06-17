@@ -2,13 +2,13 @@ package com.mpo.core.di
 
 import com.mpo.core.DebugThirdPartyIntegrator
 import com.vmenon.mpo.core.ThirdPartyIntegrator
+import com.vmenon.mpo.di.AppScope
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 class ThirdPartyIntegratorModule {
     @Provides
-    @Singleton
+    @AppScope
     fun thirdPartyIntegrator(): ThirdPartyIntegrator = DebugThirdPartyIntegrator()
 }

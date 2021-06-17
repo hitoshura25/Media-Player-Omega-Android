@@ -1,20 +1,18 @@
 package com.vmenon.mpo.library.di.dagger
 
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment
 import com.vmenon.mpo.library.view.fragment.LibraryFragment
 import com.vmenon.mpo.library.view.fragment.SubscribedShowsFragment
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
-import dagger.Subcomponent
+import com.vmenon.mpo.library.worker.UpdateAllShowsWorker
+import dagger.Component
 
-@Subcomponent
+@Component(dependencies = [AppComponent::class], modules = [LibraryModule::class])
 @LibraryScope
 interface LibraryComponent {
-    @Subcomponent.Factory
-    interface Factory {
-        fun create(): LibraryComponent
-    }
 
     fun inject(fragment: LibraryFragment)
     fun inject(viewModel: LibraryViewModel)
@@ -24,4 +22,6 @@ interface LibraryComponent {
 
     fun inject(fragment: SubscribedShowsFragment)
     fun inject(viewModel: SubscribedShowsViewModel)
+
+    fun inject(worker: UpdateAllShowsWorker)
 }

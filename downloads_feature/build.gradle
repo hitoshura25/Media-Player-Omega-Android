@@ -13,6 +13,8 @@ dependencies {
     implementation project(':app')
 
     implementation project(':downloads_domain_feature')
+    implementation project(':my_library_feature') // TODO: See if this can be removed
+
     implementation project(':downloads-framework')
     implementation project(':downloads-usecases')
 
@@ -33,4 +35,6 @@ dependencies {
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
     kapt Libs.dagger_compiler
+
+    implementation Libs.work_runtime_ktx
 }

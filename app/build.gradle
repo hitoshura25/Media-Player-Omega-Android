@@ -67,6 +67,12 @@ dependencies {
     implementation project(':api-mpo-retrofit')
     implementation project(':extensions')
     implementation project(':common-converters')
+    api project(':common-domain')
+    implementation project(':my-library-domain')
+    implementation project(':search-domain')
+    implementation project(':login-domain')
+    implementation project(':player-domain')
+    implementation project(':downloads-domain')
 
     api project(':navigation-domain')
     api project(':navigation-framework')

@@ -2,7 +2,7 @@ package com.vmenon.mpo.core
 
 import com.vmenon.mpo.common.domain.System
 
-class SystemImpl : System {
+class SystemImpl : com.vmenon.mpo.common.domain.System {
     override fun println(message: String, exception: Exception?) {
         // TODO: Maybe send to a cloud provider?
         if (exception != null) {

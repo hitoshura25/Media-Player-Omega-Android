@@ -6,13 +6,12 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.library.R
+import com.vmenon.mpo.view.R
 import com.vmenon.mpo.library.databinding.FragmentEpisodeDetailsBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider

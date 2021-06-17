@@ -2,5 +2,5 @@ apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
 
 dependencies {
     implementation project(':app')
-    implementation project(':my-library-domain')
+    api project(':my-library-domain')
 }

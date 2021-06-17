@@ -9,6 +9,6 @@ import javax.inject.Singleton
 @Module
 class ThirdPartyIntegratorModule {
     @Provides
-    @Singleton
+    AppScope
     fun thirdPartyIntegrator(): ThirdPartyIntegrator = ReleaseThirdPartyIntegrator()
 }

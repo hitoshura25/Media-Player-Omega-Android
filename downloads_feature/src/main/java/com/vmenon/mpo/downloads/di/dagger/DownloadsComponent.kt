@@ -1,16 +1,17 @@
 package com.vmenon.mpo.downloads.di.dagger
 
+import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
-import dagger.Subcomponent
+import com.vmenon.mpo.library.di.dagger.LibraryComponent
+import dagger.Component
 
-@Subcomponent
+@DownloadsScope
+@Component(
+    dependencies = [AppComponent::class, LibraryComponent::class],
+    modules = [DownloadsModule::class]
+)
 interface DownloadsComponent {
-    @Subcomponent.Factory
-    interface Factory {
-        fun create(): DownloadsComponent
-    }
-
     fun inject(fragment: DownloadsFragment)
     fun inject(viewModel: DownloadsViewModel)
 }
