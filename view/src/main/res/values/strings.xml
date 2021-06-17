@@ -4,4 +4,6 @@
     <string name="library">Library</string>
     <string name="account">Account</string>
     <string name="title_shared_feature">SharedFeature</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
 </resources>

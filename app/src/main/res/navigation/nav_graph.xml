@@ -2,16 +2,41 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/subscribed_shows_nav_graph">
-    <include app:graph="@navigation/subscribed_shows_nav_graph" />
-    <include app:graph="@navigation/search_nav_graph" />
-    <include app:graph="@navigation/my_library_nav_graph" />
-    <include app:graph="@navigation/downloads_nav_graph" />
-    <include app:graph="@navigation/login_nav_graph" />
-    <include app:graph="@navigation/player_nav_graph" />
+    app:startDestination="@+id/subscribedShowsNavGraph">
+
+    <include-dynamic
+        android:id="@+id/searchNavGraph"
+        app:graphResName="search_nav_graph"
+        app:moduleName="search_feature" />
+
+    <include-dynamic
+        android:id="@+id/subscribedShowsNavGraph"
+        app:graphResName="subscribed_shows_nav_graph"
+        app:moduleName="my_library_feature" />
+
+    <include-dynamic
+        android:id="@+id/libraryNavGraph"
+        app:graphResName="my_library_nav_graph"
+        app:moduleName="my_library_feature" />
+
+    <include-dynamic
+        android:id="@+id/downloadsNavGraph"
+        app:graphResName="downloads_nav_graph"
+        app:moduleName="downloads_feature" />
+
+    <include-dynamic
+        android:id="@+id/loginNavGraph"
+        app:graphResName="login_nav_graph"
+        app:moduleName="login_feature" />
+
+    <include-dynamic
+        android:id="@+id/playerNavGraph"
+        app:graphResName="player_nav_graph"
+        app:moduleName="player_feature" />
+
     <action
         android:id="@+id/action_global_player_nav_graph"
-        app:destination="@id/player_nav_graph">
+        app:destination="@id/playerNavGraph">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
@@ -19,7 +44,7 @@
     </action>
     <action
         android:id="@+id/action_global_search_nav_graph"
-        app:destination="@id/search_nav_graph">
+        app:destination="@id/searchNavGraph">
         <argument
             android:name="params"
             app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />

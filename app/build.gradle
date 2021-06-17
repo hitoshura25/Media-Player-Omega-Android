@@ -69,7 +69,7 @@ dependencies {
     implementation project(':common-converters')
 
     api project(':navigation-domain')
-    implementation project(':navigation-framework')
+    api project(':navigation-framework')
 
     implementation project(':view')
     implementation project(':persistence-room')
