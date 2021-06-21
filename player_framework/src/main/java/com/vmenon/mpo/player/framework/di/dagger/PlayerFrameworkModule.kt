@@ -1,8 +1,8 @@
 package com.vmenon.mpo.player.framework.di.dagger
 
+import android.app.Application
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -25,20 +25,20 @@ object PlayerFrameworkModule {
 
     @Provides
     @PlayerFrameworkScope
-    fun providePlayerEngine(commonFrameworkComponent: CommonFrameworkComponent): MediaPlayerEngine =
+    fun providePlayerEngine(application: Application): MediaPlayerEngine =
         AndroidMediaBrowserServicePlayerEngine(
-            commonFrameworkComponent.systemFrameworkComponent().application()
+            application
         )
 
     @Provides
     @PlayerFrameworkScope
-    fun providePlayer(commonFrameworkComponent: CommonFrameworkComponent): MPOPlayer =
-        MPOExoPlayer(commonFrameworkComponent.systemFrameworkComponent().application())
+    fun providePlayer(application: Application): MPOPlayer =
+        MPOExoPlayer(application)
 
     @Provides
     @PlayerFrameworkScope
     fun providesMPOMediaBrowserServiceConfiguration(
-        commonFrameworkComponent: CommonFrameworkComponent,
+        application: Application,
         player: MPOPlayer,
         playerDestination: NavigationDestination<PlayerNavigationLocation>,
         navigationController: NavigationController
@@ -53,7 +53,7 @@ object PlayerFrameworkModule {
         },
         { builder ->
             builder.color = ContextCompat.getColor(
-                commonFrameworkComponent.systemFrameworkComponent().application(),
+                application,
                 R.color.colorPrimary
             )
         })

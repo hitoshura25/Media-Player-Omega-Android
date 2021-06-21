@@ -3,7 +3,7 @@ package com.vmenon.mpo.di
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.NavGraphDirections
 import com.vmenon.mpo.R
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
@@ -28,7 +28,7 @@ class NavigationModule {
         library: NavigationDestination<MyLibraryNavigationLocation>,
         account: NavigationDestination<LoginNavigationLocation>,
         downloads: NavigationDestination<DownloadsLocation>,
-        commonFrameworkComponent: CommonFrameworkComponent
+        system: System
     ): NavigationController = DefaultNavigationController(
         mapOf(
             Pair(R.id.subscribed_shows_nav_graph, shows),
@@ -36,7 +36,7 @@ class NavigationModule {
             Pair(R.id.login_nav_graph, account),
             Pair(R.id.downloads_nav_graph, downloads)
         ),
-        commonFrameworkComponent.systemFrameworkComponent().system(),
+        system,
         R.id.nav_host_fragment,
         R.navigation.nav_graph
     )

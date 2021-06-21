@@ -1,6 +1,6 @@
 package com.vmenon.mpo.my_library.framework.di.dagger
 
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.my_library.data.EpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
@@ -9,6 +9,8 @@ import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.my_library.framework.MpoRetrofitApiShowUpdateDataSource
 import com.vmenon.mpo.my_library.framework.RoomEpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
+import com.vmenon.mpo.persistence.room.dao.EpisodeDao
+import com.vmenon.mpo.persistence.room.dao.ShowDao
 import dagger.Module
 import dagger.Provides
 
@@ -27,21 +29,20 @@ object LibraryFrameworkModule {
 
     @Provides
     fun provideShowPersistenceDataSource(
-        commonFrameworkComponent: CommonFrameworkComponent
+        showDao: ShowDao
     ): ShowPersistenceDataSource =
-        RoomShowPersistenceDataSource(commonFrameworkComponent.persistenceComponent().showDao())
+        RoomShowPersistenceDataSource(showDao)
 
     @Provides
     fun provideEpisodePersistenceDataSource(
-        commonFrameworkComponent: CommonFrameworkComponent
+        episodeDao: EpisodeDao
     ): EpisodePersistenceDataSource =
         RoomEpisodePersistenceDataSource(
-            commonFrameworkComponent.persistenceComponent().episodeDao()
+            episodeDao
         )
 
     @Provides
-    fun provideShowUpdateDataSource(
-        commonFrameworkComponent: CommonFrameworkComponent
-    ): ShowUpdateDataSource = MpoRetrofitApiShowUpdateDataSource(commonFrameworkComponent.api())
+    fun provideShowUpdateDataSource(api: MediaPlayerOmegaRetrofitService): ShowUpdateDataSource =
+        MpoRetrofitApiShowUpdateDataSource(api)
 
 }

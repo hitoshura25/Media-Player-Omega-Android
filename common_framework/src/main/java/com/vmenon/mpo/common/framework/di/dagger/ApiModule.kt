@@ -6,7 +6,6 @@ import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.common.framework.retrofit.OAuthInterceptor
 import com.vmenon.mpo.common.framework.retrofit.RetryInterceptor
 import com.vmenon.mpo.common.domain.System
-import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -35,10 +34,10 @@ object ApiModule {
 
     @Provides
     @CommonFrameworkScope
-    fun provideHttpClient(authService: AuthService, systemFrameworkComponent: SystemFrameworkComponent): OkHttpClient {
+    fun provideHttpClient(authService: AuthService, system: System): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(OAuthInterceptor(authService, systemFrameworkComponent.system()))
-            .addInterceptor(RetryInterceptor(MAX_RETRIES, systemFrameworkComponent.system()))
+            .addInterceptor(OAuthInterceptor(authService, system))
+            .addInterceptor(RetryInterceptor(MAX_RETRIES, system))
             .build()
     }
 

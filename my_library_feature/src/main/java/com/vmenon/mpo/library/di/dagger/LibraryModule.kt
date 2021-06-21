@@ -20,7 +20,7 @@ object LibraryModule {
 
     @Provides
     fun provideMyLibraryInteractors(
-        libraryFrameworkComponent: LibraryFrameworkComponent,
+        myLibraryService: MyLibraryService,
         downloadService: DownloadsService,
         navigationController: NavigationController,
         requestMapper: PlayerRequestMapper<EpisodeModel>,
@@ -28,12 +28,12 @@ object LibraryModule {
         searchNavigationDestination: NavigationDestination<SearchNavigationLocation>
     ): MyLibraryInteractors =
         MyLibraryInteractors(
-            GetAllEpisodes(libraryFrameworkComponent.myLibraryService()),
-            GetEpisodeDetails(libraryFrameworkComponent.myLibraryService()),
-            UpdateAllShows(libraryFrameworkComponent.myLibraryService(), downloadService),
-            GetSubscribedShows(libraryFrameworkComponent.myLibraryService()),
+            GetAllEpisodes(myLibraryService),
+            GetEpisodeDetails(myLibraryService),
+            UpdateAllShows(myLibraryService, downloadService),
+            GetSubscribedShows(myLibraryService),
             PlayEpisode(
-                libraryFrameworkComponent.myLibraryService(),
+                myLibraryService,
                 requestMapper,
                 navigationController,
                 playerNavigationDestination

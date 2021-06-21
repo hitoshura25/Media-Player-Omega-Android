@@ -1,11 +1,13 @@
 package com.vmenon.mpo.downloads.framework.di.dagger
 
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import android.app.Application
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.data.DownloadsRepository
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.downloads.framework.DownloadManagerDownloadQueueDataSource
 import com.vmenon.mpo.downloads.framework.FileSystemMediaPersistenceDataSource
 import com.vmenon.mpo.downloads.framework.RoomDownloadsPersistenceDataSource
+import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import dagger.Module
 import dagger.Provides
 
@@ -13,18 +15,20 @@ import dagger.Provides
 object DownloadsFrameworkModule {
     @Provides
     fun provideDownloadsService(
-        commonFrameworkComponent: CommonFrameworkComponent
+        application: Application,
+        system: System,
+        downloadDao: DownloadDao
     ): DownloadsService =
         DownloadsRepository(
             DownloadManagerDownloadQueueDataSource(
-                commonFrameworkComponent.systemFrameworkComponent().application()
+                application
             ),
             RoomDownloadsPersistenceDataSource(
-                commonFrameworkComponent.persistenceComponent().downloadDao(),
-                commonFrameworkComponent.systemFrameworkComponent().system()
+                downloadDao,
+                system
             ),
             FileSystemMediaPersistenceDataSource(
-                commonFrameworkComponent.systemFrameworkComponent().application()
+                application
             )
         )
 }

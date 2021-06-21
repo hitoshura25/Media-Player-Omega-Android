@@ -7,6 +7,6 @@ import dagger.Provides
 
 @Module
 object CommonFrameworkModule {
-    @Provides
-    fun system(component: SystemFrameworkComponent): System = component.system()
+   // @Provides
+    //fun system(component: SystemFrameworkComponent): System = component.system()
 }

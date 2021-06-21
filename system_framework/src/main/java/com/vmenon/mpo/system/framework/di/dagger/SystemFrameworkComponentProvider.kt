@@ -1,5 +1,5 @@
 package com.vmenon.mpo.system.framework.di.dagger
 
-interface SystemFrameworkComponenProvider {
+interface SystemFrameworkComponentProvider {
     fun systemFrameworkComponent(): SystemFrameworkComponent
 }

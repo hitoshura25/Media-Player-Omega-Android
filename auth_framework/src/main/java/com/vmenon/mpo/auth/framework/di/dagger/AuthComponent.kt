@@ -1,5 +1,6 @@
 package com.vmenon.mpo.auth.framework.di.dagger
 
+import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment
 import com.vmenon.mpo.auth.framework.openid.viewmodel.OpenIdHandlerViewModel
@@ -19,4 +20,5 @@ interface AuthComponent {
     fun inject(fragment: OpenIdHandlerFragment)
 
     fun authService(): AuthService
+    fun authState(): AuthState
 }

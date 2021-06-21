@@ -1,6 +1,7 @@
 package com.vmenon.mpo.search.framework.di.dagger
 
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.search.data.SearchApiDataSource
 import com.vmenon.mpo.search.data.SearchCacheDataSource
 import com.vmenon.mpo.search.data.SearchRepository
@@ -14,14 +15,14 @@ import dagger.Provides
 object SearchFrameworkModule {
     @Provides
     fun provideSearchApiDataSource(
-        commonFrameworkComponent: CommonFrameworkComponent
-    ): SearchApiDataSource = MpoRetrofitApiSearchApiDataSource(commonFrameworkComponent.api())
+        api: MediaPlayerOmegaRetrofitService
+    ): SearchApiDataSource = MpoRetrofitApiSearchApiDataSource(api)
 
     @Provides
     fun searchCacheDataSource(
-        commonFrameworkComponent: CommonFrameworkComponent
+        showSearchResultDao: ShowSearchResultDao
     ): SearchCacheDataSource = RoomSearchCacheDataSource(
-        commonFrameworkComponent.persistenceComponent().showSearchResultsDao()
+        showSearchResultDao
     )
 
     @Provides

@@ -7,6 +7,8 @@ import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Component
 
+// TODO May be able to just get rid of this and use the persistence module directly in
+// common_framework
 @Component(
     dependencies = [SystemFrameworkComponent::class],
     modules = [PersistenceModule::class]

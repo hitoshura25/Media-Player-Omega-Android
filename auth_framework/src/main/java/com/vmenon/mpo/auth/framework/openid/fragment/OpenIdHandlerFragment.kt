@@ -8,9 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
-import com.vmenon.mpo.auth.framework.di.dagger.DaggerAuthComponent
+import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
 import com.vmenon.mpo.auth.framework.openid.viewmodel.OpenIdHandlerViewModel
-import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponenProvider
 
 class OpenIdHandlerFragment : Fragment() {
     private val viewModel: OpenIdHandlerViewModel by lazy {
@@ -37,11 +36,8 @@ class OpenIdHandlerFragment : Fragment() {
         return null
     }
 
-    private fun setupComponent(context: Context): AuthComponent {
-        val systemComponent =
-            (context as SystemFrameworkComponenProvider).systemFrameworkComponent()
-        return DaggerAuthComponent.builder().systemFrameworkComponent(systemComponent).build()
-    }
+    private fun setupComponent(context: Context): AuthComponent =
+        (context as AuthComponentProvider).authComponent()
 
     private fun inject(component: AuthComponent) {
         component.inject(this)

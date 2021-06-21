@@ -4,7 +4,6 @@ import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
 import com.vmenon.mpo.login.data.UserCache
 import com.vmenon.mpo.login.data.UserRegistry
 import com.vmenon.mpo.login.domain.LoginService
-import dagger.BindsInstance
 import dagger.Component
 
 @Component(
