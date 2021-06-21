@@ -13,12 +13,11 @@ dependencies {
     implementation project(':app')
 
     implementation project(':common_framework')
-    implementation project(':search_domain_feature')
     implementation project(':my_library_framework')
     implementation project(':downloads_framework')
     api project(':search-usecases')
     api project(':search-data')
-    api project(':search-framework')
+    api project(':search_framework')
 
     implementation project(':navigation-framework')
     implementation project(':view')

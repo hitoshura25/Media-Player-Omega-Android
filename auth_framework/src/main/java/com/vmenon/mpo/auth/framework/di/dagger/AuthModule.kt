@@ -25,6 +25,8 @@ object AuthModule {
     @AuthScope
     fun provideAuthState(application: Application): AuthState = SharedPrefsAuthState(application)
 
+    // TODO: Probably makes more sense to move this into OpenIdAuthModule and have AuthComponent
+    // depend on OpenIdAuthComponent
     @Provides
     @AuthScope
     fun provideAuthenticator(

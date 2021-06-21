@@ -13,7 +13,6 @@ dependencies {
     implementation project(':app')
 
     implementation project(':common_framework')
-    implementation project(':downloads_domain_feature')
     implementation project(':my_library_framework')
 
     implementation project(':downloads_framework')

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    package="com.vmenon.login.domain.feature">
-
+    package="com.vmenon.mpo.search.framework">
     <dist:module
         dist:instant="false"
-        dist:title="@string/title_login_domain_feature">
+        dist:title="@string/title_search_framework">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

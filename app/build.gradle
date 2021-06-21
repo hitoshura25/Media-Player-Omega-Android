@@ -32,12 +32,8 @@ android {
             ':my_library_framework',
             ':player_feature',
             ':search_feature',
+            ':search_framework',
             ':downloads_framework',
-            ':downloads_domain_feature',
-            ':my_library_domain_feature',
-            ':player_domain_feature',
-            ':search_domain_feature',
-            ':login_domain_feature',
             ':player_framework'
     ]
 

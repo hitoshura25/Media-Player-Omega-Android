@@ -17,10 +17,8 @@ dependencies {
     implementation project(':navigation-domain')
     implementation project(':navigation-framework')
     implementation project(':player_framework')
+    implementation project(':search_framework')
 
-    implementation project(':my_library_domain_feature')
-    implementation project(':player_domain_feature')
-    implementation project(':search_domain_feature')
     implementation project(':my-library-data')
     implementation project(':my_library_framework')
     implementation project(':my-library-usecases')

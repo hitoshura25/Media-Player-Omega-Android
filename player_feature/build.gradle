@@ -15,10 +15,8 @@ dependencies {
     implementation project(':common-domain')
     implementation project(':common_framework')
     implementation project(':view')
-    implementation project(':my_library_domain_feature')
     implementation project(':navigation-domain')
     implementation project(':navigation-framework')
-    implementation project(':player_domain_feature')
     api project(':player-usecases')
 
     implementation Libs.dagger

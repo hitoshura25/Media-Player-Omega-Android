@@ -1,6 +1,0 @@
-apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
-
-dependencies {
-    api project(':downloads-domain')
-    implementation project(':app')
-}
