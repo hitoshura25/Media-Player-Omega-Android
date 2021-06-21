@@ -1,0 +1,11 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    implementation project(':common-domain')
+
+    implementation Libs.kotlinx_coroutines_core
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+}

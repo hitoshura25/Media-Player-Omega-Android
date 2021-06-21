@@ -12,10 +12,11 @@ import android.widget.SeekBar
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.player.R
+import com.vmenon.mpo.player.framework.R
 import com.vmenon.mpo.player.databinding.FragmentMediaPlayerBinding
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
 import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
+import com.vmenon.mpo.player.di.dagger.toPlayerComponent
 import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
@@ -36,8 +37,7 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
     private var playOnStart = false
     private var playbackMediaRequest: PlaybackMediaRequest? = null
 
-    override fun setupComponent(context: Context): PlayerComponent =
-        (context as PlayerComponentProvider).playerComponent()
+    override fun setupComponent(context: Context): PlayerComponent = context.toPlayerComponent()
 
     override fun inject(component: PlayerComponent) {
         component.inject(this)
@@ -58,7 +58,8 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                binding.position.text = DateUtils.formatElapsedTime(seekBar.progress.toLong() / 1000)
+                binding.position.text =
+                    DateUtils.formatElapsedTime(seekBar.progress.toLong() / 1000)
                 binding.remaining.text =
                     "-" + DateUtils.formatElapsedTime((seekBar.max - seekBar.progress).toLong() / 1000)
             }

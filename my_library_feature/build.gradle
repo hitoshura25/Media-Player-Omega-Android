@@ -12,15 +12,17 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':app')
 
-    implementation project(':downloads_domain_feature')
+    implementation project(':common_framework')
+    implementation project(':downloads_framework')
     implementation project(':navigation-domain')
     implementation project(':navigation-framework')
+    implementation project(':player_framework')
 
     implementation project(':my_library_domain_feature')
     implementation project(':player_domain_feature')
     implementation project(':search_domain_feature')
     implementation project(':my-library-data')
-    implementation project(':my-library-framework')
+    implementation project(':my_library_framework')
     implementation project(':my-library-usecases')
 
     implementation project(':view')

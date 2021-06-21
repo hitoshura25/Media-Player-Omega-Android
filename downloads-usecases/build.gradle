@@ -16,4 +16,5 @@ dependencies {
 
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
+    implementation 'javax.inject:javax.inject:1'
 }

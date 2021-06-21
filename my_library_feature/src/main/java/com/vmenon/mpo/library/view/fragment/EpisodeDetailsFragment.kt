@@ -15,6 +15,7 @@ import com.vmenon.mpo.view.R
 import com.vmenon.mpo.library.databinding.FragmentEpisodeDetailsBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
@@ -42,8 +43,7 @@ class EpisodeDetailsFragment :
     private val expandedToolbarTitle: CharSequence
         get() = ""
 
-    override fun setupComponent(context: Context): LibraryComponent =
-        (context as LibraryComponentProvider).libraryComponent()
+    override fun setupComponent(context: Context): LibraryComponent = context.toLibraryComponent()
 
     override fun inject(component: LibraryComponent) {
         component.inject(this)

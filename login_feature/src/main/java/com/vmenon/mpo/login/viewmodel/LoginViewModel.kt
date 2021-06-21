@@ -1,15 +1,10 @@
 package com.vmenon.mpo.login.viewmodel
 
 import android.app.Activity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
-import com.vmenon.mpo.login.domain.AuthService
+import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.model.AccountState
 import com.vmenon.mpo.login.model.LoadingState

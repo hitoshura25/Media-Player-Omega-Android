@@ -3,7 +3,7 @@
     package="com.vmenon.mpo.library">
     <dist:module
         dist:instant="false"
-        dist:title="MyLibraryFeature">
+        dist:title="@string/title_my_library_feature">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

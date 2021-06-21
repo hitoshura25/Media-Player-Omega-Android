@@ -12,6 +12,8 @@ dependencies {
     implementation project(':app')
 
     api project(':common-domain')
+    implementation project(':auth_framework')
+    implementation project(':common_framework')
     implementation project(':login_domain_feature')
     api project(':login-data')
     api project(':login-framework')

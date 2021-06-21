@@ -2,7 +2,7 @@ package com.vmenon.mpo.login.framework
 
 import com.vmenon.mpo.api.model.RegisterUserRequest
 import com.vmenon.mpo.api.model.UserDetails
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.login.data.GetUserException
 import com.vmenon.mpo.login.data.UserRegistry
 import com.vmenon.mpo.login.domain.User

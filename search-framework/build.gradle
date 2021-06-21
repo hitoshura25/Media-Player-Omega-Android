@@ -3,9 +3,9 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     api project(':api-mpo')
-    api project(':api-mpo-retrofit')
     api project(':persistence-room')
     api project(':search-data')
+    implementation project(':common_framework')
 
     implementation Libs.kotlinx_coroutines_core
     implementation Libs.dagger

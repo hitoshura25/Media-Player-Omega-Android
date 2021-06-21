@@ -12,10 +12,11 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':app')
 
+    implementation project(':common_framework')
     implementation project(':downloads_domain_feature')
-    implementation project(':my_library_feature') // TODO: See if this can be removed
+    implementation project(':my_library_framework')
 
-    implementation project(':downloads-framework')
+    implementation project(':downloads_framework')
     implementation project(':downloads-usecases')
 
     implementation project(':common-domain')
@@ -31,10 +32,15 @@ dependencies {
     implementation Libs.glide
 
     implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    implementation Libs.dagger_android
+    implementation Libs.dagger_android_support
+    kapt Libs.dagger_android_processor
+
     implementation Libs.legacy_support_v4
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
-    kapt Libs.dagger_compiler
 
     implementation Libs.work_runtime_ktx
 }

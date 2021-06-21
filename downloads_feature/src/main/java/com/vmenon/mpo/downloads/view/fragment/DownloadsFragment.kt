@@ -13,6 +13,7 @@ import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.downloads.databinding.FragmentDownloadsBinding
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponentProvider
+import com.vmenon.mpo.downloads.di.dagger.toDownloadsComponent
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
@@ -59,7 +60,7 @@ class DownloadsFragment : BaseViewBindingFragment<DownloadsComponent, FragmentDo
     }
 
     override fun setupComponent(context: Context): DownloadsComponent =
-        (context as DownloadsComponentProvider).downloadsComponent()
+        context.toDownloadsComponent()
 
     override fun inject(component: DownloadsComponent) {
         component.inject(this)

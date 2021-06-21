@@ -4,7 +4,7 @@
     package="com.vmenon.mpo.login">
     <dist:module
         dist:instant="false"
-        dist:title="LoginFeature">
+        dist:title="@string/title_login_feature">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

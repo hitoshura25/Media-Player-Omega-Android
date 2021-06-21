@@ -6,13 +6,13 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
+import com.vmenon.mpo.library.R
 import com.vmenon.mpo.common.domain.ErrorState
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.databinding.SubscribedShowsFragmentBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
-import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
@@ -82,8 +82,7 @@ class SubscribedShowsFragment :
         }
     }
 
-    override fun setupComponent(context: Context) =
-        (context as LibraryComponentProvider).libraryComponent()
+    override fun setupComponent(context: Context) = context.toLibraryComponent()
 
     override fun inject(component: LibraryComponent) {
         component.inject(this)

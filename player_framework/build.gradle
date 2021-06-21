@@ -1,0 +1,24 @@
+apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':app')
+    implementation project(':common_framework')
+    implementation project(':extensions')
+    implementation project(':my-library-domain')
+    implementation project(':player-domain')
+    implementation project(':view')
+
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.glide
+
+    implementation Libs.fragment_ktx
+    implementation Libs.kotlin_stdlib
+    implementation Libs.exoplayer_core
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    implementation Libs.androidx_media_media
+}

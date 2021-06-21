@@ -1,20 +1,20 @@
 package com.vmenon.mpo.di
 
 import com.mpo.core.di.ThirdPartyIntegratorModule
-import com.vmenon.mpo.api.di.dagger.ApiModule
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
 import com.vmenon.mpo.core.ThirdPartyIntegrator
 import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.search.domain.SearchNavigationLocation
 
-import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
 import dagger.Component
 
 @Component(
+    dependencies = [CommonFrameworkComponent::class],
     modules = [
         AppModule::class,
         ThirdPartyIntegratorModule::class,
-        PersistenceModule::class,
-        ApiModule::class,
         NavigationModule::class
     ]
 )
@@ -23,6 +23,7 @@ interface AppComponent {
     @Component.Builder
     interface Builder {
         fun appModule(module: AppModule): Builder
+        fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
         fun thirdPartyIntegratorModule(module: ThirdPartyIntegratorModule): Builder
         fun build(): AppComponent
     }
@@ -33,5 +34,7 @@ interface AppComponent {
 
     fun navigationController(): NavigationController
 
-    fun system(): System
+    fun playerDestination(): NavigationDestination<PlayerNavigationLocation>
+
+    fun searchDestination(): NavigationDestination<SearchNavigationLocation>
 }

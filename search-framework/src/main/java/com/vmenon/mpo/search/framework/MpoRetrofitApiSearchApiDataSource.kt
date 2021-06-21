@@ -2,7 +2,7 @@ package com.vmenon.mpo.search.framework
 
 import com.vmenon.mpo.api.model.Show
 import com.vmenon.mpo.api.model.ShowDetails
-import com.vmenon.mpo.api.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.search.data.SearchApiDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

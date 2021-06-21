@@ -16,6 +16,7 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.databinding.FragmentShowDetailsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.di.dagger.toSearchComponent
 import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowDetailsParams
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
@@ -40,8 +41,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
 
     private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
 
-    override fun setupComponent(context: Context): SearchComponent =
-        (context as SearchComponentProvider).searchComponent()
+    override fun setupComponent(context: Context): SearchComponent = context.toSearchComponent()
 
     override fun inject(component: SearchComponent) {
         component.inject(this)

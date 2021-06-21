@@ -1,0 +1,23 @@
+apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    api project(':downloads-data')
+    api project(':persistence-room')
+
+    implementation project(':app')
+    implementation project(':common-domain')
+    implementation project(':common_framework')
+    implementation project(':extensions')
+
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+}

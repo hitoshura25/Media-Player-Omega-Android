@@ -14,6 +14,7 @@ import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.databinding.FragmentShowSearchResultsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
+import com.vmenon.mpo.search.di.dagger.toSearchComponent
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
 import com.vmenon.mpo.search.domain.SearchNavigationParams
 import com.vmenon.mpo.search.domain.ShowDetailsLocation
@@ -99,8 +100,7 @@ class ShowSearchResultsFragment :
         navigationController.navigate(this, showDetailsDestination, ShowDetailsParams(show.id))
     }
 
-    override fun setupComponent(context: Context): SearchComponent =
-        (context as SearchComponentProvider).searchComponent()
+    override fun setupComponent(context: Context): SearchComponent = context.toSearchComponent()
 
     override fun inject(component: SearchComponent) {
         component.inject(this)

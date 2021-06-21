@@ -1,17 +1,25 @@
 package com.vmenon.mpo.login.framework.di
 
-import com.vmenon.mpo.login.framework.openid.fragment.OpenIdHandlerFragment
-import com.vmenon.mpo.login.framework.openid.viewmodel.OpenIdHandlerViewModel
-import dagger.Subcomponent
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import com.vmenon.mpo.login.data.UserCache
+import com.vmenon.mpo.login.data.UserRegistry
+import com.vmenon.mpo.login.domain.LoginService
+import dagger.BindsInstance
+import dagger.Component
 
-@Subcomponent
+@Component(
+    dependencies = [CommonFrameworkComponent::class],
+    modules = [LoginFrameworkModule::class]
+)
 @LoginFrameworkScope
 interface LoginFrameworkComponent {
-    @Subcomponent.Factory
-    interface Factory {
-        fun create(): LoginFrameworkComponent
+    @Component.Builder
+    interface Builder {
+        fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
+        fun build(): LoginFrameworkComponent
     }
 
-    fun inject(viewModel: OpenIdHandlerViewModel)
-    fun inject(fragment: OpenIdHandlerFragment)
+    fun loginService(): LoginService
+    fun userRegistry(): UserRegistry
+    fun userCache(): UserCache
 }

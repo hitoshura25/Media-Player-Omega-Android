@@ -5,4 +5,16 @@
     <string name="title_player_domain_feature">PlayerDomainFeature</string>
     <string name="title_search_domain_feature">SearchDomainFeature</string>
     <string name="title_login_domain_feature">LoginDomainFeature</string>
+
+    <string name="title_downloads_feature">DownloadsFeature</string>
+    <string name="title_my_library_feature">MyLibraryFeature</string>
+    <string name="title_player_feature">PlayerFeature</string>
+    <string name="title_search_feature">SearchFeature</string>
+    <string name="title_login_feature">LoginFeature</string>
+
+    <string name="title_downloads_framework">DownloadsFramework</string>
+    <string name="title_my_library_framework">MyLibraryFramework</string>
+    <string name="title_player_framework">PlayerFramework</string>
+    <string name="title_search_framework">SearchFramework</string>
+    <string name="title_login_framework">LoginFramework</string>
 </resources>

@@ -2,32 +2,32 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/subscribedShowsNavGraph">
+    app:startDestination="@+id/subscribed_shows_nav_graph">
 
     <include-dynamic
         android:id="@+id/search_nav_graph"
         app:graphResName="search_nav_graph"
-        app:moduleName="search_feature" />
+        app:moduleName="search_feature"/>
 
     <include-dynamic
         android:id="@+id/subscribed_shows_nav_graph"
-        app:graphResName="subscribed_shows_nav_graph"
-        app:moduleName="my_library_feature" />
+        app:graphResName="subscribed_shows_navigation_graph"
+        app:moduleName="my_library_feature"/>
 
     <include-dynamic
         android:id="@+id/my_library_nav_graph"
         app:graphResName="my_library_nav_graph"
-        app:moduleName="my_library_feature" />
+        app:moduleName="my_library_feature"/>
 
     <include-dynamic
         android:id="@+id/downloads_nav_graph"
         app:graphResName="downloads_nav_graph"
-        app:moduleName="downloads_feature" />
+        app:moduleName="downloads_feature"/>
 
     <include-dynamic
         android:id="@+id/login_nav_graph"
         app:graphResName="login_nav_graph"
-        app:moduleName="login_feature" />
+        app:moduleName="login_feature"/>
 
     <include-dynamic
         android:id="@+id/player_nav_graph"

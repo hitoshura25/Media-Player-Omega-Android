@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.vmenon.mpo.login.R
 import com.vmenon.mpo.login.databinding.FragmentLoginBinding
-import com.vmenon.mpo.login.di.LoginComponent
-import com.vmenon.mpo.login.di.LoginComponentProvider
+import com.vmenon.mpo.login.di.dagger.LoginComponent
+import com.vmenon.mpo.login.di.dagger.toLoginComponent
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.login.model.LoadingState
 import com.vmenon.mpo.login.model.LoggedInState
@@ -29,8 +29,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentLoginBinding.inflate(inflater, container, false)
 
-    override fun setupComponent(context: Context): LoginComponent =
-        (context as LoginComponentProvider).loginComponent()
+    override fun setupComponent(context: Context): LoginComponent = context.toLoginComponent()
 
     override fun inject(component: LoginComponent) {
         component.inject(this)
@@ -70,7 +69,8 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                         binding.accountView.root.visibility = View.VISIBLE
                         binding.loginForm.root.visibility = View.GONE
                         binding.registerForm.root.visibility = View.GONE
-                        binding.toolbar.title = getString(R.string.hi_user, state.userDetails.firstName)
+                        binding.toolbar.title =
+                            getString(R.string.hi_user, state.userDetails.firstName)
                     }
                     LoadingState -> {
                         loadingStateHelper.showLoadingState()

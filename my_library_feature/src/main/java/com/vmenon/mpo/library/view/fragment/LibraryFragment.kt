@@ -13,6 +13,7 @@ import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.databinding.FragmentLibraryBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
+import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
@@ -71,8 +72,7 @@ class LibraryFragment : BaseViewBindingFragment<LibraryComponent, FragmentLibrar
         )
     }
 
-    override fun setupComponent(context: Context) =
-        (context as LibraryComponentProvider).libraryComponent()
+    override fun setupComponent(context: Context) = context.toLibraryComponent()
 
     override fun inject(component: LibraryComponent) {
         component.inject(this)

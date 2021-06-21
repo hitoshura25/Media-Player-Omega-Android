@@ -1,25 +1,51 @@
 package com.vmenon.mpo
 
 import androidx.multidex.MultiDexApplication
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.mpo.core.di.ThirdPartyIntegratorModule
-import com.vmenon.mpo.di.AppComponent
-import com.vmenon.mpo.di.AppComponentProvider
-import com.vmenon.mpo.di.AppModule
-import com.vmenon.mpo.di.DaggerAppComponent
-import java.util.concurrent.TimeUnit
+import com.vmenon.mpo.auth.framework.di.dagger.AuthModule
+import com.vmenon.mpo.auth.framework.di.dagger.DaggerAuthComponent
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkModule
+import com.vmenon.mpo.common.framework.di.dagger.DaggerCommonFrameworkComponent
+import com.vmenon.mpo.di.*
+import com.vmenon.mpo.navigation.framework.di.dagger.DaggerNavigationFrameworkComponent
+import com.vmenon.mpo.navigation.framework.di.dagger.NavigationFrameworkModule
+import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
+import com.vmenon.mpo.persistence.di.dagger.PersistenceModule
+import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
+import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponenProvider
+import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 
-class MPOApplication : MultiDexApplication(), AppComponentProvider {
+class MPOApplication : MultiDexApplication(), AppComponentProvider,
+    CommonFrameworkComponentProvider, SystemFrameworkComponenProvider {
     lateinit var appComponent: AppComponent
-
+    lateinit var systemFrameworkComponent: SystemFrameworkComponent
+    lateinit var commonFrameworkComponent: CommonFrameworkComponent
     override fun onCreate() {
         super.onCreate()
 
+        systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
+            .application(this)
+            .build()
+
+        val authComponent = DaggerAuthComponent.builder()
+            .systemFrameworkComponent(systemFrameworkComponent)
+            .build()
+        val persistenceComponent = DaggerPersistenceComponent.builder()
+            .systemFrameworkComponent(systemFrameworkComponent)
+            .build()
+
+        commonFrameworkComponent = DaggerCommonFrameworkComponent.builder()
+            .systemFrameworkComponent(systemFrameworkComponent)
+            .authComponent(authComponent)
+            .persistenceComponent(persistenceComponent)
+            .build()
+
         appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
+            .appModule(AppModule())
             .thirdPartyIntegratorModule(ThirdPartyIntegratorModule())
+            .commonFrameworkComponent(commonFrameworkComponent)
             .build()
 
         appComponent.thirdPartyIntegrator().initialize(this)
@@ -44,4 +70,6 @@ class MPOApplication : MultiDexApplication(), AppComponentProvider {
     }
 
     override fun appComponent(): AppComponent = appComponent
+    override fun commonFrameworkComponent(): CommonFrameworkComponent = commonFrameworkComponent
+    override fun systemFrameworkComponent(): SystemFrameworkComponent = systemFrameworkComponent
 }

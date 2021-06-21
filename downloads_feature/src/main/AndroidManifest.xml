@@ -3,7 +3,7 @@
     package="com.vmenon.mpo.downloads">
     <dist:module
         dist:instant="false"
-        dist:title="DownloadsFeature">
+        dist:title="@string/title_downloads_feature">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

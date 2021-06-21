@@ -16,6 +16,7 @@ android {
 
 dependencies {
     api project(':base-room')
+    implementation project(':system_framework')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
 

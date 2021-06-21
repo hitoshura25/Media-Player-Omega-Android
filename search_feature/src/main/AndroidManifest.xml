@@ -3,7 +3,7 @@
     package="com.vmenon.mpo.search">
     <dist:module
         dist:instant="false"
-        dist:title="SearchFeature">
+        dist:title="@string/title_search_feature">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

@@ -21,13 +21,14 @@ android {
     }
     buildFeatures {
         viewBinding true
-    }}
+    }
+}
 
 dependencies {
     api project(':login-data')
-    api project(':api-mpo-retrofit')
 
     implementation project(':common-domain')
+    implementation project(':common_framework')
     implementation project(':view')
 
     implementation Libs.dagger

@@ -29,13 +29,16 @@ android {
             ':downloads_feature',
             ':login_feature',
             ':my_library_feature',
+            ':my_library_framework',
             ':player_feature',
             ':search_feature',
+            ':downloads_framework',
             ':downloads_domain_feature',
             ':my_library_domain_feature',
             ':player_domain_feature',
             ':search_domain_feature',
-            ':login_domain_feature', ':shared_feature'
+            ':login_domain_feature',
+            ':player_framework'
     ]
 
     compileOptions {
@@ -63,8 +66,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':common_framework')
+    implementation project(':system_framework')
     implementation project(':api-mpo')
-    implementation project(':api-mpo-retrofit')
     implementation project(':extensions')
     implementation project(':common-converters')
     api project(':common-domain')
@@ -129,6 +133,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.1.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.guava:guava:27.1-android'
 
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
