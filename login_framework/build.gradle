@@ -1,4 +1,5 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -18,21 +19,28 @@ android {
                 "\"0oavpdvnegnKXHu9F5d6\""
         )
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
-    api project(':auth_domain')
-    implementation project(':auth_data')
+    api project(':login_data')
+
     implementation project(':common_domain')
+    implementation project(':common_framework')
     implementation project(':common_view')
-    implementation project(':navigation_framework')
-    implementation project(':system_framework')
 
     implementation Libs.dagger
     kapt Libs.dagger_compiler
 
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
     implementation Libs.lifecycle_viewmodel_ktx
     implementation Libs.appauth
     implementation Libs.appcompat
-
+    implementation Libs.material
+    implementation Libs.constraintlayout
+    implementation Libs.legacy_support_v4
 }

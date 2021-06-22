@@ -1,18 +1,19 @@
-apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    api project(':downloads_data')
-    api project(':persistence_room')
-
-    implementation project(':app')
     implementation project(':common_domain')
-    implementation project(':common_framework')
-    implementation project(':extensions')
+    implementation project(':navigation_domain')
 
-    implementation Libs.kotlinx_coroutines_core
     implementation Libs.kotlin_stdlib
+
     implementation Libs.core_ktx
+    implementation Libs.appcompat
+    implementation Libs.material
+
+    api Libs.navigation_fragment_ktx
+    api Libs.navigation_ui_ktx
+    api "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
 
     implementation Libs.dagger
     kapt Libs.dagger_compiler

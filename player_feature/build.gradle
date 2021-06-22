@@ -12,12 +12,12 @@ dependencies {
     implementation project(':app')
 
     api project(':player_framework')
-    implementation project(':common-domain')
+    implementation project(':common_domain')
     implementation project(':common_framework')
-    implementation project(':view')
-    implementation project(':navigation-domain')
-    implementation project(':navigation-framework')
-    api project(':player-usecases')
+    implementation project(':common_view')
+    implementation project(':navigation_domain')
+    implementation project(':navigation_framework')
+    api project(':player_usecases')
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4

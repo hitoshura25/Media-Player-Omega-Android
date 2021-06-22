@@ -11,13 +11,13 @@ android {
 dependencies {
     implementation project(':app')
 
-    api project(':common-domain')
+    api project(':common_domain')
     implementation project(':auth_framework')
     implementation project(':common_framework')
-    api project(':login-data')
-    api project(':login-framework')
-    implementation project(':navigation-framework')
-    implementation project(":view")
+    api project(':login_data')
+    api project(':login_framework')
+    implementation project(':navigation_framework')
+    implementation project(':common_view')
 
     implementation Libs.kotlin_stdlib
     implementation Libs.core_ktx

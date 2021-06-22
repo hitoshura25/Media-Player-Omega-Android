@@ -1,0 +1,30 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.schemaLocation": "$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                ]
+            }
+        }
+    }
+}
+
+dependencies {
+    api project(':common_room')
+    implementation project(':system_framework')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Libs.kotlin_stdlib_jdk8
+
+    api Libs.room_runtime
+    implementation Libs.room_rxjava2
+    implementation Libs.room_ktx
+    kapt Libs.room_compiler
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+}

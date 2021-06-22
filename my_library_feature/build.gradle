@@ -14,16 +14,16 @@ dependencies {
 
     implementation project(':common_framework')
     implementation project(':downloads_framework')
-    implementation project(':navigation-domain')
-    implementation project(':navigation-framework')
+    implementation project(':navigation_domain')
+    implementation project(':navigation_framework')
     implementation project(':player_framework')
     implementation project(':search_framework')
 
-    implementation project(':my-library-data')
+    implementation project(':my_library_data')
     implementation project(':my_library_framework')
-    implementation project(':my-library-usecases')
+    implementation project(':my_library_usecases')
 
-    implementation project(':view')
+    implementation project(':common_view')
 
     implementation Libs.kotlin_stdlib_jdk8
     implementation Libs.lifecycle_livedata_ktx

@@ -6,9 +6,9 @@ dependencies {
     implementation project(':app')
     implementation project(':common_framework')
     implementation project(':extensions')
-    api project(':my-library-domain')
-    api project(':player-domain')
-    implementation project(':view')
+    api project(':my_library_domain')
+    api project(':player_domain')
+    implementation project(':common_view')
 
     implementation Libs.kotlinx_coroutines_core
     implementation Libs.glide

@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation project(':common_domain')
+    implementation project(':downloads_domain')
+    api project(':my_library_domain')
+    api project(':navigation_domain')
+    implementation project(':player_domain')
+    implementation project(':search_domain')
+
+    implementation project(':common_converters')
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
+}

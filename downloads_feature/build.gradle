@@ -16,11 +16,11 @@ dependencies {
     implementation project(':my_library_framework')
 
     implementation project(':downloads_framework')
-    implementation project(':downloads-usecases')
+    implementation project(':downloads_usecases')
 
-    implementation project(':common-domain')
-    implementation project(':navigation-framework')
-    implementation project(':view')
+    implementation project(':common_domain')
+    implementation project(':navigation_framework')
+    implementation project(':common_view')
 
     implementation Libs.kotlin_stdlib_jdk8
     implementation Libs.lifecycle_viewmodel_ktx

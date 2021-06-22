@@ -2,7 +2,7 @@ apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    implementation project(':common-domain')
+    implementation project(':common_domain')
 
     implementation Libs.kotlinx_coroutines_core
 
