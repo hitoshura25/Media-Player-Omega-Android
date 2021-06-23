@@ -2,6 +2,7 @@ package com.mpo.core.di
 
 import com.mpo.core.ReleaseThirdPartyIntegrator
 import com.vmenon.mpo.core.ThirdPartyIntegrator
+import com.vmenon.mpo.di.AppScope
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -9,6 +10,6 @@ import javax.inject.Singleton
 @Module
 class ThirdPartyIntegratorModule {
     @Provides
-    AppScope
+    @AppScope
     fun thirdPartyIntegrator(): ThirdPartyIntegrator = ReleaseThirdPartyIntegrator()
 }

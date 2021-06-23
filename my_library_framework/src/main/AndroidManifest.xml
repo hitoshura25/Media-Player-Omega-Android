@@ -4,7 +4,7 @@
     package="com.vmenon.mpo.my_library.framework">
     <dist:module
         dist:instant="false"
-        dist:title="@string/title_my_library_feature">
+        dist:title="@string/title_my_library_framework">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

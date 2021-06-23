@@ -80,6 +80,8 @@ dependencies {
     implementation project(':common_view')
     implementation project(':persistence_room')
 
+    implementation 'com.google.android.play:core:1.10.0'
+
     implementation Libs.material
     implementation Libs.cardview
     implementation Libs.recyclerview
@@ -138,6 +140,11 @@ dependencies {
     androidTestImplementation Libs.cucumber_android
     androidTestImplementation Libs.junit_ktx
 }
-repositories {
-    mavenCentral()
+
+task buildBundleApksDebug(type: org.gradle.api.tasks.Exec, dependsOn: 'bundleDebug') {
+    commandLine "java", "-jar", "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar","build-apks","--bundle=${project.buildDir}/outputs/bundle/debug/app-debug.aab", "--output=${project.buildDir}/outputs/bundle/debug/app-debug.apks", "--local-testing", "--overwrite"
+}
+
+task deployBundleApksDebug(type: org.gradle.api.tasks.Exec, dependsOn: 'buildBundleApksDebug') {
+    commandLine "java", "-jar", "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar","install-apks","--apks=${project.buildDir}/outputs/bundle/debug/app-debug.apks"
 }

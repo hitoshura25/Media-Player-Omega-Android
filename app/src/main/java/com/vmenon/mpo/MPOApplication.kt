@@ -1,6 +1,10 @@
 package com.vmenon.mpo
 
+import android.content.Context
+import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
+import com.google.android.play.core.splitcompat.SplitCompat
+import com.google.android.play.core.splitcompat.SplitCompatApplication
 import com.mpo.core.di.ThirdPartyIntegratorModule
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
@@ -14,12 +18,18 @@ import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 
-class MPOApplication : MultiDexApplication(), AppComponentProvider,
+class MPOApplication : SplitCompatApplication(), AppComponentProvider,
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider {
     lateinit var appComponent: AppComponent
     lateinit var systemFrameworkComponent: SystemFrameworkComponent
     lateinit var commonFrameworkComponent: CommonFrameworkComponent
     lateinit var authComponent: AuthComponent
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+        SplitCompat.install(this)
+    }
+
     override fun onCreate() {
         super.onCreate()
 

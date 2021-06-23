@@ -15,6 +15,7 @@ dependencies {
     api Libs.navigation_ui_ktx
     api "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
 
+
     implementation Libs.dagger
     kapt Libs.dagger_compiler
 
