@@ -20,7 +20,7 @@ android {
         applicationId "com.vmenon.mpo"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 2
+        versionCode 3
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
@@ -28,13 +28,13 @@ android {
     dynamicFeatures = [
             ':downloads_feature',
             ':login_feature',
+            ':player_framework',
             ':my_library_feature',
             ':my_library_framework',
             ':player_feature',
             ':search_feature',
             ':search_framework',
-            ':downloads_framework',
-            ':player_framework'
+            ':downloads_framework'
     ]
 
     compileOptions {
@@ -140,11 +140,64 @@ dependencies {
     androidTestImplementation Libs.cucumber_android
     androidTestImplementation Libs.junit_ktx
 }
-
-task buildBundleApksDebug(type: org.gradle.api.tasks.Exec, dependsOn: 'bundleDebug') {
-    commandLine "java", "-jar", "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar","build-apks","--bundle=${project.buildDir}/outputs/bundle/debug/app-debug.aab", "--output=${project.buildDir}/outputs/bundle/debug/app-debug.apks", "--local-testing", "--overwrite"
+ext {
+    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar"
 }
 
-task deployBundleApksDebug(type: org.gradle.api.tasks.Exec, dependsOn: 'buildBundleApksDebug') {
-    commandLine "java", "-jar", "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar","install-apks","--apks=${project.buildDir}/outputs/bundle/debug/app-debug.apks"
+def buildBundleApks(buildType) {
+    def command = [
+            "java",
+            "-jar",
+            BUNDLE_TOOL,
+            "build-apks",
+            "--bundle=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.aab",
+            "--output=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.apks",
+            "--local-testing",
+            "--overwrite"
+    ]
+
+    if (buildType == 'release') {
+        command.add("--ks=$keystore_file")
+        command.add("--ks-pass=pass:$keystore_password")
+        command.add("--ks-key-alias=$keystore_key_alias")
+    }
+
+    exec {
+        commandLine command.toArray()
+    }
 }
+
+def deployBundleApks(buildType) {
+    exec {
+        environment "ANDROID_HOME", ANDROID_HOME
+        commandLine "java", "-jar",
+                BUNDLE_TOOL,
+                "install-apks",
+                "--apks=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.apks"
+    }
+}
+
+task buildBundleApksDebug(dependsOn: 'bundleDebug') {
+    doLast {
+        buildBundleApks('debug')
+    }
+}
+
+task deployBundleApksDebug(dependsOn: 'buildBundleApksDebug') {
+    doLast {
+        deployBundleApks('debug')
+    }
+}
+
+task buildBundleApksRelease(dependsOn: 'bundleRelease') {
+    doLast {
+        buildBundleApks('release')
+    }
+}
+
+task deployBundleApksRelease(dependsOn: 'buildBundleApksRelease') {
+    doLast {
+        deployBundleApks('release')
+    }
+}
+
