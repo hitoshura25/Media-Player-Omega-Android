@@ -1,4 +1,4 @@
-package com.vmenon.mpo.login.di.dagger
+package com.vmenon.mpo.login_feature.di.dagger
 
 import javax.inject.Scope
 

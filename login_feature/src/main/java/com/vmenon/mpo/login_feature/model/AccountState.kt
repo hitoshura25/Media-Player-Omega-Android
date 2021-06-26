@@ -1,4 +1,4 @@
-package com.vmenon.mpo.login.model
+package com.vmenon.mpo.login_feature.model
 
 import com.vmenon.mpo.login.domain.User
 

@@ -1,4 +1,4 @@
-package com.vmenon.mpo.login.viewmodel
+package com.vmenon.mpo.login_feature.viewmodel
 
 import android.app.Activity
 import androidx.lifecycle.*
@@ -6,11 +6,11 @@ import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
-import com.vmenon.mpo.login.model.AccountState
-import com.vmenon.mpo.login.model.LoadingState
-import com.vmenon.mpo.login.model.LoggedInState
-import com.vmenon.mpo.login.model.LoginState
-import com.vmenon.mpo.login.model.RegisterState
+import com.vmenon.mpo.login_feature.model.AccountState
+import com.vmenon.mpo.login_feature.model.LoadingState
+import com.vmenon.mpo.login_feature.model.LoggedInState
+import com.vmenon.mpo.login_feature.model.LoginState
+import com.vmenon.mpo.login_feature.model.RegisterState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject

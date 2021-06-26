@@ -1,9 +1,8 @@
-package com.vmenon.mpo.login.di.dagger
+package com.vmenon.mpo.login_feature.di.dagger
 
 import android.content.Context
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
 import com.vmenon.mpo.di.AppComponentProvider
-import com.vmenon.mpo.login.di.dagger.DaggerLoginComponent
 import com.vmenon.mpo.login.framework.di.DaggerLoginFrameworkComponent
 
 fun Context.toLoginComponent(): LoginComponent {
