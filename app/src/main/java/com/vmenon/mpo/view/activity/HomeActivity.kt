@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.android.play.core.splitcompat.SplitCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
@@ -28,6 +29,11 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
     override fun inject(component: ActivityComponent) {
         component.inject(this)
         component.inject(viewModel)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        SplitCompat.install(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
