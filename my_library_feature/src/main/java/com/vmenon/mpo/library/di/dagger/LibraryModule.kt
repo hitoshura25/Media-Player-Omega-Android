@@ -1,10 +1,8 @@
 package com.vmenon.mpo.library.di.dagger
 
-import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.library.R
 import com.vmenon.mpo.library.view.fragment.LibraryFragmentDirections
 import com.vmenon.mpo.my_library.domain.*
-import com.vmenon.mpo.my_library.framework.di.dagger.LibraryFrameworkComponent
 import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -21,7 +19,6 @@ object LibraryModule {
     @Provides
     fun provideMyLibraryInteractors(
         myLibraryService: MyLibraryService,
-        downloadService: DownloadsService,
         navigationController: NavigationController,
         requestMapper: PlayerRequestMapper<EpisodeModel>,
         playerNavigationDestination: NavigationDestination<PlayerNavigationLocation>,
@@ -30,7 +27,6 @@ object LibraryModule {
         MyLibraryInteractors(
             GetAllEpisodes(myLibraryService),
             GetEpisodeDetails(myLibraryService),
-            UpdateAllShows(myLibraryService, downloadService),
             GetSubscribedShows(myLibraryService),
             PlayEpisode(
                 myLibraryService,

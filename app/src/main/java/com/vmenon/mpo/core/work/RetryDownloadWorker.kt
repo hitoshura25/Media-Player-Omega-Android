@@ -1,10 +1,8 @@
-package com.vmenon.mpo.downloads.worker
+package com.vmenon.mpo.core.work
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import com.vmenon.mpo.core.work.BaseWorker
-import com.vmenon.mpo.downloads.di.dagger.toDownloadsComponent
-import com.vmenon.mpo.downloads.usecases.DownloadsInteractors
+import com.vmenon.mpo.core.usecases.Interactors
 import javax.inject.Inject
 
 class RetryDownloadWorker(
@@ -13,10 +11,10 @@ class RetryDownloadWorker(
 ) : BaseWorker(context, workerParams) {
 
     @Inject
-    lateinit var interactors: DownloadsInteractors
+    lateinit var interactors: Interactors
 
     override suspend fun doMyWork(): Result {
-        applicationContext.toDownloadsComponent().inject(this)
+        appComponent.inject(this)
         interactors.retryDownloads()
         return Result.success()
     }

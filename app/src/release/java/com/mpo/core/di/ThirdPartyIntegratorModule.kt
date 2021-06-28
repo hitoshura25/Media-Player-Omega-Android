@@ -8,7 +8,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class ThirdPartyIntegratorModule {
+object ThirdPartyIntegratorModule {
     @Provides
     @AppScope
     fun thirdPartyIntegrator(): ThirdPartyIntegrator = ReleaseThirdPartyIntegrator()

@@ -13,7 +13,6 @@ dependencies {
     implementation project(':app')
 
     implementation project(':common_framework')
-    implementation project(':downloads_framework')
     implementation project(':navigation_domain')
     implementation project(':navigation_framework')
     implementation project(':player_framework')

@@ -2,28 +2,37 @@ package com.vmenon.mpo
 
 import android.content.Context
 import androidx.multidex.MultiDex
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.play.core.splitcompat.SplitCompat
 import com.google.android.play.core.splitcompat.SplitCompatApplication
-import com.mpo.core.di.ThirdPartyIntegratorModule
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
 import com.vmenon.mpo.auth.framework.di.dagger.DaggerAuthComponent
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
 import com.vmenon.mpo.common.framework.di.dagger.DaggerCommonFrameworkComponent
+import com.vmenon.mpo.core.work.RetryDownloadWorker
 import com.vmenon.mpo.di.*
+import com.vmenon.mpo.core.work.UpdateAllShowsWorker
+import com.vmenon.mpo.downloads.framework.di.dagger.DaggerDownloadsFrameworkComponent
+import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
 import com.vmenon.mpo.navigation.framework.di.dagger.DaggerNavigationFrameworkComponent
 import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
 import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
+import java.util.concurrent.TimeUnit
 
 class MPOApplication : SplitCompatApplication(),
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider {
     lateinit var appComponent: AppComponent
-    private lateinit var systemFrameworkComponent: SystemFrameworkComponent
     lateinit var commonFrameworkComponent: CommonFrameworkComponent
+
+    private lateinit var systemFrameworkComponent: SystemFrameworkComponent
     private lateinit var authComponent: AuthComponent
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         MultiDex.install(this)
@@ -57,17 +66,26 @@ class MPOApplication : SplitCompatApplication(),
             .navigationFrameworkComponent(navigationFrameworkComponent)
             .build()
 
-        appComponent = DaggerAppComponent.builder()
-            .thirdPartyIntegratorModule(ThirdPartyIntegratorModule())
+        val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()
             .commonFrameworkComponent(commonFrameworkComponent)
+            .build()
+
+        val libraryFrameworkComponent = DaggerLibraryFrameworkComponent.builder()
+            .commonFrameworkComponent(commonFrameworkComponent)
+            .build()
+
+        appComponent = DaggerAppComponent.builder()
+            .commonFrameworkComponent(commonFrameworkComponent)
+            .downloadsFrameworkComponent(downloadsFrameworkComponent)
+            .libraryFrameworkComponent(libraryFrameworkComponent)
             .build()
 
         appComponent.thirdPartyIntegrator().initialize(this)
 
-        /*WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "Update",
             ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<com.vmenon.mpo.my_library.worker.UpdateAllShowsWorker>(
+            PeriodicWorkRequestBuilder<UpdateAllShowsWorker>(
                 repeatInterval = 15,
                 repeatIntervalTimeUnit = TimeUnit.MINUTES
             ).build()
@@ -76,11 +94,11 @@ class MPOApplication : SplitCompatApplication(),
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "RetryDownloads",
             ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<com.vmenon.mpo.downloads.worker.RetryDownloadWorker>(
+            PeriodicWorkRequestBuilder<RetryDownloadWorker>(
                 repeatInterval = 15,
                 repeatIntervalTimeUnit = TimeUnit.MINUTES
             ).build()
-        )*/
+        )
     }
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent = commonFrameworkComponent

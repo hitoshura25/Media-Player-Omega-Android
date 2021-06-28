@@ -1,7 +1,7 @@
-package com.vmenon.mpo.my_library.usecases
+package com.vmenon.mpo.core.usecases
 
 import com.vmenon.mpo.common.converters.toDownloadRequest
-import com.vmenon.mpo.downloads.domain.DownloadRequest
+import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.my_library.domain.ShowModel
@@ -10,7 +10,8 @@ import java.util.*
 
 class UpdateAllShows(
     private val myLibraryService: MyLibraryService,
-    private val downloadService: DownloadsService
+    private val downloadService: DownloadsService,
+    private val system: System
 ) {
     suspend operator fun invoke() {
         val interval = 1000 * 60 * 5
@@ -23,11 +24,10 @@ class UpdateAllShows(
 
     private suspend fun fetchShowUpdatesAndQueueDownloads(shows: List<ShowModel>) {
         shows.forEach { show ->
-            // TODO: Abstract logging?
-            /*Log.d(
-                "UpdateWorker",
-                "Got saved show: ${show.name} , ${show.feedUrl}, ${show.lastEpisodePublished}"
-            )*/
+            system.println(
+                "UpdateWorker, Got saved show:" +
+                        " ${show.name} , ${show.feedUrl}, ${show.lastEpisodePublished}"
+            )
             fetchShowUpdate(show)
         }
     }

@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class ThirdPartyIntegratorModule {
+object ThirdPartyIntegratorModule {
     @Provides
     @AppScope
     fun thirdPartyIntegrator(): ThirdPartyIntegrator = DebugThirdPartyIntegrator()

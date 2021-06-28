@@ -5,7 +5,6 @@ import com.vmenon.mpo.downloads.framework.di.dagger.DownloadsFrameworkComponent
 import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import com.vmenon.mpo.downloads.worker.DownloadCompleteWorker
-import com.vmenon.mpo.downloads.worker.RetryDownloadWorker
 import com.vmenon.mpo.my_library.framework.di.dagger.LibraryFrameworkComponent
 import dagger.Component
 
@@ -31,5 +30,4 @@ interface DownloadsComponent {
     fun inject(viewModel: DownloadsViewModel)
 
     fun inject(worker: DownloadCompleteWorker)
-    fun inject(worker: RetryDownloadWorker)
 }
