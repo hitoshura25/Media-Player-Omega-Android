@@ -1,7 +1,6 @@
 package com.vmenon.mpo.player.framework.di.dagger
 
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.player.domain.MediaPlayerEngine
 import com.vmenon.mpo.player.domain.PlayerRequestMapper
@@ -10,7 +9,7 @@ import com.vmenon.mpo.player.framework.MPOPlayer
 import dagger.Component
 
 @Component(
-    dependencies = [CommonFrameworkComponent::class, AppComponent::class],
+    dependencies = [CommonFrameworkComponent::class],
     modules = [PlayerFrameworkModule::class]
 )
 @PlayerFrameworkScope
@@ -18,7 +17,6 @@ interface PlayerFrameworkComponent {
     @Component.Builder
     interface Builder {
         fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
-        fun appComponent(component: AppComponent): Builder
         fun build(): PlayerFrameworkComponent
     }
 

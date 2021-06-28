@@ -1,9 +1,19 @@
 apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 dependencies {
     implementation project(':common_domain')
     implementation project(':navigation_domain')
+    implementation project(':system_framework')
+
+    // TODO: Perhaps refactoring navigation related things out of these domain modules is
+    // better
+    api project(':downloads_domain')
+    api project(':login_domain')
+    api project(':my_library_domain')
+    api project(':player_domain')
+    api project(':search_domain')
 
     implementation Libs.kotlin_stdlib
 
@@ -14,7 +24,6 @@ dependencies {
     api Libs.navigation_fragment_ktx
     api Libs.navigation_ui_ktx
     api "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
-
 
     implementation Libs.dagger
     kapt Libs.dagger_compiler

@@ -1,8 +1,7 @@
-apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    implementation project(':app')
     api project(':api_mpo')
     api project(':persistence_room')
     api project(':search_data')

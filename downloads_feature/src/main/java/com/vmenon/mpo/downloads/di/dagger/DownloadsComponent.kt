@@ -1,7 +1,6 @@
 package com.vmenon.mpo.downloads.di.dagger
 
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.downloads.framework.di.dagger.DownloadsFrameworkComponent
 import com.vmenon.mpo.downloads.view.fragment.DownloadsFragment
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
@@ -13,7 +12,6 @@ import dagger.Component
 @Component(
     dependencies = [
         CommonFrameworkComponent::class,
-        AppComponent::class,
         LibraryFrameworkComponent::class,
         DownloadsFrameworkComponent::class
     ],
@@ -24,7 +22,6 @@ interface DownloadsComponent {
     @Component.Builder
     interface Builder {
         fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
-        fun appComponent(component: AppComponent): Builder
         fun libraryFrameworkComponent(component: LibraryFrameworkComponent): Builder
         fun downloadsFrameworkComponent(component: DownloadsFrameworkComponent): Builder
         fun build(): DownloadsComponent

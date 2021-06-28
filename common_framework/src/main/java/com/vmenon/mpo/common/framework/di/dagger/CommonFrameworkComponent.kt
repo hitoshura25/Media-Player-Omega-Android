@@ -5,11 +5,16 @@ import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
+import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.framework.di.dagger.NavigationFrameworkComponent
 import com.vmenon.mpo.persistence.di.dagger.PersistenceComponent
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
+import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.search.domain.SearchNavigationLocation
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Component
 
@@ -17,9 +22,10 @@ import dagger.Component
     dependencies = [
         AuthComponent::class,
         PersistenceComponent::class,
-        SystemFrameworkComponent::class
+        SystemFrameworkComponent::class,
+        NavigationFrameworkComponent::class
     ],
-    modules = [CommonFrameworkModule::class, ApiModule::class]
+    modules = [ApiModule::class]
 )
 @CommonFrameworkScope
 interface CommonFrameworkComponent {
@@ -28,6 +34,7 @@ interface CommonFrameworkComponent {
         fun authComponent(component: AuthComponent): Builder
         fun persistenceComponent(component: PersistenceComponent): Builder
         fun systemFrameworkComponent(component: SystemFrameworkComponent): Builder
+        fun navigationFrameworkComponent(component: NavigationFrameworkComponent): Builder
         fun build(): CommonFrameworkComponent
     }
 
@@ -40,4 +47,8 @@ interface CommonFrameworkComponent {
     fun episodeDao(): EpisodeDao
     fun showDao(): ShowDao
     fun showSearchResultDao(): ShowSearchResultDao
+
+    fun searchNavigationDestination(): NavigationDestination<SearchNavigationLocation>
+    fun playerNavigationDestination(): NavigationDestination<PlayerNavigationLocation>
+    fun navigationController(): NavigationController
 }

@@ -21,20 +21,16 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 7
-        versionName "7.0"
+        versionName "1.7"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
     }
     dynamicFeatures = [
             ':downloads_feature',
             ':login_feature',
-            ':player_framework',
             ':my_library_feature',
-            ':my_library_framework',
             ':player_feature',
-            ':search_feature',
-            ':search_framework',
-            ':downloads_framework'
+            ':search_feature'
     ]
 
     compileOptions {
@@ -64,15 +60,17 @@ dependencies {
 
     implementation project(':common_framework')
     implementation project(':system_framework')
+    implementation project(':downloads_framework')
+    implementation project(':my_library_framework')
+    implementation project(':player_framework')
+    implementation project(':search_framework')
+
     implementation project(':api_mpo')
     implementation project(':extensions')
     implementation project(':common_converters')
     api project(':common_domain')
-    implementation project(':my_library_domain')
     implementation project(':search_domain')
     implementation project(':login_domain')
-    implementation project(':player_domain')
-    implementation project(':downloads_domain')
 
     api project(':navigation_domain')
     api project(':navigation_framework')

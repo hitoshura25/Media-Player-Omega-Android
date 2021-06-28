@@ -8,8 +8,10 @@ dependencies {
 
     implementation project(':common_domain')
     implementation project(':auth_domain')
+
     implementation project(':common_view')
     implementation project(':persistence_room')
+    implementation project(':navigation_framework')
 
     implementation Libs.kotlinx_coroutines_core
 

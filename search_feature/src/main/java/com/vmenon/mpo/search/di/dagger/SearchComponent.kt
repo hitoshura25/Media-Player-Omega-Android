@@ -1,7 +1,6 @@
 package com.vmenon.mpo.search.di.dagger
 
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.downloads.framework.di.dagger.DownloadsFrameworkComponent
 import com.vmenon.mpo.my_library.framework.di.dagger.LibraryFrameworkComponent
 import com.vmenon.mpo.search.framework.di.dagger.SearchFrameworkComponent
@@ -13,7 +12,6 @@ import dagger.Component
 
 @Component(
     dependencies = [
-        AppComponent::class,
         CommonFrameworkComponent::class,
         SearchFrameworkComponent::class,
         LibraryFrameworkComponent::class,
@@ -25,7 +23,6 @@ import dagger.Component
 interface SearchComponent {
     @Component.Builder
     interface Builder {
-        fun appComponent(component: AppComponent): Builder
         fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
         fun searchFrameworkComponent(component: SearchFrameworkComponent): Builder
         fun libraryFrameworkComponent(component: LibraryFrameworkComponent): Builder

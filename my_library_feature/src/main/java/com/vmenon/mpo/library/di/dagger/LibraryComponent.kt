@@ -1,7 +1,6 @@
 package com.vmenon.mpo.library.di.dagger
 
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.di.AppComponent
 import com.vmenon.mpo.downloads.framework.di.dagger.DownloadsFrameworkComponent
 import com.vmenon.mpo.library.view.fragment.EpisodeDetailsFragment
 import com.vmenon.mpo.library.view.fragment.LibraryFragment
@@ -17,7 +16,6 @@ import dagger.Component
 @Component(
     dependencies = [
         CommonFrameworkComponent::class,
-        AppComponent::class,
         DownloadsFrameworkComponent::class,
         PlayerFrameworkComponent::class,
         LibraryFrameworkComponent::class
@@ -29,7 +27,6 @@ interface LibraryComponent {
     @Component.Builder
     interface Builder {
         fun commonFrameworkComponent(component: CommonFrameworkComponent): Builder
-        fun appComponent(component: AppComponent): Builder
         fun downloadsFrameworkComponent(component: DownloadsFrameworkComponent): Builder
         fun playerFrameworkComponent(component: PlayerFrameworkComponent): Builder
         fun libraryFrameworkComponent(component: LibraryFrameworkComponent): Builder
