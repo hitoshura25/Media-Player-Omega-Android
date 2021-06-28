@@ -1,4 +1,4 @@
-package com.vmenon.mpo.downloads.receiver
+package com.vmenon.mpo.core.receiver
 
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.vmenon.mpo.downloads.worker.DownloadCompleteWorker
+import com.vmenon.mpo.core.work.DownloadCompleteWorker
 
 class DownloadReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -20,7 +20,7 @@ class DownloadReceiver : BroadcastReceiver() {
                         OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
                             .setInputData(
                                 Data.Builder()
-                                    .putLong(com.vmenon.mpo.downloads.worker.DownloadCompleteWorker.INPUT_DOWNLOAD_ID, downloadId)
+                                    .putLong(DownloadCompleteWorker.INPUT_DOWNLOAD_ID, downloadId)
                                     .build()
                             ).build()
                     )

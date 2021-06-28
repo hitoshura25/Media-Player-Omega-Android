@@ -3,6 +3,7 @@ package com.vmenon.mpo.di
 import com.mpo.core.di.ThirdPartyIntegratorModule
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
 import com.vmenon.mpo.core.ThirdPartyIntegrator
+import com.vmenon.mpo.core.work.DownloadCompleteWorker
 import com.vmenon.mpo.core.work.RetryDownloadWorker
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.downloads.framework.di.dagger.DownloadsFrameworkComponent
@@ -36,4 +37,5 @@ interface AppComponent {
 
     fun inject(worker: UpdateAllShowsWorker)
     fun inject(worker: RetryDownloadWorker)
+    fun inject(worker: DownloadCompleteWorker)
 }

@@ -9,11 +9,4 @@
         </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
-    <application>
-        <receiver android:name=".receiver.DownloadReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
-            </intent-filter>
-        </receiver>
-    </application>
 </manifest>

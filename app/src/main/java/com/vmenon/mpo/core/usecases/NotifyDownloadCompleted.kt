@@ -1,4 +1,4 @@
-package com.vmenon.mpo.downloads.usecases
+package com.vmenon.mpo.core.usecases
 
 import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.downloads.domain.DownloadsService
