@@ -9,6 +9,7 @@ android {
 }
 
 dependencies {
+    api project(':login_domain')
     implementation project(':login_data')
 
     implementation project(':common_domain')

@@ -9,9 +9,9 @@ dependencies {
 
     // TODO: Perhaps refactoring navigation related things out of these domain modules is
     // better
-    api project(':downloads_domain')
-    api project(':login_domain')
-    api project(':my_library_domain')
+    implementation project(':downloads_domain')
+    implementation project(':login_domain')
+    implementation project(':my_library_domain')
     api project(':player_domain')
     api project(':search_domain')
 
