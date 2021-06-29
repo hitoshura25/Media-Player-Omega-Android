@@ -3,6 +3,8 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     api project(':api_mpo')
+    api project(':navigation_domain')
+
     implementation project(':auth_framework')
     implementation project(':system_framework')
 
