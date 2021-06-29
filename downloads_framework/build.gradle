@@ -2,8 +2,8 @@ apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    api project(':downloads_data')
-    api project(':persistence_room')
+    implementation project(':downloads_data')
+    implementation project(':persistence_room')
 
     implementation project(':common_domain')
     implementation project(':common_framework')
