@@ -2,13 +2,11 @@ apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    api project(':auth_framework')
     api project(':api_mpo')
-    api project(':system_framework')
+    implementation project(':auth_framework')
+    implementation project(':system_framework')
 
     implementation project(':common_domain')
-    implementation project(':auth_domain')
-
     implementation project(':common_view')
     implementation project(':persistence_room')
     implementation project(':navigation_framework')

@@ -58,6 +58,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(':auth_framework')
     implementation project(':common_framework')
     implementation project(':system_framework')
     implementation project(':downloads_framework')
@@ -67,6 +68,7 @@ dependencies {
     implementation project(':navigation_framework')
     implementation project(':common_converters')
     implementation project(':common_view')
+
     implementation 'com.google.android.play:core:1.10.0'
 
     implementation Libs.constraintlayout
