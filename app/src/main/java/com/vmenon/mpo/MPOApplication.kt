@@ -20,15 +20,20 @@ import com.vmenon.mpo.downloads.framework.di.dagger.DaggerDownloadsFrameworkComp
 import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
 import com.vmenon.mpo.navigation.framework.di.dagger.DaggerNavigationFrameworkComponent
 import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
+import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import java.util.concurrent.TimeUnit
 
 class MPOApplication : SplitCompatApplication(),
-    CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider {
+    CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider,
+    PlayerFrameworkComponentProvider {
     lateinit var appComponent: AppComponent
     lateinit var commonFrameworkComponent: CommonFrameworkComponent
+    lateinit var playerFrameworkComponent: PlayerFrameworkComponent
 
     private lateinit var systemFrameworkComponent: SystemFrameworkComponent
     private lateinit var authComponent: AuthComponent
@@ -82,6 +87,10 @@ class MPOApplication : SplitCompatApplication(),
 
         appComponent.thirdPartyIntegrator().initialize(this)
 
+        playerFrameworkComponent = DaggerPlayerFrameworkComponent.builder()
+            .commonFrameworkComponent(commonFrameworkComponent)
+            .build()
+
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "Update",
             ExistingPeriodicWorkPolicy.KEEP,
@@ -104,4 +113,5 @@ class MPOApplication : SplitCompatApplication(),
     override fun commonFrameworkComponent(): CommonFrameworkComponent = commonFrameworkComponent
     override fun systemFrameworkComponent(): SystemFrameworkComponent = systemFrameworkComponent
     override fun authComponent(): AuthComponent = authComponent
+    override fun playerFrameworkComponent(): PlayerFrameworkComponent = playerFrameworkComponent
 }

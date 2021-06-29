@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -13,7 +12,6 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.databinding.FragmentShowSearchResultsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
-import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.di.dagger.toSearchComponent
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
 import com.vmenon.mpo.search.domain.SearchNavigationParams

@@ -3,7 +3,7 @@ package com.vmenon.mpo.library.di.dagger
 import android.content.Context
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
 import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
-import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
 
 fun Context.toLibraryComponent(): LibraryComponent {
     val commonFrameworkComponent =
@@ -11,9 +11,8 @@ fun Context.toLibraryComponent(): LibraryComponent {
     val libraryFrameworkComponent = DaggerLibraryFrameworkComponent.builder()
         .commonFrameworkComponent(commonFrameworkComponent)
         .build()
-    val playerFrameworkComponent = DaggerPlayerFrameworkComponent.builder()
-        .commonFrameworkComponent(commonFrameworkComponent)
-        .build()
+    val playerFrameworkComponent =
+        (applicationContext as PlayerFrameworkComponentProvider).playerFrameworkComponent()
 
     return DaggerLibraryComponent.builder()
         .commonFrameworkComponent(commonFrameworkComponent)

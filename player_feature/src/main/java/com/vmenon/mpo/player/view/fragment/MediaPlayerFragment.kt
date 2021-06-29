@@ -15,7 +15,6 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.player.framework.R
 import com.vmenon.mpo.player.databinding.FragmentMediaPlayerBinding
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
-import com.vmenon.mpo.player.di.dagger.PlayerComponentProvider
 import com.vmenon.mpo.player.di.dagger.toPlayerComponent
 import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.framework.MPOPlayer

@@ -15,7 +15,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.databinding.FragmentShowDetailsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
-import com.vmenon.mpo.search.di.dagger.SearchComponentProvider
 import com.vmenon.mpo.search.di.dagger.toSearchComponent
 import com.vmenon.mpo.search.domain.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowDetailsParams

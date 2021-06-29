@@ -12,7 +12,6 @@ import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.library.databinding.FragmentLibraryBinding
 import com.vmenon.mpo.library.di.dagger.LibraryComponent
-import com.vmenon.mpo.library.di.dagger.LibraryComponentProvider
 import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
