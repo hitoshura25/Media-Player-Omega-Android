@@ -10,7 +10,5 @@ java {
 
 dependencies {
     api project(':downloads_domain')
-    api project(':my_library_domain')
-
     implementation Libs.kotlin_stdlib
 }
