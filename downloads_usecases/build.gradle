@@ -9,10 +9,8 @@ java {
 }
 
 dependencies {
-    api project(':downloads_domain')
-    api project(':common_domain')
-
-    implementation project(':my_library_domain')
+    implementation project(':downloads_domain')
+    implementation project(':common_domain')
 
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
