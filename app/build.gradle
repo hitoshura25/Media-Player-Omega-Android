@@ -64,44 +64,15 @@ dependencies {
     implementation project(':my_library_framework')
     implementation project(':player_framework')
     implementation project(':search_framework')
-
-    implementation project(':api_mpo')
-    implementation project(':extensions')
+    implementation project(':navigation_framework')
     implementation project(':common_converters')
-    api project(':common_domain')
-    implementation project(':search_domain')
-    implementation project(':login_domain')
-
-    api project(':navigation_domain')
-    api project(':navigation_framework')
-
     implementation project(':common_view')
-    implementation project(':persistence_room')
-
     implementation 'com.google.android.play:core:1.10.0'
 
-    implementation Libs.material
-    implementation Libs.cardview
-    implementation Libs.recyclerview
-    implementation Libs.androidx_media_media
     implementation Libs.constraintlayout
 
-    // ViewModel
     implementation Libs.lifecycle_viewmodel_ktx
-    // LiveData
     implementation Libs.lifecycle_livedata_ktx
-
-    // alternately - if using Java8, use the following instead of lifecycle-compiler
-    implementation Libs.lifecycle_common_java8
-
-    // optional - helpers for implementing LifecycleOwner in a Service
-    implementation Libs.lifecycle_service
-
-    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
-    implementation Libs.lifecycle_process
-
-    // optional - ReactiveStreams support for LiveData
-    implementation Libs.lifecycle_reactivestreams_ktx
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4
@@ -110,12 +81,8 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_android_processor
 
-    implementation Libs.glide
-
-    implementation Libs.jsr250_api
-
     testImplementation Libs.junit_junit
-    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
 
     implementation Libs.com_android_support_multidex
