@@ -10,9 +10,8 @@ java {
 
 dependencies {
     implementation project(':common_domain')
-    implementation project(':downloads_domain')
-    api project(':my_library_domain')
-    api project(':navigation_domain')
+    implementation project(':my_library_domain')
+    implementation project(':navigation_domain')
     implementation project(':player_domain')
     implementation project(':search_domain')
 
