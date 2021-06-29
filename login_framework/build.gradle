@@ -3,29 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    defaultConfig {
-        def appAuthRedirectScheme = 'com.vmenon.mpo'
-        manifestPlaceholders = [
-                'appAuthRedirectScheme': appAuthRedirectScheme
-        ]
-        buildConfigField(
-                "String",
-                "APP_AUTH_REDIRECT_SCHEME",
-                "\"$appAuthRedirectScheme\""
-        )
-        buildConfigField(
-                "String",
-                "OAUTH_CLIENT_ID",
-                "\"0oavpdvnegnKXHu9F5d6\""
-        )
-    }
     buildFeatures {
         viewBinding true
     }
 }
 
 dependencies {
-    api project(':login_data')
+    implementation project(':login_data')
 
     implementation project(':common_domain')
     implementation project(':common_framework')
