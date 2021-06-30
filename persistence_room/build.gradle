@@ -20,7 +20,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
 
-    api Libs.room_runtime
+    implementation Libs.room_runtime
     implementation Libs.room_rxjava2
     implementation Libs.room_ktx
     kapt Libs.room_compiler
