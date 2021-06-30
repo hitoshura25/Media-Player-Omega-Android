@@ -18,7 +18,7 @@ import com.vmenon.mpo.library.viewmodel.LibraryViewModel
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
 import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.EpisodeModel
-import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
+import com.vmenon.mpo.navigation.domain.my_library.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
