@@ -13,9 +13,9 @@ buildscript {
         classpath Libs.de_fayard_buildsrcversions_gradle_plugin
         classpath Libs.com_android_tools_build_gradle
         classpath Libs.kotlin_gradle_plugin
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5"
-        classpath 'com.google.gms:google-services:4.3.8'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
+        classpath Libs.navigation_safe_args_gradle_plugin
+        classpath Libs.google_services
+        classpath Libs.firebase_crashlytics_gradle
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
