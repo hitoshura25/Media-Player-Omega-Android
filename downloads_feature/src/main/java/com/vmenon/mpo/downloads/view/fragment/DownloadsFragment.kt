@@ -13,7 +13,7 @@ import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.downloads.databinding.FragmentDownloadsBinding
 import com.vmenon.mpo.downloads.di.dagger.DownloadsComponent
 import com.vmenon.mpo.downloads.di.dagger.toDownloadsComponent
-import com.vmenon.mpo.downloads.domain.DownloadsLocation
+import com.vmenon.mpo.navigation.domain.downloads.DownloadsLocation
 import com.vmenon.mpo.downloads.view.adapter.DownloadsAdapter
 import com.vmenon.mpo.downloads.viewmodel.DownloadsViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
