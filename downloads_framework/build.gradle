@@ -6,7 +6,6 @@ dependencies {
     implementation project(':downloads_data')
     implementation project(':persistence_room')
 
-    implementation project(':common_domain')
     implementation project(':common_framework')
     implementation project(':extensions')
 

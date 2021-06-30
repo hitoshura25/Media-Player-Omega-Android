@@ -9,7 +9,6 @@ java {
 }
 
 dependencies {
-    implementation project(':common_domain')
     implementation project(':downloads_domain')
     implementation project(':search_data')
     implementation project(':search_domain')

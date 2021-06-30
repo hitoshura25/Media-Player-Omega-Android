@@ -12,7 +12,6 @@ dependencies {
     implementation project(':app')
 
     implementation project(':player_framework')
-    implementation project(':common_domain')
     implementation project(':common_framework')
     implementation project(':common_view')
     implementation project(':navigation_framework')

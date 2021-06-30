@@ -9,7 +9,6 @@ java {
 }
 
 dependencies {
-    implementation project(':common_domain')
     implementation project(':navigation_domain')
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core

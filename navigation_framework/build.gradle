@@ -4,7 +4,6 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 dependencies {
     api project(':navigation_domain')
-    implementation project(':common_domain')
     implementation project(':system_framework')
 
     // TODO: Perhaps refactoring navigation related things out of these domain modules is

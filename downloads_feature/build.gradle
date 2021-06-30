@@ -17,7 +17,6 @@ dependencies {
     implementation project(':downloads_framework')
     implementation project(':downloads_usecases')
 
-    implementation project(':common_domain')
     implementation project(':navigation_framework')
     implementation project(':common_view')
 

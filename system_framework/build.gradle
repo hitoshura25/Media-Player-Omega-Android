@@ -3,7 +3,6 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     api project(':system_domain')
-    implementation project(':common_domain')
 
     implementation Libs.kotlinx_coroutines_core
 
