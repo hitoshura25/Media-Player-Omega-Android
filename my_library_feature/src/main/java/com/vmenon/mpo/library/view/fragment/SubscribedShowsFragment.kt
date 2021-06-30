@@ -15,7 +15,7 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.view.adapter.SubscriptionGalleryAdapter
 import com.vmenon.mpo.library.viewmodel.SubscribedShowsViewModel
-import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
+import com.vmenon.mpo.navigation.domain.my_library.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment

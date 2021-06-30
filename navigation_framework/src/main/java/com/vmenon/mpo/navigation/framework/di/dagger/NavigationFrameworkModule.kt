@@ -3,7 +3,7 @@ package com.vmenon.mpo.navigation.framework.di.dagger
 import com.vmenon.mpo.navigation.domain.downloads.DownloadsLocation
 import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.navigation.domain.my_library.MyLibraryNavigationLocation
-import com.vmenon.mpo.my_library.domain.SubscribedShowsLocation
+import com.vmenon.mpo.navigation.domain.my_library.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.*
