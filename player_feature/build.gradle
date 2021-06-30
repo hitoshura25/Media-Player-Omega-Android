@@ -11,13 +11,12 @@ android {
 dependencies {
     implementation project(':app')
 
-    api project(':player_framework')
+    implementation project(':player_framework')
     implementation project(':common_domain')
     implementation project(':common_framework')
     implementation project(':common_view')
-    implementation project(':navigation_domain')
     implementation project(':navigation_framework')
-    api project(':player_usecases')
+    implementation project(':player_usecases')
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4
