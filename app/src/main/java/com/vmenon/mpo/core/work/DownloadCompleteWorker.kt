@@ -2,12 +2,13 @@ package com.vmenon.mpo.core.work
 
 import android.content.Context
 import android.util.Log
+import androidx.work.WorkerParameters
 import com.vmenon.mpo.core.usecases.Interactors
 import javax.inject.Inject
 
 class DownloadCompleteWorker(
     context: Context,
-    workerParams: androidx.work.WorkerParameters
+    workerParams: WorkerParameters
 ) : BaseWorker(context, workerParams) {
 
     @Inject

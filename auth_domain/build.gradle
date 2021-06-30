@@ -10,5 +10,5 @@ java {
 
 dependencies {
     implementation Libs.kotlin_stdlib
-    api Libs.kotlinx_coroutines_core
+    implementation Libs.kotlinx_coroutines_core
 }

@@ -9,6 +9,7 @@ java {
 }
 
 dependencies {
-    implementation Libs.kotlin_stdlib
     implementation project(':auth_domain')
+    implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
 }

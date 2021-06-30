@@ -26,6 +26,7 @@ import com.vmenon.mpo.search.view.adapter.EpisodesAdapter
 import com.vmenon.mpo.search.viewmodel.ShowDetailsViewModel
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
+import com.vmenon.mpo.view.R
 
 class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentShowDetailsBinding>(),
     AppBarLayout.OnOffsetChangedListener,
@@ -57,7 +58,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
             navigationView(),
             binding.collapsingToolbar
         )
-        binding.fab.setImageResource(com.vmenon.mpo.view.R.drawable.ic_add_white_48dp)
+        binding.fab.setImageResource(R.drawable.ic_add_white_48dp)
         binding.appbar.addOnOffsetChangedListener(this)
 
         loadingStateHelper = LoadingStateHelper.switchWithContent(

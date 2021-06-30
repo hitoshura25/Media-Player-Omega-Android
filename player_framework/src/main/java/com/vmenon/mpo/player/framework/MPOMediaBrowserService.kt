@@ -32,8 +32,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
-import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
-import com.vmenon.mpo.player.framework.R
 import com.vmenon.mpo.player.framework.di.dagger.toPlayerFrameworkComponent
 import java.io.File
 import java.lang.ref.WeakReference
@@ -582,7 +580,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
                     .setMediaSession(sessionToken)
             )
             .setDeleteIntent(stopIntent)
-            .setSmallIcon(com.vmenon.mpo.view.R.drawable.ic_headset)
+            .setSmallIcon(R.drawable.ic_headset)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
             .setContentIntent(createNotificationContentIntent())
@@ -597,7 +595,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         } else {
             if (placeholderMediaBitmap == null) {
                 placeholderMediaBitmap =
-                    BitmapFactory.decodeResource(resources, com.vmenon.mpo.view.R.drawable.ic_headset)
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_headset)
             }
             notificationBuilder.setLargeIcon(placeholderMediaBitmap)
             if (fetchArtUrl != null) {
@@ -652,11 +650,11 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         val icon: Int
         val intent: PendingIntent?
         if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
-            label = getString(com.vmenon.mpo.view.R.string.pause)
+            label = getString(R.string.pause)
             icon = R.drawable.ic_pause_circle_filled_white_48dp
             intent = pauseIntent
         } else {
-            label = getString(com.vmenon.mpo.view.R.string.play)
+            label = getString(R.string.play)
             icon = R.drawable.ic_play_circle_filled_white_48dp
             intent = playIntent
         }

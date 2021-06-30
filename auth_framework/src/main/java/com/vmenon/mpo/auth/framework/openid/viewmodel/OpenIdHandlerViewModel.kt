@@ -3,6 +3,7 @@ package com.vmenon.mpo.auth.framework.openid.viewmodel
 import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.EndSessionResponse
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class OpenIdHandlerViewModel : ViewModel() {
@@ -35,12 +37,12 @@ class OpenIdHandlerViewModel : ViewModel() {
 
     fun onCreated(fragment: Fragment) {
         startAuthContract = fragment.registerForActivityResult(
-            androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+            StartActivityForResult()
         ) { activityResult ->
             handlePerformAuthOperationResult(activityResult.resultCode, activityResult.data)
         }
         logoutContract = fragment.registerForActivityResult(
-            androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+            StartActivityForResult()
         ) { activityResult ->
             handleEndSessionOperationResult(activityResult.resultCode, activityResult.data)
         }
@@ -52,12 +54,13 @@ class OpenIdHandlerViewModel : ViewModel() {
         if (operation != null) {
             fragment.arguments?.remove(EXTRA_OPERATION)
             when (operation) {
-                Operation.PERFORM_AUTH -> handlePerformAuthOperationRequest(
-                    startAuthContract!!
-                )
-                Operation.LOGOUT -> handleEndSessionRequest(
-                    logoutContract!!
-                )
+                Operation.PERFORM_AUTH -> startAuthContract?.let { contract ->
+                    handlePerformAuthOperationRequest(contract)
+                } ?: throw IllegalStateException("startAuthContract should not be null!")
+
+                Operation.LOGOUT -> logoutContract?.let { contract ->
+                    handleEndSessionRequest(contract)
+                } ?: throw IllegalStateException("logoutContract should not be null!")
             }
         }
     }
