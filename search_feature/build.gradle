@@ -15,9 +15,9 @@ dependencies {
     implementation project(':common_framework')
     implementation project(':my_library_framework')
     implementation project(':downloads_framework')
-    api project(':search_usecases')
-    api project(':search_data')
-    api project(':search_framework')
+    implementation project(':search_usecases')
+    implementation project(':search_data')
+    implementation project(':search_framework')
 
     implementation project(':navigation_framework')
     implementation project(':common_view')
