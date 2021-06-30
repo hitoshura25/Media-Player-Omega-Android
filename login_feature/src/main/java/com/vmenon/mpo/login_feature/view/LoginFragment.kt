@@ -9,7 +9,7 @@ import com.vmenon.mpo.login_feature.R
 import com.vmenon.mpo.login_feature.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login_feature.di.dagger.LoginComponent
 import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
-import com.vmenon.mpo.login.domain.LoginNavigationLocation
+import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.login_feature.model.LoadingState
 import com.vmenon.mpo.login_feature.model.LoggedInState
 import com.vmenon.mpo.login_feature.model.LoginState

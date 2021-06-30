@@ -2,12 +2,6 @@ apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
-android {
-    buildFeatures {
-        viewBinding true
-    }
-}
-
 dependencies {
     api project(':login_domain')
     implementation project(':login_data')
@@ -20,11 +14,6 @@ dependencies {
 
     implementation Libs.kotlinx_coroutines_core
     implementation Libs.kotlin_stdlib
-    implementation Libs.core_ktx
-    implementation Libs.lifecycle_viewmodel_ktx
-    implementation Libs.appauth
-    implementation Libs.appcompat
-    implementation Libs.material
-    implementation Libs.constraintlayout
-    implementation Libs.legacy_support_v4
+    implementation Libs.retrofit
+    implementation Libs.rxjava
 }
