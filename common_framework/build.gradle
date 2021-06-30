@@ -19,8 +19,8 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_compiler
 
-    api Libs.rxjava
-    api Libs.retrofit
+    implementation Libs.rxjava
+    implementation Libs.retrofit
     implementation Libs.adapter_rxjava2
     implementation Libs.converter_gson
 }
