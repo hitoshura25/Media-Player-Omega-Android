@@ -16,8 +16,8 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.search.databinding.FragmentShowDetailsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.toSearchComponent
-import com.vmenon.mpo.search.domain.ShowDetailsLocation
-import com.vmenon.mpo.search.domain.ShowDetailsParams
+import com.vmenon.mpo.navigation.domain.search.ShowDetailsLocation
+import com.vmenon.mpo.navigation.domain.search.ShowDetailsParams
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.mvi.ShowDetailsViewEffect

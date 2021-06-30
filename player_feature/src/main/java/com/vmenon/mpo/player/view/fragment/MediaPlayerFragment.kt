@@ -88,7 +88,7 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
     override fun onStart() {
         super.onStart()
-        viewModel.connectClient(this).observe(viewLifecycleOwner, Observer {
+        viewModel.connectClient(this).observe(viewLifecycleOwner, {
             updateMediaDisplay()
             playbackMediaRequest?.let {
                 viewModel.playMedia(it)

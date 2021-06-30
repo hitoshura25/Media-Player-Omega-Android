@@ -19,6 +19,6 @@
         android:label="">
         <argument
             android:name="params"
-            app:argType="com.vmenon.mpo.search.domain.ShowDetailsParams" />
+            app:argType="com.vmenon.mpo.navigation.domain.search.ShowDetailsParams" />
     </fragment>
 </navigation>
