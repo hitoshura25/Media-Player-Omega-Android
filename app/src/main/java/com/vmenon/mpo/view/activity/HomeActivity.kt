@@ -9,16 +9,16 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.splitcompat.SplitCompat
-import com.vmenon.mpo.HomeLocation
-import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
+import com.vmenon.mpo.navigation.domain.root.RootLocation
 import com.vmenon.mpo.viewmodel.HomeViewModel
 
 class HomeActivity : BaseActivity<ActivityComponent>(),
-    NavigationOrigin<HomeNavigationParams> by NavigationOrigin.from(HomeLocation) {
+    NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(RootLocation) {
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
