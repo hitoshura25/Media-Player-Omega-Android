@@ -6,6 +6,7 @@ import com.vmenon.mpo.my_library.domain.*
 import com.vmenon.mpo.my_library.usecases.*
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsLocation
 import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.player.domain.PlayerRequestMapper

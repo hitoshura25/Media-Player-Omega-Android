@@ -18,6 +18,6 @@
         android:label="">
         <argument
             android:name="params"
-            app:argType="com.vmenon.mpo.my_library.domain.EpisodeDetailsParams" />
+            app:argType="com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsParams" />
     </fragment>
 </navigation>

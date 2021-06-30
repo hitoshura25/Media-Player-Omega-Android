@@ -15,8 +15,8 @@ import com.vmenon.mpo.library.di.dagger.LibraryComponent
 import com.vmenon.mpo.library.di.dagger.toLibraryComponent
 import com.vmenon.mpo.library.view.adapter.LibraryAdapter
 import com.vmenon.mpo.library.viewmodel.LibraryViewModel
-import com.vmenon.mpo.my_library.domain.EpisodeDetailsLocation
-import com.vmenon.mpo.my_library.domain.EpisodeDetailsParams
+import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsLocation
+import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.navigation.domain.my_library.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
