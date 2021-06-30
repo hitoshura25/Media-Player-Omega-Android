@@ -47,6 +47,6 @@
         app:destination="@id/search_nav_graph">
         <argument
             android:name="params"
-            app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
+            app:argType="com.vmenon.mpo.navigation.domain.search.SearchNavigationParams" />
     </action>
 </navigation>

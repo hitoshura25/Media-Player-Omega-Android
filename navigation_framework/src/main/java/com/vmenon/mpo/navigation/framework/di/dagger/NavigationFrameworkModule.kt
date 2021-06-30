@@ -8,7 +8,7 @@ import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.*
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
-import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named

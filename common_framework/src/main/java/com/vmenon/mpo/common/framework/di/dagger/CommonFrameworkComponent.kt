@@ -13,7 +13,7 @@ import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
-import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import com.vmenon.mpo.system.domain.ThreadUtil
