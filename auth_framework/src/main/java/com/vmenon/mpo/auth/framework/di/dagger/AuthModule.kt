@@ -7,7 +7,7 @@ import com.vmenon.mpo.auth.framework.AuthServiceImpl
 import com.vmenon.mpo.auth.framework.Authenticator
 import com.vmenon.mpo.auth.framework.SharedPrefsAuthState
 import com.vmenon.mpo.auth.framework.openid.OpenIdAuthenticator
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.system.domain.Logger
 import dagger.Module
 import dagger.Provides
 
@@ -32,8 +32,8 @@ object AuthModule {
     fun provideAuthenticator(
         application: Application,
         authState: AuthState,
-        system: System
+        logger: Logger
     ): Authenticator =
-        OpenIdAuthenticator(application, authState, system)
+        OpenIdAuthenticator(application, authState, logger)
 
 }

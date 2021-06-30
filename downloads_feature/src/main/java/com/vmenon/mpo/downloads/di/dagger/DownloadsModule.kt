@@ -1,9 +1,9 @@
 package com.vmenon.mpo.downloads.di.dagger
 
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.downloads.usecases.DownloadsInteractors
 import com.vmenon.mpo.downloads.usecases.GetQueuedDownloads
+import com.vmenon.mpo.system.domain.ThreadUtil
 import dagger.Module
 import dagger.Provides
 
@@ -12,9 +12,9 @@ object DownloadsModule {
     @Provides
     fun provideDownloadsInteractors(
         downloadsService: DownloadsService,
-        system: System
+        threadUtil: ThreadUtil
     ): DownloadsInteractors =
         DownloadsInteractors(
-            GetQueuedDownloads(downloadsService, system)
+            GetQueuedDownloads(downloadsService, threadUtil)
         )
 }

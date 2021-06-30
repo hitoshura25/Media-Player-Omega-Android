@@ -9,6 +9,7 @@ java {
 }
 
 dependencies {
+    implementation project(':system_domain')
     implementation project(':common_domain')
     implementation project(':my_library_domain')
     implementation project(':player_domain')

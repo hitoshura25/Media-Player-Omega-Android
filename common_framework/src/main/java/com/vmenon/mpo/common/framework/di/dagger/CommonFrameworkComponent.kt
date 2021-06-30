@@ -3,7 +3,6 @@ package com.vmenon.mpo.common.framework.di.dagger
 import android.app.Application
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
@@ -15,6 +14,9 @@ import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.system.domain.Clock
+import com.vmenon.mpo.system.domain.Logger
+import com.vmenon.mpo.system.domain.ThreadUtil
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Component
 
@@ -39,7 +41,9 @@ interface CommonFrameworkComponent {
     }
 
     fun application(): Application
-    fun system(): System
+    fun logger(): Logger
+    fun clock(): Clock
+    fun threadUtil(): ThreadUtil
     fun authService(): AuthService
     fun api(): MediaPlayerOmegaRetrofitService
 

@@ -8,8 +8,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.system.domain.Logger
 
 import javax.inject.Inject
 
@@ -20,7 +20,7 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
     protected lateinit var navigationController: NavigationController
 
     @Inject
-    protected lateinit var system: System
+    protected lateinit var logger: Logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -20,7 +20,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +30,6 @@ import java.lang.ref.WeakReference
 
 class DefaultNavigationController(
     private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>,
-    private val system: System,
     private val hostFragmentId: Int,
     private val navGraphId: Int
 ) :

@@ -1,15 +1,15 @@
 package com.vmenon.mpo.downloads.framework
 
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.data.DownloadsPersistenceDataSource
 import com.vmenon.mpo.downloads.domain.DownloadModel
 import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.entity.DownloadEntity
+import com.vmenon.mpo.system.domain.Logger
 
 class RoomDownloadsPersistenceDataSource(
     private val downloadDao: DownloadDao,
-    private val system: System
+    private val logger: Logger
 ) :
     DownloadsPersistenceDataSource {
     override suspend fun insertOrUpdate(download: DownloadModel): DownloadModel =
@@ -43,7 +43,7 @@ class RoomDownloadsPersistenceDataSource(
         downloadRequestType = try {
             DownloadRequestType.valueOf(downloadRequestType)
         } catch (e: Exception) {
-            system.println("Error determining DownloadRequestType", e)
+            logger.println("Error determining DownloadRequestType", e)
             DownloadRequestType.UNKNOWN
         },
         requesterId = requesterId,

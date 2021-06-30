@@ -9,8 +9,9 @@ java {
 }
 
 dependencies {
-    implementation project(':downloads_domain')
     implementation project(':common_domain')
+    implementation project(':downloads_domain')
+    implementation project(':system_domain')
 
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core

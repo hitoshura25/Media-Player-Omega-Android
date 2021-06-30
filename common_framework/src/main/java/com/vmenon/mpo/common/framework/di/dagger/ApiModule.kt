@@ -5,7 +5,9 @@ import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.common.framework.retrofit.OAuthInterceptor
 import com.vmenon.mpo.common.framework.retrofit.RetryInterceptor
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.system.domain.Clock
+import com.vmenon.mpo.system.domain.Logger
+import com.vmenon.mpo.system.domain.ThreadUtil
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -34,10 +36,15 @@ object ApiModule {
 
     @Provides
     @CommonFrameworkScope
-    fun provideHttpClient(authService: AuthService, system: System): OkHttpClient {
+    fun provideHttpClient(
+        authService: AuthService,
+        logger: Logger,
+        threadUtil: ThreadUtil,
+        clock: Clock
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(OAuthInterceptor(authService, system))
-            .addInterceptor(RetryInterceptor(MAX_RETRIES, system))
+            .addInterceptor(OAuthInterceptor(authService, logger, clock))
+            .addInterceptor(RetryInterceptor(MAX_RETRIES, logger, threadUtil))
             .build()
     }
 

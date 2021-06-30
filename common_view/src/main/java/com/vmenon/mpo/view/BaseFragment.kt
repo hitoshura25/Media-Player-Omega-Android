@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.system.domain.Logger
 import com.vmenon.mpo.view.activity.BaseActivity
 import javax.inject.Inject
 
@@ -23,16 +23,16 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
     protected lateinit var navigationController: NavigationController
 
     @Inject
-    protected lateinit var system: System
+    protected lateinit var logger: Logger
 
     override fun onDestroyView() {
         super.onDestroyView()
-        system.println("${javaClass.name} onDestroyView")
+        logger.println("${javaClass.name} onDestroyView")
     }
 
     override fun onStop() {
         super.onStop()
-        system.println("${javaClass.name} onStop")
+        logger.println("${javaClass.name} onStop")
 
     }
 
@@ -40,34 +40,34 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
         super.onAttach(context)
         component = setupComponent(context.applicationContext)
         inject(component)
-        system.println("${javaClass.name} onAttach")
+        logger.println("${javaClass.name} onAttach")
     }
 
     override fun onPause() {
         super.onPause()
-        system.println("${javaClass.name} onPause")
+        logger.println("${javaClass.name} onPause")
 
     }
 
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        system.println("${javaClass.name} onActivityCreated")
+        logger.println("${javaClass.name} onActivityCreated")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        system.println("${javaClass.name} onCreate")
+        logger.println("${javaClass.name} onCreate")
     }
 
     override fun onStart() {
         super.onStart()
-        system.println("${javaClass.name} onStart")
+        logger.println("${javaClass.name} onStart")
     }
 
     override fun onResume() {
         super.onResume()
-        system.println("${javaClass.name} onResume")
+        logger.println("${javaClass.name} onResume")
         if (this is NavigationOrigin<*>) {
             navigationController.setOrigin(this)
         }
@@ -75,7 +75,7 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        system.println("${javaClass.name} onDetach")
+        logger.println("${javaClass.name} onDetach")
     }
 
     override fun onCreateView(
@@ -83,13 +83,13 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        system.println("${javaClass.name} onCreateView")
+        logger.println("${javaClass.name} onCreateView")
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        system.println("${javaClass.name} onViewCreated")
+        logger.println("${javaClass.name} onViewCreated")
     }
 
     protected fun drawerLayout(): DrawerLayout? =

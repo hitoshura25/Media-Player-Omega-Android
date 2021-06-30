@@ -1,6 +1,5 @@
 package com.vmenon.mpo.navigation.framework.di.dagger
 
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.downloads.domain.DownloadsLocation
 import com.vmenon.mpo.login.domain.LoginNavigationLocation
 import com.vmenon.mpo.my_library.domain.MyLibraryNavigationLocation
@@ -22,8 +21,7 @@ object NavigationFrameworkModule {
         shows: NavigationDestination<SubscribedShowsLocation>,
         library: NavigationDestination<MyLibraryNavigationLocation>,
         account: NavigationDestination<LoginNavigationLocation>,
-        downloads: NavigationDestination<DownloadsLocation>,
-        system: System
+        downloads: NavigationDestination<DownloadsLocation>
     ): NavigationController = DefaultNavigationController(
         mapOf(
             Pair(R.id.subscribed_shows_nav_graph, shows),
@@ -31,7 +29,6 @@ object NavigationFrameworkModule {
             Pair(R.id.login_nav_graph, account),
             Pair(R.id.downloads_nav_graph, downloads)
         ),
-        system,
         hostFragmentId,
         R.navigation.nav_graph
     )

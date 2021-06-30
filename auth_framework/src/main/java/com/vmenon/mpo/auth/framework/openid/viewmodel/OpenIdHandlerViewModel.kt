@@ -12,6 +12,7 @@ import com.vmenon.mpo.auth.framework.Authenticator
 import com.vmenon.mpo.auth.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment.Companion.EXTRA_OPERATION
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment.Companion.Operation
+import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
@@ -24,7 +25,7 @@ class OpenIdHandlerViewModel : ViewModel() {
     lateinit var authenticator: Authenticator
 
     @Inject
-    lateinit var system: com.vmenon.mpo.common.domain.System
+    lateinit var logger: Logger
 
     private val authenticated = MutableLiveData<Boolean>()
     private var startAuthContract: ActivityResultLauncher<Intent>? = null
@@ -85,7 +86,7 @@ class OpenIdHandlerViewModel : ViewModel() {
                 authenticated.postValue(true)
             }
         } else {
-            system.println("Issue with handling auth result $resultCode $data")
+            logger.println("Issue with handling auth result $resultCode $data")
             authenticated.postValue(false)
         }
     }

@@ -1,7 +1,6 @@
 package com.vmenon.mpo.login.framework.di
 
 import android.app.Application
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.login.data.LoginRepository
 import com.vmenon.mpo.login.data.UserCache
@@ -9,6 +8,8 @@ import com.vmenon.mpo.login.data.UserRegistry
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.framework.MpoApiUserRegistry
 import com.vmenon.mpo.login.framework.SharedPrefsUserCache
+import com.vmenon.mpo.system.domain.Clock
+import com.vmenon.mpo.system.domain.Logger
 import dagger.Module
 import dagger.Provides
 import java.util.concurrent.TimeUnit
@@ -19,11 +20,11 @@ object LoginFrameworkModule {
     @LoginFrameworkScope
     fun provideUserCache(
         application: Application,
-        system: System
+        clock: Clock
     ): UserCache =
         SharedPrefsUserCache(
             application,
-            system,
+            clock,
             TimeUnit.MINUTES.toMillis(15)
         )
 
@@ -32,11 +33,11 @@ object LoginFrameworkModule {
     fun provideLoginService(
         userRegistry: UserRegistry,
         userCache: UserCache,
-        system: System
+        logger: Logger
     ): LoginService = LoginRepository(
         userRegistry,
         userCache,
-        system
+        logger
     )
 
     @Provides

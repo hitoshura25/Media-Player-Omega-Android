@@ -9,10 +9,5 @@ java {
 }
 
 dependencies {
-    api project(':login_domain')
-    implementation project(':system_domain')
-    implementation project(':common_domain')
-
     implementation Libs.kotlin_stdlib
-    implementation Libs.kotlinx_coroutines_core
 }

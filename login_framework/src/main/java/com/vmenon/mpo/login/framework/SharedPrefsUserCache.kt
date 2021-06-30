@@ -1,13 +1,13 @@
 package com.vmenon.mpo.login.framework
 
 import android.content.Context
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.data.UserCache
 import com.vmenon.mpo.login.domain.User
+import com.vmenon.mpo.system.domain.Clock
 
 class SharedPrefsUserCache(
     context: Context,
-    private val system: System,
+    private val clock: Clock,
     private val cacheExpirationMillis: Long
 ) : UserCache {
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
@@ -16,7 +16,7 @@ class SharedPrefsUserCache(
     override suspend fun getCachedUser(): User? = if (isUserValid()) currentUser?.user else null
 
     override suspend fun cacheUser(user: User) {
-        val cachedUser = CachedUser(user, system.currentTimeMillis())
+        val cachedUser = CachedUser(user, clock.currentTimeMillis())
         storeToPrefs(cachedUser)
         currentUser = cachedUser
     }
@@ -27,7 +27,7 @@ class SharedPrefsUserCache(
     }
 
     private fun isUserValid(): Boolean = currentUser?.let { currentUser ->
-        system.currentTimeMillis() - currentUser.lastUpdated < cacheExpirationMillis
+        clock.currentTimeMillis() - currentUser.lastUpdated < cacheExpirationMillis
     } ?: false
 
 
@@ -35,7 +35,7 @@ class SharedPrefsUserCache(
         val email = sharedPrefs.getString(EMAIL, null)
         val firstName = sharedPrefs.getString(FIRST_NAME, null)
         val lastName = sharedPrefs.getString(LAST_NAME, null)
-        val lastUpdated = sharedPrefs.getLong(LAST_UPDATED, system.currentTimeMillis())
+        val lastUpdated = sharedPrefs.getLong(LAST_UPDATED, clock.currentTimeMillis())
         return if (email != null && firstName != null && lastName != null) {
             CachedUser(User(email, firstName, lastName), lastUpdated)
         } else {

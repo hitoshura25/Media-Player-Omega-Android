@@ -1,7 +1,8 @@
 package com.vmenon.mpo.common.framework.retrofit
 
 import com.vmenon.mpo.auth.domain.AuthService
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.system.domain.Clock
+import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -15,7 +16,8 @@ import java.net.HttpURLConnection
  */
 class OAuthInterceptor(
     private val authService: AuthService,
-    private val system: System
+    private val logger: Logger,
+    private val clock: Clock
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
@@ -40,8 +42,8 @@ class OAuthInterceptor(
         chain: Interceptor.Chain,
         request: Request
     ): ResponseWithCredentials = runBlocking {
-        authService.runWithFreshCredentialsIfNecessary(system.currentTimeMillis()) { refreshed ->
-            system.println("Refreshed token $refreshed")
+        authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
+            logger.println("Refreshed token $refreshed")
             val credentials = authService.getCredentials()
             val newRequest = if (credentials != null) {
                 request.newBuilder().addHeader(

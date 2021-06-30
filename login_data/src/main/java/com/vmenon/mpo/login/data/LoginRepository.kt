@@ -1,13 +1,13 @@
 package com.vmenon.mpo.login.data
 
-import com.vmenon.mpo.common.domain.System
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.domain.User
+import com.vmenon.mpo.system.domain.Logger
 
 class LoginRepository(
     private val registry: UserRegistry,
     private val userCache: UserCache,
-    private val system: System
+    private val logger: Logger
 ) : LoginService {
     override suspend fun registerUser(
         firstName: String,
@@ -27,7 +27,7 @@ class LoginRepository(
                 Result.success(freshUser)
             }
         } catch (exception: GetUserException) {
-            system.println("Clearing out credentials", exception)
+            logger.println("Clearing out credentials", exception)
             userCache.clear()
             Result.failure(exception)
         }

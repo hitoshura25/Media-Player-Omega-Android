@@ -1,7 +1,9 @@
 package com.vmenon.mpo.system.framework.di.dagger
 
 import android.app.Application
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.system.domain.Clock
+import com.vmenon.mpo.system.domain.Logger
+import com.vmenon.mpo.system.domain.ThreadUtil
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -15,6 +17,8 @@ interface SystemFrameworkComponent {
         fun build(): SystemFrameworkComponent
     }
 
-    fun system(): System
+    fun logger(): Logger
+    fun clock(): Clock
+    fun threadUtil(): ThreadUtil
     fun application(): Application
 }

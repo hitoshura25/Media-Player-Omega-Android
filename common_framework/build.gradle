@@ -5,6 +5,7 @@ dependencies {
     api project(':api_mpo')
     api project(':common_domain')
     api project(':navigation_domain')
+    api project(':system_domain')
 
     implementation project(':auth_framework')
     implementation project(':system_framework')

@@ -6,7 +6,7 @@ import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import com.vmenon.mpo.auth.domain.Credentials
 import com.vmenon.mpo.auth.framework.BuildConfig
-import com.vmenon.mpo.common.domain.System
+import com.vmenon.mpo.system.domain.Logger
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationRequest.Scope
@@ -24,7 +24,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class OpenIdAuthenticatorEngine(context: Context, private val system: System) {
+class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
     private var serviceConfiguration: AuthorizationServiceConfiguration? = null
     private var authorizationService = AuthorizationService(context.applicationContext)
 
@@ -73,7 +73,7 @@ class OpenIdAuthenticatorEngine(context: Context, private val system: System) {
         exception: AuthorizationException?
     ) {
         if (exception != null) {
-            system.println("End Session error", exception)
+            logger.println("End Session error", exception)
         }
     }
 
