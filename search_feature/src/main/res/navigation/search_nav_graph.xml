@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/nav_search_results">
+    <fragment
+        android:id="@+id/nav_search_results"
+        android:name="com.vmenon.mpo.search.view.fragment.ShowSearchResultsFragment"
+        android:label="">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.search.domain.SearchNavigationParams" />
+        <action
+            android:id="@+id/action_showSearchResultsFragment_to_showDetailsFragment"
+            app:destination="@id/nav_search_details" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_search_details"
+        android:name="com.vmenon.mpo.search.view.fragment.ShowDetailsFragment"
+        android:label="">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.search.domain.ShowDetailsParams" />
+    </fragment>
+</navigation>

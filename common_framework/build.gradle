@@ -1,0 +1,26 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    api project(':api_mpo')
+    api project(':common_domain')
+    api project(':navigation_domain')
+    api project(':system_domain')
+
+    implementation project(':auth_framework')
+    implementation project(':system_framework')
+
+    implementation project(':common_view')
+    implementation project(':persistence_room')
+    implementation project(':navigation_framework')
+
+    implementation Libs.kotlinx_coroutines_core
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    api Libs.rxjava
+    api Libs.retrofit
+    implementation Libs.adapter_rxjava2
+    implementation Libs.converter_gson
+}

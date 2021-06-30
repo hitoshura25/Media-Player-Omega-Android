@@ -25,15 +25,18 @@ public object Libs {
     public const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.5.10"
 
-    public const val kotlin_gradle_plugin: String =
-            "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
-
     public const val kotlin_scripting_compiler_embeddable: String =
             "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.5.10"
 
     public const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:1.5.10"
 
     public const val kotlin_stdlib_jdk8: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.10"
+
+    public const val kotlin_gradle_plugin: String =
+            "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
+
+    public const val navigation_dynamic_features_fragment: String =
+            "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
 
     public const val navigation_fragment_ktx: String =
             "androidx.navigation:navigation-fragment-ktx:2.3.5"
@@ -43,21 +46,11 @@ public object Libs {
 
     public const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:2.3.5"
 
-    public const val lifecycle_common_java8: String =
-            "androidx.lifecycle:lifecycle-common-java8:2.3.1"
-
     public const val lifecycle_livedata_ktx: String =
             "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
 
-    public const val lifecycle_process: String = "androidx.lifecycle:lifecycle-process:2.3.1"
-
-    public const val lifecycle_reactivestreams_ktx: String =
-            "androidx.lifecycle:lifecycle-reactivestreams-ktx:2.3.1"
-
     public const val lifecycle_runtime_ktx: String =
             "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
-
-    public const val lifecycle_service: String = "androidx.lifecycle:lifecycle-service:2.3.1"
 
     public const val lifecycle_viewmodel_ktx: String =
             "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
@@ -97,6 +90,8 @@ public object Libs {
 
     public const val com_android_support_multidex: String = "com.android.support:multidex:1.0.3"
 
+    public const val com_google_android_play_core: String = "com.google.android.play:core:1.10.0"
+
     public const val androidx_media_media: String = "androidx.media:media:1.3.1"
 
     public const val junit_junit: String = "junit:junit:4.13.2"
@@ -107,6 +102,15 @@ public object Libs {
     public const val au_com_dius_pact_gradle_plugin: String =
             "au.com.dius.pact:au.com.dius.pact.gradle.plugin:4.1.0"
 
+    public const val firebase_crashlytics_gradle: String =
+            "com.google.firebase:firebase-crashlytics-gradle:2.7.0"
+
+    public const val firebase_crashlytics_ktx: String =
+            "com.google.firebase:firebase-crashlytics-ktx:18.0.1"
+
+    public const val firebase_analytics_ktx: String =
+            "com.google.firebase:firebase-analytics-ktx:19.0.0"
+
     public const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:1.0.0"
 
     public const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:2.0.4"
@@ -115,13 +119,19 @@ public object Libs {
 
     public const val work_runtime_ktx: String = "androidx.work:work-runtime-ktx:2.5.0"
 
+    public const val google_services: String = "com.google.gms:google-services:4.3.8"
+
     public const val logback_classic: String = "ch.qos.logback:logback-classic:1.2.3"
 
     public const val exoplayer_core: String = "com.google.android.exoplayer:exoplayer-core:2.14.0"
 
     public const val espresso_core: String = "androidx.test.espresso:espresso-core:3.3.0"
 
+    public const val firebase_bom: String = "com.google.firebase:firebase-bom:28.1.0"
+
     public const val fragment_ktx: String = "androidx.fragment:fragment-ktx:1.3.4"
+
+    public const val javax_inject: String = "javax.inject:javax.inject:1"
 
     public const val mockito_core: String = "org.mockito:mockito-core:3.11.0"
 
@@ -135,11 +145,7 @@ public object Libs {
 
     public const val `annotation`: String = "androidx.annotation:annotation:1.1.0"
 
-    public const val jsr250_api: String = "javax.annotation:jsr250-api:1.0"
-
     public const val appcompat: String = "androidx.appcompat:appcompat:1.3.0"
-
-    public const val cardview: String = "androidx.cardview:cardview:1.0.0"
 
     public const val core_ktx: String = "androidx.core:core-ktx:1.5.0"
 
@@ -152,6 +158,8 @@ public object Libs {
     public const val stetho: String = "com.facebook.stetho:stetho:1.6.0"
 
     public const val glide: String = "com.github.bumptech.glide:glide:4.12.0"
+
+    public const val guava: String = "com.google.guava:guava:27.1-android"
 
     public const val gson: String = "com.google.code.gson:gson:2.8.7"
 }

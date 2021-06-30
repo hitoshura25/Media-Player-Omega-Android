@@ -8,22 +8,17 @@ import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.android.play.core.splitcompat.SplitCompat
 import com.vmenon.mpo.HomeLocation
 import com.vmenon.mpo.HomeNavigationParams
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
-import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.player.domain.PlayerNavigationLocation
 import com.vmenon.mpo.viewmodel.HomeViewModel
-import javax.inject.Inject
 
 class HomeActivity : BaseActivity<ActivityComponent>(),
     NavigationOrigin<HomeNavigationParams> by NavigationOrigin.from(HomeLocation) {
-
-    @Inject
-    lateinit var playerDestination: NavigationDestination<PlayerNavigationLocation>
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
@@ -34,6 +29,11 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
     override fun inject(component: ActivityComponent) {
         component.inject(this)
         component.inject(viewModel)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        SplitCompat.install(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

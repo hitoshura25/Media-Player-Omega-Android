@@ -1,0 +1,15 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation project(':auth_domain')
+    implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
+}

@@ -2,19 +2,36 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file(keystore_file)
+            storePassword keystore_password
+            keyAlias keystore_key_alias
+            keyPassword keystore_key_password
+        }
+    }
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
         applicationId "com.vmenon.mpo"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 7
+        versionName "1.7"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
     }
+    dynamicFeatures = [
+            ':downloads_feature',
+            ':login_feature',
+            ':my_library_feature',
+            ':player_feature',
+            ':search_feature'
+    ]
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -27,6 +44,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     packagingOptions {
@@ -40,44 +58,24 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':api-mpo')
-    implementation project(':api-mpo-retrofit')
+    implementation project(':auth_framework')
+    implementation project(':common_framework')
+    implementation project(':system_framework')
+    implementation project(':downloads_framework')
+    implementation project(':my_library_framework')
+    implementation project(':player_framework')
+    implementation project(':search_framework')
+    implementation project(':navigation_framework')
+    implementation project(':common_converters')
+    implementation project(':common_view')
+    implementation project(':persistence_room')
 
-    implementation project(':navigation-domain')
-    implementation project(':navigation-framework')
+    implementation Libs.com_google_android_play_core
 
-    implementation project(':view')
-
-    implementation project(':downloads-feature')
-    implementation project(':login-feature')
-    implementation project(':my-library-feature')
-    implementation project(':player-feature')
-    implementation project(':search-feature')
-
-    implementation project(':persistence-room')
-
-    implementation Libs.material
-    implementation Libs.cardview
-    implementation Libs.recyclerview
-    implementation Libs.androidx_media_media
     implementation Libs.constraintlayout
 
-    // ViewModel
     implementation Libs.lifecycle_viewmodel_ktx
-    // LiveData
     implementation Libs.lifecycle_livedata_ktx
-
-    // alternately - if using Java8, use the following instead of lifecycle-compiler
-    implementation Libs.lifecycle_common_java8
-
-    // optional - helpers for implementing LifecycleOwner in a Service
-    implementation Libs.lifecycle_service
-
-    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
-    implementation Libs.lifecycle_process
-
-    // optional - ReactiveStreams support for LiveData
-    implementation Libs.lifecycle_reactivestreams_ktx
 
     implementation Libs.dagger
     implementation Libs.legacy_support_v4
@@ -86,12 +84,9 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_android_processor
 
-    implementation Libs.glide
-
-    implementation Libs.jsr250_api
-
     testImplementation Libs.junit_junit
-    implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.kotlin_stdlib
+    implementation Libs.kotlinx_coroutines_core
 
     implementation Libs.com_android_support_multidex
     implementation Libs.work_runtime_ktx
@@ -101,6 +96,11 @@ dependencies {
 
     debugImplementation Libs.stetho
 
+    implementation platform(Libs.firebase_bom)
+    implementation Libs.firebase_analytics_ktx
+    implementation Libs.firebase_crashlytics_ktx
+    implementation Libs.guava
+
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
     androidTestImplementation Libs.uiautomator
@@ -108,6 +108,64 @@ dependencies {
     androidTestImplementation Libs.cucumber_android
     androidTestImplementation Libs.junit_ktx
 }
-repositories {
-    mavenCentral()
+ext {
+    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar"
 }
+
+def buildBundleApks(buildType) {
+    def command = [
+            "java",
+            "-jar",
+            BUNDLE_TOOL,
+            "build-apks",
+            "--bundle=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.aab",
+            "--output=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.apks",
+            "--local-testing",
+            "--overwrite"
+    ]
+
+    if (buildType == 'release') {
+        command.add("--ks=$keystore_file")
+        command.add("--ks-pass=pass:$keystore_password")
+        command.add("--ks-key-alias=$keystore_key_alias")
+    }
+
+    exec {
+        commandLine command.toArray()
+    }
+}
+
+def deployBundleApks(buildType) {
+    exec {
+        environment "ANDROID_HOME", ANDROID_HOME
+        commandLine "java", "-jar",
+                BUNDLE_TOOL,
+                "install-apks",
+                "--apks=${project.buildDir}/outputs/bundle/$buildType/app-${buildType}.apks"
+    }
+}
+
+task buildBundleApksDebug(dependsOn: 'bundleDebug') {
+    doLast {
+        buildBundleApks('debug')
+    }
+}
+
+task deployBundleApksDebug(dependsOn: 'buildBundleApksDebug') {
+    doLast {
+        deployBundleApks('debug')
+    }
+}
+
+task buildBundleApksRelease(dependsOn: 'bundleRelease') {
+    doLast {
+        buildBundleApks('release')
+    }
+}
+
+task deployBundleApksRelease(dependsOn: 'buildBundleApksRelease') {
+    doLast {
+        deployBundleApks('release')
+    }
+}
+

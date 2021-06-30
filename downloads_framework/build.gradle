@@ -1,0 +1,22 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    api project(':downloads_domain')
+    implementation project(':downloads_data')
+    implementation project(':persistence_room')
+
+    implementation project(':common_framework')
+    implementation project(':extensions')
+
+    implementation Libs.kotlinx_coroutines_core
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+}

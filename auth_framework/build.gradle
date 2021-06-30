@@ -1,0 +1,37 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    defaultConfig {
+        def appAuthRedirectScheme = 'com.vmenon.mpo'
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': appAuthRedirectScheme
+        ]
+        buildConfigField(
+                "String",
+                "APP_AUTH_REDIRECT_SCHEME",
+                "\"$appAuthRedirectScheme\""
+        )
+        buildConfigField(
+                "String",
+                "OAUTH_CLIENT_ID",
+                "\"0oavpdvnegnKXHu9F5d6\""
+        )
+    }
+}
+
+dependencies {
+    api project(':auth_domain')
+    implementation project(':auth_data')
+    implementation project(':common_view')
+    implementation project(':navigation_framework')
+    implementation project(':system_framework')
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.appauth
+    implementation Libs.appcompat
+
+}

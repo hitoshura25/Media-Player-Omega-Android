@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "785081000696",
+    "project_id": "mediaplayeromega-fef84",
+    "storage_bucket": "mediaplayeromega-fef84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785081000696:android:075eb1342617b8f220910d",
+        "android_client_info": {
+          "package_name": "com.vmenon.mpo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785081000696-vi9hkcarfjps9iaqroenlanjr0ovdidp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPzB6WSndq789QQfhE0HeKfQ1bOTRyBEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785081000696-vi9hkcarfjps9iaqroenlanjr0ovdidp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

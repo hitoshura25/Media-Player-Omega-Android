@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.vmenon.mpo.player"
+    xmlns:dist="http://schemas.android.com/apk/distribution">
+    <dist:module
+        dist:instant="false"
+        dist:title="@string/title_player_feature">
+        <dist:delivery>
+            <dist:on-demand />
+        </dist:delivery>
+        <dist:fusing dist:include="true" />
+    </dist:module>
+</manifest>
