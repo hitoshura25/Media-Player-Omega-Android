@@ -9,9 +9,9 @@ java {
 }
 
 dependencies {
-    api project(':api_mpo')
-    api project(':common_domain')
     api project(':search_domain')
+    implementation project(':api_mpo')
+    implementation project(':common_domain')
 
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
