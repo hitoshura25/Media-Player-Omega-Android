@@ -3,10 +3,10 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api project(':player_domain')
     implementation project(':common_framework')
     implementation project(':extensions')
-    api project(':my_library_domain')
-    api project(':player_domain')
+    implementation project(':my_library_domain')
     implementation project(':common_view')
 
     implementation Libs.kotlinx_coroutines_core
