@@ -2,9 +2,9 @@ apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    api project(':api_mpo')
-    api project(':persistence_room')
-    api project(':search_data')
+    implementation project(':api_mpo')
+    implementation project(':persistence_room')
+    implementation project(':search_data')
     implementation project(':common_framework')
 
     implementation Libs.kotlinx_coroutines_core
