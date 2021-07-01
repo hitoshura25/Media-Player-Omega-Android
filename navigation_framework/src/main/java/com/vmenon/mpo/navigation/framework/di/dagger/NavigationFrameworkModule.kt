@@ -16,6 +16,7 @@ import javax.inject.Named
 @Module
 object NavigationFrameworkModule {
     @Provides
+    @NavigationFrameworkScope
     fun providesNavigationController(
         @Named("navigationHostFragmentId") hostFragmentId: Int,
         shows: NavigationDestination<SubscribedShowsLocation>,
@@ -34,10 +35,12 @@ object NavigationFrameworkModule {
     )
 
     @Provides
+    @NavigationFrameworkScope
     fun provideDownloadsNavigationDestination(): NavigationDestination<DownloadsLocation> =
         AndroidNavigationDestination.fromNoParams(DownloadsLocation, R.id.downloads_nav_graph)
 
     @Provides
+    @NavigationFrameworkScope
     fun provideLibraryNavigationDestination(): NavigationDestination<MyLibraryNavigationLocation> =
         AndroidNavigationDestination.fromNoParams(
             MyLibraryNavigationLocation,
@@ -45,6 +48,7 @@ object NavigationFrameworkModule {
         )
 
     @Provides
+    @NavigationFrameworkScope
     fun provideShowsNavigationDestination(): NavigationDestination<SubscribedShowsLocation> =
         AndroidNavigationDestination.fromNoParams(
             SubscribedShowsLocation,
@@ -52,10 +56,12 @@ object NavigationFrameworkModule {
         )
 
     @Provides
+    @NavigationFrameworkScope
     fun provideLoginNavigationDestination(): NavigationDestination<LoginNavigationLocation> =
         AndroidNavigationDestination.fromNoParams(LoginNavigationLocation, R.id.login_nav_graph)
 
     @Provides
+    @NavigationFrameworkScope
     fun providePlayerNavigationDestination(): NavigationDestination<PlayerNavigationLocation> =
         AndroidNavigationDestination.fromParams(
             PlayerNavigationLocation,
@@ -65,6 +71,7 @@ object NavigationFrameworkModule {
         }
 
     @Provides
+    @NavigationFrameworkScope
     fun provideSearchNavigationDestination(): NavigationDestination<SearchNavigationLocation> =
         AndroidNavigationDestination.fromParams(
             SearchNavigationLocation,

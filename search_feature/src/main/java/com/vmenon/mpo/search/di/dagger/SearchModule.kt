@@ -16,6 +16,7 @@ import dagger.Provides
 @Module
 class SearchModule {
     @Provides
+    @SearchScope
     fun provideSearchInteractors(
         showSearchService: ShowSearchService,
         myLibraryService: MyLibraryService,
@@ -28,6 +29,7 @@ class SearchModule {
     )
 
     @Provides
+    @SearchScope
     fun provideShowDetailsNavigationDestination(): NavigationDestination<ShowDetailsLocation> =
         AndroidNavigationDestination.fromParams(
             ShowDetailsLocation,

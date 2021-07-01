@@ -10,6 +10,7 @@ import dagger.Provides
 @Module
 object DownloadsModule {
     @Provides
+    @DownloadsScope
     fun provideDownloadsInteractors(
         downloadsService: DownloadsService,
         threadUtil: ThreadUtil

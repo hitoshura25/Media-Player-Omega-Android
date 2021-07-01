@@ -14,6 +14,7 @@ import dagger.Provides
 @Module
 object DownloadsFrameworkModule {
     @Provides
+    @DownloadsFrameworkScope
     fun provideDownloadsService(
         application: Application,
         logger: Logger,

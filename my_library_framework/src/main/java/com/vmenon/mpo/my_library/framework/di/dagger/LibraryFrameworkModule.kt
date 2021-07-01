@@ -17,6 +17,7 @@ import dagger.Provides
 @Module
 object LibraryFrameworkModule {
     @Provides
+    @LibraryFrameworkScope
     fun provideLibraryService(
         showPersistenceDataSource: ShowPersistenceDataSource,
         episodePersistenceDataSource: EpisodePersistenceDataSource,
@@ -28,12 +29,14 @@ object LibraryFrameworkModule {
     )
 
     @Provides
+    @LibraryFrameworkScope
     fun provideShowPersistenceDataSource(
         showDao: ShowDao
     ): ShowPersistenceDataSource =
         RoomShowPersistenceDataSource(showDao)
 
     @Provides
+    @LibraryFrameworkScope
     fun provideEpisodePersistenceDataSource(
         episodeDao: EpisodeDao
     ): EpisodePersistenceDataSource =
@@ -42,6 +45,7 @@ object LibraryFrameworkModule {
         )
 
     @Provides
+    @LibraryFrameworkScope
     fun provideShowUpdateDataSource(api: MediaPlayerOmegaRetrofitService): ShowUpdateDataSource =
         MpoRetrofitApiShowUpdateDataSource(api)
 
