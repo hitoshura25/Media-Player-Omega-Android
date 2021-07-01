@@ -14,11 +14,13 @@ import dagger.Provides
 @Module
 object SearchFrameworkModule {
     @Provides
+    @SearchFrameworkScope
     fun provideSearchApiDataSource(
         api: MediaPlayerOmegaRetrofitService
     ): SearchApiDataSource = MpoRetrofitApiSearchApiDataSource(api)
 
     @Provides
+    @SearchFrameworkScope
     fun searchCacheDataSource(
         showSearchResultDao: ShowSearchResultDao
     ): SearchCacheDataSource = RoomSearchCacheDataSource(
@@ -26,6 +28,7 @@ object SearchFrameworkModule {
     )
 
     @Provides
+    @SearchFrameworkScope
     fun provideSearchService(
         searchApiDataSource: SearchApiDataSource,
         searchCacheDataSource: SearchCacheDataSource

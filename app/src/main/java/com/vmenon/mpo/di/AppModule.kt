@@ -14,6 +14,7 @@ import dagger.Provides
 @Module
 object AppModule {
     @Provides
+    @AppScope
     fun provideInteractors(
         downloadsService: DownloadsService,
         myLibraryService: MyLibraryService,

@@ -11,6 +11,7 @@ import dagger.Provides
 @Module
 object PlayerModule {
     @Provides
+    @PlayerScope
     fun providePlayerInteractors(
         playerEngine: MediaPlayerEngine,
         converter: NavigationParamsConverter,
