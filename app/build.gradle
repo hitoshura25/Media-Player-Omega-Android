@@ -94,12 +94,13 @@ dependencies {
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
 
-    debugImplementation Libs.stetho
-
     implementation platform(Libs.firebase_bom)
     implementation Libs.firebase_analytics_ktx
     implementation Libs.firebase_crashlytics_ktx
     implementation Libs.guava
+
+    debugImplementation Libs.stetho
+    debugImplementation Libs.leakcanary_android
 
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
