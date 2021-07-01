@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player.framework
+package com.vmenon.mpo.my_library.framework
 
 import android.media.MediaMetadataRetriever
 import com.vmenon.mpo.extensions.useFileDescriptor

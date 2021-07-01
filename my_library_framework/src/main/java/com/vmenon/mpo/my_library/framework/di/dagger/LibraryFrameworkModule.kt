@@ -5,17 +5,24 @@ import com.vmenon.mpo.my_library.data.EpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.data.MyLibraryRepository
 import com.vmenon.mpo.my_library.data.ShowPersistenceDataSource
 import com.vmenon.mpo.my_library.data.ShowUpdateDataSource
+import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
+import com.vmenon.mpo.my_library.framework.EpisodeModelPlayerRequestMapper
 import com.vmenon.mpo.my_library.framework.MpoRetrofitApiShowUpdateDataSource
 import com.vmenon.mpo.my_library.framework.RoomEpisodePersistenceDataSource
 import com.vmenon.mpo.my_library.framework.RoomShowPersistenceDataSource
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
 import com.vmenon.mpo.persistence.room.dao.ShowDao
+import com.vmenon.mpo.player.domain.PlayerRequestMapper
 import dagger.Module
 import dagger.Provides
 
 @Module
 object LibraryFrameworkModule {
+    @Provides
+    fun provideEpisodeRequestMapper(): PlayerRequestMapper<EpisodeModel> =
+        EpisodeModelPlayerRequestMapper()
+
     @Provides
     fun provideLibraryService(
         showPersistenceDataSource: ShowPersistenceDataSource,
