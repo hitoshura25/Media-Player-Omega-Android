@@ -2,8 +2,8 @@ package com.vmenon.mpo.navigation.framework.di.dagger
 
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
-import com.vmenon.mpo.player.domain.PlayerNavigationLocation
-import com.vmenon.mpo.search.domain.SearchNavigationLocation
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
+import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.BindsInstance
 import dagger.Component

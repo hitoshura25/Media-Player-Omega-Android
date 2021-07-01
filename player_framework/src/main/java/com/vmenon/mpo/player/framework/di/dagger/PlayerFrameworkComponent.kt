@@ -1,9 +1,8 @@
 package com.vmenon.mpo.player.framework.di.dagger
 
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.player.domain.MediaPlayerEngine
-import com.vmenon.mpo.player.domain.PlayerRequestMapper
+import com.vmenon.mpo.player.domain.NavigationParamsConverter
 import com.vmenon.mpo.player.framework.MPOMediaBrowserService
 import com.vmenon.mpo.player.framework.MPOPlayer
 import dagger.Component
@@ -21,7 +20,7 @@ interface PlayerFrameworkComponent {
     }
 
     fun inject(service: MPOMediaBrowserService)
-    fun episodePlayerRequestMapper(): PlayerRequestMapper<EpisodeModel>
     fun player(): MPOPlayer
     fun playerEngine(): MediaPlayerEngine
+    fun navigationParamsConverter(): NavigationParamsConverter
 }

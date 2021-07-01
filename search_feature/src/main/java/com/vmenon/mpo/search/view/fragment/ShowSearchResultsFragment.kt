@@ -13,10 +13,10 @@ import com.vmenon.mpo.search.R
 import com.vmenon.mpo.search.databinding.FragmentShowSearchResultsBinding
 import com.vmenon.mpo.search.di.dagger.SearchComponent
 import com.vmenon.mpo.search.di.dagger.toSearchComponent
-import com.vmenon.mpo.search.domain.SearchNavigationLocation
-import com.vmenon.mpo.search.domain.SearchNavigationParams
-import com.vmenon.mpo.search.domain.ShowDetailsLocation
-import com.vmenon.mpo.search.domain.ShowDetailsParams
+import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
+import com.vmenon.mpo.navigation.domain.search.SearchNavigationParams
+import com.vmenon.mpo.navigation.domain.search.ShowDetailsLocation
+import com.vmenon.mpo.navigation.domain.search.ShowDetailsParams
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 import com.vmenon.mpo.search.mvi.ShowSearchViewEvent
 import com.vmenon.mpo.search.view.adapter.ShowSearchResultsAdapter

@@ -6,14 +6,6 @@ dependencies {
     api project(':navigation_domain')
     implementation project(':system_framework')
 
-    // TODO: Perhaps refactoring navigation related things out of these domain modules is
-    // better
-    implementation project(':downloads_domain')
-    implementation project(':login_domain')
-    implementation project(':my_library_domain')
-    api project(':player_domain')
-    api project(':search_domain')
-
     implementation Libs.kotlin_stdlib
 
     implementation Libs.core_ktx

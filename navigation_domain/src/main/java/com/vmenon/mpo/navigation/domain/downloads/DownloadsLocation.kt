@@ -1,6 +1,6 @@
-package com.vmenon.mpo.my_library.domain
+package com.vmenon.mpo.navigation.domain.downloads
 
 import com.vmenon.mpo.navigation.domain.NavigationLocation
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 
-object MyLibraryNavigationLocation : NavigationLocation<NoNavigationParams>
+object DownloadsLocation: NavigationLocation<NoNavigationParams>

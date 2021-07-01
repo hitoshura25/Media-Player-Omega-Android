@@ -5,7 +5,7 @@ import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.AndroidNavigationDestination
 import com.vmenon.mpo.search.R
-import com.vmenon.mpo.search.domain.ShowDetailsLocation
+import com.vmenon.mpo.navigation.domain.search.ShowDetailsLocation
 import com.vmenon.mpo.search.domain.ShowSearchService
 
 import com.vmenon.mpo.search.usecases.*

@@ -6,7 +6,6 @@ dependencies {
     api project(':player_domain')
     implementation project(':common_framework')
     implementation project(':extensions')
-    implementation project(':my_library_domain')
     implementation project(':common_view')
 
     implementation Libs.kotlinx_coroutines_core

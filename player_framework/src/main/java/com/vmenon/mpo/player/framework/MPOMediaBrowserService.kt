@@ -42,13 +42,15 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
     AudioManager.OnAudioFocusChangeListener {
 
     data class Configuration(
-        val player: MPOPlayer,
         val playerUiIntentCreator: (PlaybackMediaRequest?, Context) -> PendingIntent,
         val notificationBuilderProcessor: (NotificationCompat.Builder) -> Unit
     )
 
     @Inject
     lateinit var configuration: Configuration
+
+    @Inject
+    lateinit var player: MPOPlayer
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
@@ -77,7 +79,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         override fun onReceive(context: Context, intent: Intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == intent.action) {
                 Log.d(TAG, "Headphones disconnected.")
-                if (playOnFocusGain && configuration.player.isPlaying) {
+                if (playOnFocusGain && player.isPlaying) {
                     val i = Intent(context, MPOMediaBrowserService::class.java)
                     i.action = ACTION_CMD
                     i.putExtra(CMD_NAME, CMD_PAUSE)
@@ -108,7 +110,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             var actions =
                 PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
                         PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
-            if (configuration.player.isPlaying) {
+            if (player.isPlaying) {
                 actions = actions or PlaybackStateCompat.ACTION_PAUSE
             }
 
@@ -167,7 +169,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         mediaSession.setPlaybackState(stateBuilder.build())
         mediaSession.setCallback(SessionCallback())
         sessionToken = mediaSession.sessionToken
-        configuration.player.setListener(this)
+        player.setListener(this)
 
         val intent = configuration.playerUiIntentCreator(null, applicationContext)
         mediaSession.setSessionActivity(intent)
@@ -180,7 +182,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             val command = intent.getStringExtra(CMD_NAME)
             if (ACTION_CMD == action) {
                 if (CMD_PAUSE == command) {
-                    if (configuration.player.isPlaying) {
+                    if (player.isPlaying) {
                         handlePauseRequest()
                     }
                 }
@@ -200,7 +202,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         // Always release the MediaSession to clean up resources
         // and notify associated MediaController(s).
         mediaSession.release()
-        configuration.player.setListener(null)
+        player.setListener(null)
     }
 
     override fun onGetRoot(
@@ -316,7 +318,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
             if (mediaFile != null) {
                 playbackState = PlaybackStateCompat.STATE_BUFFERING
-                configuration.player.prepareForPlayback(mediaFile)
+                player.prepareForPlayback(mediaFile)
             } else {
                 configMediaPlayerState()
             }
@@ -371,8 +373,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         Log.d(TAG, "handlePauseRequest: mState=$playbackState")
         if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
-            if (configuration.player.isPlaying) {
-                configuration.player.pause()
+            if (player.isPlaying) {
+                player.pause()
             }
             // while paused, retain the MediaPlayer but give up audio focus
             relaxResources(false)
@@ -388,7 +390,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     private fun handleStopRequest(withError: String?) {
         Log.d(TAG, "handleStopRequest: mState=$playbackState error=$withError")
-        configuration.player.stop()
+        player.stop()
         playbackState = PlaybackStateCompat.STATE_STOPPED
         // Give up Audio focus
         giveUpAudioFocus()
@@ -413,7 +415,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
     private fun updatePlaybackState(error: String?) {
         Log.d(TAG, "updatePlaybackState")
-        val position = configuration.player.getCurrentPosition()
+        val position = player.getCurrentPosition()
         var state = playbackState
         val stateBuilder = PlaybackStateCompat.Builder()
             .setActions(availableActions)
@@ -444,24 +446,24 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
             }
         } else {  // we have audio focus:
             if (audioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
-                configuration.player.setVolume(VOLUME_DUCK) // we'll be relatively quiet
+                player.setVolume(VOLUME_DUCK) // we'll be relatively quiet
             } else {
-                configuration.player.setVolume(VOLUME_NORMAL) // we can be loud again
+                player.setVolume(VOLUME_NORMAL) // we can be loud again
             }
             // If we were playing when we lost focus, we need to resume playing.
             if (playOnFocusGain) {
-                if (!configuration.player.isPlaying) {
-                    val currentPosition = configuration.player.getCurrentPosition()
+                if (!player.isPlaying) {
+                    val currentPosition = player.getCurrentPosition()
                     Log.d(
                         "MPO",
                         "configMediaPlayerState startMediaPlayer. seeking to $currentPosition"
                     )
                     playbackState =
-                        if (currentPosition == configuration.player.getCurrentPosition()) {
-                            configuration.player.play()
+                        if (currentPosition == player.getCurrentPosition()) {
+                            player.play()
                             PlaybackStateCompat.STATE_PLAYING
                         } else {
-                            configuration.player.seekTo(currentPosition)
+                            player.seekTo(currentPosition)
                             PlaybackStateCompat.STATE_BUFFERING
                         }
                 }
@@ -504,7 +506,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
 
         // stop and release the Media Player, if it's available
         if (releaseMediaPlayer) {
-            configuration.player.cleanup()
+            player.cleanup()
         }
 
         // we can also release the Wifi lock, if we're holding it
@@ -737,8 +739,8 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         }
 
         override fun onSeekTo(pos: Long) {
-            configuration.player.seekTo(pos)
-            if (configuration.player.isPlaying) {
+            player.seekTo(pos)
+            if (player.isPlaying) {
                 playbackState = PlaybackStateCompat.STATE_BUFFERING
             }
             updatePlaybackState(null)
@@ -752,7 +754,7 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         override fun handleMessage(msg: Message) {
             val service = weakRefService.get()
             if (service != null) {
-                if (this@MPOMediaBrowserService.configuration.player.isPlaying) {
+                if (this@MPOMediaBrowserService.player.isPlaying) {
                     Log.d(TAG, "Ignoring delayed stop since the media player is in use.")
                     return
                 }

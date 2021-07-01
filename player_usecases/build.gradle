@@ -9,8 +9,8 @@ java {
 }
 
 dependencies {
+    implementation project(':navigation_domain')
     implementation project(':system_domain')
-    implementation project(':my_library_domain')
     implementation project(':player_domain')
 
     implementation Libs.kotlinx_coroutines_core

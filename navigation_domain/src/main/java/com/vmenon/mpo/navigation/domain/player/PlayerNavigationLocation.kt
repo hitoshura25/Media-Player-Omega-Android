@@ -1,4 +1,4 @@
-package com.vmenon.mpo.player.domain
+package com.vmenon.mpo.navigation.domain.player
 
 import com.vmenon.mpo.navigation.domain.NavigationLocation
 
