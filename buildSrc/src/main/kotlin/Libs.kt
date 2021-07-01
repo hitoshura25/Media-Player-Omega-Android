@@ -111,6 +111,8 @@ public object Libs {
     public const val firebase_analytics_ktx: String =
             "com.google.firebase:firebase-analytics-ktx:19.0.0"
 
+    public const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:2.7"
+
     public const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:1.0.0"
 
     public const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:2.0.4"
