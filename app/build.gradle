@@ -146,6 +146,7 @@ def deployBundleApks(buildType) {
 }
 
 task buildBundleApksDebug(dependsOn: 'bundleDebug') {
+    outputs.files("${project.buildDir}/outputs/bundle/debug/app-debug.apks")
     doLast {
         buildBundleApks('debug')
     }
@@ -158,6 +159,7 @@ task deployBundleApksDebug(dependsOn: 'buildBundleApksDebug') {
 }
 
 task buildBundleApksRelease(dependsOn: 'bundleRelease') {
+    outputs.files("${project.buildDir}/outputs/bundle/release/app-release.apks")
     doLast {
         buildBundleApks('release')
     }
