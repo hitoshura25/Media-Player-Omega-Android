@@ -2,7 +2,7 @@
 buildscript {
     ext {
         compileSdkVersion = 30
-        minSdkVersion = 18
+        minSdkVersion = 21
         targetSdkVersion = 30
     }
     repositories {
@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath Libs.de_fayard_buildsrcversions_gradle_plugin
-        classpath Libs.com_android_tools_build_gradle
+        classpath 'com.android.tools.build:gradle:7.0.0-beta04'
         classpath Libs.kotlin_gradle_plugin
         classpath Libs.navigation_safe_args_gradle_plugin
         classpath Libs.google_services
