@@ -9,7 +9,7 @@
         android:label="">
         <argument
             android:name="params"
-            app:argType="com.vmenon.mpo.player.domain.PlayerNavigationParams"
+            app:argType="com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams"
             app:nullable="true" />
     </fragment>
 </navigation>

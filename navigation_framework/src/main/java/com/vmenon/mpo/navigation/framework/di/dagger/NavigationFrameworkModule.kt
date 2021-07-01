@@ -7,7 +7,7 @@ import com.vmenon.mpo.navigation.domain.my_library.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.framework.*
-import com.vmenon.mpo.player.domain.PlayerNavigationLocation
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
 import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import dagger.Module
 import dagger.Provides

@@ -1,26 +1,39 @@
 package com.vmenon.mpo.my_library.usecases
 
-import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
 import com.vmenon.mpo.navigation.domain.NavigationController
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
-import com.vmenon.mpo.player.domain.PlayerNavigationLocation
-import com.vmenon.mpo.player.domain.PlayerNavigationParams
-import com.vmenon.mpo.player.domain.PlayerRequestMapper
+import com.vmenon.mpo.navigation.domain.player.FileMediaSource
+import com.vmenon.mpo.navigation.domain.player.Media
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams
 
 class PlayEpisode(
     private val myLibraryService: MyLibraryService,
-    private val requestMapper: PlayerRequestMapper<EpisodeModel>,
     private val navigationController: NavigationController,
     private val playerNavigationDestination: NavigationDestination<PlayerNavigationLocation>
 ) {
     suspend operator fun invoke(episodeId: Long, libraryView: NavigationOrigin<*>) {
-        val episodeModel = myLibraryService.getEpisode(episodeId)
+        val episode = myLibraryService.getEpisode(episodeId)
+        val filename = episode.filename ?: throw IllegalStateException("Filename cannot be null!")
+
+        val params = PlayerNavigationParams(
+            Media(
+                mediaId = "episode:${episode.id}",
+                mediaSource = FileMediaSource(filename),
+                author = episode.show.author,
+                album = episode.show.name,
+                title = episode.name,
+                artworkUrl = episode.artworkUrl ?: episode.show.artworkUrl,
+                genres = episode.show.genres
+            )
+        )
+
         navigationController.navigate(
             libraryView,
             playerNavigationDestination,
-            PlayerNavigationParams(requestMapper.createMediaId(episodeModel))
+            params
         )
     }
 }

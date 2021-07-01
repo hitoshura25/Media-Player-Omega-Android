@@ -7,5 +7,6 @@ data class PlayerInteractors(
     val playMedia: PlayMedia,
     val togglePlaybackState: TogglePlaybackState,
     val skipPlayback: SkipPlayback,
-    val seekToPosition: SeekToPosition
+    val seekToPosition: SeekToPosition,
+    val handlePlayerNavigationRequest: HandlePlayerNavigationRequest
 )

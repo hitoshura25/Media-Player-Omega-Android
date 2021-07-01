@@ -1,6 +1,7 @@
 package com.vmenon.mpo.player.viewmodel
 
 import androidx.lifecycle.*
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
@@ -12,8 +13,12 @@ class MediaPlayerViewModel : ViewModel() {
     @Inject
     lateinit var playerInteractors: PlayerInteractors
 
-    val playBackState = liveData<PlaybackState> {
+    val playBackState = liveData {
         emitSource(playerInteractors.listenForPlayBackStateChanges().asLiveData())
+    }
+
+    fun handleNavigationRequest(playerNavigationParams: PlayerNavigationParams) = liveData {
+        emit(playerInteractors.handlePlayerNavigationRequest(playerNavigationParams))
     }
 
     fun connectClient(client: PlayerClient) = liveData {

@@ -12,6 +12,8 @@ import android.widget.SeekBar
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
+import com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams
 import com.vmenon.mpo.player.framework.R
 import com.vmenon.mpo.player.databinding.FragmentMediaPlayerBinding
 import com.vmenon.mpo.player.di.dagger.PlayerComponent
@@ -45,7 +47,6 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playbackMediaRequest = navigationController.getParams(this).playbackMediaRequest
         playOnStart = savedInstanceState == null
         lastPlaybackState = null
 
@@ -90,9 +91,7 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
         super.onStart()
         viewModel.connectClient(this).observe(viewLifecycleOwner, {
             updateMediaDisplay()
-            playbackMediaRequest?.let {
-                viewModel.playMedia(it)
-            }
+            playMedia()
         })
     }
 
@@ -121,6 +120,16 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
     override fun onMediaVideoSizeDetermined(width: Int, height: Int) {
         updateMediaDisplay()
+    }
+
+    private fun playMedia() {
+        viewModel.handleNavigationRequest(navigationController.getParams(this))
+            .observe(viewLifecycleOwner) { request ->
+                playbackMediaRequest = request
+                if (request != null) {
+                    viewModel.playMedia(request)
+                }
+            }
     }
 
     private fun updateUIFromMedia(playbackMedia: PlaybackMedia) {
