@@ -5,15 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.vmenon.mpo.login_feature.R
 import com.vmenon.mpo.login_feature.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login_feature.di.dagger.LoginComponent
 import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
 import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.login_feature.model.LoadingState
-import com.vmenon.mpo.login_feature.model.LoggedInState
-import com.vmenon.mpo.login_feature.model.LoginState
-import com.vmenon.mpo.login_feature.model.RegisterState
 import com.vmenon.mpo.login_feature.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
@@ -49,36 +45,18 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         viewModel.loginState().observe(viewLifecycleOwner, { event ->
             event.unhandledContent()?.let { state ->
                 when (state) {
-                    LoginState -> {
-                        loadingStateHelper.showContentState()
-                        binding.loginForm.root.visibility = View.VISIBLE
-                        binding.registerForm.root.visibility = View.GONE
-                        binding.accountView.root.visibility = View.GONE
-                        binding.toolbar.title = ""
-                    }
-                    RegisterState -> {
-                        loadingStateHelper.showContentState()
-                        binding.registerForm.root.visibility = View.VISIBLE
-                        binding.loginForm.root.visibility = View.GONE
-                        binding.accountView.root.visibility = View.GONE
-                        binding.toolbar.title = ""
-                    }
-
-                    is LoggedInState -> {
-                        loadingStateHelper.showContentState()
-                        binding.accountView.root.visibility = View.VISIBLE
-                        binding.loginForm.root.visibility = View.GONE
-                        binding.registerForm.root.visibility = View.GONE
-                        binding.toolbar.title =
-                            getString(R.string.hi_user, state.userDetails.firstName)
-                    }
                     LoadingState -> {
                         loadingStateHelper.showLoadingState()
                     }
+                    else -> {
+                        loadingStateHelper.showContentState()
+                    }
                 }
+                binding.state = state
             }
         })
 
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.loginForm.registerLink.setOnClickListener {
             viewModel.registerClicked()
         }

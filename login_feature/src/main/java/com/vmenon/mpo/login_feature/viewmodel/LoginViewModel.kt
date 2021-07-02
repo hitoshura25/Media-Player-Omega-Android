@@ -25,11 +25,7 @@ class LoginViewModel : ViewModel() {
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
     private val refreshState = MutableLiveData<Unit>()
 
-    fun fetchState() {
-        refreshState.postValue(Unit)
-    }
-
-    fun loginState(): LiveData<ContentEvent<AccountState>> =
+    private val loginState by lazy {
         MediatorLiveData<ContentEvent<AccountState>>().apply {
             addSource(authService.authenticated().asLiveData()) { authenticated ->
                 postState(authenticated, this)
@@ -41,6 +37,13 @@ class LoginViewModel : ViewModel() {
                 postState(authService.isAuthenticated(), this)
             }
         }
+    }
+
+    fun fetchState() {
+        refreshState.postValue(Unit)
+    }
+
+    fun loginState(): LiveData<ContentEvent<AccountState>> = loginState
 
     fun registerClicked() {
         loginStateFromUI.postValue(RegisterState.toContentEvent())
