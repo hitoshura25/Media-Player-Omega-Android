@@ -3,7 +3,6 @@ package com.vmenon.mpo.library.view.fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import com.vmenon.mpo.library.R
@@ -32,10 +31,6 @@ class SubscribedShowsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).let { activity ->
-            activity.setSupportActionBar(binding.toolbar)
-            activity.title = getString(R.string.shows)
-        }
         navigationController.setupWith(
             this,
             binding.toolbar,

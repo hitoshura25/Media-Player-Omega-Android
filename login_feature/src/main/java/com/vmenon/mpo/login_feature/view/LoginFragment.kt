@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.vmenon.mpo.common.framework.livedata.observeUnhandled
 import com.vmenon.mpo.login_feature.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login_feature.di.dagger.LoginComponent
 import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
@@ -42,18 +43,16 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             drawerLayout(),
             navigationView()
         )
-        viewModel.loginState().observe(viewLifecycleOwner, { event ->
-            event.unhandledContent()?.let { state ->
-                when (state) {
-                    LoadingState -> {
-                        loadingStateHelper.showLoadingState()
-                    }
-                    else -> {
-                        loadingStateHelper.showContentState()
-                    }
+        viewModel.loginState().observeUnhandled(viewLifecycleOwner, { state ->
+            when (state) {
+                LoadingState -> {
+                    loadingStateHelper.showLoadingState()
                 }
-                binding.state = state
+                else -> {
+                    loadingStateHelper.showContentState()
+                }
             }
+            binding.state = state
         })
 
         binding.lifecycleOwner = viewLifecycleOwner
