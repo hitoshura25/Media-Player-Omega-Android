@@ -14,6 +14,9 @@
         <variable
             name="registration"
             type="com.vmenon.mpo.login_feature.model.RegistrationObservable" />
+        <variable
+            name="registrationValid"
+            type="androidx.lifecycle.LiveData&lt;com.vmenon.mpo.login_feature.model.RegistrationValid&gt;"/>
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -53,7 +56,8 @@
                 android:id="@+id/register_form"
                 layout="@layout/register_form"
                 android:visibility="@{state instanceof RegisterState ? View.VISIBLE : View.GONE}"
-                app:registration="@{registration}"/>
+                app:registration="@{registration}"
+                app:registrationValid="@{registrationValid}"/>
 
             <include
                 android:id="@+id/account_view"

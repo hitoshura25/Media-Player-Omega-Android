@@ -5,6 +5,9 @@
         <variable
             name="registration"
             type="com.vmenon.mpo.login_feature.model.RegistrationObservable" />
+        <variable
+            name="registrationValid"
+            type="androidx.lifecycle.LiveData&lt;com.vmenon.mpo.login_feature.model.RegistrationValid&gt;"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -73,6 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/register"
+            android:enabled="@{registrationValid.allValid()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/confirm_password" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
+import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +19,13 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var loginService: LoginService
 
-    val registration = RegistrationObservable()
+    val registration by lazy {
+        val registrationObservable = RegistrationObservable()
+        registrationObservable.addOnPropertyChangedCallback(validator)
+        registrationObservable
+    }
+
+    private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
     private val refreshState = MutableLiveData<Unit>()
 
@@ -35,6 +42,8 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
+    fun registrationValid(): LiveData<RegistrationValid> = validator.registrationValid()
 
     fun fetchState() {
         refreshState.postValue(Unit)

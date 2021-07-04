@@ -56,6 +56,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         })
 
         binding.registration = viewModel.registration
+        binding.registrationValid = viewModel.registrationValid()
         binding.lifecycleOwner = viewLifecycleOwner
         binding.loginForm.registerLink.setOnClickListener {
             viewModel.registerClicked()
