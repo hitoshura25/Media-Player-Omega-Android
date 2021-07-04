@@ -55,6 +55,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             binding.state = state
         })
 
+        binding.registration = viewModel.registration
         binding.lifecycleOwner = viewLifecycleOwner
         binding.loginForm.registerLink.setOnClickListener {
             viewModel.registerClicked()
@@ -64,14 +65,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         }
 
         binding.registerForm.registerUser.setOnClickListener {
-            viewModel.performRegistration(
-                binding.registerForm.firstName.text.toString(),
-                binding.registerForm.lastName.text.toString(),
-                binding.registerForm.email.text.toString(),
-                binding.registerForm.password.text.toString(),
-                binding.registerForm.confirmPassword.text.toString(),
-                requireActivity()
-            )
+            viewModel.performRegistration(requireActivity())
         }
 
         binding.accountView.logoutLink.setOnClickListener {

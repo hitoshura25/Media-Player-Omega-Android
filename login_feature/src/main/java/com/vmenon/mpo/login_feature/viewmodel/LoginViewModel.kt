@@ -6,11 +6,7 @@ import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
-import com.vmenon.mpo.login_feature.model.AccountState
-import com.vmenon.mpo.login_feature.model.LoadingState
-import com.vmenon.mpo.login_feature.model.LoggedInState
-import com.vmenon.mpo.login_feature.model.LoginState
-import com.vmenon.mpo.login_feature.model.RegisterState
+import com.vmenon.mpo.login_feature.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +18,7 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var loginService: LoginService
 
+    val registration = RegistrationObservable()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
     private val refreshState = MutableLiveData<Unit>()
 
@@ -63,17 +60,15 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun performRegistration(
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String,
-        confirmPassword: String,
-        activity: Activity
-    ) {
+    fun performRegistration(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            loginService.registerUser(firstName, lastName, email, password)
+            loginService.registerUser(
+                registration.getFirstName(),
+                registration.getLastName(),
+                registration.getEmail(),
+                registration.getPassword()
+            )
             authService.startAuthentication(activity)
         }
     }

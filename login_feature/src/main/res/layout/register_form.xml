@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="registration"
+            type="com.vmenon.mpo.login_feature.model.RegistrationObservable" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,6 +20,7 @@
             android:hint="@string/first_name"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
+            android:text="@={registration.firstName}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +31,7 @@
             android:hint="@string/last_name"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
+            android:text="@={registration.lastName}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/first_name" />
 
@@ -35,6 +42,7 @@
             android:hint="@string/e_mail"
             android:importantForAutofill="no"
             android:inputType="textEmailAddress"
+            android:text="@={registration.email}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/last_name" />
 
@@ -45,6 +53,7 @@
             android:hint="@string/password"
             android:importantForAutofill="no"
             android:inputType="textPassword"
+            android:text="@={registration.password}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/email" />
 
@@ -55,6 +64,7 @@
             android:hint="@string/confirm_password"
             android:importantForAutofill="no"
             android:inputType="textPassword"
+            android:text="@={registration.confirmPassword}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password" />
 

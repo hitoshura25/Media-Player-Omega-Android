@@ -11,6 +11,9 @@
         <variable
             name="state"
             type="com.vmenon.mpo.login_feature.model.AccountState"/>
+        <variable
+            name="registration"
+            type="com.vmenon.mpo.login_feature.model.RegistrationObservable" />
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -49,7 +52,8 @@
             <include
                 android:id="@+id/register_form"
                 layout="@layout/register_form"
-                android:visibility="@{state instanceof RegisterState ? View.VISIBLE : View.GONE}"  />
+                android:visibility="@{state instanceof RegisterState ? View.VISIBLE : View.GONE}"
+                app:registration="@{registration}"/>
 
             <include
                 android:id="@+id/account_view"
