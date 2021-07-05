@@ -24,6 +24,7 @@
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:text="@={registration.firstName}"
+            app:error="@{registrationValid.firstNameError != null ? context.getString(registrationValid.firstNameError) : null}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,6 +36,7 @@
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:text="@={registration.lastName}"
+            app:error="@{registrationValid.lastNameError != null ? context.getString(registrationValid.lastNameError) : null}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/first_name" />
 
@@ -46,6 +48,7 @@
             android:importantForAutofill="no"
             android:inputType="textEmailAddress"
             android:text="@={registration.email}"
+            app:error="@{registrationValid.emailError != null ? context.getString(registrationValid.emailError) : null}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/last_name" />
 
@@ -57,6 +60,7 @@
             android:importantForAutofill="no"
             android:inputType="textPassword"
             android:text="@={registration.password}"
+            app:error="@{registrationValid.passwordError != null ? context.getString(registrationValid.passwordError) : null}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/email" />
 
@@ -68,6 +72,7 @@
             android:importantForAutofill="no"
             android:inputType="textPassword"
             android:text="@={registration.confirmPassword}"
+            app:error="@{registrationValid.confirmPasswordError != null ? context.getString(registrationValid.confirmPasswordError) : null}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password" />
 
