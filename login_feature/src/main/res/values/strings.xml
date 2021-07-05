@@ -10,4 +10,10 @@
     <string name="login">Login with Email</string>
     <string name="sign_out">Sign Out</string>
     <string name="hi_user">Hello %1$s!</string>
+    <string name="first_name_invalid">First name is invalid</string>
+    <string name="last_name_invalid">Last name is invalid</string>
+    <string name="email_invalid">Email is invalid</string>
+    <string name="password_invalid">Password is invalid</string>
+    <string name="confirm_password_invalid">Confirm Password is invalid</string>
+    <string name="confirm_password_does_not_match">Confirm Password does not match</string>
 </resources>

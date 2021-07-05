@@ -23,4 +23,5 @@ dependencies {
     implementation Libs.retrofit
     implementation Libs.adapter_rxjava2
     implementation Libs.converter_gson
+    implementation Libs.lifecycle_livedata_ktx
 }

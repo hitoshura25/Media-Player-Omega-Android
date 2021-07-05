@@ -6,11 +6,8 @@ import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.login.domain.LoginService
-import com.vmenon.mpo.login_feature.model.AccountState
-import com.vmenon.mpo.login_feature.model.LoadingState
-import com.vmenon.mpo.login_feature.model.LoggedInState
-import com.vmenon.mpo.login_feature.model.LoginState
-import com.vmenon.mpo.login_feature.model.RegisterState
+import com.vmenon.mpo.login_feature.RegistrationFormValidator
+import com.vmenon.mpo.login_feature.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,14 +19,17 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var loginService: LoginService
 
+    val registration by lazy {
+        val registrationObservable = RegistrationObservable()
+        registrationObservable.addOnPropertyChangedCallback(validator)
+        registrationObservable
+    }
+
+    private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
     private val refreshState = MutableLiveData<Unit>()
 
-    fun fetchState() {
-        refreshState.postValue(Unit)
-    }
-
-    fun loginState(): LiveData<ContentEvent<AccountState>> =
+    private val loginState by lazy {
         MediatorLiveData<ContentEvent<AccountState>>().apply {
             addSource(authService.authenticated().asLiveData()) { authenticated ->
                 postState(authenticated, this)
@@ -41,6 +41,15 @@ class LoginViewModel : ViewModel() {
                 postState(authService.isAuthenticated(), this)
             }
         }
+    }
+
+    fun registrationValid(): LiveData<RegistrationValid> = validator.registrationValid()
+
+    fun fetchState() {
+        refreshState.postValue(Unit)
+    }
+
+    fun loginState(): LiveData<ContentEvent<AccountState>> = loginState
 
     fun registerClicked() {
         loginStateFromUI.postValue(RegisterState.toContentEvent())
@@ -60,17 +69,15 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun performRegistration(
-        firstName: String,
-        lastName: String,
-        email: String,
-        password: String,
-        confirmPassword: String,
-        activity: Activity
-    ) {
+    fun performRegistration(activity: Activity) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            loginService.registerUser(firstName, lastName, email, password)
+            loginService.registerUser(
+                registration.getFirstName(),
+                registration.getLastName(),
+                registration.getEmail(),
+                registration.getPassword()
+            )
             authService.startAuthentication(activity)
         }
     }

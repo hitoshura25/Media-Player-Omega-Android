@@ -1,47 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.vmenon.mpo.login_feature.view.LoginFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <RelativeLayout android:id="@+id/login_container"
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.vmenon.mpo.login_feature.model.LoginState"/>
+        <import type="com.vmenon.mpo.login_feature.model.RegisterState"/>
+        <import type="com.vmenon.mpo.login_feature.model.LoggedInState"/>
+        <variable
+            name="state"
+            type="com.vmenon.mpo.login_feature.model.AccountState"/>
+        <variable
+            name="registration"
+            type="com.vmenon.mpo.login_feature.model.RegistrationObservable" />
+        <variable
+            name="registrationValid"
+            type="androidx.lifecycle.LiveData&lt;com.vmenon.mpo.login_feature.model.RegistrationValid&gt;"/>
+    </data>
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="?attr/actionBarSize">
+        tools:context="com.vmenon.mpo.login_feature.view.LoginFragment">
 
-        <include
-            android:id="@+id/login_form"
-            layout="@layout/login_form"
-            android:visibility="gone" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <include
-            android:id="@+id/register_form"
-            layout="@layout/register_form"
-            android:visibility="gone" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title='@{state instanceof LoggedInState ? @string/hi_user(((LoggedInState) state).userDetails.firstName) : ""}'/>
 
-        <include
-            android:id="@+id/account_view"
-            layout="@layout/account_view"
-            android:visibility="gone" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <RelativeLayout android:id="@+id/login_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="?attr/actionBarSize">
+
+            <include
+                android:id="@+id/login_form"
+                layout="@layout/login_form"
+                android:visibility="@{state instanceof LoginState ? View.VISIBLE : View.GONE}" />
+
+            <include
+                android:id="@+id/register_form"
+                layout="@layout/register_form"
+                android:visibility="@{state instanceof RegisterState ? View.VISIBLE : View.GONE}"
+                app:registration="@{registration}"
+                app:registrationValid="@{registrationValid}"/>
+
+            <include
+                android:id="@+id/account_view"
+                layout="@layout/account_view"
+                android:visibility="@{state instanceof LoggedInState ? View.VISIBLE : View.GONE}" />
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+</layout>
