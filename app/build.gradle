@@ -20,8 +20,8 @@ android {
         applicationId "com.vmenon.mpo"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 7
-        versionName "1.7"
+        versionCode 8
+        versionName "1.8"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
     }
