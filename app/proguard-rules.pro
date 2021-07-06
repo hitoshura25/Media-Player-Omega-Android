@@ -20,3 +20,9 @@
 -keep class retrofit2.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+-keepnames class * implements java.io.Serializable { *; }
+
+-keepattributes LineNumberTable,SourceFile
+-printconfiguration ./build/full-r8-config.txt
+-printusage ./build/usage.txt

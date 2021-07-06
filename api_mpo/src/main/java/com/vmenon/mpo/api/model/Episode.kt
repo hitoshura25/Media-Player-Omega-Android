@@ -1,5 +1,7 @@
 package com.vmenon.mpo.api.model
 
+import java.io.Serializable
+
 data class Episode(
     val name: String,
     val description: String?,
@@ -8,4 +10,4 @@ data class Episode(
     val downloadUrl: String,
     val length: Long?,
     val artworkUrl: String?
-)
+) : Serializable
