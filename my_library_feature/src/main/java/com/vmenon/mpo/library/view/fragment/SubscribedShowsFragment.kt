@@ -37,6 +37,23 @@ class SubscribedShowsFragment :
             drawerLayout(),
             navigationView()
         )
+        binding.toolbar.inflateMenu(R.menu.subscribed_shows_options_menu)
+        // Associate searchable configuration with the SearchView
+        val menuItem = binding.toolbar.menu.findItem(R.id.search)
+        val searchView = menuItem.actionView as SearchView
+        searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let {
+                        viewModel.searchForShows(query, this@SubscribedShowsFragment)
+                    }
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean = false
+            }
+        )
+
         binding.showList.setHasFixedSize(true)
         binding.showList.layoutManager = GridLayoutManager(context, 3)
         viewModel.subscribedShows().observe(viewLifecycleOwner, { result ->
@@ -52,29 +69,6 @@ class SubscribedShowsFragment :
                 }
             }
         })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        activity?.let {
-            inflater.inflate(R.menu.subscribed_shows_options_menu, menu)
-
-            // Associate searchable configuration with the SearchView
-            val menuItem = menu.findItem(R.id.search)
-            val searchView = menuItem.actionView as SearchView
-            searchView.setOnQueryTextListener(
-                object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        query?.let {
-                            viewModel.searchForShows(query, this@SubscribedShowsFragment)
-                        }
-                        return false
-                    }
-
-                    override fun onQueryTextChange(newText: String?): Boolean = false
-                }
-            )
-        }
     }
 
     override fun setupComponent(context: Context) = context.toLibraryComponent()
