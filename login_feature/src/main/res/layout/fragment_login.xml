@@ -50,7 +50,8 @@
             <include
                 android:id="@+id/login_form"
                 layout="@layout/login_form"
-                android:visibility="@{state instanceof LoginState ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{state instanceof LoginState ? View.VISIBLE : View.GONE}"
+                app:state="@{state instanceof LoginState ? (LoginState) state : null}"/>
 
             <include
                 android:id="@+id/register_form"

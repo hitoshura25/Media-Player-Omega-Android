@@ -3,9 +3,11 @@ package com.vmenon.mpo.auth.framework.di.dagger
 import android.app.Application
 import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.framework.AuthServiceImpl
 import com.vmenon.mpo.auth.framework.Authenticator
 import com.vmenon.mpo.auth.framework.SharedPrefsAuthState
+import com.vmenon.mpo.auth.framework.biometrics.DefaultBiometricsManager
 import com.vmenon.mpo.auth.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.system.domain.Logger
 import dagger.Module
@@ -36,4 +38,8 @@ object AuthModule {
     ): Authenticator =
         OpenIdAuthenticator(application, authState, logger)
 
+    @Provides
+    @AuthScope
+    fun provideBiometricsManager(application: Application): BiometricsManager =
+        DefaultBiometricsManager(application)
 }

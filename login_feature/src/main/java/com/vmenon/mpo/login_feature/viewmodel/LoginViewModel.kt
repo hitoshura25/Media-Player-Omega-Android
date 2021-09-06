@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
@@ -18,6 +19,9 @@ class LoginViewModel : ViewModel() {
 
     @Inject
     lateinit var loginService: LoginService
+
+    @Inject
+    lateinit var biometricsManager: BiometricsManager
 
     val registration by lazy {
         val registrationObservable = RegistrationObservable()
@@ -94,7 +98,7 @@ class LoginViewModel : ViewModel() {
                 }
             }
         } else {
-            mutableLiveData.postValue(LoginState.toContentEvent())
+            mutableLiveData.postValue(LoginState(biometricsManager.biometricState()).toContentEvent())
         }
     }
 }

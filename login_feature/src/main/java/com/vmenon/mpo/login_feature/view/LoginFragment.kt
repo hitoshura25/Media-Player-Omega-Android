@@ -1,7 +1,11 @@
 package com.vmenon.mpo.login_feature.view
 
 import android.content.Context
+import android.content.Intent
+import android.hardware.biometrics.BiometricManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,11 +68,21 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         binding.loginForm.loginLink.setOnClickListener {
             viewModel.loginClicked(requireActivity())
         }
+        binding.loginForm.enrollInBiometrics.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                    putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK)
+                }
+                startActivityForResult(enrollIntent, REQUEST_CODE)
 
+            } else {
+                TODO("VERSION.SDK_INT < R")
+            }
+        }
         binding.registerForm.registerUser.setOnClickListener {
             viewModel.performRegistration(requireActivity())
         }
-
         binding.accountView.logoutLink.setOnClickListener {
             viewModel.logoutClicked(requireActivity())
         }
@@ -77,5 +91,9 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
     override fun onResume() {
         super.onResume()
         viewModel.fetchState()
+    }
+
+    companion object {
+        private const val REQUEST_CODE = 100
     }
 }
