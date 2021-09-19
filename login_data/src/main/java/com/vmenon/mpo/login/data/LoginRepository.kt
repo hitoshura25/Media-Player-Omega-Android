@@ -7,6 +7,7 @@ import com.vmenon.mpo.system.domain.Logger
 class LoginRepository(
     private val registry: UserRegistry,
     private val userCache: UserCache,
+    private val userSettings: UserSettings,
     private val logger: Logger
 ) : LoginService {
     override suspend fun registerUser(
@@ -31,5 +32,11 @@ class LoginRepository(
             userCache.clear()
             Result.failure(exception)
         }
+    }
+
+    override suspend fun isEnrolledInBiometrics(): Boolean = userSettings.enrolledInBiometrics()
+
+    override suspend fun setEnrolledInBiometrics(enrolled: Boolean) {
+        userSettings.setEnrolledInBiometrics(enrolled)
     }
 }

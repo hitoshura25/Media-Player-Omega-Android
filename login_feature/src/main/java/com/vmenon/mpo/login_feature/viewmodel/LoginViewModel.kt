@@ -1,11 +1,23 @@
 package com.vmenon.mpo.login_feature.viewmodel
 
 import android.app.Activity
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.framework.CryptographyManager
+import com.vmenon.mpo.auth.framework.biometrics.BiometricPromptUtils
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
@@ -23,6 +35,10 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var biometricsManager: BiometricsManager
 
+    private val cryptographyManager = CryptographyManager()
+
+    private var biometricEnrollmentContract: ActivityResultLauncher<Intent>? = null
+
     val registration by lazy {
         val registrationObservable = RegistrationObservable()
         registrationObservable.addOnPropertyChangedCallback(validator)
@@ -32,6 +48,7 @@ class LoginViewModel : ViewModel() {
     private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
     private val refreshState = MutableLiveData<Unit>()
+    private val biometricStateChanged = MutableLiveData<Unit>()
 
     private val loginState by lazy {
         MediatorLiveData<ContentEvent<AccountState>>().apply {
@@ -43,6 +60,19 @@ class LoginViewModel : ViewModel() {
             }
             addSource(refreshState) {
                 postState(authService.isAuthenticated(), this)
+            }
+            addSource(biometricStateChanged) {
+                postState(authService.isAuthenticated(), this)
+            }
+        }
+    }
+
+    fun onCreate(fragment: Fragment) {
+        biometricEnrollmentContract = fragment.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                biometricStateChanged.postValue(Unit)
             }
         }
     }
@@ -59,21 +89,21 @@ class LoginViewModel : ViewModel() {
         loginStateFromUI.postValue(RegisterState.toContentEvent())
     }
 
-    fun loginClicked(activity: Activity) {
+    fun loginClicked(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            authService.startAuthentication(activity)
+            authService.startAuthentication(fragment.requireActivity())
         }
     }
 
-    fun logoutClicked(activity: Activity) {
+    fun logoutClicked(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            authService.logout(activity)
+            authService.logout(fragment.requireActivity())
         }
     }
 
-    fun performRegistration(activity: Activity) {
+    fun performRegistration(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             loginService.registerUser(
@@ -82,23 +112,138 @@ class LoginViewModel : ViewModel() {
                 registration.getEmail(),
                 registration.getPassword()
             )
-            authService.startAuthentication(activity)
+            authService.startAuthentication(fragment.requireActivity())
         }
+    }
+
+    fun userDoesNotWantBiometrics() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loginService.setEnrolledInBiometrics(false)
+        }
+    }
+
+    fun userWantsToEnrollInBiometrics(fragment: Fragment) {
+        val activity = fragment.requireActivity() as AppCompatActivity
+        when (biometricsManager.biometricState()) {
+            BiometricState.SUCCESS -> {
+                val secretKeyName = "biometric_sample_encryption_key"
+                val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKeyName)
+                val biometricPrompt =
+                    BiometricPromptUtils.createBiometricPrompt(
+                        activity,
+                        ::encryptAndStoreServerToken
+                    )
+                val promptInfo = BiometricPromptUtils.createPromptInfo(activity)
+                biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+            }
+            BiometricState.REQUIRES_ENROLLMENT -> promptToEnrollInBiometrics()
+            BiometricState.NOT_SUPPORTED -> {
+
+            }
+        }
+    }
+
+    fun loginWithBiometrics(fragment: Fragment) {
+        val activity = fragment.requireActivity() as AppCompatActivity
+        val secretKeyName = "biometric_sample_encryption_key"
+        val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKeyName)
+        val biometricPrompt =
+            BiometricPromptUtils.createBiometricPrompt(
+                activity,
+                ::decryptServerTokenFromStorage
+            )
+        val promptInfo = BiometricPromptUtils.createPromptInfo(activity)
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+    }
+
+    @Suppress("DEPRECATION")
+    private fun promptToEnrollInBiometrics() {
+        val enrollIntent = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                    putExtra(
+                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK
+                    )
+                }
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
+                Intent(Settings.ACTION_FINGERPRINT_ENROLL)
+            }
+            else -> {
+                Intent(Settings.ACTION_SECURITY_SETTINGS)
+            }
+        }
+        biometricEnrollmentContract?.launch(enrollIntent)
+    }
+
+    private fun encryptAndStoreServerToken(authResult: BiometricPrompt.AuthenticationResult) {
+        /*authResult.cryptoObject?.cipher?.apply {
+            SampleAppUser.fakeToken?.let { token ->
+                Log.d(TAG, "The token from server is $token")
+                val encryptedServerTokenWrapper = cryptographyManager.encryptData(token, this)
+                cryptographyManager.persistCiphertextWrapperToSharedPrefs(
+                    encryptedServerTokenWrapper,
+                    applicationContext,
+                    SHARED_PREFS_FILENAME,
+                    Context.MODE_PRIVATE,
+                    CIPHERTEXT_WRAPPER
+                )
+            }
+        }*/
+    }
+
+    private fun decryptServerTokenFromStorage(authResult: BiometricPrompt.AuthenticationResult) {
+        /*ciphertextWrapper?.let { textWrapper ->
+            authResult.cryptoObject?.cipher?.let {
+                val plaintext =
+                    cryptographyManager.decryptData(textWrapper.ciphertext, it)
+                SampleAppUser.fakeToken = plaintext
+                // Now that you have the token, you can query server for everything else
+                // the only reason we call this fakeToken is because we didn't really get it from
+                // the server. In your case, you will have gotten it from the server the first time
+                // and therefore, it's a real token.
+
+            }
+        }*/
     }
 
     private fun postState(
         authenticated: Boolean,
         mutableLiveData: MutableLiveData<ContentEvent<AccountState>>
     ) {
-        if (authenticated) {
-            viewModelScope.launch(Dispatchers.IO) {
-                mutableLiveData.postValue(LoadingState.toContentEvent())
+        viewModelScope.launch(Dispatchers.IO) {
+            mutableLiveData.postValue(LoadingState.toContentEvent())
+            if (authenticated) {
                 loginService.getUser().onSuccess { user ->
-                    mutableLiveData.postValue(LoggedInState(user).toContentEvent())
+                    mutableLiveData.postValue(
+                        LoggedInState(
+                            user,
+                            shouldPromptToEnrollInBiometrics()
+                        ).toContentEvent()
+                    )
                 }
+            } else {
+                mutableLiveData.postValue(
+                    LoginState(canUseBiometrics()).toContentEvent()
+                )
             }
-        } else {
-            mutableLiveData.postValue(LoginState(biometricsManager.biometricState()).toContentEvent())
         }
     }
+
+    private suspend fun canUseBiometrics() = if (!loginService.isEnrolledInBiometrics()) {
+        when (biometricsManager.biometricState()) {
+            BiometricState.SUCCESS -> true
+            else -> false
+        }
+    } else false
+
+    private suspend fun shouldPromptToEnrollInBiometrics() =
+        if (!loginService.isEnrolledInBiometrics()) {
+            when (biometricsManager.biometricState()) {
+                BiometricState.SUCCESS,
+                BiometricState.REQUIRES_ENROLLMENT -> true
+                else -> false
+            }
+        } else false
 }

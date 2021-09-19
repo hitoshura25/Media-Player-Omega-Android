@@ -34,6 +34,6 @@ dependencies {
     implementation Libs.appauth
     implementation Libs.appcompat
     implementation Libs.gson
-    implementation("androidx.biometric:biometric:1.1.0")
+    api("androidx.biometric:biometric:1.1.0")
 
 }

@@ -9,4 +9,8 @@ interface LoginService {
     ): User
 
     suspend fun getUser(): Result<User>
+
+    suspend fun isEnrolledInBiometrics(): Boolean
+
+    suspend fun setEnrolledInBiometrics(enrolled: Boolean)
 }
