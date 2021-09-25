@@ -47,7 +47,6 @@ class LoginViewModel : ViewModel() {
 
     private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
-    private val refreshState = MutableLiveData<Unit>()
     private val biometricStateChanged = MutableLiveData<Unit>()
 
     private val loginState by lazy {
@@ -57,9 +56,6 @@ class LoginViewModel : ViewModel() {
             }
             addSource(loginStateFromUI) { value ->
                 postValue(value)
-            }
-            addSource(refreshState) {
-                postState(authService.isAuthenticated(), this)
             }
             addSource(biometricStateChanged) {
                 postState(authService.isAuthenticated(), this)
@@ -78,10 +74,6 @@ class LoginViewModel : ViewModel() {
     }
 
     fun registrationValid(): LiveData<RegistrationValid> = validator.registrationValid()
-
-    fun fetchState() {
-        refreshState.postValue(Unit)
-    }
 
     fun loginState(): LiveData<ContentEvent<AccountState>> = loginState
 
@@ -119,6 +111,7 @@ class LoginViewModel : ViewModel() {
     fun userDoesNotWantBiometrics() {
         viewModelScope.launch(Dispatchers.IO) {
             loginService.setEnrolledInBiometrics(false)
+            loginService.userDeclinedBiometricsEnrollment()
         }
     }
 
@@ -239,7 +232,9 @@ class LoginViewModel : ViewModel() {
     } else false
 
     private suspend fun shouldPromptToEnrollInBiometrics() =
-        if (!loginService.isEnrolledInBiometrics()) {
+        if (!loginService.didUserDeclineBiometricsEnrollment() &&
+            !loginService.isEnrolledInBiometrics()
+        ) {
             when (biometricsManager.biometricState()) {
                 BiometricState.SUCCESS,
                 BiometricState.REQUIRES_ENROLLMENT -> true

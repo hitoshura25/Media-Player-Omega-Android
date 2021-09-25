@@ -88,11 +88,6 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         viewModel.onCreate(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchState()
-    }
-
     private fun promptToSetupBiometrics() {
         val builder = AlertDialog.Builder(requireContext())
         builder.apply {

@@ -39,4 +39,11 @@ class LoginRepository(
     override suspend fun setEnrolledInBiometrics(enrolled: Boolean) {
         userSettings.setEnrolledInBiometrics(enrolled)
     }
+
+    override suspend fun didUserDeclineBiometricsEnrollment(): Boolean =
+        userSettings.userDeclinedBiometrics()
+
+    override suspend fun userDeclinedBiometricsEnrollment() {
+        userSettings.setUserDeclinedBiometrics(true)
+    }
 }
