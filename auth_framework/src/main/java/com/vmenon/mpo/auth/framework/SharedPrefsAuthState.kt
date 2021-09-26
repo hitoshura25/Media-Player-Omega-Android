@@ -3,15 +3,17 @@ package com.vmenon.mpo.auth.framework
 import android.content.Context
 import com.google.gson.Gson
 import com.vmenon.mpo.auth.data.AuthState
+import com.vmenon.mpo.auth.domain.CipherEncryptedData
 import com.vmenon.mpo.auth.domain.Credentials
 import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.CredentialsResult.RequiresBiometricAuth
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
@@ -25,7 +27,9 @@ class SharedPrefsAuthState(
         SHARED_PREFS_FILE,
         Context.MODE_PRIVATE
     )
-    private var biometricCipher: Cipher? = null
+    private var biometricEncryptionCipher: Cipher? = null
+    private var biometricDecryptionCipher: Cipher? = null
+
     private val credentialState = MutableSharedFlow<CredentialsResult>(replay = 1)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -39,26 +43,35 @@ class SharedPrefsAuthState(
 
     init {
         scope.launch {
-            getCredentials()
-            biometricsManager.authenticated().collect { cipher ->
-                if (biometricCipher != cipher) {
-                    biometricCipher = cipher
+            biometricsManager.decryptionCipher.collectLatest { cipher ->
+                if (biometricDecryptionCipher != cipher) {
+                    biometricDecryptionCipher = cipher
+                    getCredentials()
+                }
+            }
+        }
+
+        scope.launch {
+            biometricsManager.encryptionCipher.collectLatest { cipher ->
+                if (biometricEncryptionCipher != cipher) {
+                    biometricEncryptionCipher = cipher
                     sharedPreferences.edit().putBoolean(ENCRYPTED_WITH_BIOMETRICS, true).apply()
                     when (val credentialsResult = getCredentials()) {
-                        is CredentialsResult.Success -> {
-                            storeToSharedPrefs(credentialsResult.credentials)
-                        }
-                        is CredentialsResult.RequiresBiometricAuth -> {
-                            storedCredentials = readFromSharedPrefs()
-                        }
+                        is CredentialsResult.Success -> storeToSharedPrefs(
+                            credentialsResult.credentials
+                        )
                     }
                 }
             }
         }
+
+        scope.launch {
+            getCredentials()
+        }
     }
 
     override suspend fun getCredentials(): CredentialsResult {
-        if (storedCredentials == null) {
+        if (storedCredentials == null || storedCredentials is RequiresBiometricAuth) {
             storedCredentials = readFromSharedPrefs()
         }
         return storedCredentials ?: CredentialsResult.None
@@ -84,17 +97,17 @@ class SharedPrefsAuthState(
         val credentialsJson = sharedPreferences.getString(CREDENTIALS, null)
         return if (credentialsJson != null) {
             if (encrypted) {
-                biometricCipher?.let { biometricCipher ->
-                    val cipherWrapper = gson.fromJson(
-                        credentialsJson,
-                        CiphertextWrapper::class.java
-                    )
+                val encryptedCredentials = gson.fromJson(
+                    credentialsJson,
+                    CipherEncryptedData::class.java
+                )
+                biometricDecryptionCipher?.let { biometricCipher ->
                     val decrypted = cryptographyManager.decryptData(
-                        cipherWrapper.ciphertext,
+                        encryptedCredentials.ciphertext,
                         biometricCipher
                     )
                     CredentialsResult.Success(gson.fromJson(decrypted, Credentials::class.java))
-                } ?: CredentialsResult.RequiresBiometricAuth
+                } ?: RequiresBiometricAuth(encryptedCredentials)
             } else {
                 CredentialsResult.Success(gson.fromJson(credentialsJson, Credentials::class.java))
             }
@@ -105,36 +118,13 @@ class SharedPrefsAuthState(
         val credentialJSON = gson.toJson(credentials)
         val encrypted = sharedPreferences.getBoolean(ENCRYPTED_WITH_BIOMETRICS, false)
         if (encrypted) {
-            biometricCipher?.let { biometricCipher ->
+            biometricEncryptionCipher?.let { biometricCipher ->
                 val cipherWrapper = cryptographyManager.encryptData(credentialJSON, biometricCipher)
                 val encryptedJSON = Gson().toJson(cipherWrapper)
                 sharedPreferences.edit().putString(CREDENTIALS, encryptedJSON).apply()
             }
         } else {
             sharedPreferences.edit().putString(CREDENTIALS, credentialJSON).apply()
-        }
-    }
-
-    private data class CiphertextWrapper(
-        val ciphertext: ByteArray,
-        val initializationVector: ByteArray
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as CiphertextWrapper
-
-            if (!ciphertext.contentEquals(other.ciphertext)) return false
-            if (!initializationVector.contentEquals(other.initializationVector)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = ciphertext.contentHashCode()
-            result = 31 * result + initializationVector.contentHashCode()
-            return result
         }
     }
 

@@ -3,14 +3,12 @@ package com.vmenon.mpo.common.framework.retrofit
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
-import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import java.lang.IllegalStateException
 import java.net.HttpURLConnection
 
 /**
@@ -27,10 +25,10 @@ class OAuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         return runBlocking {
             val request: Request = chain.request()
-            if (authService.isAuthenticated()) {
-                handleAuthentication(chain, request)
-            } else {
+            if (authService.getCredentials() is CredentialsResult.None) {
                 chain.proceed(request)
+            } else {
+                handleAuthentication(chain, request)
             }
         }
     }
@@ -58,11 +56,8 @@ class OAuthInterceptor(
                         "${credentialsResult.credentials.tokenType} ${credentialsResult.credentials.accessToken}"
                     ).build()
                 }
-                CredentialsResult.None -> request
-                CredentialsResult.RequiresBiometricAuth -> {
-                    biometricsManager.requestBiometricPrompt(PromptReason.STAY_AUTHENTICATED)
-                    throw IllegalStateException("BiometricAuthRequired")
-                }
+                else -> request
+                // TODO: What if Biometric prompt is needed?
             }
             val response = kotlin.runCatching { chain.proceed(newRequest) }.getOrThrow()
             ResponseWithCredentials(newRequest, response, refreshed)

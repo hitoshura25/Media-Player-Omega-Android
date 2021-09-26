@@ -4,7 +4,6 @@ import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class AuthServiceImpl(
     private val authState: AuthState,
@@ -13,9 +12,7 @@ class AuthServiceImpl(
 
     override suspend fun getCredentials(): CredentialsResult = authState.getCredentials()
 
-    override fun authenticated(): Flow<Boolean> = authState.credentials().map { credentials ->
-        credentials is CredentialsResult.Success
-    }
+    override fun credentials(): Flow<CredentialsResult> = authState.credentials()
 
     override suspend fun logout(context: Any) {
         authenticator.logout(context)

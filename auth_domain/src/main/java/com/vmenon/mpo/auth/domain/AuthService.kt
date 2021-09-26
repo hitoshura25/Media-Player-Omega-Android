@@ -4,8 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthService {
     suspend fun getCredentials(): CredentialsResult
-    suspend fun isAuthenticated(): Boolean = getCredentials() is CredentialsResult.Success
-    fun authenticated(): Flow<Boolean>
+    fun credentials(): Flow<CredentialsResult>
     suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
         operation: suspend (Boolean) -> T

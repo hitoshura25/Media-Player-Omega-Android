@@ -1,9 +1,8 @@
 package com.vmenon.mpo.auth.framework
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import com.google.gson.Gson
+import com.vmenon.mpo.auth.domain.CipherEncryptedData
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -23,28 +22,12 @@ interface CryptographyManager {
     /**
      * The Cipher created with [getInitializedCipherForEncryption] is used here
      */
-    fun encryptData(plaintext: String, cipher: Cipher): CiphertextWrapper
+    fun encryptData(plaintext: String, cipher: Cipher): CipherEncryptedData
 
     /**
      * The Cipher created with [getInitializedCipherForDecryption] is used here
      */
     fun decryptData(ciphertext: ByteArray, cipher: Cipher): String
-
-    fun persistCiphertextWrapperToSharedPrefs(
-        ciphertextWrapper: CiphertextWrapper,
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
-    )
-
-    fun getCiphertextWrapperFromSharedPrefs(
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
-    ): CiphertextWrapper?
-
 }
 
 fun CryptographyManager(): CryptographyManager = CryptographyManagerImpl()
@@ -78,9 +61,9 @@ private class CryptographyManagerImpl : CryptographyManager {
         return cipher
     }
 
-    override fun encryptData(plaintext: String, cipher: Cipher): CiphertextWrapper {
+    override fun encryptData(plaintext: String, cipher: Cipher): CipherEncryptedData {
         val ciphertext = cipher.doFinal(plaintext.toByteArray(Charset.forName("UTF-8")))
-        return CiphertextWrapper(ciphertext, cipher.iv)
+        return CipherEncryptedData(ciphertext, cipher.iv)
     }
 
     override fun decryptData(ciphertext: ByteArray, cipher: Cipher): String {
@@ -118,47 +101,5 @@ private class CryptographyManagerImpl : CryptographyManager {
         )
         keyGenerator.init(keyGenParams)
         return keyGenerator.generateKey()
-    }
-
-    override fun persistCiphertextWrapperToSharedPrefs(
-        ciphertextWrapper: CiphertextWrapper,
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
-    ) {
-        val json = Gson().toJson(ciphertextWrapper)
-        context.getSharedPreferences(filename, mode).edit().putString(prefKey, json).apply()
-    }
-
-    override fun getCiphertextWrapperFromSharedPrefs(
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
-    ): CiphertextWrapper? {
-        val json = context.getSharedPreferences(filename, mode).getString(prefKey, null)
-        return Gson().fromJson(json, CiphertextWrapper::class.java)
-    }
-}
-
-
-data class CiphertextWrapper(val ciphertext: ByteArray, val initializationVector: ByteArray) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as CiphertextWrapper
-
-        if (!ciphertext.contentEquals(other.ciphertext)) return false
-        if (!initializationVector.contentEquals(other.initializationVector)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = ciphertext.contentHashCode()
-        result = 31 * result + initializationVector.contentHashCode()
-        return result
     }
 }

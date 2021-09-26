@@ -22,7 +22,7 @@ class LoginRepository(
 
     init {
         scope.launch {
-            biometricsManager.authenticated().collect {
+            biometricsManager.encryptionCipher.collect {
                 userSettings.setEnrolledInBiometrics(true)
             }
         }

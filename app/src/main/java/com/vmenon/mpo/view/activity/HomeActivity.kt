@@ -12,6 +12,7 @@ import com.google.android.play.core.splitcompat.SplitCompat
 import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason.Login
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
@@ -46,19 +47,22 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         navigationController.setupWith(this, binding.navigation)
         viewModel.biometricPromptRequested.observe(this) { reason ->
             val request = when (reason) {
-                PromptReason.ENROLLMENT -> PromptRequest(
-                    title = getString(R.string.enroll_in_biometrics),
-                    subtitle = getString(R.string.confirm_to_complete_enrollment),
-                    confirmationRequired = false,
-                    negativeActionText = getString(R.string.cancel)
-                )
-                PromptReason.STAY_AUTHENTICATED -> PromptRequest(
+                is PromptReason.StayAuthenticated -> PromptRequest(
+                    reason = reason,
                     title = getString(R.string.authenticate),
                     subtitle = getString(R.string.confirm_to_stay_authenticated),
                     confirmationRequired = false,
                     negativeActionText = getString(R.string.logout)
                 )
-                PromptReason.LOGIN -> PromptRequest(
+                is PromptReason.Enrollment -> PromptRequest(
+                    reason = reason,
+                    title = getString(R.string.enroll_in_biometrics),
+                    subtitle = getString(R.string.confirm_to_complete_enrollment),
+                    confirmationRequired = false,
+                    negativeActionText = getString(R.string.cancel)
+                )
+                is Login -> PromptRequest(
+                    reason = reason,
                     title = getString(R.string.login),
                     subtitle = getString(R.string.confirm_to_login),
                     confirmationRequired = false,
