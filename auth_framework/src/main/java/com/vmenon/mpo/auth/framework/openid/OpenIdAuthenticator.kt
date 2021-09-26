@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.FragmentActivity
 import com.vmenon.mpo.auth.data.AuthState
+import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.auth.framework.Authenticator
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment
 import com.vmenon.mpo.system.domain.Logger
@@ -51,9 +52,9 @@ class OpenIdAuthenticator(
     }
 
     suspend fun performLogoutIfNecessary(launcher: ActivityResultLauncher<Intent>): Boolean {
-        val credentials = authState.getCredentials()
-        return if (credentials != null) {
-            authenticatorEngine.performLogout(launcher, credentials.idToken)
+        val credentialsResult = authState.getCredentials()
+        return if (credentialsResult is CredentialsResult.Success) {
+            authenticatorEngine.performLogout(launcher, credentialsResult.credentials.idToken)
             true
         } else {
             false

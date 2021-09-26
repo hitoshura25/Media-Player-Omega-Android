@@ -1,6 +1,7 @@
 package com.vmenon.mpo.login.framework.di
 
 import android.app.Application
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.login.data.LoginRepository
 import com.vmenon.mpo.login.data.UserCache
@@ -36,11 +37,13 @@ object LoginFrameworkModule {
         userRegistry: UserRegistry,
         userCache: UserCache,
         userSettings: UserSettings,
+        biometricsManager: BiometricsManager,
         logger: Logger
     ): LoginService = LoginRepository(
         userRegistry,
         userCache,
         userSettings,
+        biometricsManager,
         logger
     )
 

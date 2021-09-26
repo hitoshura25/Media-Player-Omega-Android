@@ -12,8 +12,6 @@ interface LoginService {
 
     suspend fun isEnrolledInBiometrics(): Boolean
 
-    suspend fun setEnrolledInBiometrics(enrolled: Boolean)
-
     suspend fun didUserDeclineBiometricsEnrollment(): Boolean
 
     suspend fun userDeclinedBiometricsEnrollment()

@@ -12,4 +12,6 @@
     <string name="authenticate">Authenticate</string>
     <string name="confirm_to_stay_authenticated">Confirm To Stay Authenticated</string>
     <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="confirm_to_login">Confirm to Login</string>
 </resources>

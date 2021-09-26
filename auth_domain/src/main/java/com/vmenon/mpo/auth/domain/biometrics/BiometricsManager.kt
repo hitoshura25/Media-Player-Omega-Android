@@ -6,7 +6,7 @@ import javax.crypto.Cipher
 interface BiometricsManager {
     fun biometricState(): BiometricState
     fun <T: Any> showBiometricPrompt(requester: T, request: PromptRequest)
-    fun cipher(): Flow<Cipher>
+    fun authenticated(): Flow<Cipher>
 
     suspend fun requestBiometricPrompt(reason: PromptReason)
     val biometricPromptRequested: Flow<PromptReason>

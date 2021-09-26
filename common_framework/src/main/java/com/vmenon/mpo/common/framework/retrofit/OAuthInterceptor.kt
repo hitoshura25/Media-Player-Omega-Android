@@ -1,12 +1,16 @@
 package com.vmenon.mpo.common.framework.retrofit
 
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.lang.IllegalStateException
 import java.net.HttpURLConnection
 
 /**
@@ -17,18 +21,21 @@ import java.net.HttpURLConnection
 class OAuthInterceptor(
     private val authService: AuthService,
     private val logger: Logger,
-    private val clock: Clock
+    private val clock: Clock,
+    private val biometricsManager: BiometricsManager
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request: Request = chain.request()
-        return if (authService.isAuthenticated()) {
-            handleAuthentication(chain, request)
-        } else {
-            chain.proceed(request)
+        return runBlocking {
+            val request: Request = chain.request()
+            if (authService.isAuthenticated()) {
+                handleAuthentication(chain, request)
+            } else {
+                chain.proceed(request)
+            }
         }
     }
 
-    private fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
+    private suspend fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
         val response = proceedWithCredentials(chain, request)
         if (response.response.code() == HttpURLConnection.HTTP_UNAUTHORIZED
             && !response.tokenRefreshed
@@ -38,22 +45,26 @@ class OAuthInterceptor(
         return response.response
     }
 
-    private fun proceedWithCredentials(
+    private suspend fun proceedWithCredentials(
         chain: Interceptor.Chain,
         request: Request
-    ): ResponseWithCredentials = runBlocking {
-        authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
+    ): ResponseWithCredentials {
+        return authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
             logger.println("Refreshed token $refreshed")
-            val credentials = authService.getCredentials()
-            val newRequest = if (credentials != null) {
-                request.newBuilder().addHeader(
-                    "Authorization",
-                    "${credentials.tokenType} ${credentials.accessToken}"
-                ).build()
-            } else {
-                request
+            val newRequest = when (val credentialsResult = authService.getCredentials()) {
+                is CredentialsResult.Success -> {
+                    request.newBuilder().addHeader(
+                        "Authorization",
+                        "${credentialsResult.credentials.tokenType} ${credentialsResult.credentials.accessToken}"
+                    ).build()
+                }
+                CredentialsResult.None -> request
+                CredentialsResult.RequiresBiometricAuth -> {
+                    biometricsManager.requestBiometricPrompt(PromptReason.STAY_AUTHENTICATED)
+                    throw IllegalStateException("BiometricAuthRequired")
+                }
             }
-            val response = chain.proceed(newRequest)
+            val response = kotlin.runCatching { chain.proceed(newRequest) }.getOrThrow()
             ResponseWithCredentials(newRequest, response, refreshed)
         }
     }

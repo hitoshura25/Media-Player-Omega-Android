@@ -52,11 +52,17 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
                     confirmationRequired = false,
                     negativeActionText = getString(R.string.cancel)
                 )
-                PromptReason.AUTHENTICATE -> PromptRequest(
+                PromptReason.STAY_AUTHENTICATED -> PromptRequest(
                     title = getString(R.string.authenticate),
                     subtitle = getString(R.string.confirm_to_stay_authenticated),
                     confirmationRequired = false,
                     negativeActionText = getString(R.string.logout)
+                )
+                PromptReason.LOGIN -> PromptRequest(
+                    title = getString(R.string.login),
+                    subtitle = getString(R.string.confirm_to_login),
+                    confirmationRequired = false,
+                    negativeActionText = getString(R.string.cancel)
                 )
                 else -> null
             }

@@ -73,7 +73,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             viewModel.loginClicked(this)
         }
         binding.loginForm.useBiometrics.setOnClickListener {
-            viewModel.loginWithBiometrics(this)
+            viewModel.loginWithBiometrics()
         }
         binding.registerForm.registerUser.setOnClickListener {
             viewModel.performRegistration(this)

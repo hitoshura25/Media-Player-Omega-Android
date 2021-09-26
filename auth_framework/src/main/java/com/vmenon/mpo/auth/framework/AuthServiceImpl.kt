@@ -2,7 +2,7 @@ package com.vmenon.mpo.auth.framework
 
 import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.AuthService
-import com.vmenon.mpo.auth.domain.Credentials
+import com.vmenon.mpo.auth.domain.CredentialsResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -11,10 +11,10 @@ class AuthServiceImpl(
     private val authenticator: Authenticator
 ) : AuthService {
 
-    override fun getCredentials(): Credentials? = authState.getCredentials()
+    override suspend fun getCredentials(): CredentialsResult = authState.getCredentials()
 
     override fun authenticated(): Flow<Boolean> = authState.credentials().map { credentials ->
-        credentials != null
+        credentials is CredentialsResult.Success
     }
 
     override suspend fun logout(context: Any) {
@@ -27,19 +27,22 @@ class AuthServiceImpl(
 
     override suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
-        operation: (Boolean) -> T
+        operation: suspend (Boolean) -> T
     ): T {
-        val credentials = getCredentials()
-        return when {
-            credentials == null -> {
+        return when (val result = getCredentials()) {
+            is CredentialsResult.None -> {
                 operation(false)
             }
-            credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS -> {
-                operation(false)
+            is CredentialsResult.Success -> {
+                if (result.credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS) {
+                    operation(false)
+                } else {
+                    authenticator.refreshToken(result.credentials.refreshToken)
+                    operation(true)
+                }
             }
             else -> {
-                authenticator.refreshToken(credentials.refreshToken)
-                operation(true)
+                operation(false)
             }
         }
     }
