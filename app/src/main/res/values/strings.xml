@@ -6,4 +6,10 @@
     <string name="title_player_feature">PlayerFeature</string>
     <string name="title_search_feature">SearchFeature</string>
     <string name="title_login_feature">LoginFeature</string>
+    <string name="enroll_in_biometrics">Enroll In Biometrics</string>
+    <string name="confirm_to_complete_enrollment">Confirm To Complete Enrollment</string>
+    <string name="cancel">Cancel</string>
+    <string name="authenticate">Authenticate</string>
+    <string name="confirm_to_stay_authenticated">Confirm To Stay Authenticated</string>
+    <string name="logout">Logout</string>
 </resources>

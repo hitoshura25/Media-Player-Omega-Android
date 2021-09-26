@@ -6,14 +6,16 @@ import com.vmenon.mpo.auth.domain.Credentials
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SharedPrefsAuthState(context: Context) : AuthState {
+class SharedPrefsAuthState(
+    context: Context
+) : AuthState {
     private val sharedPreferences =
         context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
     private var storedCredentials: Credentials? = readFromSharedPrefs()
-    private set(value) {
-        field = value
-        credentialState.value = value
-    }
+        private set(value) {
+            field = value
+            credentialState.value = value
+        }
 
     private val credentialState = MutableStateFlow(storedCredentials)
 
@@ -71,5 +73,6 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         private const val ACCESS_TOKEN_EXPIRATION = "access_token_expiration"
         private const val ID_TOKEN = "id_token"
         private const val TOKEN_TYPE = "token_type"
+        private const val ENCRYPTED_WITH_BIOMETRICS = "encrypted_with_biometrics"
     }
 }

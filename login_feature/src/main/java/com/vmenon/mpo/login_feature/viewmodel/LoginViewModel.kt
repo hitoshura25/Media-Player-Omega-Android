@@ -6,7 +6,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.Fragment
@@ -16,8 +15,8 @@ import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.auth.framework.CryptographyManager
-import com.vmenon.mpo.auth.framework.biometrics.BiometricPromptUtils
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
@@ -116,7 +115,10 @@ class LoginViewModel : ViewModel() {
     }
 
     fun userWantsToEnrollInBiometrics(fragment: Fragment) {
-        val activity = fragment.requireActivity() as AppCompatActivity
+        viewModelScope.launch {
+            biometricsManager.requestBiometricPrompt(PromptReason.ENROLLMENT)
+        }
+        /*val activity = fragment.requireActivity() as AppCompatActivity
         when (biometricsManager.biometricState()) {
             BiometricState.SUCCESS -> {
                 val secretKeyName = "biometric_sample_encryption_key"
@@ -133,11 +135,11 @@ class LoginViewModel : ViewModel() {
             BiometricState.NOT_SUPPORTED -> {
 
             }
-        }
+        }*/
     }
 
     fun loginWithBiometrics(fragment: Fragment) {
-        val activity = fragment.requireActivity() as AppCompatActivity
+        /*val activity = fragment.requireActivity() as AppCompatActivity
         val secretKeyName = "biometric_sample_encryption_key"
         val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKeyName)
         val biometricPrompt =
@@ -147,6 +149,7 @@ class LoginViewModel : ViewModel() {
             )
         val promptInfo = BiometricPromptUtils.createPromptInfo(activity)
         biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+         */
     }
 
     @Suppress("DEPRECATION")

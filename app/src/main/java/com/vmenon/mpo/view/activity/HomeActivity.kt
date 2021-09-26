@@ -10,6 +10,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.splitcompat.SplitCompat
 import com.vmenon.mpo.MPOApplication
+import com.vmenon.mpo.R
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason
+import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
@@ -41,6 +44,26 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navigationController.setupWith(this, binding.navigation)
+        viewModel.biometricPromptRequested.observe(this) { reason ->
+            val request = when (reason) {
+                PromptReason.ENROLLMENT -> PromptRequest(
+                    title = getString(R.string.enroll_in_biometrics),
+                    subtitle = getString(R.string.confirm_to_complete_enrollment),
+                    confirmationRequired = false,
+                    negativeActionText = getString(R.string.cancel)
+                )
+                PromptReason.AUTHENTICATE -> PromptRequest(
+                    title = getString(R.string.authenticate),
+                    subtitle = getString(R.string.confirm_to_stay_authenticated),
+                    confirmationRequired = false,
+                    negativeActionText = getString(R.string.logout)
+                )
+                else -> null
+            }
+            if (request != null) {
+                viewModel.showBiometricPrompt(this, request)
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
