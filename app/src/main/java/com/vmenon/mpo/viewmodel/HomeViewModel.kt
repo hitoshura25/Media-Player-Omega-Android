@@ -36,7 +36,7 @@ class HomeViewModel : ViewModel() {
                 biometricsManager.requestBiometricPrompt(
                     fragment,
                     PromptRequest(
-                        reason = PromptReason.StayAuthenticated(credentialsResult.encryptedData),
+                        reason = PromptReason.Decryption(credentialsResult.encryptedData),
                         title = fragment.getString(R.string.authenticate),
                         subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
                         confirmationRequired = false,

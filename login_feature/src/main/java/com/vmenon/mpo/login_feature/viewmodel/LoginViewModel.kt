@@ -99,7 +99,7 @@ class LoginViewModel : ViewModel() {
         biometricsManager.requestBiometricPrompt(
             fragment,
             PromptRequest(
-                reason = Enrollment,
+                reason = Encryption,
                 title = fragment.getString(R.string.enroll_in_biometrics),
                 subtitle = fragment.getString(R.string.confirm_to_complete_enrollment),
                 confirmationRequired = false,
@@ -115,7 +115,7 @@ class LoginViewModel : ViewModel() {
                 biometricsManager.requestBiometricPrompt(
                     fragment,
                     PromptRequest(
-                        reason = Login(credentialsResult.encryptedData),
+                        reason = Decryption(credentialsResult.encryptedData),
                         title = fragment.getString(R.string.login),
                         subtitle = fragment.getString(R.string.confirm_to_login),
                         confirmationRequired = false,
@@ -133,7 +133,7 @@ class LoginViewModel : ViewModel() {
                 biometricsManager.requestBiometricPrompt(
                     fragment,
                     PromptRequest(
-                        reason = StayAuthenticated(credentialsResult.encryptedData),
+                        reason = Decryption(credentialsResult.encryptedData),
                         title = fragment.getString(R.string.authenticate),
                         subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
                         confirmationRequired = false,

@@ -61,18 +61,12 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
         when (biometricState()) {
             BiometricState.SUCCESS -> {
                 when (request.reason) {
-                    is Enrollment -> handleBiometricFlowForEncryption(activity, request)
-                    is Login ->
+                    is Encryption -> handleBiometricFlowForEncryption(activity, request)
+                    is Decryption ->
                         handleBiometricFlowForDecryption(
                             activity,
                             request,
-                            (request.reason as Login).cipherEncryptedData
-                        )
-                    is StayAuthenticated ->
-                        handleBiometricFlowForDecryption(
-                            activity,
-                            request,
-                            (request.reason as StayAuthenticated).cipherEncryptedData
+                            (request.reason as Decryption).cipherEncryptedData
                         )
                 }
             }
