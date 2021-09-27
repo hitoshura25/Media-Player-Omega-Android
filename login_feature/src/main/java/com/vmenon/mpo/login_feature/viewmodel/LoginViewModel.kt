@@ -2,6 +2,7 @@ package com.vmenon.mpo.login_feature.viewmodel
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.vmenon.mpo.R
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
@@ -9,6 +10,7 @@ import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
+import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
@@ -41,11 +43,7 @@ class LoginViewModel : ViewModel() {
                 when (credentialsResult) {
                     CredentialsResult.None -> postState(false, this)
                     is CredentialsResult.RequiresBiometricAuth -> {
-                        viewModelScope.launch {
-                            biometricsManager.requestBiometricPrompt(
-                                StayAuthenticated(credentialsResult.encryptedData)
-                            )
-                        }
+                        postValue(ContentEvent(RequireBiometricAuthState))
                     }
                     is CredentialsResult.Success -> postState(true, this)
                 }
@@ -54,10 +52,6 @@ class LoginViewModel : ViewModel() {
                 postValue(value)
             }
         }
-    }
-
-    fun onCreate(fragment: Fragment) {
-
     }
 
     fun registrationValid(): LiveData<RegistrationValid> = validator.registrationValid()
@@ -102,16 +96,49 @@ class LoginViewModel : ViewModel() {
     }
 
     fun userWantsToEnrollInBiometrics(fragment: Fragment) {
-        viewModelScope.launch {
-            biometricsManager.requestBiometricPrompt(Enrollment)
-        }
+        biometricsManager.requestBiometricPrompt(
+            fragment,
+            PromptRequest(
+                reason = Enrollment,
+                title = fragment.getString(R.string.enroll_in_biometrics),
+                subtitle = fragment.getString(R.string.confirm_to_complete_enrollment),
+                confirmationRequired = false,
+                negativeActionText = fragment.getString(R.string.cancel)
+            )
+        )
     }
 
-    fun loginWithBiometrics() {
+    fun loginWithBiometrics(fragment: Fragment) {
         viewModelScope.launch {
             val credentialsResult = authService.getCredentials()
             if (credentialsResult is CredentialsResult.RequiresBiometricAuth) {
-                biometricsManager.requestBiometricPrompt(Login(credentialsResult.encryptedData))
+                biometricsManager.requestBiometricPrompt(
+                    fragment,
+                    PromptRequest(
+                        reason = Login(credentialsResult.encryptedData),
+                        title = fragment.getString(R.string.login),
+                        subtitle = fragment.getString(R.string.confirm_to_login),
+                        confirmationRequired = false,
+                        negativeActionText = fragment.getString(R.string.cancel)
+                    )
+                )
+            }
+        }
+    }
+
+    fun promptForBiometricsToStayAuthenticated(fragment: Fragment) {
+        viewModelScope.launch {
+            val credentialsResult = authService.getCredentials()
+            if (credentialsResult is CredentialsResult.RequiresBiometricAuth) {
+                biometricsManager.requestBiometricPrompt(
+                    fragment,
+                    PromptRequest(
+                        reason = StayAuthenticated(credentialsResult.encryptedData),
+                        title = fragment.getString(R.string.authenticate),
+                        subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
+                        confirmationRequired = false,
+                        negativeActionText = fragment.getString(R.string.logout)
+                    ))
             }
         }
     }

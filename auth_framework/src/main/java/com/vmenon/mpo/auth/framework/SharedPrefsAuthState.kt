@@ -35,9 +35,11 @@ class SharedPrefsAuthState(
 
     private var storedCredentials: CredentialsResult? = null
         private set(value) {
-            field = value
-            scope.launch {
-                credentialState.emit(value ?: CredentialsResult.None)
+            if (field != value) {
+                field = value
+                scope.launch {
+                    credentialState.emit(value ?: CredentialsResult.None)
+                }
             }
         }
 

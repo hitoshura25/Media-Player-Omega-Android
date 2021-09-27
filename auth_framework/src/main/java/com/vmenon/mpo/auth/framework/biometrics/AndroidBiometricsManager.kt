@@ -16,14 +16,12 @@ import androidx.fragment.app.Fragment
 import com.vmenon.mpo.auth.domain.CipherEncryptedData
 import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
-import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.auth.framework.CryptographyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
@@ -32,11 +30,9 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
     private val appContext = context.applicationContext
     private val cryptographyManager = CryptographyManager()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val _biometricPromptRequested = MutableSharedFlow<PromptReason>()
 
     override val encryptionCipher = MutableSharedFlow<Cipher>()
     override val decryptionCipher = MutableSharedFlow<Cipher>()
-    override val biometricPromptRequested: Flow<PromptReason> = _biometricPromptRequested
 
     override fun biometricState(): BiometricState =
         when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
@@ -45,7 +41,7 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
             else -> BiometricState.NOT_SUPPORTED
         }
 
-    override fun <T : Any> showBiometricPrompt(requester: T, request: PromptRequest) {
+    override fun <T : Any> requestBiometricPrompt(requester: T, request: PromptRequest) {
         when (requester) {
             is AppCompatActivity -> {
                 handleBiometricFlow(requester, request)
@@ -59,10 +55,6 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
                 )
             }
         }
-    }
-
-    override suspend fun requestBiometricPrompt(reason: PromptReason) {
-        _biometricPromptRequested.emit(reason)
     }
 
     private fun handleBiometricFlow(activity: AppCompatActivity, request: PromptRequest) {

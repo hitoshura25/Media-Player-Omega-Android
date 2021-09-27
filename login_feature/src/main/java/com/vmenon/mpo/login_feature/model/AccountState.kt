@@ -8,3 +8,4 @@ object RegisterState : AccountState()
 object LoadingState : AccountState()
 data class LoggedInState(val userDetails: User, val promptToEnrollInBiometrics: Boolean) :
     AccountState()
+object RequireBiometricAuthState : AccountState()

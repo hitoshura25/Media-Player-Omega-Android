@@ -13,6 +13,7 @@ import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
 import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.login_feature.model.LoadingState
 import com.vmenon.mpo.login_feature.model.LoggedInState
+import com.vmenon.mpo.login_feature.model.RequireBiometricAuthState
 import com.vmenon.mpo.login_feature.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
@@ -50,6 +51,10 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                 LoadingState -> {
                     loadingStateHelper.showLoadingState()
                 }
+                RequireBiometricAuthState -> {
+                    loadingStateHelper.showLoadingState()
+                    viewModel.promptForBiometricsToStayAuthenticated(this)
+                }
                 is LoggedInState -> {
                     loadingStateHelper.showContentState()
                     if (state.promptToEnrollInBiometrics) {
@@ -73,7 +78,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             viewModel.loginClicked(this)
         }
         binding.loginForm.useBiometrics.setOnClickListener {
-            viewModel.loginWithBiometrics()
+            viewModel.loginWithBiometrics(this)
         }
         binding.registerForm.registerUser.setOnClickListener {
             viewModel.performRegistration(this)
@@ -81,11 +86,6 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
         binding.accountView.logoutLink.setOnClickListener {
             viewModel.logoutClicked(this)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.onCreate(this)
     }
 
     private fun promptToSetupBiometrics() {
