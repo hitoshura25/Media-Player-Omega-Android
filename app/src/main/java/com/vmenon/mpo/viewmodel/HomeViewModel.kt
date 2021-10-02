@@ -7,13 +7,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.R
 import com.vmenon.mpo.auth.domain.AuthService
-import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.CredentialsResult.RequiresBiometricAuth
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
@@ -33,6 +34,10 @@ class HomeViewModel : ViewModel() {
 
     var biometricEnrollmentLauncher: ActivityResultLauncher<Intent>? = null
 
+    private val _promptForBiometricsToStayAuthenticated = MutableLiveData<Unit>()
+    val promptForBiometricsToStayAuthenticated: LiveData<Unit> =
+        _promptForBiometricsToStayAuthenticated
+
     fun registerForBiometricEnrollment(activity: AppCompatActivity) {
         biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
 
@@ -40,20 +45,28 @@ class HomeViewModel : ViewModel() {
         biometricsManager.enrollmentRequired.asLiveData().observe(activity) {
             promptForBiometricEnrollment()
         }
+
+        authService.credentials().asLiveData().observe(activity) { credentialsResult ->
+            viewModelScope.launch {
+                if (credentialsResult is RequiresBiometricAuth && !authService.isLoggedOut()) {
+                    _promptForBiometricsToStayAuthenticated.postValue(Unit)
+                }
+            }
+        }
     }
 
-    fun promptForBiometricsToStayAuthenticated(fragment: Fragment) {
+    fun promptForBiometricsToStayAuthenticated(activity: AppCompatActivity) {
         viewModelScope.launch {
             val credentialsResult = authService.getCredentials()
-            if (credentialsResult is CredentialsResult.RequiresBiometricAuth) {
+            if (credentialsResult is RequiresBiometricAuth) {
                 biometricsManager.requestBiometricPrompt(
-                    fragment,
+                    activity,
                     PromptRequest(
                         reason = PromptReason.Decryption(credentialsResult.encryptedData),
-                        title = fragment.getString(R.string.authenticate),
-                        subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
+                        title = activity.getString(R.string.authenticate),
+                        subtitle = activity.getString(R.string.confirm_to_stay_authenticated),
                         confirmationRequired = false,
-                        negativeActionText = fragment.getString(R.string.logout)
+                        negativeActionText = activity.getString(R.string.logout)
                     )
                 )
             }

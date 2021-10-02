@@ -13,7 +13,6 @@ import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
 import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.login_feature.model.LoadingState
 import com.vmenon.mpo.login_feature.model.LoggedInState
-import com.vmenon.mpo.login_feature.model.RequireBiometricAuthState
 import com.vmenon.mpo.login_feature.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
@@ -50,10 +49,6 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             when (state) {
                 LoadingState -> {
                     loadingStateHelper.showLoadingState()
-                }
-                RequireBiometricAuthState -> {
-                    loadingStateHelper.showLoadingState()
-                    viewModel.promptForBiometricsToStayAuthenticated(this)
                 }
                 is LoggedInState -> {
                     loadingStateHelper.showContentState()

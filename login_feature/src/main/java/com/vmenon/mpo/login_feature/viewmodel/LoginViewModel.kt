@@ -40,10 +40,8 @@ class LoginViewModel : ViewModel() {
         MediatorLiveData<ContentEvent<AccountState>>().apply {
             addSource(authService.credentials().asLiveData()) { credentialsResult ->
                 when (credentialsResult) {
-                    CredentialsResult.None -> postState(false, this)
-                    is CredentialsResult.RequiresBiometricAuth -> {
-                        postValue(ContentEvent(RequireBiometricAuthState))
-                    }
+                    CredentialsResult.None,
+                    is CredentialsResult.RequiresBiometricAuth -> postState(false, this)
                     is CredentialsResult.Success -> postState(true, this)
                 }
             }
@@ -119,24 +117,6 @@ class LoginViewModel : ViewModel() {
                         subtitle = fragment.getString(R.string.confirm_to_login),
                         confirmationRequired = false,
                         negativeActionText = fragment.getString(R.string.cancel)
-                    )
-                )
-            }
-        }
-    }
-
-    fun promptForBiometricsToStayAuthenticated(fragment: Fragment) {
-        viewModelScope.launch {
-            val credentialsResult = authService.getCredentials()
-            if (credentialsResult is CredentialsResult.RequiresBiometricAuth) {
-                biometricsManager.requestBiometricPrompt(
-                    fragment,
-                    PromptRequest(
-                        reason = Decryption(credentialsResult.encryptedData),
-                        title = fragment.getString(R.string.authenticate),
-                        subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
-                        confirmationRequired = false,
-                        negativeActionText = fragment.getString(R.string.logout)
                     )
                 )
             }

@@ -12,4 +12,5 @@ interface AuthService {
 
     suspend fun startAuthentication(context: Any)
     suspend fun logout(context: Any)
+    suspend fun isLoggedOut(): Boolean
 }

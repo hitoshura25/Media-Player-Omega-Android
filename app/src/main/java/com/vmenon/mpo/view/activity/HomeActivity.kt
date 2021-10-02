@@ -42,6 +42,9 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         setContentView(binding.root)
         navigationController.setupWith(this, binding.navigation)
         viewModel.registerForBiometricEnrollment(this)
+        viewModel.promptForBiometricsToStayAuthenticated.observe(this) {
+            viewModel.promptForBiometricsToStayAuthenticated(this)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {

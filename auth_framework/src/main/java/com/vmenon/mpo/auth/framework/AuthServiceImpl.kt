@@ -44,6 +44,8 @@ class AuthServiceImpl(
         authenticator.logout(context)
     }
 
+    override suspend fun isLoggedOut() = authState.isLoggedOut()
+
     override suspend fun startAuthentication(context: Any) {
         authenticator.startAuthentication(context)
     }

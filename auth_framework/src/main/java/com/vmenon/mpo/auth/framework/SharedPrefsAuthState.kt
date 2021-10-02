@@ -52,6 +52,7 @@ class SharedPrefsAuthState(context: Context) : AuthState {
     }
 
     override fun credentials(): Flow<CredentialsResult> = credentialState
+    override suspend fun isLoggedOut(): Boolean = sharedPreferences.getBoolean(SIGNED_OUT, true)
 
     override suspend fun storeCredentials(credentials: Credentials) {
         storeToSharedPrefs(credentials)
@@ -63,6 +64,7 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         if (!encrypted) {
             sharedPreferences.edit().clear().apply()
         }
+        sharedPreferences.edit().putBoolean(SIGNED_OUT, true).apply()
         this.storedCredentials = null
         this.biometricDecryptionCipher = null
         this.biometricEncryptionCipher = null
@@ -121,11 +123,13 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         } else {
             sharedPreferences.edit().putString(CREDENTIALS, credentialJSON).apply()
         }
+        sharedPreferences.edit().putBoolean(SIGNED_OUT, false).apply()
     }
 
     companion object {
         private const val SHARED_PREFS_FILE = "mpo_credentials"
         private const val CREDENTIALS = "credentials"
         private const val ENCRYPTED_WITH_BIOMETRICS = "encrypted_with_biometrics"
+        private const val SIGNED_OUT = "signed_out"
     }
 }
