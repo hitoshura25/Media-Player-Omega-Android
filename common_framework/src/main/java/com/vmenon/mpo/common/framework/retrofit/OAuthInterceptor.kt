@@ -60,7 +60,7 @@ class OAuthInterceptor(
                 // That we need to prompt for biometrics to stay authenticated. Then throw an error and hope
                 // the retry mechanism will eventually get it? Or maybe just do this from the AuthService??
             }
-            val response = kotlin.runCatching { chain.proceed(newRequest) }.getOrThrow()
+            val response = runCatching { chain.proceed(newRequest) }.getOrThrow()
             ResponseWithCredentials(newRequest, response, refreshed)
         }
     }

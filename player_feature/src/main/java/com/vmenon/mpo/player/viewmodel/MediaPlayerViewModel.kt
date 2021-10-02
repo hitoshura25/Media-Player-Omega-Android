@@ -3,9 +3,9 @@ package com.vmenon.mpo.player.viewmodel
 import androidx.lifecycle.*
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams
 import com.vmenon.mpo.player.domain.PlaybackMediaRequest
-import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.player.domain.PlayerClient
 import com.vmenon.mpo.player.usecases.PlayerInteractors
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,6 +13,7 @@ class MediaPlayerViewModel : ViewModel() {
     @Inject
     lateinit var playerInteractors: PlayerInteractors
 
+    @ExperimentalCoroutinesApi
     val playBackState = liveData {
         emitSource(playerInteractors.listenForPlayBackStateChanges().asLiveData())
     }

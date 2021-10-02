@@ -4,6 +4,7 @@ import com.vmenon.mpo.player.domain.MediaPlayerEngine
 import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.ThreadUtil
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.transformLatest
 
 class ListenForPlaybackStateChanges(
@@ -11,6 +12,7 @@ class ListenForPlaybackStateChanges(
     private val clock: Clock,
     private val threadUtil: ThreadUtil
 ) {
+    @ExperimentalCoroutinesApi
     operator fun invoke() = playerEngine.playbackStateChanges.transformLatest { playbackState ->
         emit(playbackState)
         val comparisonTime = clock.currentTimeMillis()

@@ -22,6 +22,7 @@ import com.vmenon.mpo.player.domain.*
 import com.vmenon.mpo.player.framework.MPOPlayer
 import com.vmenon.mpo.player.viewmodel.MediaPlayerViewModel
 import com.vmenon.mpo.view.BaseViewBindingFragment
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMediaPlayerBinding>(),
@@ -45,6 +46,7 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
         component.inject(viewModel)
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playOnStart = savedInstanceState == null

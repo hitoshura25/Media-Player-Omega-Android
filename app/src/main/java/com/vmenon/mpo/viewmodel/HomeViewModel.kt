@@ -39,19 +39,15 @@ class HomeViewModel : ViewModel() {
     private val biometricsStateMediator by lazy {
         MediatorLiveData<ContentEvent<BiometricsState>>().apply {
             addSource(authService.credentials().asLiveData()) { credentialsResult ->
-                when (credentialsResult) {
-                    is RequiresBiometricAuth -> {
-                        viewModelScope.launch {
-                            if (!authService.didUserLogout()) {
-                                postValue(
-                                    PromptToStayAuthenticated(
-                                        biometricsManager.enrollmentRequired()
-                                    ).toContentEvent()
-                                )
-                            }
+                if (credentialsResult is RequiresBiometricAuth) {
+                    viewModelScope.launch {
+                        if (!authService.didUserLogout()) {
+                            postValue(
+                                PromptToStayAuthenticated(
+                                    biometricsManager.enrollmentRequired()
+                                ).toContentEvent()
+                            )
                         }
-                    }
-                    else -> {
                     }
                 }
             }
@@ -64,9 +60,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun registerForBiometrics(
-        activity: AppCompatActivity
-    ): LiveData<ContentEvent<BiometricsState>> {
+    fun registerForBiometrics(activity: AppCompatActivity): LiveData<ContentEvent<BiometricsState>> {
         biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
             biometricRequestWaitingOnEnrollment?.let { request ->
                 biometricPromptRequestAfterEnrollment.postValue(request)
@@ -94,6 +88,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    @Suppress("DEPRECATION")
     fun promptForBiometricEnrollment(request: PromptRequest) {
         val enrollIntent = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {

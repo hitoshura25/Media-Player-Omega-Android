@@ -31,7 +31,6 @@ class LoginRepository(
                     }
                     is PromptResponse.EncryptionSuccess ->
                         userSettings.setEnrolledInBiometrics(true)
-
                 }
             }
         }
