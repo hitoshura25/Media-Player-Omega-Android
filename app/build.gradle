@@ -92,7 +92,7 @@ dependencies {
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
 
-    implementation Libs.com_android_support_multidex
+    implementation Libs.multidex
     implementation Libs.work_runtime_ktx
 
     implementation Libs.navigation_fragment_ktx

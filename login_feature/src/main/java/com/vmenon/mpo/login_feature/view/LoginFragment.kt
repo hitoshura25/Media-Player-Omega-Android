@@ -5,17 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import com.vmenon.mpo.common.framework.livedata.observeUnhandled
 import com.vmenon.mpo.login_feature.databinding.FragmentLoginBinding
 import com.vmenon.mpo.login_feature.di.dagger.LoginComponent
 import com.vmenon.mpo.login_feature.di.dagger.toLoginComponent
 import com.vmenon.mpo.navigation.domain.login.LoginNavigationLocation
 import com.vmenon.mpo.login_feature.model.LoadingState
+import com.vmenon.mpo.login_feature.model.LoggedInState
 import com.vmenon.mpo.login_feature.viewmodel.LoginViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
+import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.BaseActivity
 
 class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBinding>(),
@@ -48,6 +51,12 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                 LoadingState -> {
                     loadingStateHelper.showLoadingState()
                 }
+                is LoggedInState -> {
+                    loadingStateHelper.showContentState()
+                    if (state.promptToEnrollInBiometrics) {
+                        promptToSetupBiometrics()
+                    }
+                }
                 else -> {
                     loadingStateHelper.showContentState()
                 }
@@ -62,20 +71,31 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             viewModel.registerClicked()
         }
         binding.loginForm.loginLink.setOnClickListener {
-            viewModel.loginClicked(requireActivity())
+            viewModel.loginClicked(this)
         }
-
+        binding.loginForm.useBiometrics.setOnClickListener {
+            viewModel.loginWithBiometrics(this)
+        }
         binding.registerForm.registerUser.setOnClickListener {
-            viewModel.performRegistration(requireActivity())
+            viewModel.performRegistration(this)
         }
-
         binding.accountView.logoutLink.setOnClickListener {
-            viewModel.logoutClicked(requireActivity())
+            viewModel.logoutClicked(this)
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchState()
+    private fun promptToSetupBiometrics() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.apply {
+            setPositiveButton(getString(R.string.yes)) { _, _ ->
+                viewModel.userWantsToEnrollInBiometrics(this@LoginFragment)
+            }
+            setNegativeButton(R.string.no) { _, _ ->
+                viewModel.userDoesNotWantBiometrics()
+            }
+            setTitle(getString(com.vmenon.mpo.login_feature.R.string.use_biometrics))
+            setMessage(getString(com.vmenon.mpo.login_feature.R.string.use_biometrics_for_login))
+        }
+        builder.create().show()
     }
 }

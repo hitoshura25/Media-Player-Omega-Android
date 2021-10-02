@@ -33,5 +33,7 @@ dependencies {
     implementation Libs.lifecycle_viewmodel_ktx
     implementation Libs.appauth
     implementation Libs.appcompat
+    implementation Libs.gson
+    api Libs.biometric
 
 }

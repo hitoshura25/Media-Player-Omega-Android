@@ -22,6 +22,18 @@ public object Libs {
 
     public const val retrofit: String = "com.squareup.retrofit2:retrofit:2.9.0"
 
+    public const val viewbinding: String = "androidx.databinding:viewbinding:4.2.1"
+
+    public const val databinding_adapters: String =
+            "androidx.databinding:databinding-adapters:4.2.1"
+
+    public const val databinding_common: String = "androidx.databinding:databinding-common:4.2.1"
+
+    public const val databinding_compiler: String =
+            "androidx.databinding:databinding-compiler:4.2.1"
+
+    public const val databinding_runtime: String = "androidx.databinding:databinding-runtime:4.2.1"
+
     public const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.5.10"
 
@@ -55,11 +67,6 @@ public object Libs {
     public const val lifecycle_viewmodel_ktx: String =
             "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
 
-    public const val androidx_multidex_multidex: String = "androidx.multidex:multidex:2.0.0"
-
-    public const val multidex_instrumentation: String =
-            "androidx.multidex:multidex-instrumentation:2.0.0"
-
     public const val androidx_test_ext_junit: String = "androidx.test.ext:junit:1.1.2"
 
     public const val junit_ktx: String = "androidx.test.ext:junit-ktx:1.1.2"
@@ -87,8 +94,6 @@ public object Libs {
     public const val room_testing: String = "androidx.room:room-testing:2.3.0"
 
     public const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:4.2.1"
-
-    public const val com_android_support_multidex: String = "com.android.support:multidex:1.0.3"
 
     public const val com_google_android_play_core: String = "com.google.android.play:core:1.10.0"
 
@@ -143,15 +148,17 @@ public object Libs {
 
     public const val uiautomator: String = "androidx.test.uiautomator:uiautomator:2.2.0"
 
-    public const val viewbinding: String = "androidx.databinding:viewbinding:4.2.1"
-
     public const val `annotation`: String = "androidx.annotation:annotation:1.1.0"
 
     public const val appcompat: String = "androidx.appcompat:appcompat:1.3.0"
 
+    public const val biometric: String = "androidx.biometric:biometric:1.1.0"
+
     public const val core_ktx: String = "androidx.core:core-ktx:1.5.0"
 
     public const val material: String = "com.google.android.material:material:1.3.0"
+
+    public const val multidex: String = "com.android.support:multidex:1.0.3"
 
     public const val appauth: String = "net.openid:appauth:0.8.1"
 

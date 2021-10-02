@@ -2,6 +2,7 @@ package com.vmenon.mpo.common.framework.di.dagger
 
 import android.app.Application
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.navigation.domain.NavigationController
@@ -55,4 +56,5 @@ interface CommonFrameworkComponent {
     fun searchNavigationDestination(): NavigationDestination<SearchNavigationLocation>
     fun playerNavigationDestination(): NavigationDestination<PlayerNavigationLocation>
     fun navigationController(): NavigationController
+    fun biometricsManager(): BiometricsManager
 }

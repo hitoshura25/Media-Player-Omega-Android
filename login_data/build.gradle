@@ -10,6 +10,7 @@ java {
 
 dependencies {
     api project(':login_domain')
+    api project(':auth_domain')
     implementation project(':system_domain')
 
     implementation Libs.kotlin_stdlib

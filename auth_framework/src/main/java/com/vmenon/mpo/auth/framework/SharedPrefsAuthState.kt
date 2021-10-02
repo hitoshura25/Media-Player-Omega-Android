@@ -1,75 +1,138 @@
 package com.vmenon.mpo.auth.framework
 
 import android.content.Context
+import com.google.gson.Gson
 import com.vmenon.mpo.auth.data.AuthState
+import com.vmenon.mpo.auth.domain.CipherEncryptedData
 import com.vmenon.mpo.auth.domain.Credentials
+import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.CredentialsResult.RequiresBiometricAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+import javax.crypto.Cipher
 
 class SharedPrefsAuthState(context: Context) : AuthState {
-    private val sharedPreferences =
-        context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-    private var storedCredentials: Credentials? = readFromSharedPrefs()
-    private set(value) {
-        field = value
-        credentialState.value = value
+    private val cryptographyManager = CryptographyManager()
+    private val gson = Gson()
+    private val sharedPreferences = context.getSharedPreferences(
+        SHARED_PREFS_FILE,
+        Context.MODE_PRIVATE
+    )
+    private var biometricEncryptionCipher: Cipher? = null
+    private var biometricDecryptionCipher: Cipher? = null
+
+    private val credentialState = MutableSharedFlow<CredentialsResult>(replay = 1)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    private var storedCredentials: CredentialsResult? = null
+        private set(value) {
+            if (field != value) {
+                field = value
+                scope.launch {
+                    credentialState.emit(value ?: CredentialsResult.None)
+                }
+            }
+        }
+
+    init {
+        scope.launch {
+            getCredentials()
+        }
     }
 
-    private val credentialState = MutableStateFlow(storedCredentials)
+    override suspend fun getCredentials(): CredentialsResult {
+        if (storedCredentials == null || storedCredentials is RequiresBiometricAuth) {
+            storedCredentials = readFromSharedPrefs()
+        }
+        return storedCredentials ?: CredentialsResult.None
+    }
 
-    override fun getCredentials(): Credentials? = storedCredentials
-    override fun credentials(): Flow<Credentials?> = credentialState
+    override fun credentials(): Flow<CredentialsResult> = credentialState
+    override suspend fun didUserLogOut(): Boolean =
+        sharedPreferences.getBoolean(USER_LOGGED_OUT, true)
 
     override suspend fun storeCredentials(credentials: Credentials) {
         storeToSharedPrefs(credentials)
-        this.storedCredentials = credentials
+        this.storedCredentials = CredentialsResult.Success(credentials)
     }
 
-    override suspend fun clearCredentials() {
-        sharedPreferences.edit().clear().apply()
+    override suspend fun userLoggedOut() {
+        val encrypted = sharedPreferences.getBoolean(ENCRYPTED_WITH_BIOMETRICS, false)
+        if (!encrypted) {
+            sharedPreferences.edit().clear().apply()
+        }
+        sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, true).apply()
         this.storedCredentials = null
+        this.biometricDecryptionCipher = null
+        this.biometricEncryptionCipher = null
     }
 
-    private fun readFromSharedPrefs(): Credentials? {
-        val accessToken = sharedPreferences.getString(ACCESS_TOKEN, null)
-        val refreshToken = sharedPreferences.getString(REFRESH_TOKEN, null)
-        val accessTokenExpiration = sharedPreferences.getLong(ACCESS_TOKEN_EXPIRATION, -1L)
-        val idToken = sharedPreferences.getString(ID_TOKEN, null)
-        val tokenType = sharedPreferences.getString(TOKEN_TYPE, null)
+    override suspend fun encryptCredentials(cipher: Cipher) {
+        if (biometricEncryptionCipher != cipher) {
+            biometricEncryptionCipher = cipher
+            sharedPreferences.edit().putBoolean(ENCRYPTED_WITH_BIOMETRICS, true).apply()
+            when (val credentialsResult = getCredentials()) {
+                is CredentialsResult.Success -> storeToSharedPrefs(
+                    credentialsResult.credentials
+                )
+            }
+        }
+    }
 
-        return if (
-            accessToken != null
-            && refreshToken != null
-            && accessTokenExpiration != -1L
-            && idToken != null
-            && tokenType != null
-        ) {
-            Credentials(
-                accessToken = accessToken,
-                refreshToken = refreshToken,
-                accessTokenExpiration = accessTokenExpiration,
-                idToken = idToken,
-                tokenType = tokenType
-            )
-        } else null
+    override suspend fun decryptCredentials(cipher: Cipher) {
+        if (biometricDecryptionCipher != cipher) {
+            biometricDecryptionCipher = cipher
+        }
+        if (getCredentials() is CredentialsResult.Success) {
+            sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, false).apply()
+        }
+    }
+
+    private fun readFromSharedPrefs(): CredentialsResult {
+        val encrypted = sharedPreferences.getBoolean(ENCRYPTED_WITH_BIOMETRICS, false)
+        val credentialsJson = sharedPreferences.getString(CREDENTIALS, null)
+        return if (credentialsJson != null) {
+            if (encrypted) {
+                val encryptedCredentials = gson.fromJson(
+                    credentialsJson,
+                    CipherEncryptedData::class.java
+                )
+                biometricDecryptionCipher?.let { biometricCipher ->
+                    val decrypted = cryptographyManager.decryptData(
+                        encryptedCredentials.ciphertext,
+                        biometricCipher
+                    )
+                    CredentialsResult.Success(gson.fromJson(decrypted, Credentials::class.java))
+                } ?: RequiresBiometricAuth(encryptedCredentials)
+            } else {
+                CredentialsResult.Success(gson.fromJson(credentialsJson, Credentials::class.java))
+            }
+        } else CredentialsResult.None
     }
 
     private fun storeToSharedPrefs(credentials: Credentials) {
-        sharedPreferences.edit()
-            .putString(ACCESS_TOKEN, credentials.accessToken)
-            .putString(REFRESH_TOKEN, credentials.refreshToken)
-            .putString(ID_TOKEN, credentials.idToken)
-            .putLong(ACCESS_TOKEN_EXPIRATION, credentials.accessTokenExpiration)
-            .putString(TOKEN_TYPE, credentials.tokenType)
-            .apply()
+        val credentialJSON = gson.toJson(credentials)
+        val encrypted = sharedPreferences.getBoolean(ENCRYPTED_WITH_BIOMETRICS, false)
+        if (encrypted) {
+            biometricEncryptionCipher?.let { biometricCipher ->
+                val cipherWrapper = cryptographyManager.encryptData(credentialJSON, biometricCipher)
+                val encryptedJSON = Gson().toJson(cipherWrapper)
+                sharedPreferences.edit().putString(CREDENTIALS, encryptedJSON).apply()
+            }
+        } else {
+            sharedPreferences.edit().putString(CREDENTIALS, credentialJSON).apply()
+        }
+        sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, false).apply()
     }
 
     companion object {
         private const val SHARED_PREFS_FILE = "mpo_credentials"
-        private const val ACCESS_TOKEN = "access_token"
-        private const val REFRESH_TOKEN = "refresh_token"
-        private const val ACCESS_TOKEN_EXPIRATION = "access_token_expiration"
-        private const val ID_TOKEN = "id_token"
-        private const val TOKEN_TYPE = "token_type"
+        private const val CREDENTIALS = "credentials"
+        private const val ENCRYPTED_WITH_BIOMETRICS = "encrypted_with_biometrics"
+        private const val USER_LOGGED_OUT = "credentials_cleared"
     }
 }

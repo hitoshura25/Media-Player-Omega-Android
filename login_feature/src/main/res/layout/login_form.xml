@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="com.vmenon.mpo.login_feature.model.LoginState" />
+
+        <variable
+            name="state"
+            type="com.vmenon.mpo.login_feature.model.LoginState" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -9,13 +21,26 @@
 
         <Button
             android:id="@+id/login_link"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="@string/login"
-            app:layout_constraintBottom_toTopOf="@+id/register_link"
+            app:layout_constraintBottom_toTopOf="@+id/use_biometrics"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <Button
+            android:id="@+id/use_biometrics"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/use_biometrics"
+            android:visibility="@{state.canUseBiometrics ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/register_link"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/login_link"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
@@ -28,7 +53,7 @@
             android:textColor="#0000EE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/login_link"
-            app:layout_constraintTop_toBottomOf="@id/login_link" />
+            app:layout_constraintTop_toBottomOf="@id/use_biometrics" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

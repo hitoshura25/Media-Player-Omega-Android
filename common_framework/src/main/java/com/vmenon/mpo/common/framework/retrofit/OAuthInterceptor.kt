@@ -1,6 +1,7 @@
 package com.vmenon.mpo.common.framework.retrofit
 
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.runBlocking
@@ -17,18 +18,20 @@ import java.net.HttpURLConnection
 class OAuthInterceptor(
     private val authService: AuthService,
     private val logger: Logger,
-    private val clock: Clock
+    private val clock: Clock,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request: Request = chain.request()
-        return if (authService.isAuthenticated()) {
-            handleAuthentication(chain, request)
-        } else {
-            chain.proceed(request)
+        return runBlocking {
+            val request: Request = chain.request()
+            if (authService.getCredentials() is CredentialsResult.None) {
+                chain.proceed(request)
+            } else {
+                handleAuthentication(chain, request)
+            }
         }
     }
 
-    private fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
+    private suspend fun handleAuthentication(chain: Interceptor.Chain, request: Request): Response {
         val response = proceedWithCredentials(chain, request)
         if (response.response.code() == HttpURLConnection.HTTP_UNAUTHORIZED
             && !response.tokenRefreshed
@@ -38,22 +41,26 @@ class OAuthInterceptor(
         return response.response
     }
 
-    private fun proceedWithCredentials(
+    private suspend fun proceedWithCredentials(
         chain: Interceptor.Chain,
         request: Request
-    ): ResponseWithCredentials = runBlocking {
-        authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
+    ): ResponseWithCredentials {
+        return authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
             logger.println("Refreshed token $refreshed")
-            val credentials = authService.getCredentials()
-            val newRequest = if (credentials != null) {
-                request.newBuilder().addHeader(
-                    "Authorization",
-                    "${credentials.tokenType} ${credentials.accessToken}"
-                ).build()
-            } else {
-                request
+            val newRequest = when (val credentialsResult = authService.getCredentials()) {
+                is CredentialsResult.Success -> {
+                    request.newBuilder().addHeader(
+                        "Authorization",
+                        "${credentialsResult.credentials.tokenType} ${credentialsResult.credentials.accessToken}"
+                    ).build()
+                }
+                else -> request
+                // TODO: What if Biometric prompt is needed?
+                // Maybe implement an EventBus, and send an event notifying the listener (the HomeActivity maybe?)
+                // That we need to prompt for biometrics to stay authenticated. Then throw an error and hope
+                // the retry mechanism will eventually get it? Or maybe just do this from the AuthService??
             }
-            val response = chain.proceed(newRequest)
+            val response = runCatching { chain.proceed(newRequest) }.getOrThrow()
             ResponseWithCredentials(newRequest, response, refreshed)
         }
     }

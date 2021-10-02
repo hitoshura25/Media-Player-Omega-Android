@@ -1,10 +1,15 @@
 package com.vmenon.mpo.login_feature.viewmodel
 
-import android.app.Activity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.vmenon.mpo.R
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
+import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
+import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
@@ -19,6 +24,9 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var loginService: LoginService
 
+    @Inject
+    lateinit var biometricsManager: BiometricsManager
+
     val registration by lazy {
         val registrationObservable = RegistrationObservable()
         registrationObservable.addOnPropertyChangedCallback(validator)
@@ -27,27 +35,23 @@ class LoginViewModel : ViewModel() {
 
     private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
-    private val refreshState = MutableLiveData<Unit>()
 
     private val loginState by lazy {
         MediatorLiveData<ContentEvent<AccountState>>().apply {
-            addSource(authService.authenticated().asLiveData()) { authenticated ->
-                postState(authenticated, this)
+            addSource(authService.credentials().asLiveData()) { credentialsResult ->
+                when (credentialsResult) {
+                    CredentialsResult.None,
+                    is CredentialsResult.RequiresBiometricAuth -> postState(false, this)
+                    is CredentialsResult.Success -> postState(true, this)
+                }
             }
             addSource(loginStateFromUI) { value ->
                 postValue(value)
-            }
-            addSource(refreshState) {
-                postState(authService.isAuthenticated(), this)
             }
         }
     }
 
     fun registrationValid(): LiveData<RegistrationValid> = validator.registrationValid()
-
-    fun fetchState() {
-        refreshState.postValue(Unit)
-    }
 
     fun loginState(): LiveData<ContentEvent<AccountState>> = loginState
 
@@ -55,21 +59,21 @@ class LoginViewModel : ViewModel() {
         loginStateFromUI.postValue(RegisterState.toContentEvent())
     }
 
-    fun loginClicked(activity: Activity) {
+    fun loginClicked(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            authService.startAuthentication(activity)
+            authService.startAuthentication(fragment.requireActivity())
         }
     }
 
-    fun logoutClicked(activity: Activity) {
+    fun logoutClicked(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
-            authService.logout(activity)
+            authService.logout(fragment.requireActivity())
         }
     }
 
-    fun performRegistration(activity: Activity) {
+    fun performRegistration(fragment: Fragment) {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             loginService.registerUser(
@@ -78,7 +82,44 @@ class LoginViewModel : ViewModel() {
                 registration.getEmail(),
                 registration.getPassword()
             )
-            authService.startAuthentication(activity)
+            authService.startAuthentication(fragment.requireActivity())
+        }
+    }
+
+    fun userDoesNotWantBiometrics() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loginService.userDeclinedBiometricsEnrollment()
+        }
+    }
+
+    fun userWantsToEnrollInBiometrics(fragment: Fragment) {
+        biometricsManager.requestBiometricPrompt(
+            fragment,
+            PromptRequest(
+                reason = Encryption,
+                title = fragment.getString(R.string.enroll_in_biometrics),
+                subtitle = fragment.getString(R.string.confirm_to_complete_enrollment),
+                confirmationRequired = false,
+                negativeActionText = fragment.getString(R.string.cancel)
+            )
+        )
+    }
+
+    fun loginWithBiometrics(fragment: Fragment) {
+        viewModelScope.launch {
+            val credentialsResult = authService.getCredentials()
+            if (credentialsResult is CredentialsResult.RequiresBiometricAuth) {
+                biometricsManager.requestBiometricPrompt(
+                    fragment,
+                    PromptRequest(
+                        reason = Decryption(credentialsResult.encryptedData),
+                        title = fragment.getString(R.string.login),
+                        subtitle = fragment.getString(R.string.confirm_to_login),
+                        confirmationRequired = false,
+                        negativeActionText = fragment.getString(R.string.cancel)
+                    )
+                )
+            }
         }
     }
 
@@ -86,15 +127,30 @@ class LoginViewModel : ViewModel() {
         authenticated: Boolean,
         mutableLiveData: MutableLiveData<ContentEvent<AccountState>>
     ) {
-        if (authenticated) {
-            viewModelScope.launch(Dispatchers.IO) {
-                mutableLiveData.postValue(LoadingState.toContentEvent())
+        viewModelScope.launch(Dispatchers.IO) {
+            mutableLiveData.postValue(LoadingState.toContentEvent())
+            if (authenticated) {
                 loginService.getUser().onSuccess { user ->
-                    mutableLiveData.postValue(LoggedInState(user).toContentEvent())
+                    mutableLiveData.postValue(
+                        LoggedInState(
+                            user,
+                            shouldPromptToEnrollInBiometrics()
+                        ).toContentEvent()
+                    )
                 }
+            } else {
+                mutableLiveData.postValue(
+                    LoginState(canUseBiometrics()).toContentEvent()
+                )
             }
-        } else {
-            mutableLiveData.postValue(LoginState.toContentEvent())
         }
     }
+
+    private suspend fun canUseBiometrics() =
+        loginService.isEnrolledInBiometrics() && biometricsManager.deviceSupportsBiometrics()
+
+    private suspend fun shouldPromptToEnrollInBiometrics() =
+        !loginService.didUserDeclineBiometricsEnrollment() &&
+                !loginService.isEnrolledInBiometrics() &&
+                biometricsManager.deviceSupportsBiometrics()
 }

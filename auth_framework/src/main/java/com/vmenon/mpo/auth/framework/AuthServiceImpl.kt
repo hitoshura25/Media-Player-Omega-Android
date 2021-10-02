@@ -2,24 +2,49 @@ package com.vmenon.mpo.auth.framework
 
 import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.AuthService
-import com.vmenon.mpo.auth.domain.Credentials
+import com.vmenon.mpo.auth.domain.CredentialsResult
+import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.domain.biometrics.PromptResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class AuthServiceImpl(
     private val authState: AuthState,
-    private val authenticator: Authenticator
+    private val authenticator: Authenticator,
+    private val biometricsManager: BiometricsManager
 ) : AuthService {
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    override fun getCredentials(): Credentials? = authState.getCredentials()
-
-    override fun authenticated(): Flow<Boolean> = authState.credentials().map { credentials ->
-        credentials != null
+    init {
+        scope.launch {
+            biometricsManager.promptResponse.collect { response ->
+                when (response) {
+                    is PromptResponse.DecryptionSuccess -> authState.decryptCredentials(
+                        response.decryptionCipher
+                    )
+                    is PromptResponse.EncryptionSuccess -> authState.encryptCredentials(
+                        response.encryptionCipher
+                    )
+                    else -> {
+                    }
+                }
+            }
+        }
     }
+
+    override suspend fun getCredentials(): CredentialsResult = authState.getCredentials()
+
+    override fun credentials(): Flow<CredentialsResult> = authState.credentials()
 
     override suspend fun logout(context: Any) {
         authenticator.logout(context)
     }
+
+    override suspend fun didUserLogout() = authState.didUserLogOut()
 
     override suspend fun startAuthentication(context: Any) {
         authenticator.startAuthentication(context)
@@ -27,19 +52,22 @@ class AuthServiceImpl(
 
     override suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
-        operation: (Boolean) -> T
+        operation: suspend (Boolean) -> T
     ): T {
-        val credentials = getCredentials()
-        return when {
-            credentials == null -> {
+        return when (val result = getCredentials()) {
+            is CredentialsResult.None -> {
                 operation(false)
             }
-            credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS -> {
-                operation(false)
+            is CredentialsResult.Success -> {
+                if (result.credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS) {
+                    operation(false)
+                } else {
+                    authenticator.refreshToken(result.credentials.refreshToken)
+                    operation(true)
+                }
             }
             else -> {
-                authenticator.refreshToken(credentials.refreshToken)
-                operation(true)
+                operation(false)
             }
         }
     }
