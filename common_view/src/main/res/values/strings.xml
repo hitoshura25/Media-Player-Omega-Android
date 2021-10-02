@@ -6,4 +6,6 @@
     <string name="title_shared_feature">SharedFeature</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

@@ -16,6 +16,7 @@
     <string name="password_invalid">Password is invalid</string>
     <string name="confirm_password_invalid">Confirm Password is invalid</string>
     <string name="confirm_password_does_not_match">Confirm Password does not match</string>
-    <string name="use_biometrics">Use Biometrics</string>
     <string name="enroll_in_biometrics">Enroll in Biometrics</string>
+    <string name="use_biometrics">Use Biometrics</string>
+    <string name="use_biometrics_for_login">Would you like to use Biometrics for login?</string>
 </resources>

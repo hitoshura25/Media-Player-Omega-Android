@@ -18,6 +18,7 @@ import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
+import com.vmenon.mpo.view.R
 import com.vmenon.mpo.view.activity.BaseActivity
 
 class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBinding>(),
@@ -86,14 +87,14 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
     private fun promptToSetupBiometrics() {
         val builder = AlertDialog.Builder(requireContext())
         builder.apply {
-            setPositiveButton("Yes") { dialog, id ->
+            setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.userWantsToEnrollInBiometrics(this@LoginFragment)
             }
-            setNegativeButton("No") { dialog, id ->
+            setNegativeButton(R.string.no) { _, _ ->
                 viewModel.userDoesNotWantBiometrics()
             }
-            setTitle("Use Biometrics")
-            setMessage("Would you like to use Biometrics for login?")
+            setTitle(getString(com.vmenon.mpo.login_feature.R.string.use_biometrics))
+            setMessage(getString(com.vmenon.mpo.login_feature.R.string.use_biometrics_for_login))
         }
         builder.create().show()
     }

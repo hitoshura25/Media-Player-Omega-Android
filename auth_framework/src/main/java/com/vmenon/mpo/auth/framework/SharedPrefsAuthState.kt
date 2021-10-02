@@ -52,19 +52,20 @@ class SharedPrefsAuthState(context: Context) : AuthState {
     }
 
     override fun credentials(): Flow<CredentialsResult> = credentialState
-    override suspend fun isLoggedOut(): Boolean = sharedPreferences.getBoolean(SIGNED_OUT, true)
+    override suspend fun didUserLogOut(): Boolean =
+        sharedPreferences.getBoolean(USER_LOGGED_OUT, true)
 
     override suspend fun storeCredentials(credentials: Credentials) {
         storeToSharedPrefs(credentials)
         this.storedCredentials = CredentialsResult.Success(credentials)
     }
 
-    override suspend fun clearCredentials() {
+    override suspend fun userLoggedOut() {
         val encrypted = sharedPreferences.getBoolean(ENCRYPTED_WITH_BIOMETRICS, false)
         if (!encrypted) {
             sharedPreferences.edit().clear().apply()
         }
-        sharedPreferences.edit().putBoolean(SIGNED_OUT, true).apply()
+        sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, true).apply()
         this.storedCredentials = null
         this.biometricDecryptionCipher = null
         this.biometricEncryptionCipher = null
@@ -86,7 +87,9 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         if (biometricDecryptionCipher != cipher) {
             biometricDecryptionCipher = cipher
         }
-        getCredentials()
+        if (getCredentials() is CredentialsResult.Success) {
+            sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, false).apply()
+        }
     }
 
     private fun readFromSharedPrefs(): CredentialsResult {
@@ -123,13 +126,13 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         } else {
             sharedPreferences.edit().putString(CREDENTIALS, credentialJSON).apply()
         }
-        sharedPreferences.edit().putBoolean(SIGNED_OUT, false).apply()
+        sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, false).apply()
     }
 
     companion object {
         private const val SHARED_PREFS_FILE = "mpo_credentials"
         private const val CREDENTIALS = "credentials"
         private const val ENCRYPTED_WITH_BIOMETRICS = "encrypted_with_biometrics"
-        private const val SIGNED_OUT = "signed_out"
+        private const val USER_LOGGED_OUT = "credentials_cleared"
     }
 }

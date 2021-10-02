@@ -74,7 +74,7 @@ class OpenIdAuthenticator(
         exception: AuthorizationException?
     ) {
         authenticatorEngine.handleEndSessionResponse(response, exception)
-        authState.clearCredentials()
+        authState.userLoggedOut()
     }
 }
 

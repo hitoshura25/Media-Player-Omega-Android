@@ -28,14 +28,17 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override val promptResponse = MutableSharedFlow<PromptResponse>()
-    override val enrollmentRequired = MutableSharedFlow<Unit>()
+    override val promptToEnroll = MutableSharedFlow<PromptRequest>()
 
-    override fun canUseBiometrics(): Boolean =
+    override fun deviceSupportsBiometrics(): Boolean =
         when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
             BiometricManager.BIOMETRIC_SUCCESS,
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> true
             else -> false
         }
+
+    override fun enrollmentRequired(): Boolean = BiometricManager.from(appContext)
+        .canAuthenticate(BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
 
     override fun <T : Any> requestBiometricPrompt(requester: T, request: PromptRequest) {
         when (requester) {
@@ -70,7 +73,7 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
                 }
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> scope.launch {
-                enrollmentRequired.emit(Unit)
+                promptToEnroll.emit(request)
             }
             else -> {
 

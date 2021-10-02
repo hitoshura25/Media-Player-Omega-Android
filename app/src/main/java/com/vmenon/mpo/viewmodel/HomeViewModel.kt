@@ -7,17 +7,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.vmenon.mpo.R
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult.RequiresBiometricAuth
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
+import com.vmenon.mpo.common.domain.ContentEvent
+import com.vmenon.mpo.common.domain.toContentEvent
+import com.vmenon.mpo.model.BiometricsState
+import com.vmenon.mpo.model.BiometricsState.*
 import com.vmenon.mpo.navigation.domain.NavigationController
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,27 +32,48 @@ class HomeViewModel : ViewModel() {
     @Inject
     lateinit var authService: AuthService
 
-    var biometricEnrollmentLauncher: ActivityResultLauncher<Intent>? = null
+    private val biometricPromptRequestAfterEnrollment = MutableLiveData<PromptRequest>()
+    private var biometricEnrollmentLauncher: ActivityResultLauncher<Intent>? = null
+    private var biometricRequestWaitingOnEnrollment: PromptRequest? = null
 
-    private val _promptForBiometricsToStayAuthenticated = MutableLiveData<Unit>()
-    val promptForBiometricsToStayAuthenticated: LiveData<Unit> =
-        _promptForBiometricsToStayAuthenticated
-
-    fun registerForBiometricEnrollment(activity: AppCompatActivity) {
-        biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
-
-        }
-        biometricsManager.enrollmentRequired.asLiveData().observe(activity) {
-            promptForBiometricEnrollment()
-        }
-
-        authService.credentials().asLiveData().observe(activity) { credentialsResult ->
-            viewModelScope.launch {
-                if (credentialsResult is RequiresBiometricAuth && !authService.isLoggedOut()) {
-                    _promptForBiometricsToStayAuthenticated.postValue(Unit)
+    private val biometricsStateMediator by lazy {
+        MediatorLiveData<ContentEvent<BiometricsState>>().apply {
+            addSource(authService.credentials().asLiveData()) { credentialsResult ->
+                when (credentialsResult) {
+                    is RequiresBiometricAuth -> {
+                        viewModelScope.launch {
+                            if (!authService.didUserLogout()) {
+                                postValue(
+                                    PromptToStayAuthenticated(
+                                        biometricsManager.enrollmentRequired()
+                                    ).toContentEvent()
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                    }
                 }
             }
+            addSource(biometricsManager.promptToEnroll.asLiveData()) { request ->
+                postValue(PromptToEnroll(request).toContentEvent())
+            }
+            addSource(biometricPromptRequestAfterEnrollment) { request ->
+                postValue(PromptAfterEnrollment(request).toContentEvent())
+            }
         }
+    }
+
+    fun registerForBiometrics(
+        activity: AppCompatActivity
+    ): LiveData<ContentEvent<BiometricsState>> {
+        biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
+            biometricRequestWaitingOnEnrollment?.let { request ->
+                biometricPromptRequestAfterEnrollment.postValue(request)
+                biometricRequestWaitingOnEnrollment = null
+            }
+        }
+        return biometricsStateMediator
     }
 
     fun promptForBiometricsToStayAuthenticated(activity: AppCompatActivity) {
@@ -73,7 +94,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private fun promptForBiometricEnrollment() {
+    fun promptForBiometricEnrollment(request: PromptRequest) {
         val enrollIntent = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
@@ -90,6 +111,11 @@ class HomeViewModel : ViewModel() {
                 Intent(Settings.ACTION_SECURITY_SETTINGS)
             }
         }
+        biometricRequestWaitingOnEnrollment = request
         biometricEnrollmentLauncher?.launch(enrollIntent)
+    }
+
+    fun promptForBiometricsAfterEnrollment(activity: AppCompatActivity, request: PromptRequest) {
+        biometricsManager.requestBiometricPrompt(activity, request)
     }
 }

@@ -147,10 +147,10 @@ class LoginViewModel : ViewModel() {
     }
 
     private suspend fun canUseBiometrics() =
-        loginService.isEnrolledInBiometrics() && biometricsManager.canUseBiometrics()
+        loginService.isEnrolledInBiometrics() && biometricsManager.deviceSupportsBiometrics()
 
     private suspend fun shouldPromptToEnrollInBiometrics() =
         !loginService.didUserDeclineBiometricsEnrollment() &&
                 !loginService.isEnrolledInBiometrics() &&
-                biometricsManager.canUseBiometrics()
+                biometricsManager.deviceSupportsBiometrics()
 }
