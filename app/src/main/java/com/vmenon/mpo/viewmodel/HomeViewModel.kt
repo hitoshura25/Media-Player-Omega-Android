@@ -1,9 +1,15 @@
 package com.vmenon.mpo.viewmodel
 
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.R
 import com.vmenon.mpo.auth.domain.AuthService
@@ -25,8 +31,15 @@ class HomeViewModel : ViewModel() {
     @Inject
     lateinit var authService: AuthService
 
-    val currentLocation = liveData {
-        emitSource(navigationController.currentLocation.asLiveData())
+    var biometricEnrollmentLauncher: ActivityResultLauncher<Intent>? = null
+
+    fun registerForBiometricEnrollment(activity: AppCompatActivity) {
+        biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
+
+        }
+        biometricsManager.enrollmentRequired.asLiveData().observe(activity) {
+            promptForBiometricEnrollment()
+        }
     }
 
     fun promptForBiometricsToStayAuthenticated(fragment: Fragment) {
@@ -41,8 +54,29 @@ class HomeViewModel : ViewModel() {
                         subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
                         confirmationRequired = false,
                         negativeActionText = fragment.getString(R.string.logout)
-                    ))
+                    )
+                )
             }
         }
+    }
+
+    private fun promptForBiometricEnrollment() {
+        val enrollIntent = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                    putExtra(
+                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK
+                    )
+                }
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
+                Intent(Settings.ACTION_FINGERPRINT_ENROLL)
+            }
+            else -> {
+                Intent(Settings.ACTION_SECURITY_SETTINGS)
+            }
+        }
+        biometricEnrollmentLauncher?.launch(enrollIntent)
     }
 }

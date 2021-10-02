@@ -1,12 +1,7 @@
 package com.vmenon.mpo.auth.framework.biometrics
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -14,31 +9,32 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.vmenon.mpo.auth.domain.CipherEncryptedData
-import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
+import com.vmenon.mpo.auth.domain.biometrics.PromptResponse
+import com.vmenon.mpo.auth.domain.biometrics.PromptResponse.DecryptionSuccess
+import com.vmenon.mpo.auth.domain.biometrics.PromptResponse.EncryptionSuccess
 import com.vmenon.mpo.auth.framework.CryptographyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import javax.crypto.Cipher
 
 class AndroidBiometricsManager(context: Context) : BiometricsManager {
     private val appContext = context.applicationContext
     private val cryptographyManager = CryptographyManager()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    override val encryptionCipher = MutableSharedFlow<Cipher>()
-    override val decryptionCipher = MutableSharedFlow<Cipher>()
+    override val promptResponse = MutableSharedFlow<PromptResponse>()
+    override val enrollmentRequired = MutableSharedFlow<Unit>()
 
-    override fun biometricState(): BiometricState =
+    override fun canUseBiometrics(): Boolean =
         when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> BiometricState.SUCCESS
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricState.REQUIRES_ENROLLMENT
-            else -> BiometricState.NOT_SUPPORTED
+            BiometricManager.BIOMETRIC_SUCCESS,
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> true
+            else -> false
         }
 
     override fun <T : Any> requestBiometricPrompt(requester: T, request: PromptRequest) {
@@ -58,8 +54,8 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
     }
 
     private fun handleBiometricFlow(activity: AppCompatActivity, request: PromptRequest) {
-        when (biometricState()) {
-            BiometricState.SUCCESS -> {
+        when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
+            BiometricManager.BIOMETRIC_SUCCESS -> {
                 when (request.reason) {
                     is Encryption -> handleBiometricFlowForEncryption(activity, request)
                     is Decryption ->
@@ -68,41 +64,18 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
                             request,
                             (request.reason as Decryption).cipherEncryptedData
                         )
+                    Confirmation -> {
+
+                    }
                 }
             }
-            BiometricState.REQUIRES_ENROLLMENT -> promptToEnrollInBiometrics(activity, request)
-            BiometricState.NOT_SUPPORTED -> {
-
-            }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun promptToEnrollInBiometrics(activity: AppCompatActivity, request: PromptRequest) {
-        val enrollIntent = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                    putExtra(
-                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                        BIOMETRIC_WEAK
-                    )
-                }
-            }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
-                Intent(Settings.ACTION_FINGERPRINT_ENROLL)
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> scope.launch {
+                enrollmentRequired.emit(Unit)
             }
             else -> {
-                Intent(Settings.ACTION_SECURITY_SETTINGS)
+
             }
         }
-        val biometricEnrollmentContract = activity.registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK) {
-                handleBiometricFlow(activity, request)
-            }
-        }
-        biometricEnrollmentContract.launch(enrollIntent)
     }
 
     private fun handleBiometricFlowForDecryption(
@@ -118,7 +91,7 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
             authResult.cryptoObject?.let { cryptoObject ->
                 cryptoObject.cipher?.let { biometricCipher ->
                     scope.launch {
-                        decryptionCipher.emit(biometricCipher)
+                        promptResponse.emit(DecryptionSuccess(request, biometricCipher))
                     }
                 }
             }
@@ -136,7 +109,7 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
             authResult.cryptoObject?.let { cryptoObject ->
                 cryptoObject.cipher?.let { biometricCipher ->
                     scope.launch {
-                        encryptionCipher.emit(biometricCipher)
+                        promptResponse.emit(EncryptionSuccess(request, biometricCipher))
                     }
                 }
             }

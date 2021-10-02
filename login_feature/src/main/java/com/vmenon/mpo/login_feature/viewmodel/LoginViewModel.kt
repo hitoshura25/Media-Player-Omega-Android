@@ -7,7 +7,6 @@ import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult
-import com.vmenon.mpo.auth.domain.biometrics.BiometricState
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
@@ -138,7 +137,8 @@ class LoginViewModel : ViewModel() {
                         subtitle = fragment.getString(R.string.confirm_to_stay_authenticated),
                         confirmationRequired = false,
                         negativeActionText = fragment.getString(R.string.logout)
-                    ))
+                    )
+                )
             }
         }
     }
@@ -166,21 +166,11 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private suspend fun canUseBiometrics() = if (loginService.isEnrolledInBiometrics()) {
-        when (biometricsManager.biometricState()) {
-            BiometricState.SUCCESS -> true
-            else -> false
-        }
-    } else false
+    private suspend fun canUseBiometrics() =
+        loginService.isEnrolledInBiometrics() && biometricsManager.canUseBiometrics()
 
     private suspend fun shouldPromptToEnrollInBiometrics() =
-        if (!loginService.didUserDeclineBiometricsEnrollment() &&
-            !loginService.isEnrolledInBiometrics()
-        ) {
-            when (biometricsManager.biometricState()) {
-                BiometricState.SUCCESS,
-                BiometricState.REQUIRES_ENROLLMENT -> true
-                else -> false
-            }
-        } else false
+        !loginService.didUserDeclineBiometricsEnrollment() &&
+                !loginService.isEnrolledInBiometrics() &&
+                biometricsManager.canUseBiometrics()
 }

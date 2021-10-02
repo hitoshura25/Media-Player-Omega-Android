@@ -1,6 +1,7 @@
 package com.vmenon.mpo.login.data
 
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
+import com.vmenon.mpo.auth.domain.biometrics.PromptResponse
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.domain.User
 import com.vmenon.mpo.system.domain.Logger
@@ -22,8 +23,16 @@ class LoginRepository(
 
     init {
         scope.launch {
-            biometricsManager.encryptionCipher.collect {
-                userSettings.setEnrolledInBiometrics(true)
+            biometricsManager.promptResponse.collect { promptResponse ->
+                when (promptResponse) {
+                    is PromptResponse.ConfirmationSuccess,
+                    is PromptResponse.DecryptionSuccess -> {
+                        // no-op
+                    }
+                    is PromptResponse.EncryptionSuccess ->
+                        userSettings.setEnrolledInBiometrics(true)
+
+                }
             }
         }
     }

@@ -41,6 +41,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navigationController.setupWith(this, binding.navigation)
+        viewModel.registerForBiometricEnrollment(this)
     }
 
     override fun onNewIntent(intent: Intent?) {

@@ -2,7 +2,6 @@ package com.vmenon.mpo.common.framework.retrofit
 
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult
-import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.runBlocking
@@ -20,7 +19,6 @@ class OAuthInterceptor(
     private val authService: AuthService,
     private val logger: Logger,
     private val clock: Clock,
-    private val biometricsManager: BiometricsManager
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         return runBlocking {
@@ -58,6 +56,9 @@ class OAuthInterceptor(
                 }
                 else -> request
                 // TODO: What if Biometric prompt is needed?
+                // Maybe implement an EventBus, and send an event notifying the listener (the HomeActivity maybe?)
+                // That we need to prompt for biometrics to stay authenticated. Then throw an error and hope
+                // the retry mechanism will eventually get it? Or maybe just do this from the AuthService??
             }
             val response = kotlin.runCatching { chain.proceed(newRequest) }.getOrThrow()
             ResponseWithCredentials(newRequest, response, refreshed)

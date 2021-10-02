@@ -20,15 +20,15 @@ object AuthModule {
     fun provideAuthService(
         authState: AuthState,
         authenticator: Authenticator,
+        biometricsManager: BiometricsManager
     ): AuthService =
-        AuthServiceImpl(authState, authenticator)
+        AuthServiceImpl(authState, authenticator, biometricsManager)
 
     @Provides
     @AuthScope
     fun provideAuthState(
-        application: Application,
-        biometricsManager: BiometricsManager
-    ): AuthState = SharedPrefsAuthState(application, biometricsManager)
+        application: Application
+    ): AuthState = SharedPrefsAuthState(application)
 
     // TODO: Probably makes more sense to move this into OpenIdAuthModule and have AuthComponent
     // depend on OpenIdAuthComponent

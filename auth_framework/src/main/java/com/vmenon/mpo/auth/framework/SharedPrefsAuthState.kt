@@ -7,20 +7,15 @@ import com.vmenon.mpo.auth.domain.CipherEncryptedData
 import com.vmenon.mpo.auth.domain.Credentials
 import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.auth.domain.CredentialsResult.RequiresBiometricAuth
-import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
-class SharedPrefsAuthState(
-    context: Context,
-    biometricsManager: BiometricsManager
-) : AuthState {
+class SharedPrefsAuthState(context: Context) : AuthState {
     private val cryptographyManager = CryptographyManager()
     private val gson = Gson()
     private val sharedPreferences = context.getSharedPreferences(
@@ -44,29 +39,6 @@ class SharedPrefsAuthState(
         }
 
     init {
-        scope.launch {
-            biometricsManager.decryptionCipher.collectLatest { cipher ->
-                if (biometricDecryptionCipher != cipher) {
-                    biometricDecryptionCipher = cipher
-                    getCredentials()
-                }
-            }
-        }
-
-        scope.launch {
-            biometricsManager.encryptionCipher.collectLatest { cipher ->
-                if (biometricEncryptionCipher != cipher) {
-                    biometricEncryptionCipher = cipher
-                    sharedPreferences.edit().putBoolean(ENCRYPTED_WITH_BIOMETRICS, true).apply()
-                    when (val credentialsResult = getCredentials()) {
-                        is CredentialsResult.Success -> storeToSharedPrefs(
-                            credentialsResult.credentials
-                        )
-                    }
-                }
-            }
-        }
-
         scope.launch {
             getCredentials()
         }
@@ -92,6 +64,27 @@ class SharedPrefsAuthState(
             sharedPreferences.edit().clear().apply()
         }
         this.storedCredentials = null
+        this.biometricDecryptionCipher = null
+        this.biometricEncryptionCipher = null
+    }
+
+    override suspend fun encryptCredentials(cipher: Cipher) {
+        if (biometricEncryptionCipher != cipher) {
+            biometricEncryptionCipher = cipher
+            sharedPreferences.edit().putBoolean(ENCRYPTED_WITH_BIOMETRICS, true).apply()
+            when (val credentialsResult = getCredentials()) {
+                is CredentialsResult.Success -> storeToSharedPrefs(
+                    credentialsResult.credentials
+                )
+            }
+        }
+    }
+
+    override suspend fun decryptCredentials(cipher: Cipher) {
+        if (biometricDecryptionCipher != cipher) {
+            biometricDecryptionCipher = cipher
+        }
+        getCredentials()
     }
 
     private fun readFromSharedPrefs(): CredentialsResult {

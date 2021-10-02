@@ -2,7 +2,6 @@ package com.vmenon.mpo.common.framework.di.dagger
 
 import com.google.gson.GsonBuilder
 import com.vmenon.mpo.auth.domain.AuthService
-import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.common.framework.retrofit.MediaPlayerOmegaRetrofitService
 import com.vmenon.mpo.common.framework.retrofit.OAuthInterceptor
 import com.vmenon.mpo.common.framework.retrofit.RetryInterceptor
@@ -41,11 +40,10 @@ object ApiModule {
         authService: AuthService,
         logger: Logger,
         threadUtil: ThreadUtil,
-        clock: Clock,
-        biometricsManager: BiometricsManager
+        clock: Clock
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(OAuthInterceptor(authService, logger, clock, biometricsManager))
+            .addInterceptor(OAuthInterceptor(authService, logger, clock))
             .addInterceptor(RetryInterceptor(MAX_RETRIES, logger, threadUtil))
             .build()
     }
