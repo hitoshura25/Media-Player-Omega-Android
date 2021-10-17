@@ -1,3 +1,10 @@
+plugins {
+    // See https://jmfayard.github.io/refreshVersions
+    id 'de.fayard.refreshVersions' version '0.23.0'
+}
+refreshVersions {
+    enableBuildSrcLibs()
+}
 include ':common_converters'
 include ':navigation_framework'
 include ':navigation_domain'

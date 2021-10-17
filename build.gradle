@@ -21,11 +21,6 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-
-plugins {
-    id 'de.fayard.buildSrcVersions' version '0.7.0'
-}
-
 allprojects {
     repositories {
         mavenCentral()
@@ -35,8 +30,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-buildSrcVersions {
-    useFqdnFor('au.com.dius.pact.consumer')
 }

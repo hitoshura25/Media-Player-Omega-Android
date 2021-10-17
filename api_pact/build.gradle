@@ -1,5 +1,5 @@
 plugins {
-    id "au.com.dius.pact" version "4.1.0"
+    id "au.com.dius.pact"
 }
 
 apply plugin: 'java-library'
