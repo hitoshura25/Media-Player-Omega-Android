@@ -70,6 +70,7 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             authService.logout(fragment.requireActivity())
+            loginService.userLoggedOut()
         }
     }
 
@@ -93,6 +94,9 @@ class LoginViewModel : ViewModel() {
     }
 
     fun userWantsToEnrollInBiometrics(fragment: Fragment) {
+        viewModelScope.launch {
+            loginService.askedToEnrollInBiometrics()
+        }
         biometricsManager.requestBiometricPrompt(
             fragment,
             PromptRequest(
@@ -150,7 +154,8 @@ class LoginViewModel : ViewModel() {
         loginService.isEnrolledInBiometrics() && biometricsManager.deviceSupportsBiometrics()
 
     private suspend fun shouldPromptToEnrollInBiometrics() =
-        !loginService.didUserDeclineBiometricsEnrollment() &&
+        !loginService.hasAskedToEnrollInBiometrics() &&
+                !loginService.didUserDeclineBiometricsEnrollment() &&
                 !loginService.isEnrolledInBiometrics() &&
                 biometricsManager.deviceSupportsBiometrics()
 }
