@@ -8,167 +8,167 @@ import kotlin.String
  */
 public object Libs {
     public const val kotlinx_coroutines_core: String =
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:_"
 
     public const val au_com_dius_pact_consumer_java8: String =
-            "au.com.dius.pact.consumer:java8:4.1.21"
+            "au.com.dius.pact.consumer:java8:_"
 
     public const val au_com_dius_pact_consumer_junit: String =
-            "au.com.dius.pact.consumer:junit:4.1.21"
+            "au.com.dius.pact.consumer:junit:_"
 
-    public const val adapter_rxjava2: String = "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
+    public const val adapter_rxjava2: String = "com.squareup.retrofit2:adapter-rxjava2:_"
 
-    public const val converter_gson: String = "com.squareup.retrofit2:converter-gson:2.9.0"
+    public const val converter_gson: String = "com.squareup.retrofit2:converter-gson:_"
 
-    public const val retrofit: String = "com.squareup.retrofit2:retrofit:2.9.0"
+    public const val retrofit: String = "com.squareup.retrofit2:retrofit:_"
 
-    public const val viewbinding: String = "androidx.databinding:viewbinding:4.2.1"
+    public const val viewbinding: String = "androidx.databinding:viewbinding:_"
 
     public const val databinding_adapters: String =
-            "androidx.databinding:databinding-adapters:4.2.1"
+            "androidx.databinding:databinding-adapters:_"
 
-    public const val databinding_common: String = "androidx.databinding:databinding-common:4.2.1"
+    public const val databinding_common: String = "androidx.databinding:databinding-common:_"
 
     public const val databinding_compiler: String =
-            "androidx.databinding:databinding-compiler:4.2.1"
+            "androidx.databinding:databinding-compiler:_"
 
-    public const val databinding_runtime: String = "androidx.databinding:databinding-runtime:4.2.1"
+    public const val databinding_runtime: String = "androidx.databinding:databinding-runtime:_"
 
     public const val kotlin_annotation_processing_gradle: String =
-            "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.5.10"
+            "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:_"
 
     public const val kotlin_scripting_compiler_embeddable: String =
-            "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.5.10"
+            "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:_"
 
-    public const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:1.5.10"
+    public const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:_"
 
-    public const val kotlin_stdlib_jdk8: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.10"
+    public const val kotlin_stdlib_jdk8: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:_"
 
     public const val kotlin_gradle_plugin: String =
-            "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
+            "org.jetbrains.kotlin:kotlin-gradle-plugin:_"
 
     public const val navigation_dynamic_features_fragment: String =
-            "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
+            "androidx.navigation:navigation-dynamic-features-fragment:_"
 
     public const val navigation_fragment_ktx: String =
-            "androidx.navigation:navigation-fragment-ktx:2.3.5"
+            "androidx.navigation:navigation-fragment-ktx:_"
 
     public const val navigation_safe_args_gradle_plugin: String =
-            "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5"
+            "androidx.navigation:navigation-safe-args-gradle-plugin:_"
 
-    public const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:2.3.5"
+    public const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:_"
 
     public const val lifecycle_livedata_ktx: String =
-            "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+            "androidx.lifecycle:lifecycle-livedata-ktx:_"
 
     public const val lifecycle_runtime_ktx: String =
-            "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+            "androidx.lifecycle:lifecycle-runtime-ktx:_"
 
     public const val lifecycle_viewmodel_ktx: String =
-            "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+            "androidx.lifecycle:lifecycle-viewmodel-ktx:_"
 
-    public const val androidx_test_ext_junit: String = "androidx.test.ext:junit:1.1.2"
+    public const val androidx_test_ext_junit: String = "androidx.test.ext:junit:_"
 
-    public const val junit_ktx: String = "androidx.test.ext:junit-ktx:1.1.2"
+    public const val junit_ktx: String = "androidx.test.ext:junit-ktx:_"
 
-    public const val dagger: String = "com.google.dagger:dagger:2.35.1"
+    public const val dagger: String = "com.google.dagger:dagger:_"
 
-    public const val dagger_android: String = "com.google.dagger:dagger-android:2.35.1"
+    public const val dagger_android: String = "com.google.dagger:dagger-android:_"
 
     public const val dagger_android_processor: String =
-            "com.google.dagger:dagger-android-processor:2.35.1"
+            "com.google.dagger:dagger-android-processor:_"
 
     public const val dagger_android_support: String =
-            "com.google.dagger:dagger-android-support:2.35.1"
+            "com.google.dagger:dagger-android-support:_"
 
-    public const val dagger_compiler: String = "com.google.dagger:dagger-compiler:2.35.1"
+    public const val dagger_compiler: String = "com.google.dagger:dagger-compiler:_"
 
-    public const val room_compiler: String = "androidx.room:room-compiler:2.3.0"
+    public const val room_compiler: String = "androidx.room:room-compiler:_"
 
-    public const val room_ktx: String = "androidx.room:room-ktx:2.3.0"
+    public const val room_ktx: String = "androidx.room:room-ktx:_"
 
-    public const val room_runtime: String = "androidx.room:room-runtime:2.3.0"
+    public const val room_runtime: String = "androidx.room:room-runtime:_"
 
-    public const val room_rxjava2: String = "androidx.room:room-rxjava2:2.3.0"
+    public const val room_rxjava2: String = "androidx.room:room-rxjava2:_"
 
-    public const val room_testing: String = "androidx.room:room-testing:2.3.0"
+    public const val room_testing: String = "androidx.room:room-testing:_"
 
-    public const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:4.2.1"
+    public const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:_"
 
-    public const val com_google_android_play_core: String = "com.google.android.play:core:1.10.0"
+    public const val com_google_android_play_core: String = "com.google.android.play:core:_"
 
-    public const val androidx_media_media: String = "androidx.media:media:1.3.1"
+    public const val androidx_media_media: String = "androidx.media:media:_"
 
-    public const val junit_junit: String = "junit:junit:4.13.2"
+    public const val junit_junit: String = "junit:junit:_"
 
     public const val de_fayard_buildsrcversions_gradle_plugin: String =
-            "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:0.7.0"
+            "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:_"
 
     public const val au_com_dius_pact_gradle_plugin: String =
-            "au.com.dius.pact:au.com.dius.pact.gradle.plugin:4.1.0"
+            "au.com.dius.pact:au.com.dius.pact.gradle.plugin:_"
 
     public const val firebase_crashlytics_gradle: String =
-            "com.google.firebase:firebase-crashlytics-gradle:2.7.0"
+            "com.google.firebase:firebase-crashlytics-gradle:_"
 
     public const val firebase_crashlytics_ktx: String =
-            "com.google.firebase:firebase-crashlytics-ktx:18.0.1"
+            "com.google.firebase:firebase-crashlytics-ktx:_"
 
     public const val firebase_analytics_ktx: String =
-            "com.google.firebase:firebase-analytics-ktx:19.0.0"
+            "com.google.firebase:firebase-analytics-ktx:_"
 
-    public const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:2.7"
+    public const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:_"
 
-    public const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:1.0.0"
+    public const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:_"
 
-    public const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:2.0.4"
+    public const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:_"
 
-    public const val cucumber_android: String = "io.cucumber:cucumber-android:4.8.4"
+    public const val cucumber_android: String = "io.cucumber:cucumber-android:_"
 
-    public const val work_runtime_ktx: String = "androidx.work:work-runtime-ktx:2.5.0"
+    public const val work_runtime_ktx: String = "androidx.work:work-runtime-ktx:_"
 
-    public const val google_services: String = "com.google.gms:google-services:4.3.8"
+    public const val google_services: String = "com.google.gms:google-services:_"
 
-    public const val logback_classic: String = "ch.qos.logback:logback-classic:1.2.3"
+    public const val logback_classic: String = "ch.qos.logback:logback-classic:_"
 
-    public const val exoplayer_core: String = "com.google.android.exoplayer:exoplayer-core:2.14.0"
+    public const val exoplayer_core: String = "com.google.android.exoplayer:exoplayer-core:_"
 
-    public const val espresso_core: String = "androidx.test.espresso:espresso-core:3.3.0"
+    public const val espresso_core: String = "androidx.test.espresso:espresso-core:_"
 
-    public const val firebase_bom: String = "com.google.firebase:firebase-bom:28.1.0"
+    public const val firebase_bom: String = "com.google.firebase:firebase-bom:_"
 
-    public const val fragment_ktx: String = "androidx.fragment:fragment-ktx:1.3.4"
+    public const val fragment_ktx: String = "androidx.fragment:fragment-ktx:_"
 
     public const val javax_inject: String = "javax.inject:javax.inject:1"
 
-    public const val mockito_core: String = "org.mockito:mockito-core:3.11.0"
+    public const val mockito_core: String = "org.mockito:mockito-core:_"
 
-    public const val recyclerview: String = "androidx.recyclerview:recyclerview:1.2.0"
+    public const val recyclerview: String = "androidx.recyclerview:recyclerview:_"
 
-    public const val lint_gradle: String = "com.android.tools.lint:lint-gradle:27.2.1"
+    public const val lint_gradle: String = "com.android.tools.lint:lint-gradle:_"
 
-    public const val uiautomator: String = "androidx.test.uiautomator:uiautomator:2.2.0"
+    public const val uiautomator: String = "androidx.test.uiautomator:uiautomator:_"
 
-    public const val `annotation`: String = "androidx.annotation:annotation:1.1.0"
+    public const val `annotation`: String = "androidx.annotation:annotation:_"
 
-    public const val appcompat: String = "androidx.appcompat:appcompat:1.3.0"
+    public const val appcompat: String = "androidx.appcompat:appcompat:_"
 
-    public const val biometric: String = "androidx.biometric:biometric:1.1.0"
+    public const val biometric: String = "androidx.biometric:biometric:_"
 
-    public const val core_ktx: String = "androidx.core:core-ktx:1.5.0"
+    public const val core_ktx: String = "androidx.core:core-ktx:_"
 
-    public const val material: String = "com.google.android.material:material:1.3.0"
+    public const val material: String = "com.google.android.material:material:_"
 
-    public const val multidex: String = "com.android.support:multidex:1.0.3"
+    public const val multidex: String = "com.android.support:multidex:_"
 
-    public const val appauth: String = "net.openid:appauth:0.8.1"
+    public const val appauth: String = "net.openid:appauth:_"
 
-    public const val rxjava: String = "io.reactivex.rxjava2:rxjava:2.2.21"
+    public const val rxjava: String = "io.reactivex.rxjava2:rxjava:_"
 
-    public const val stetho: String = "com.facebook.stetho:stetho:1.6.0"
+    public const val stetho: String = "com.facebook.stetho:stetho:_"
 
-    public const val glide: String = "com.github.bumptech.glide:glide:4.12.0"
+    public const val glide: String = "com.github.bumptech.glide:glide:_"
 
     public const val guava: String = "com.google.guava:guava:27.1-android"
 
-    public const val gson: String = "com.google.code.gson:gson:2.8.7"
+    public const val gson: String = "com.google.code.gson:gson:_"
 }
