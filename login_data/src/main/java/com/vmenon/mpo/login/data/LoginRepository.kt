@@ -69,4 +69,16 @@ class LoginRepository(
         userSettings.setUserDeclinedBiometrics(true)
         userSettings.setEnrolledInBiometrics(false)
     }
+
+    override suspend fun hasAskedToEnrollInBiometrics(): Boolean =
+        userSettings.hasAskedToEnrollInBiometrics()
+
+    override suspend fun askedToEnrollInBiometrics() {
+        userSettings.askedToEnrollInBiometrics()
+    }
+
+    override suspend fun userLoggedOut() {
+        userCache.clear()
+        userSettings.clear()
+    }
 }

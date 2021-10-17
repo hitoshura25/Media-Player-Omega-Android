@@ -1,5 +1,6 @@
 package com.vmenon.mpo.viewmodel
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
@@ -61,12 +62,15 @@ class HomeViewModel : ViewModel() {
     }
 
     fun registerForBiometrics(activity: AppCompatActivity): LiveData<ContentEvent<BiometricsState>> {
-        biometricEnrollmentLauncher = activity.registerForActivityResult(StartActivityForResult()) {
-            biometricRequestWaitingOnEnrollment?.let { request ->
-                biometricPromptRequestAfterEnrollment.postValue(request)
-                biometricRequestWaitingOnEnrollment = null
+        biometricEnrollmentLauncher =
+            activity.registerForActivityResult(StartActivityForResult()) { result ->
+                biometricRequestWaitingOnEnrollment?.let { request ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        biometricPromptRequestAfterEnrollment.postValue(request)
+                    }
+                    biometricRequestWaitingOnEnrollment = null
+                }
             }
-        }
         return biometricsStateMediator
     }
 
