@@ -8,10 +8,10 @@ apply plugin: 'com.google.firebase.crashlytics'
 android {
     signingConfigs {
         release {
-            storeFile file(keystore_file)
-            storePassword keystore_password
-            keyAlias keystore_key_alias
-            keyPassword keystore_key_password
+            storeFile file(System.getenv('android_keystore_file'))
+            storePassword System.getenv('android_keystore_password')
+            keyAlias System.getenv('android_keystore_key_alias')
+            keyPassword System.getenv('android_keystore_key_password')
         }
     }
     compileSdkVersion rootProject.compileSdkVersion
@@ -130,9 +130,9 @@ def buildBundleApks(buildType) {
     ]
 
     if (buildType == 'release') {
-        command.add("--ks=$keystore_file")
-        command.add("--ks-pass=pass:$keystore_password")
-        command.add("--ks-key-alias=$keystore_key_alias")
+        command.add("--ks=${System.getenv('android_keystore_file')}")
+        command.add("--ks-pass=pass:${System.getenv('android_keystore_password')}")
+        command.add("--ks-key-alias=${System.getnev('android_keystore_key_alias')}")
     }
 
     exec {
