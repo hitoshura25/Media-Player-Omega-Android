@@ -2,23 +2,24 @@ language: android
 dist: trusty
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - tools
-    # - platform-tools
-
-    # The BuildTools version used by your project
-    - build-tools-26.0.2
-
-    # The SDK version used to compile your project
-    - android-26
-
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-
-    # Specify at least one system image,
-    # if you need to run emulator(s) during your tests
-    - sys-img-x86-android-26
-    - sys-img-armeabi-v7a-android-17
+  - build-tools-26.0.2
+  - android-26
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - sys-img-x86-android-26
+  - sys-img-armeabi-v7a-android-17
+before_install:
+- openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv
+  -in vmenon_keystore.enc -out vmenon_keystore -d
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: "oOc4FkirP5t6VELPc4bXbOs8fdFpQ6+lpOwIokrByKKqbLzXd8hmoSehczDrd4AXEBIMFs/ztRbq0n2hyzKK43Wvl3Pu3tMx6/eo+ZX/L+0MdvwNvEc2DH+nJvXHqhaCPeYV/b+YXF5bYAj4DjpSjSTOipwwFwComgzAmTSoyscQEgSB1KlqOTeAoc0CLhtRv/Wvgb+reD4Z2+X26unyEk3ExCHTUJhMULtzS0rZHOJvv9CePu5IuzJeGy1o3CGAB1yKH05sVoMZRoMYWsMNk8ME3EZbbvAzOFEF3XFTL+HYCCh1lcMoLpHR42BnROqXKWoflTdE2hTuz7FKHDs2Tn3fRBuo+/6EWwFUoL24KC+pcNn0uzSWC0xrgdeEZvFAZ6vE0sAvnJzGDgcj9Wtq99zcDLQSqFPa0u8T5ISpcOMvnanzMChfAxW1BDSX417rEy6bFnVGB543fnwVRUXIlnEvZYcnfcXkyt9YwFm91Dsijb7eJjgsYc0a5x3c8c3Ay6S796ejZS6xira6lxFQjbCMhrzdZ7PkllKbeY6cpqHS3sgvVBMj80rJ5pysy/HhiSGjAOiGDFkZzlcEtl/wQKNPPnrNOFaMlmrKom1ootpCM85/0cKTHXaNVIB4Ih+hoW2pgI3wuMaDizIpwpHM4kEKsaKUhdVFx1eGYAkUX6s="
+    file_glob: true
+  file: /home/travis/build/hitoshura25/Media-Player-Omega-Android/app/build/outputs/bundle/release/*
+  on:
+    repo: hitoshura25/Media-Player-Omega-Android
+    tags: true
