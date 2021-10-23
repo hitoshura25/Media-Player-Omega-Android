@@ -5,6 +5,13 @@ env:
   global:
     # for updates check https://developer.android.com/studio#downloads
     - ANDROID_SDK_CMD_TOOLS=commandlinetools-linux-7583922_latest.zip
+    - SERVICE_ACCOUNT_FILE=./google_service_account.json
+    - BUNDLE_LOCATION=./app/build/outputs/bundle/release/app-release.aab
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache/
 before_install:
   # download and unzip Android SDK command line tools
   - wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
@@ -16,6 +23,7 @@ before_install:
   # create empty cfg file to prevent sdkmanager warning message
   - mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
   - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
+  - openssl aes-256-cbc -K $encrypted_faf62aa3591f_key -iv $encrypted_faf62aa3591f_iv -in google_service_account.json.enc -out google_service_account.json -d
 install:
   #- yes | sdkmanager "platforms;android-30" >/dev/null
   #- yes | sdkmanager "platform-tools" >/dev/null
@@ -26,11 +34,30 @@ install:
 before_script:
   # set executable flag for gradle wrapper
   - chmod +x gradlew
+   # create dir for gradle settings
+  - mkdir -p $HOME/.gradle
+  # disable gradle daemon
+  - echo "org.gradle.daemon=false" >> $HOME/.gradle/gradle.properties
   - chmod +x ./android-wait-for-emulator
   #- echo no | avdmanager create avd --name CI_Emulator -f -k "system-images;android-30;google_apis_playstore;x86_64" --abi x86_64
   #- $ANDROID_SDK_ROOT/emulator/emulator -avd CI_Emulator -no-audio -no-window &
   #- ./android-wait-for-emulator
   #- adb shell input keyevent 82 &
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.bin
+  - rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.lock
+  - rm -f $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
+  - rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.bin
+  - rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.lock
+  - rm -f $HOME/.gradle/caches/journal-1/file-access.bin
+  - rm -f $HOME/.gradle/caches/journal-1/journal-1.lock
+  - rm -f $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -f $HOME/.gradle/caches/user-id.txt.lock
+  # only cache latest gradle version used by the wrapper
+  # list content in wrapper/dist sorted by modification time and remove entries starting by the second entry
+  - ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
 script:
   - ./gradlew test lint :app:bundleRelease
 deploy:
