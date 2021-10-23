@@ -1,6 +1,5 @@
 language: android
 dist: trusty
-jdk: oraclejdk11
 env:
   global:
     # for updates check https://developer.android.com/studio#downloads
