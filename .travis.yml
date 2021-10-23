@@ -14,8 +14,7 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - sys-img-x86-android-30
-  - sys-img-armeabi-v7a-android-17
+  - sys-img-x86_64-google_apis_playstore-30
 before_install:
   # download and unzip Android SDK command line tools
   - wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
@@ -29,8 +28,8 @@ before_install:
   - yes | sdkmanager "platforms;android-30"
   - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
 before_script:
-  - echo no | android create avd --force -n test -t android-30 --abi x86
-  - emulator -avd test -no-audio -no-window &
+  - echo no | avdmanager create avd --name CI_Emulator -f -k "system-images;android-30;google_apis_playstore;x86_64" --abi x86_64
+  - emulator -avd CI_Emulator -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 deploy:
