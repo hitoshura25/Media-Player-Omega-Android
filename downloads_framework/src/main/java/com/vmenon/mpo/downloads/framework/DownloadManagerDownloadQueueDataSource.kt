@@ -22,13 +22,13 @@ class DownloadManagerDownloadQueueDataSource(
             DownloadManager.Query().setFilterById(*queueIds.toLongArray())
         )
         while (cursor.moveToNext()) {
-            val id = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_ID))
+            val id = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_ID))
             val totalSize =
-                cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
             val downloaded = cursor.getInt(
-                cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
             )
-            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+            val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
             downloadQueueItems.add(
                 DownloadQueueItem(
                     queueId = id,
