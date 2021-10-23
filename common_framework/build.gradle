@@ -6,8 +6,8 @@ dependencies {
     api project(':common_domain')
     api project(':navigation_domain')
     api project(':system_domain')
+    api project(':auth_framework')
 
-    implementation project(':auth_framework')
     implementation project(':system_framework')
 
     implementation project(':common_view')
