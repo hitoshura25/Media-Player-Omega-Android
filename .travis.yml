@@ -1,6 +1,10 @@
 language: android
 dist: trusty
 jdk: oraclejdk11
+env:
+  global:
+    # for updates check https://developer.android.com/studio#downloads
+    - ANDROID_SDK_CMD_TOOLS=commandlinetools-linux-7583922_latest.zip
 android:
   components:
   - tools
@@ -14,8 +18,19 @@ android:
   - sys-img-x86-android-30
   - sys-img-armeabi-v7a-android-17
 before_install:
-  - yes | sdkmanager "platforms;android-30"
+  # download and unzip Android SDK command line tools
+  - wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
+  - mkdir -p $HOME/sdk/cmdline-tools && unzip -q $ANDROID_SDK_CMD_TOOLS -d $HOME/sdk/cmdline-tools
+  - mv $HOME/sdk/cmdline-tools/cmdline-tools $HOME/sdk/cmdline-tools/latest
+  # set SDK tools path variable and ANDROID_HOME
+  - export PATH=$PATH:$HOME/sdk/cmdline-tools/latest/bin
+  - export ANDROID_SDK_ROOT=$HOME/sdk
+  # create empty cfg file to prevent sdkmanager warning message
+  - mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
   - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
+install:
+  # accept licenses for all available packages that have not already been accepted
+  - yes | sdkmanager --licenses >/dev/null
 deploy:
   provider: releases
   skip_cleanup: true
