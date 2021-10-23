@@ -2,6 +2,9 @@ language: android
 dist: trusty
 android:
   components:
+  - tools
+  - platform-tools
+  - tools
   - build-tools-30.0.2
   - android-30
   - extra-google-google_play_services
@@ -10,6 +13,7 @@ android:
   - sys-img-x86-android-30
   - sys-img-armeabi-v7a-android-17
 before_install:
+  - yes | sdkmanager --licenses >/dev/null
 - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv
   -in vmenon_keystore.enc -out vmenon_keystore -d
 deploy:
