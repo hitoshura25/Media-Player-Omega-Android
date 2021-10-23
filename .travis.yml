@@ -17,6 +17,7 @@ before_install:
   - mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
   - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
 install:
+  - sdkmanager "system-images;android-30;google_apis_playstore;x86_64"
   # accept licenses for all available packages that have not already been accepted
   - yes | sdkmanager --licenses >/dev/null
 before_script:
