@@ -84,9 +84,9 @@ function uploadBundle {
 }
 
 # Parse service account JSON for authentication information
-AUTH_SERVER=$(echo ${SERVICE_ACCOUNT_FILE} | jq -r '.token_uri')
-AUTH_EMAIL=$(echo ${SERVICE_ACCOUNT_FILE} | jq -r '.client_email')
-AUTH_KEY=$(echo ${SERVICE_ACCOUNT_FILE} | jq -r '.private_key')
+AUTH_SERVER=$(jq -r '.token_uri' "${SERVICE_ACCOUNT_FILE}")
+AUTH_EMAIL=$(jq -r '.client_email' "${SERVICE_ACCOUNT_FILE}")
+AUTH_KEY=$(jq -r '.private_key' "${SERVICE_ACCOUNT_FILE}")
 echo "Retrieved service account from JSON!"
 
 # Generate JWT from authentication information

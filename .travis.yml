@@ -25,10 +25,6 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
   - openssl aes-256-cbc -K $encrypted_faf62aa3591f_key -iv $encrypted_faf62aa3591f_iv -in google_service_account.json.enc -out google_service_account.json -d
 install:
-  #- yes | sdkmanager "platforms;android-30" >/dev/null
-  #- yes | sdkmanager "platform-tools" >/dev/null
-  #- yes | sdkmanager "emulator" >/dev/null
-  #- yes | sdkmanager "system-images;android-30;google_apis_playstore;x86_64" >/dev/null
   # accept licenses for all available packages that have not already been accepted
   - yes | sdkmanager --licenses >/dev/null
 before_script:
@@ -38,11 +34,6 @@ before_script:
   - mkdir -p $HOME/.gradle
   # disable gradle daemon
   - echo "org.gradle.daemon=false" >> $HOME/.gradle/gradle.properties
-  - chmod +x ./android-wait-for-emulator
-  #- echo no | avdmanager create avd --name CI_Emulator -f -k "system-images;android-30;google_apis_playstore;x86_64" --abi x86_64
-  #- $ANDROID_SDK_ROOT/emulator/emulator -avd CI_Emulator -no-audio -no-window &
-  #- ./android-wait-for-emulator
-  #- adb shell input keyevent 82 &
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
@@ -61,6 +52,13 @@ before_cache:
 script:
   - ./gradlew test lint :app:bundleRelease
   - ./uploadBundle.sh
+after_script:
+  #- yes | sdkmanager "emulator" "system-images;android-30;google_apis_playstore;x86" >/dev/null
+  #- echo no | avdmanager create avd --name CI_Emulator -f -k "system-images;android-30;google_apis_playstore;x86" --abi x86
+  #- $ANDROID_SDK_ROOT/emulator/emulator -avd CI_Emulator -no-audio -no-window &
+  #- ./android-wait-for-emulator
+  #- adb shell input keyevent 82 &
+  #- ./gradlew connectedAndroidTest
 deploy:
   provider: releases
   skip_cleanup: true
