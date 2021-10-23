@@ -7,8 +7,7 @@ dependencies {
     api project(':navigation_domain')
     api project(':system_domain')
     api project(':auth_framework')
-
-    implementation project(':system_framework')
+    api project(':system_framework')
 
     implementation project(':common_view')
     implementation project(':persistence_room')
