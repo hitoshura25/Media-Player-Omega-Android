@@ -15,7 +15,6 @@ android {
         }
     }
     compileSdkVersion rootProject.compileSdkVersion
-
     defaultConfig {
         applicationId "com.vmenon.mpo"
         minSdkVersion rootProject.minSdkVersion
