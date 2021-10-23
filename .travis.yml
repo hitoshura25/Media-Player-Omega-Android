@@ -60,6 +60,7 @@ before_cache:
   - ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
 script:
   - ./gradlew test lint :app:bundleRelease
+  - ./uploadBundle.sh
 deploy:
   provider: releases
   skip_cleanup: true
