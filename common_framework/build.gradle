@@ -8,10 +8,9 @@ dependencies {
     api project(':system_domain')
     api project(':auth_framework')
     api project(':system_framework')
-
-    implementation project(':common_view')
-    implementation project(':persistence_room')
-    implementation project(':navigation_framework')
+    api project(':navigation_framework')
+    api project(':common_view')
+    api project(':persistence_room')
 
     implementation Libs.kotlinx_coroutines_core
 
