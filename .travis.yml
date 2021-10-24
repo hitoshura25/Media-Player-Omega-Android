@@ -9,9 +9,9 @@ env:
     - BUNDLE_LOCATION=./app/build/outputs/bundle/release/app-release.aab
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-    - $HOME/.android/build-cache/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.android/build-cache/"
 before_install:
   # download and unzip Android SDK command line tools
   - wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
@@ -64,9 +64,18 @@ deploy:
   skip_cleanup: true
   overwrite: true
   api_key:
-    secure: "oOc4FkirP5t6VELPc4bXbOs8fdFpQ6+lpOwIokrByKKqbLzXd8hmoSehczDrd4AXEBIMFs/ztRbq0n2hyzKK43Wvl3Pu3tMx6/eo+ZX/L+0MdvwNvEc2DH+nJvXHqhaCPeYV/b+YXF5bYAj4DjpSjSTOipwwFwComgzAmTSoyscQEgSB1KlqOTeAoc0CLhtRv/Wvgb+reD4Z2+X26unyEk3ExCHTUJhMULtzS0rZHOJvv9CePu5IuzJeGy1o3CGAB1yKH05sVoMZRoMYWsMNk8ME3EZbbvAzOFEF3XFTL+HYCCh1lcMoLpHR42BnROqXKWoflTdE2hTuz7FKHDs2Tn3fRBuo+/6EWwFUoL24KC+pcNn0uzSWC0xrgdeEZvFAZ6vE0sAvnJzGDgcj9Wtq99zcDLQSqFPa0u8T5ISpcOMvnanzMChfAxW1BDSX417rEy6bFnVGB543fnwVRUXIlnEvZYcnfcXkyt9YwFm91Dsijb7eJjgsYc0a5x3c8c3Ay6S796ejZS6xira6lxFQjbCMhrzdZ7PkllKbeY6cpqHS3sgvVBMj80rJ5pysy/HhiSGjAOiGDFkZzlcEtl/wQKNPPnrNOFaMlmrKom1ootpCM85/0cKTHXaNVIB4Ih+hoW2pgI3wuMaDizIpwpHM4kEKsaKUhdVFx1eGYAkUX6s="
+    secure: oOc4FkirP5t6VELPc4bXbOs8fdFpQ6+lpOwIokrByKKqbLzXd8hmoSehczDrd4AXEBIMFs/ztRbq0n2hyzKK43Wvl3Pu3tMx6/eo+ZX/L+0MdvwNvEc2DH+nJvXHqhaCPeYV/b+YXF5bYAj4DjpSjSTOipwwFwComgzAmTSoyscQEgSB1KlqOTeAoc0CLhtRv/Wvgb+reD4Z2+X26unyEk3ExCHTUJhMULtzS0rZHOJvv9CePu5IuzJeGy1o3CGAB1yKH05sVoMZRoMYWsMNk8ME3EZbbvAzOFEF3XFTL+HYCCh1lcMoLpHR42BnROqXKWoflTdE2hTuz7FKHDs2Tn3fRBuo+/6EWwFUoL24KC+pcNn0uzSWC0xrgdeEZvFAZ6vE0sAvnJzGDgcj9Wtq99zcDLQSqFPa0u8T5ISpcOMvnanzMChfAxW1BDSX417rEy6bFnVGB543fnwVRUXIlnEvZYcnfcXkyt9YwFm91Dsijb7eJjgsYc0a5x3c8c3Ay6S796ejZS6xira6lxFQjbCMhrzdZ7PkllKbeY6cpqHS3sgvVBMj80rJ5pysy/HhiSGjAOiGDFkZzlcEtl/wQKNPPnrNOFaMlmrKom1ootpCM85/0cKTHXaNVIB4Ih+hoW2pgI3wuMaDizIpwpHM4kEKsaKUhdVFx1eGYAkUX6s=
   file_glob: true
-  file: /home/travis/build/hitoshura25/Media-Player-Omega-Android/app/build/outputs/bundle/release/*
+  file: "/home/travis/build/hitoshura25/Media-Player-Omega-Android/app/build/outputs/bundle/release/*"
   on:
     repo: hitoshura25/Media-Player-Omega-Android
     tags: true
+notifications:
+  webhook:
+    urls:
+      secure: KBLOUO7GKQBS0Z0VVyFYymgpI/nm5QN0VMls9OGk1sDvqN3kDc1TIjNNUGfYEK0pjcAFyJ4t9ERYpXGQyU6PTLYa3FL+VfI0iS/zUko7LtXtMZKrgwnLkYDPO9HPs7OZyHdU1idvkWzf/8D7pc0A+J8EFpO3P29fUL9IOS4f0f3uOIqtoPeIeCsrD3BuflQ2WGRiGo5mfGUZeSwrgtlOBLkDBOO2xcevNjwF3GYakpcD27YQLvfpdtuNHKPKzZ6IijTjjgz/85BHJA+x+Ba8rpPwUTyu4EzxscKWKqk7tcl2r2xejHkpeZEzdJMpsX4h+yRrymEwLecEo9mofWF/Ou9+Sfh7aS6zPkJIvxHug0Qrfbt2KrORhF47EGVWZgt7wru1zphXEStYDxkwBjpOy3mmcS+4z0gmrq3LHDK2tS0krYSRWtm9gNgW/tfE+JjQwa8vJ168qF8WWODEwCEpGCgAcPu0hC/bSDK8Rx3ShfrOJI1/qCWzTYqBk7hd41NW/s6AIqCBCbqQyCruPCCgplgkipZAqwGwXwvwqWcS+oSUbLgeCyL3/KehlW4f11rGXP2i3fXub+TXEbtdMl1plqq0EhC2MxWmuhg/e8IuJUF96Pc5e6tIf5jw1Ng0F9mAzXfo8ULSYA8LAHiDqdbJU8nTpRCHwwN1ERMVoEVF6Xc=
+    on_success: always   # default: always
+    on_failure: never  # default: always
+    on_start: never     # default: never
+    on_cancel: never    # default: always
+    on_error: never    # default: always
