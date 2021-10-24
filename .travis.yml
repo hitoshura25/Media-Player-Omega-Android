@@ -3,62 +3,47 @@ dist: trusty
 jdk: openjdk11
 env:
   global:
-    # for updates check https://developer.android.com/studio#downloads
-    - ANDROID_SDK_CMD_TOOLS=commandlinetools-linux-7583922_latest.zip
-    - SERVICE_ACCOUNT_FILE=./google_service_account.json
-    - BUNDLE_LOCATION=./app/build/outputs/bundle/release/app-release.aab
+  - ANDROID_SDK_CMD_TOOLS=commandlinetools-linux-7583922_latest.zip
+  - SERVICE_ACCOUNT_FILE=./google_service_account.json
+  - BUNDLE_LOCATION=./app/build/outputs/bundle/release/app-release.aab
 cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
   - "$HOME/.android/build-cache/"
 before_install:
-  # download and unzip Android SDK command line tools
-  - wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
-  - mkdir -p $HOME/sdk/cmdline-tools && unzip -q $ANDROID_SDK_CMD_TOOLS -d $HOME/sdk/cmdline-tools
-  - mv $HOME/sdk/cmdline-tools/cmdline-tools $HOME/sdk/cmdline-tools/latest
-  # set SDK tools path variable and ANDROID_HOME
-  - export PATH=$PATH:$HOME/sdk/cmdline-tools/latest/bin
-  - export ANDROID_SDK_ROOT=$HOME/sdk
-  # create empty cfg file to prevent sdkmanager warning message
-  - mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
-  - openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv -in vmenon_keystore.enc -out vmenon_keystore -d
-  - openssl aes-256-cbc -K $encrypted_faf62aa3591f_key -iv $encrypted_faf62aa3591f_iv -in google_service_account.json.enc -out google_service_account.json -d
+- wget -nv https://dl.google.com/android/repository/$ANDROID_SDK_CMD_TOOLS
+- mkdir -p $HOME/sdk/cmdline-tools && unzip -q $ANDROID_SDK_CMD_TOOLS -d $HOME/sdk/cmdline-tools
+- mv $HOME/sdk/cmdline-tools/cmdline-tools $HOME/sdk/cmdline-tools/latest
+- export PATH=$PATH:$HOME/sdk/cmdline-tools/latest/bin
+- export ANDROID_SDK_ROOT=$HOME/sdk
+- mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
+- openssl aes-256-cbc -K $encrypted_fb5491918f57_key -iv $encrypted_fb5491918f57_iv
+  -in vmenon_keystore.enc -out vmenon_keystore -d
+- openssl aes-256-cbc -K $encrypted_faf62aa3591f_key -iv $encrypted_faf62aa3591f_iv
+  -in google_service_account.json.enc -out google_service_account.json -d
 install:
-  # accept licenses for all available packages that have not already been accepted
-  - yes | sdkmanager --licenses >/dev/null
+- yes | sdkmanager --licenses >/dev/null
 before_script:
-  # set executable flag for gradle wrapper
-  - chmod +x gradlew
-   # create dir for gradle settings
-  - mkdir -p $HOME/.gradle
-  # disable gradle daemon
-  - echo "org.gradle.daemon=false" >> $HOME/.gradle/gradle.properties
+- chmod +x gradlew
+- mkdir -p $HOME/.gradle
+- echo "org.gradle.daemon=false" >> $HOME/.gradle/gradle.properties
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
-  - rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.bin
-  - rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.lock
-  - rm -f $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
-  - rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.bin
-  - rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.lock
-  - rm -f $HOME/.gradle/caches/journal-1/file-access.bin
-  - rm -f $HOME/.gradle/caches/journal-1/journal-1.lock
-  - rm -f $HOME/.gradle/caches/transforms-1/transforms-1.lock
-  - rm -f $HOME/.gradle/caches/user-id.txt.lock
-  # only cache latest gradle version used by the wrapper
-  # list content in wrapper/dist sorted by modification time and remove entries starting by the second entry
-  - ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.bin
+- rm -f $HOME/.gradle/caches/*/fileHashes/fileHashes.lock
+- rm -f $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
+- rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.bin
+- rm -f $HOME/.gradle/caches/*/executionHistory/executionHistory.lock
+- rm -f $HOME/.gradle/caches/journal-1/file-access.bin
+- rm -f $HOME/.gradle/caches/journal-1/journal-1.lock
+- rm -f $HOME/.gradle/caches/transforms-1/transforms-1.lock
+- rm -f $HOME/.gradle/caches/user-id.txt.lock
+- ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
 script:
-  - ./gradlew test lint :app:bundleRelease
-  - ./uploadBundle.sh
-after_script:
-  #- yes | sdkmanager "emulator" "system-images;android-30;google_apis_playstore;x86" >/dev/null
-  #- echo no | avdmanager create avd --name CI_Emulator -f -k "system-images;android-30;google_apis_playstore;x86" --abi x86
-  #- $ANDROID_SDK_ROOT/emulator/emulator -avd CI_Emulator -no-audio -no-window &
-  #- ./android-wait-for-emulator
-  #- adb shell input keyevent 82 &
-  #- ./gradlew connectedAndroidTest
+- "./gradlew test lint :app:bundleRelease"
+- "./uploadBundle.sh"
 deploy:
   provider: releases
   skip_cleanup: true
@@ -70,12 +55,3 @@ deploy:
   on:
     repo: hitoshura25/Media-Player-Omega-Android
     tags: true
-notifications:
-  webhook:
-    urls:
-      secure: KBLOUO7GKQBS0Z0VVyFYymgpI/nm5QN0VMls9OGk1sDvqN3kDc1TIjNNUGfYEK0pjcAFyJ4t9ERYpXGQyU6PTLYa3FL+VfI0iS/zUko7LtXtMZKrgwnLkYDPO9HPs7OZyHdU1idvkWzf/8D7pc0A+J8EFpO3P29fUL9IOS4f0f3uOIqtoPeIeCsrD3BuflQ2WGRiGo5mfGUZeSwrgtlOBLkDBOO2xcevNjwF3GYakpcD27YQLvfpdtuNHKPKzZ6IijTjjgz/85BHJA+x+Ba8rpPwUTyu4EzxscKWKqk7tcl2r2xejHkpeZEzdJMpsX4h+yRrymEwLecEo9mofWF/Ou9+Sfh7aS6zPkJIvxHug0Qrfbt2KrORhF47EGVWZgt7wru1zphXEStYDxkwBjpOy3mmcS+4z0gmrq3LHDK2tS0krYSRWtm9gNgW/tfE+JjQwa8vJ168qF8WWODEwCEpGCgAcPu0hC/bSDK8Rx3ShfrOJI1/qCWzTYqBk7hd41NW/s6AIqCBCbqQyCruPCCgplgkipZAqwGwXwvwqWcS+oSUbLgeCyL3/KehlW4f11rGXP2i3fXub+TXEbtdMl1plqq0EhC2MxWmuhg/e8IuJUF96Pc5e6tIf5jw1Ng0F9mAzXfo8ULSYA8LAHiDqdbJU8nTpRCHwwN1ERMVoEVF6Xc=
-    on_success: always   # default: always
-    on_failure: never  # default: always
-    on_start: never     # default: never
-    on_cancel: never    # default: always
-    on_error: never    # default: always

@@ -83,6 +83,17 @@ function uploadBundle {
    echo $(echo ${HTTP_BODY} | jq -r '.downloadUrl')
 }
 
+function sendNotification {
+  AUTHOR_NAME="$(git log -1 --pretty="%aN")"
+  DOWNLOAD_URL=$1
+  TIMESTAMP=$(date -u +%FT%TZ)
+curl -X POST https://api.twilio.com/2010-04-01/Accounts/$twilio_sid/Messages.json \
+--data-urlencode "Body=New build available: $DOWNLOAD_URL" \
+--data-urlencode "From=$twilio_number" \
+--data-urlencode "To=$recipient_phone" \
+-u $twilio_sid:$twilio_auth_token
+}
+
 # Parse service account JSON for authentication information
 AUTH_SERVER=$(jq -r '.token_uri' "${SERVICE_ACCOUNT_FILE}")
 AUTH_EMAIL=$(jq -r '.client_email' "${SERVICE_ACCOUNT_FILE}")
@@ -100,3 +111,5 @@ echo "Generated access token!"
 # Use access token to upload app bundle to Google Play Internal App Sharing
 URL=$(uploadBundle "$ACCESS_TOKEN" "$BUNDLE_LOCATION")
 echo "Uploaded app bundle to ${URL}"
+
+sendNotification "$URL"
