@@ -6,15 +6,14 @@ import au.com.dius.pact.consumer.junit.PactProviderRule
 import au.com.dius.pact.consumer.junit.PactVerification
 import au.com.dius.pact.core.model.RequestResponsePact
 import au.com.dius.pact.core.model.annotations.Pact
-import com.vmenon.mpo.api.di.dagger.ApiModule
 import com.vmenon.mpo.api.model.RegisterUserRequest
-import com.vmenon.mpo.login.domain.AuthService
+import com.vmenon.mpo.common.framework.di.dagger.ApiModule
 import io.pactfoundation.consumer.dsl.LambdaDsl
 import io.pactfoundation.consumer.dsl.LambdaDslObject
+import okhttp3.OkHttpClient
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 
 class MpoApiPactTest {
 
@@ -129,36 +128,28 @@ class MpoApiPactTest {
     @Test
     @PactVerification(fragment = "createSearchPact")
     fun `should fetch shows from provider`() {
-        val httpClient = ApiModule.provideHttpClient(Mockito.mock(AuthService::class.java))
-        val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url, httpClient)
-        val response = client.searchPodcasts(SEARCH_KEYWORD).blockingGet()
+        val response = client().searchPodcasts(SEARCH_KEYWORD).blockingGet()
         Assert.assertFalse(response.isEmpty())
     }
 
     @Test
     @PactVerification(fragment = "createShowDetailsPact")
     fun `should fetch show details from provider`() {
-        val httpClient = ApiModule.provideHttpClient(Mockito.mock(AuthService::class.java))
-        val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url, httpClient)
-        val response = client.getPodcastDetails(FEED_URL, MAX_EPISODES).blockingGet()
+        val response = client().getPodcastDetails(FEED_URL, MAX_EPISODES).blockingGet()
         Assert.assertNotNull(response)
     }
 
     @Test
     @PactVerification(fragment = "createShowUpdatePact")
     fun `should fetch show update from provider`() {
-        val httpClient = ApiModule.provideHttpClient(Mockito.mock(AuthService::class.java))
-        val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url, httpClient)
-        val response = client.getPodcastUpdate(FEED_URL, PUBLISH_TIMESTAMP).blockingGet()
+        val response = client().getPodcastUpdate(FEED_URL, PUBLISH_TIMESTAMP).blockingGet()
         Assert.assertNotNull(response)
     }
 
     @Test
     @PactVerification(fragment = "registerUserPact")
     fun `should register a User`() {
-        val httpClient = ApiModule.provideHttpClient(Mockito.mock(AuthService::class.java))
-        val client = ApiModule.provideMediaPlayerRetrofitApi(provider.url, httpClient)
-        val response = client.registerUser(
+        val response = client().registerUser(
             RegisterUserRequest(
                 firstName = "User First Name",
                 lastName = "User Last Name",
@@ -168,6 +159,9 @@ class MpoApiPactTest {
         ).blockingGet()
         Assert.assertNotNull(response)
     }
+
+    private fun client() =
+        ApiModule.provideMediaPlayerRetrofitApi(provider.url, OkHttpClient.Builder().build())
 
     companion object {
         private const val SEARCH_KEYWORD = "Game Scoop! TV (Video)"

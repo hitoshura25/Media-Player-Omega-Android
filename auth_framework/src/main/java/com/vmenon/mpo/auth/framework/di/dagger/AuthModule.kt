@@ -43,6 +43,6 @@ object AuthModule {
 
     @Provides
     @AuthScope
-    fun provideBiometricsManager(application: Application): BiometricsManager =
-        AndroidBiometricsManager(application)
+    fun provideBiometricsManager(application: Application, logger: Logger): BiometricsManager =
+        AndroidBiometricsManager(application, logger)
 }

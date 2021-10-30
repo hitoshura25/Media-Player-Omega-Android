@@ -1,7 +1,6 @@
 package com.vmenon.mpo.auth.framework.biometrics
 
 import android.content.Context
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -16,13 +15,14 @@ import com.vmenon.mpo.auth.domain.biometrics.PromptResponse
 import com.vmenon.mpo.auth.domain.biometrics.PromptResponse.DecryptionSuccess
 import com.vmenon.mpo.auth.domain.biometrics.PromptResponse.EncryptionSuccess
 import com.vmenon.mpo.auth.framework.CryptographyManager
+import com.vmenon.mpo.system.domain.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
-class AndroidBiometricsManager(context: Context) : BiometricsManager {
+class AndroidBiometricsManager(context: Context, private val logger: Logger) : BiometricsManager {
     private val appContext = context.applicationContext
     private val cryptographyManager = CryptographyManager()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -131,17 +131,17 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
 
             override fun onAuthenticationError(errCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errCode, errString)
-                Log.d(TAG, "errCode is $errCode and errString is: $errString")
+                logger.println("errCode is $errCode and errString is: $errString")
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Log.d(TAG, "User biometric rejected.")
+                logger.println("User biometric rejected.")
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                Log.d(TAG, "Authentication was successful")
+                logger.println("Authentication was successful")
                 processSuccess(result)
             }
         }
@@ -164,7 +164,6 @@ class AndroidBiometricsManager(context: Context) : BiometricsManager {
         }.build()
 
     companion object {
-        private const val TAG = "AndroidBiometricsManager"
         private const val secretKeyName = "biometric_sample_encryption_key"
     }
 }

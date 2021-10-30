@@ -2,17 +2,14 @@ plugins {
     id "au.com.dius.pact"
 }
 
-apply plugin: 'java-library'
-apply plugin: 'kotlin'
+apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 
-sourceCompatibility = "8"
-targetCompatibility = "8"
-sourceSets.main.kotlin.srcDirs += 'build/generated/source'
-
 dependencies {
+    implementation project(':common_framework')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
+    implementation Libs.kotlin_reflect
 
     implementation Libs.retrofit
     implementation Libs.adapter_rxjava2
@@ -28,8 +25,10 @@ dependencies {
     testImplementation Libs.mockito_core
 }
 
-test {
-    systemProperty 'pact.rootDir', "$projectDir/pacts"
+android {
+    testOptions.unitTests.all {
+        systemProperty 'pact.rootDir', "$projectDir/pacts"
+    }
 }
 
 pact {
