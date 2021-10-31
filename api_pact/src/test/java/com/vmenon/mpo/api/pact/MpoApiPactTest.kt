@@ -1,5 +1,7 @@
 package com.vmenon.mpo.api.pact
 
+import au.com.dius.pact.consumer.dsl.LambdaDsl
+import au.com.dius.pact.consumer.dsl.LambdaDslObject
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider
 import au.com.dius.pact.consumer.junit.PactProviderRule
@@ -8,8 +10,6 @@ import au.com.dius.pact.core.model.RequestResponsePact
 import au.com.dius.pact.core.model.annotations.Pact
 import com.vmenon.mpo.api.model.RegisterUserRequest
 import com.vmenon.mpo.common.framework.di.dagger.ApiModule
-import io.pactfoundation.consumer.dsl.LambdaDsl
-import io.pactfoundation.consumer.dsl.LambdaDslObject
 import okhttp3.OkHttpClient
 import org.junit.Assert
 import org.junit.Rule

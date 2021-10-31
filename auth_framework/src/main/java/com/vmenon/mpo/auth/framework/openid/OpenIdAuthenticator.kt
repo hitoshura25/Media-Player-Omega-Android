@@ -11,7 +11,6 @@ import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment
 import com.vmenon.mpo.system.domain.Logger
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
-import net.openid.appauth.EndSessionResponse
 
 class OpenIdAuthenticator(
     applicationContext: Context,
@@ -70,10 +69,9 @@ class OpenIdAuthenticator(
     }
 
     suspend fun handleEndSessionResponse(
-        response: EndSessionResponse?,
         exception: AuthorizationException?
     ) {
-        authenticatorEngine.handleEndSessionResponse(response, exception)
+        authenticatorEngine.handleEndSessionResponse(exception)
         authState.userLoggedOut()
     }
 }

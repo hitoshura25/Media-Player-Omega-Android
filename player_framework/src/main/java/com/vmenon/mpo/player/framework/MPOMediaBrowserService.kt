@@ -128,27 +128,32 @@ class MPOMediaBrowserService : MediaBrowserServiceCompat(), MPOPlayer.MediaPlaye
         pauseIntent = PendingIntent.getBroadcast(
             this,
             NOTIFICATION_REQUEST_CODE,
-            Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+            Intent(NOTIFICATION_ACTION_PAUSE).setPackage(pkg),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         playIntent = PendingIntent.getBroadcast(
             this,
             NOTIFICATION_REQUEST_CODE,
-            Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+            Intent(NOTIFICATION_ACTION_PLAY).setPackage(pkg),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         previousIntent = PendingIntent.getBroadcast(
             this,
             NOTIFICATION_REQUEST_CODE,
-            Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+            Intent(NOTIFICATION_ACTION_PREV).setPackage(pkg),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         nextIntent = PendingIntent.getBroadcast(
             this,
             NOTIFICATION_REQUEST_CODE,
-            Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+            Intent(NOTIFICATION_ACTION_NEXT).setPackage(pkg),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         stopIntent = PendingIntent.getBroadcast(
             this,
             NOTIFICATION_REQUEST_CODE,
-            Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT
+            Intent(NOTIFICATION_ACTION_STOP).setPackage(pkg),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // Cancel all notifications to handle the case where the Service was killed and

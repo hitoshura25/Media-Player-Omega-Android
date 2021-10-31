@@ -5,13 +5,9 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
 import android.view.SurfaceHolder
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackParameters
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -176,15 +172,8 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
 
         }
 
-        override fun onPlayerError(error: ExoPlaybackException) {
-            val what: String? = when (error.type) {
-                ExoPlaybackException.TYPE_SOURCE -> error.sourceException.message
-                ExoPlaybackException.TYPE_RENDERER -> error.rendererException.message
-                ExoPlaybackException.TYPE_UNEXPECTED -> error.unexpectedException.message
-                else -> "Unknown: $error"
-            }
-
-            Log.w("MPO", "ExoPlayer error: what=$what")
+        override fun onPlayerError(error: PlaybackException) {
+            Log.w("MPO", "ExoPlayer error", error)
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {

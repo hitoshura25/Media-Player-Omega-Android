@@ -1,30 +1,28 @@
 {
-  "provider": {
-    "name": "mpo-api"
-  },
   "consumer": {
     "name": "consumer-mpo-api"
   },
   "interactions": [
     {
       "description": "Get Show Details",
+      "providerStates": [
+        {
+          "name": "default"
+        }
+      ],
       "request": {
         "method": "GET",
         "path": "/podcastdetails",
         "query": {
-          "maxEpisodes": [
-            "10"
-          ],
           "feedUrl": [
             "http://feeds.ign.com/ignfeeds/podcasts/video/gamescoop"
+          ],
+          "maxEpisodes": [
+            "10"
           ]
         }
       },
       "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "application/json; charset=UTF-8"
-        },
         "body": {
           "description": "string",
           "episodes": [
@@ -42,158 +40,162 @@
           "imageUrl": "string",
           "name": "string"
         },
-        "matchingRules": {
+        "generators": {
           "body": {
-            "$.name": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
             "$.description": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.imageUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.episodes": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.episodes[*].name": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
             "$.episodes[*].artworkUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.episodes[*].feedUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.episodes[*].smallArtworkUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
             "$.episodes[*].author": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
-            "$.episodes[*].genres": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+            "$.episodes[*].feedUrl": {
+              "size": 20,
+              "type": "RandomString"
             },
             "$.episodes[*].genres[*]": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.episodes[*].name": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.episodes[*].smallArtworkUrl": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.imageUrl": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.name": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.description": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "type"
                 }
-              ],
-              "combine": "AND"
+              ]
+            },
+            "$.episodes": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].artworkUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].author": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].feedUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].genres": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].genres[*]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.episodes[*].smallArtworkUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.imageUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
             }
           },
           "header": {
             "Content-Type": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "regex",
                   "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
-              ],
-              "combine": "AND"
+              ]
             }
           }
         },
-        "generators": {
-          "body": {
-            "$.name": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.description": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.imageUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].name": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].artworkUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].feedUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].smallArtworkUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].author": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.episodes[*].genres[*]": {
-              "type": "RandomString",
-              "size": 20
-            }
-          }
-        }
-      },
+        "status": 200
+      }
+    },
+    {
+      "description": "Get Show update",
       "providerStates": [
         {
           "name": "default"
         }
-      ]
-    },
-    {
-      "description": "Get Show update",
+      ],
       "request": {
         "method": "GET",
         "path": "/podcastupdate",
@@ -207,29 +209,51 @@
         }
       },
       "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "application/json; charset=UTF-8"
-        },
         "body": {
           "artworkUrl": "string",
-          "name": "string",
-          "length": 100,
           "description": "string",
+          "length": 100,
+          "name": "string",
           "published": 100,
           "type": "string"
         },
+        "generators": {
+          "body": {
+            "$.artworkUrl": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.description": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.length": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$.name": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$.published": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$.type": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
         "matchingRules": {
           "body": {
-            "$.name": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
             "$.artworkUrl": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "type"
@@ -237,236 +261,214 @@
                 {
                   "match": "type"
                 }
-              ],
-              "combine": "AND"
+              ]
             },
             "$.description": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "type"
                 }
-              ],
-              "combine": "AND"
-            },
-            "$.type": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.published": {
-              "matchers": [
-                {
-                  "match": "number"
-                }
-              ],
-              "combine": "AND"
+              ]
             },
             "$.length": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "number"
                 }
-              ],
-              "combine": "AND"
+              ]
+            },
+            "$.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.published": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$.type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
             }
           },
           "header": {
             "Content-Type": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "regex",
                   "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
-              ],
-              "combine": "AND"
+              ]
             }
           }
         },
-        "generators": {
-          "body": {
-            "$.name": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.artworkUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.description": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.type": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.published": {
-              "type": "RandomInt",
-              "min": 0,
-              "max": 2147483647
-            },
-            "$.length": {
-              "type": "RandomInt",
-              "min": 0,
-              "max": 2147483647
-            }
-          }
-        }
-      },
+        "status": 200
+      }
+    },
+    {
+      "description": "Register a User",
       "providerStates": [
         {
           "name": "default"
         }
-      ]
-    },
-    {
-      "description": "Register a User",
+      ],
       "request": {
-        "method": "POST",
-        "path": "/register_user",
-        "headers": {
-          "Content-Type": "application/json; charset=UTF-8"
-        },
         "body": {
           "email": "string",
           "firstName": "string",
           "lastName": "string",
           "password": "string"
         },
-        "matchingRules": {
-          "body": {
-            "$.firstName": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.lastName": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.email": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$.password": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            }
-          }
-        },
         "generators": {
           "body": {
+            "$.email": {
+              "size": 20,
+              "type": "RandomString"
+            },
             "$.firstName": {
-              "type": "RandomString",
-              "size": 20
+              "size": 20,
+              "type": "RandomString"
             },
             "$.lastName": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.email": {
-              "type": "RandomString",
-              "size": 20
+              "size": 20,
+              "type": "RandomString"
             },
             "$.password": {
-              "type": "RandomString",
-              "size": 20
+              "size": 20,
+              "type": "RandomString"
             }
           }
-        }
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.password": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/register_user"
       },
       "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "application/json; charset=UTF-8"
-        },
         "body": {
           "email": "string",
           "firstName": "string",
           "lastName": "string"
         },
-        "matchingRules": {
+        "generators": {
           "body": {
+            "$.email": {
+              "size": 20,
+              "type": "RandomString"
+            },
             "$.firstName": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
             "$.lastName": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "matchingRules": {
+          "body": {
             "$.email": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "type"
                 }
-              ],
-              "combine": "AND"
+              ]
+            },
+            "$.firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
             }
           },
           "header": {
             "Content-Type": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "regex",
                   "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
-              ],
-              "combine": "AND"
+              ]
             }
           }
         },
-        "generators": {
-          "body": {
-            "$.firstName": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.lastName": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$.email": {
-              "type": "RandomString",
-              "size": 20
-            }
-          }
-        }
-      },
+        "status": 200
+      }
+    },
+    {
+      "description": "Search for shows",
       "providerStates": [
         {
           "name": "default"
         }
-      ]
-    },
-    {
-      "description": "Search for shows",
+      ],
       "request": {
         "method": "GET",
         "path": "/podcasts",
@@ -477,10 +479,6 @@
         }
       },
       "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "application/json; charset=UTF-8"
-        },
         "body": [
           {
             "artworkUrl": "string",
@@ -493,119 +491,121 @@
             "smallArtworkUrl": "string"
           }
         ],
-        "matchingRules": {
+        "generators": {
           "body": {
-            "$[0].name": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
             "$[0].artworkUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$[0].feedUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            },
-            "$[0].smallArtworkUrl": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
             "$[0].author": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+              "size": 20,
+              "type": "RandomString"
             },
-            "$[0].genres": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
+            "$[0].feedUrl": {
+              "size": 20,
+              "type": "RandomString"
             },
             "$[0].genres[*]": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[0].name": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[0].smallArtworkUrl": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$[0].artworkUrl": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "type"
                 }
-              ],
-              "combine": "AND"
+              ]
+            },
+            "$[0].author": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].feedUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].genres": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].genres[*]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[0].smallArtworkUrl": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
             }
           },
           "header": {
             "Content-Type": {
+              "combine": "AND",
               "matchers": [
                 {
                   "match": "regex",
                   "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
                 }
-              ],
-              "combine": "AND"
+              ]
             }
           }
         },
-        "generators": {
-          "body": {
-            "$[0].name": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$[0].artworkUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$[0].feedUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$[0].smallArtworkUrl": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$[0].author": {
-              "type": "RandomString",
-              "size": 20
-            },
-            "$[0].genres[*]": {
-              "type": "RandomString",
-              "size": 20
-            }
-          }
-        }
-      },
-      "providerStates": [
-        {
-          "name": "default"
-        }
-      ]
+        "status": 200
+      }
     }
   ],
   "metadata": {
+    "pact-jvm": {
+      "version": "4.2.14"
+    },
     "pactSpecification": {
       "version": "3.0.0"
-    },
-    "pact-jvm": {
-      "version": "4.1.21"
     }
+  },
+  "provider": {
+    "name": "mpo-api"
   }
 }

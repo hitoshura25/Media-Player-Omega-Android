@@ -5,7 +5,8 @@
     <application>
         <activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
-            tools:node="replace">
+            tools:node="replace"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

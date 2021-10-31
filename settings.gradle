@@ -1,9 +1,14 @@
+import de.fayard.refreshVersions.core.StabilityLevel
+
 plugins {
     // See https://jmfayard.github.io/refreshVersions
     id 'de.fayard.refreshVersions' version '0.23.0'
 }
 refreshVersions {
     enableBuildSrcLibs()
+    rejectVersionIf {
+        candidate.stabilityLevel != StabilityLevel.Stable
+    }
 }
 include ':common_converters'
 include ':navigation_framework'

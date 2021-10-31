@@ -9,7 +9,6 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
@@ -46,7 +45,6 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
         component.inject(viewModel)
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playOnStart = savedInstanceState == null
@@ -80,7 +78,12 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
         binding.surfaceView.holder.addCallback(this)
         player.setVideoSizeListener(this)
-        viewModel.playBackState.observe(viewLifecycleOwner, Observer { playbackState ->
+        setupObserver()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun setupObserver() {
+        viewModel.playBackState.observe(viewLifecycleOwner, { playbackState ->
             updatePlaybackState(playbackState.state)
             updateProgress(playbackState)
             updateDuration(playbackState)

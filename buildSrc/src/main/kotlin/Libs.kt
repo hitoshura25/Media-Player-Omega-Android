@@ -28,6 +28,8 @@ public object Libs {
 
     public const val databinding_compiler: String = "androidx.databinding:databinding-compiler:_"
 
+    public const val databinding_ktx: String = "androidx.databinding:databinding-ktx:_"
+
     public const val databinding_runtime: String = "androidx.databinding:databinding-runtime:_"
 
     public const val viewbinding: String = "androidx.databinding:viewbinding:_"
@@ -77,8 +79,6 @@ public object Libs {
     public const val uiautomator: String = "androidx.test.uiautomator:uiautomator:_"
 
     public const val work_runtime_ktx: String = "androidx.work:work-runtime-ktx:_"
-
-    public const val au_com_dius_pact_consumer_java8: String = "au.com.dius.pact.consumer:java8:_"
 
     public const val au_com_dius_pact_consumer_junit: String = "au.com.dius.pact.consumer:junit:_"
 
@@ -153,6 +153,8 @@ public object Libs {
     public const val junit_junit: String = "junit:junit:_"
 
     public const val appauth: String = "net.openid:appauth:_"
+
+    public const val org_jacoco_ant: String = "org.jacoco:org.jacoco.ant:_"
 
     public const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:_"

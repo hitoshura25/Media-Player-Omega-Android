@@ -18,13 +18,15 @@
         <activity
             android:name="com.vmenon.mpo.view.activity.HomeActivity"
             android:label=""
-            android:theme="@style/AppThemeNoActionBar">
+            android:theme="@style/AppThemeNoActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.vmenon.mpo.core.receiver.DownloadReceiver">
+        <receiver android:name="com.vmenon.mpo.core.receiver.DownloadReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>
