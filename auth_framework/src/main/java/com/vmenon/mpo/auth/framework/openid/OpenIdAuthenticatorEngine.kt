@@ -14,7 +14,6 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.EndSessionRequest
-import net.openid.appauth.EndSessionResponse
 import net.openid.appauth.GrantTypeValues
 import net.openid.appauth.NoClientAuthentication
 import net.openid.appauth.ResponseTypeValues
@@ -68,8 +67,7 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
         throw IllegalStateException("No Auth response or exception")
     }
 
-    suspend fun handleEndSessionResponse(
-        endSessionResponse: EndSessionResponse?,
+    fun handleEndSessionResponse(
         exception: AuthorizationException?
     ) {
         if (exception != null) {

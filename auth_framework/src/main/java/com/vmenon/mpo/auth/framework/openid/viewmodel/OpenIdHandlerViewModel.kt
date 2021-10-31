@@ -95,16 +95,13 @@ class OpenIdHandlerViewModel : ViewModel() {
     }
 
     private fun handleEndSessionOperationResult(resultCode: Int, data: Intent?) {
-        var response: EndSessionResponse? = null
         var exception: AuthorizationException? = null
         if (resultCode == Activity.RESULT_OK && data != null) {
-            response = EndSessionResponse.fromIntent(data)
             exception = AuthorizationException.fromIntent(data)
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             (authenticator as OpenIdAuthenticator).handleEndSessionResponse(
-                response,
                 exception
             )
             authenticated.postValue(false)

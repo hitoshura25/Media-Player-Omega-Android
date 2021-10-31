@@ -6,6 +6,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
 }
 
 dependencies {

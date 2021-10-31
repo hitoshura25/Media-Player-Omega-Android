@@ -24,7 +24,7 @@ data class AndroidNavigationDestination<L : NavigationLocation<*>>(
 
         fun <L : NavigationLocation<NoNavigationParams>> fromNoParams(
             location: L, destinationId: Int
-        ) = AndroidNavigationDestination(location, destinationId {
+        ) = AndroidNavigationDestination(location, destinationId) {
             object : NavDirections {
                 override val actionId: Int
                     get() = destinationId // DestinationId works for actionId

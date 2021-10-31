@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -160,7 +161,7 @@ class DefaultNavigationController(
     ) {
         if (bottomNavigationView != null) {
             val originWeakReference = WeakReference(navigationOrigin)
-            bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            bottomNavigationView.setOnItemSelectedListener { menuItem: MenuItem ->
                 topLevelItems[menuItem.itemId]?.let { destination ->
                     val origin = originWeakReference.get()
                     if (origin != null) {
@@ -169,7 +170,7 @@ class DefaultNavigationController(
                     true
                 } ?: false
             }
-            bottomNavigationView.setOnNavigationItemReselectedListener { }
+            bottomNavigationView.setOnItemReselectedListener { }
 
             val bottomNavigationRef = WeakReference(bottomNavigationView)
             val listener = object : NavController.OnDestinationChangedListener {
