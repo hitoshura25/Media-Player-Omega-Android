@@ -45,10 +45,10 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
 
     suspend fun performLogout(launcher: ActivityResultLauncher<Intent>, idToken: String) {
         val endSessionRequest = EndSessionRequest.Builder(
-            getServiceConfiguration(),
-            idToken,
-            LOGOUT_REDIRECT_URI
-        ).build()
+            getServiceConfiguration()
+        ).setIdTokenHint(idToken)
+            .setPostLogoutRedirectUri(LOGOUT_REDIRECT_URI)
+            .build()
         val endSessionIntent =
             authorizationService.getEndSessionRequestIntent(endSessionRequest)
         launcher.launch(endSessionIntent)

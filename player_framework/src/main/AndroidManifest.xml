@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vmenon.mpo.player.framework">
     <application>
-        <service android:name="com.vmenon.mpo.player.framework.MPOMediaBrowserService" >
+        <service android:name="com.vmenon.mpo.player.framework.MPOMediaBrowserService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
