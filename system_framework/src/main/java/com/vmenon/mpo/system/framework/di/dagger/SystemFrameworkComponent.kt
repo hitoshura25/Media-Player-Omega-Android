@@ -1,6 +1,7 @@
 package com.vmenon.mpo.system.framework.di.dagger
 
 import android.app.Application
+import com.vmenon.mpo.system.domain.BuildConfigProvider
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import com.vmenon.mpo.system.domain.ThreadUtil
@@ -14,6 +15,7 @@ interface SystemFrameworkComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance fun application(application: Application): Builder
+        @BindsInstance fun buildConfigProvider(buildConfigProvider: BuildConfigProvider): Builder
         fun build(): SystemFrameworkComponent
     }
 
@@ -21,4 +23,5 @@ interface SystemFrameworkComponent {
     fun clock(): Clock
     fun threadUtil(): ThreadUtil
     fun application(): Application
+    fun buildConfigProvider(): BuildConfigProvider
 }

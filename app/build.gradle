@@ -5,6 +5,8 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
+def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+
 android {
     signingConfigs {
         release {
@@ -23,6 +25,7 @@ android {
         versionName "1.8"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
+        buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
     }
     dynamicFeatures = [
             ':downloads_feature',

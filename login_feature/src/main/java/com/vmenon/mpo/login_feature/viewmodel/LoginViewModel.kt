@@ -13,6 +13,7 @@ import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login_feature.RegistrationFormValidator
 import com.vmenon.mpo.login_feature.model.*
+import com.vmenon.mpo.system.domain.BuildConfigProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +27,9 @@ class LoginViewModel : ViewModel() {
 
     @Inject
     lateinit var biometricsManager: BiometricsManager
+
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
 
     val registration by lazy {
         val registrationObservable = RegistrationObservable()
@@ -138,13 +142,19 @@ class LoginViewModel : ViewModel() {
                     mutableLiveData.postValue(
                         LoggedInState(
                             user,
-                            shouldPromptToEnrollInBiometrics()
+                            shouldPromptToEnrollInBiometrics(),
+                            buildConfigProvider.appVersion(),
+                            buildConfigProvider.buildNumber()
                         ).toContentEvent()
                     )
                 }
             } else {
                 mutableLiveData.postValue(
-                    LoginState(canUseBiometrics()).toContentEvent()
+                    LoginState(
+                        canUseBiometrics(),
+                        buildConfigProvider.appVersion(),
+                        buildConfigProvider.buildNumber()
+                    ).toContentEvent()
                 )
             }
         }
