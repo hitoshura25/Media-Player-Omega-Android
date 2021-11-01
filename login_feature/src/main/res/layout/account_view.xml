@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="com.vmenon.mpo.login_feature.model.LoggedInState" />
+        <variable
+            name="state"
+            type="com.vmenon.mpo.login_feature.model.LoggedInState" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -35,6 +42,14 @@
             android:background="@android:color/darker_gray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/settings" />
-
+        <TextView android:id="@+id/app_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:text="@{@string/app_version(state.version, state.buildNumber)}"
+            tools:text="Version:"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

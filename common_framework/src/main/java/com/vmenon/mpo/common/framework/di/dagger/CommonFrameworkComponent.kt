@@ -15,6 +15,7 @@ import com.vmenon.mpo.persistence.room.dao.ShowDao
 import com.vmenon.mpo.persistence.room.dao.ShowSearchResultDao
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
 import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
+import com.vmenon.mpo.system.domain.BuildConfigProvider
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import com.vmenon.mpo.system.domain.ThreadUtil
@@ -47,6 +48,7 @@ interface CommonFrameworkComponent {
     fun threadUtil(): ThreadUtil
     fun authService(): AuthService
     fun api(): MediaPlayerOmegaRetrofitService
+    fun buildConfigProvider(): BuildConfigProvider
 
     fun downloadDao(): DownloadDao
     fun episodeDao(): EpisodeDao

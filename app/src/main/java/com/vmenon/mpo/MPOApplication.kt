@@ -23,6 +23,7 @@ import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
 import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
+import com.vmenon.mpo.system.framework.AndroidBuildConfigProvider
 import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
@@ -49,7 +50,12 @@ class MPOApplication : SplitCompatApplication(),
 
         systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
             .application(this)
-            .build()
+            .buildConfigProvider(
+                AndroidBuildConfigProvider(
+                    BuildConfig.VERSION_NAME,
+                    BuildConfig.buildNumber
+                )
+            ).build()
 
         authComponent = DaggerAuthComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)

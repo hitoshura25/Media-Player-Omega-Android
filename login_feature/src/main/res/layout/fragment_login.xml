@@ -63,6 +63,7 @@
             <include
                 android:id="@+id/account_view"
                 layout="@layout/account_view"
+                app:state="@{state instanceof LoggedInState ? (LoggedInState) state : null}"
                 android:visibility="@{state instanceof LoggedInState ? View.VISIBLE : View.GONE}" />
         </RelativeLayout>
     </RelativeLayout>
