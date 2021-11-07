@@ -1,8 +1,11 @@
-apply from: "$rootProject.projectDir/android-dynamic-feature-common.gradle"
+apply from: "$rootProject.projectDir/android-library-common.gradle"
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
     buildFeatures {
         viewBinding true
     }
@@ -10,12 +13,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':app')
 
     implementation project(':common_framework')
     implementation project(':downloads_framework')
     implementation project(':downloads_usecases')
-    implementation project(':downloads_presentation')
     implementation project(':navigation_framework')
     implementation project(':common_view')
 
@@ -38,4 +39,10 @@ dependencies {
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
     implementation Libs.work_runtime_ktx
+
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation "androidx.fragment:fragment-testing:1.3.6"
+    androidTestImplementation('androidx.test:runner:1.4.0')
+    androidTestImplementation('androidx.test:rules:1.4.0')
 }

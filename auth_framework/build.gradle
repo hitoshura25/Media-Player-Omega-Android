@@ -36,4 +36,10 @@ dependencies {
     implementation Libs.gson
     api Libs.biometric
 
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation "androidx.fragment:fragment-testing:1.3.6"
+    androidTestImplementation('androidx.test:runner:1.4.0')
+    androidTestImplementation('androidx.test:rules:1.4.0')
+
 }
