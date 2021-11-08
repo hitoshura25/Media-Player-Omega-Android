@@ -5,6 +5,6 @@
 
     <fragment
         android:id="@+id/nav_downloads"
-        android:name="com.vmenon.mpo.downloads.view.fragment.DownloadsFragment"
+        android:name="com.vmenon.mpo.downloads.presentation.fragment.DownloadsFragment"
         android:label="@string/downloads" />
 </navigation>

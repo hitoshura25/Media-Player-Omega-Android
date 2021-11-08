@@ -20,4 +20,7 @@
     <string name="use_biometrics">Use Biometrics</string>
     <string name="use_biometrics_for_login">Would you like to use Biometrics for login?</string>
     <string name="app_version">Version: %1$s (Build: %2$s)</string>
+    <string name="confirm_to_complete_enrollment">Confirm To Complete Enrollment</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm_to_login">Confirm to Login</string>
 </resources>

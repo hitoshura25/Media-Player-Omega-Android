@@ -5,18 +5,18 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="com.vmenon.mpo.login_presentation.model.LoginState"/>
-        <import type="com.vmenon.mpo.login_presentation.model.RegisterState"/>
-        <import type="com.vmenon.mpo.login_presentation.model.LoggedInState"/>
+        <import type="com.vmenon.mpo.login.presentation.model.LoginState"/>
+        <import type="com.vmenon.mpo.login.presentation.model.RegisterState"/>
+        <import type="com.vmenon.mpo.login.presentation.model.LoggedInState"/>
         <variable
             name="state"
-            type="com.vmenon.mpo.login_presentation.model.AccountState"/>
+            type="com.vmenon.mpo.login.presentation.model.AccountState"/>
         <variable
             name="registration"
-            type="com.vmenon.mpo.login_presentation.model.RegistrationObservable" />
+            type="com.vmenon.mpo.login.presentation.model.RegistrationObservable" />
         <variable
             name="registrationValid"
-            type="com.vmenon.mpo.login_presentation.model.RegistrationValid"/>
+            type="com.vmenon.mpo.login.presentation.model.RegistrationValid"/>
     </data>
     <RelativeLayout
         android:layout_width="match_parent"

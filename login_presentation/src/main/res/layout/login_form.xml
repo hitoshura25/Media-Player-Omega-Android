@@ -6,11 +6,11 @@
 
         <import type="android.view.View" />
 
-        <import type="com.vmenon.mpo.login_presentation.model.LoginState" />
+        <import type="com.vmenon.mpo.login.presentation.model.LoginState" />
 
         <variable
             name="state"
-            type="com.vmenon.mpo.login_presentation.model.LoginState" />
+            type="com.vmenon.mpo.login.presentation.model.LoginState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"

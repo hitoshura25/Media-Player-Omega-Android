@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
-        <import type="com.vmenon.mpo.login_presentation.model.LoggedInState" />
+        <import type="com.vmenon.mpo.login.presentation.model.LoggedInState" />
         <variable
             name="state"
-            type="com.vmenon.mpo.login_presentation.model.LoggedInState" />
+            type="com.vmenon.mpo.login.presentation.model.LoggedInState" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
