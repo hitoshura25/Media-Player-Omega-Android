@@ -12,15 +12,17 @@ import com.vmenon.mpo.common.domain.SuccessState
 import com.vmenon.mpo.my_library.presentation.databinding.SubscribedShowsFragmentBinding
 import com.vmenon.mpo.my_library.presentation.di.dagger.toLibraryComponent
 import com.vmenon.mpo.my_library.presentation.adapter.SubscriptionGalleryAdapter
+import com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent
+import com.vmenon.mpo.my_library.presentation.viewmodel.SubscribedShowsViewModel
 import com.vmenon.mpo.navigation.domain.my_library.SubscribedShowsLocation
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
 
 class SubscribedShowsFragment :
-    BaseViewBindingFragment<com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent, SubscribedShowsFragmentBinding>(),
+    BaseViewBindingFragment<LibraryComponent, SubscribedShowsFragmentBinding>(),
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(SubscribedShowsLocation) {
-    private val viewModel: com.vmenon.mpo.my_library.presentation.viewmodel.SubscribedShowsViewModel by viewModel()
+    private val viewModel: SubscribedShowsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +73,7 @@ class SubscribedShowsFragment :
 
     override fun setupComponent(context: Context) = context.toLibraryComponent()
 
-    override fun inject(component: com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent) {
+    override fun inject(component: LibraryComponent) {
         component.inject(this)
         component.inject(viewModel)
     }

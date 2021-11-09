@@ -24,23 +24,23 @@ import com.vmenon.mpo.view.BaseViewBindingFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-class MediaPlayerFragment : BaseViewBindingFragment<com.vmenon.mpo.player.presentation.di.dagger.PlayerComponent, FragmentMediaPlayerBinding>(),
+class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMediaPlayerBinding>(),
     NavigationOrigin<PlayerNavigationParams> by NavigationOrigin.from(PlayerNavigationLocation),
     SurfaceHolder.Callback, MPOPlayer.VideoSizeListener, PlayerClient {
 
     @Inject
     lateinit var player: MPOPlayer
 
-    private val viewModel: com.vmenon.mpo.player.presentation.viewmodel.MediaPlayerViewModel by viewModel()
+    private val viewModel: MediaPlayerViewModel by viewModel()
 
     private var lastPlaybackState: PlaybackState? = null
 
     private var playOnStart = false
     private var playbackMediaRequest: PlaybackMediaRequest? = null
 
-    override fun setupComponent(context: Context): com.vmenon.mpo.player.presentation.di.dagger.PlayerComponent = context.toPlayerComponent()
+    override fun setupComponent(context: Context): PlayerComponent = context.toPlayerComponent()
 
-    override fun inject(component: com.vmenon.mpo.player.presentation.di.dagger.PlayerComponent) {
+    override fun inject(component: PlayerComponent) {
         component.inject(this)
         component.inject(viewModel)
     }

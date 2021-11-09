@@ -70,7 +70,7 @@ class ShowSearchResultsFragment :
         val query = navigationController.getParams(this).query
         binding.toolbar.title = this.getString(R.string.show_search_title, query)
 
-        showSearchResultsViewModel.send(com.vmenon.mpo.search.presentation.mvi.ShowSearchViewEvent.SearchRequestedEvent(query))
+        showSearchResultsViewModel.send(ShowSearchViewEvent.SearchRequestedEvent(query))
         showSearchResultsViewModel.states().observe(viewLifecycleOwner, { state ->
             state.unhandledContent()?.let { stateContent ->
                 if (stateContent.loading) {

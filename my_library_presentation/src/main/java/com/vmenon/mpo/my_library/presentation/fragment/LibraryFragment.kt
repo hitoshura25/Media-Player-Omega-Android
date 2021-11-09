@@ -16,6 +16,8 @@ import com.vmenon.mpo.my_library.presentation.adapter.LibraryAdapter
 import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsLocation
 import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.EpisodeModel
+import com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent
+import com.vmenon.mpo.my_library.presentation.viewmodel.LibraryViewModel
 import com.vmenon.mpo.navigation.domain.my_library.MyLibraryNavigationLocation
 import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
@@ -23,14 +25,14 @@ import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import javax.inject.Inject
 
-class LibraryFragment : BaseViewBindingFragment<com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent, FragmentLibraryBinding>(),
+class LibraryFragment : BaseViewBindingFragment<LibraryComponent, FragmentLibraryBinding>(),
     LibraryAdapter.LibrarySelectedListener,
     NavigationOrigin<NoNavigationParams> by NavigationOrigin.from(MyLibraryNavigationLocation) {
 
     @Inject
     lateinit var episodeDetailsDestination: NavigationDestination<EpisodeDetailsLocation>
 
-    private val viewModel: com.vmenon.mpo.my_library.presentation.viewmodel.LibraryViewModel by viewModel()
+    private val viewModel: LibraryViewModel by viewModel()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navigationController.setupWith(
@@ -71,7 +73,7 @@ class LibraryFragment : BaseViewBindingFragment<com.vmenon.mpo.my_library.presen
 
     override fun setupComponent(context: Context) = context.toLibraryComponent()
 
-    override fun inject(component: com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent) {
+    override fun inject(component: LibraryComponent) {
         component.inject(this)
         component.inject(viewModel)
     }

@@ -17,17 +17,19 @@ import com.vmenon.mpo.my_library.presentation.di.dagger.toLibraryComponent
 import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsLocation
 import com.vmenon.mpo.navigation.domain.my_library.EpisodeDetailsParams
 import com.vmenon.mpo.my_library.domain.ShowModel
+import com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent
+import com.vmenon.mpo.my_library.presentation.viewmodel.EpisodeDetailsViewModel
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.view.BaseViewBindingFragment
 import java.text.DateFormat
 import java.util.*
 
 class EpisodeDetailsFragment :
-    BaseViewBindingFragment<com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent, FragmentEpisodeDetailsBinding>(),
+    BaseViewBindingFragment<LibraryComponent, FragmentEpisodeDetailsBinding>(),
     NavigationOrigin<EpisodeDetailsParams> by NavigationOrigin.from(EpisodeDetailsLocation),
     AppBarLayout.OnOffsetChangedListener {
 
-    private val viewModel: com.vmenon.mpo.my_library.presentation.viewmodel.EpisodeDetailsViewModel by viewModel()
+    private val viewModel: EpisodeDetailsViewModel by viewModel()
 
     private var show: ShowModel? = null
 
@@ -40,9 +42,9 @@ class EpisodeDetailsFragment :
     private val expandedToolbarTitle: CharSequence
         get() = ""
 
-    override fun setupComponent(context: Context): com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent = context.toLibraryComponent()
+    override fun setupComponent(context: Context): LibraryComponent = context.toLibraryComponent()
 
-    override fun inject(component: com.vmenon.mpo.my_library.presentation.di.dagger.LibraryComponent) {
+    override fun inject(component: LibraryComponent) {
         component.inject(this)
         component.inject(viewModel)
     }

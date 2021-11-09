@@ -28,7 +28,7 @@ import com.vmenon.mpo.view.BaseViewBindingFragment
 import com.vmenon.mpo.view.LoadingStateHelper
 import com.vmenon.mpo.view.R
 
-class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presentation.di.dagger.SearchComponent, FragmentShowDetailsBinding>(),
+class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentShowDetailsBinding>(),
     AppBarLayout.OnOffsetChangedListener,
     NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation) {
     private lateinit var loadingStateHelper: LoadingStateHelper
@@ -39,11 +39,11 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
     private var collapsedToolbarTitle: CharSequence = ""
     private val expandedToolbarTitle: CharSequence = ""
 
-    private val showDetailsViewModel: com.vmenon.mpo.search.presentation.viewmodel.ShowDetailsViewModel by viewModel()
+    private val showDetailsViewModel: ShowDetailsViewModel by viewModel()
 
-    override fun setupComponent(context: Context): com.vmenon.mpo.search.presentation.di.dagger.SearchComponent = context.toSearchComponent()
+    override fun setupComponent(context: Context): SearchComponent = context.toSearchComponent()
 
-    override fun inject(component: com.vmenon.mpo.search.presentation.di.dagger.SearchComponent) {
+    override fun inject(component: SearchComponent) {
         component.inject(this)
         component.inject(showDetailsViewModel)
     }
@@ -68,7 +68,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
 
         val undoListener = View.OnClickListener { Log.d("MPO", "User clicked undo") }
         val showId = navigationController.getParams(this).showSearchResultId
-        showDetailsViewModel.send(com.vmenon.mpo.search.presentation.mvi.ShowDetailsViewEvent.LoadShowDetailsEvent(showId))
+        showDetailsViewModel.send(ShowDetailsViewEvent.LoadShowDetailsEvent(showId))
         showDetailsViewModel.states().observe(viewLifecycleOwner, Observer { event ->
             event.unhandledContent()?.let { state ->
                 if (state.loading) {
@@ -81,7 +81,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
                     displayDetails(state.showDetails)
                     binding.fab.setOnClickListener {
                         showDetailsViewModel.send(
-                            com.vmenon.mpo.search.presentation.mvi.ShowDetailsViewEvent.SubscribeToShowEvent(state.showDetails)
+                            ShowDetailsViewEvent.SubscribeToShowEvent(state.showDetails)
                         )
                     }
                 } else {
@@ -90,10 +90,10 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
                 }
             }
         })
-        showDetailsViewModel.effects().observe(viewLifecycleOwner, Observer { event ->
+        showDetailsViewModel.effects().observe(viewLifecycleOwner, { event ->
             event.unhandledContent()?.let { effect ->
                 when (effect) {
-                    is com.vmenon.mpo.search.presentation.mvi.ShowDetailsViewEffect.ShowSubscribedViewEffect -> {
+                    is ShowDetailsViewEffect.ShowSubscribedViewEffect -> {
                         Snackbar.make(
                             binding.detailsContainer, "You have subscribed to this show",
                             Snackbar.LENGTH_LONG
@@ -101,7 +101,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
                             .setAction("UNDO", undoListener)
                             .show()
                     }
-                    is com.vmenon.mpo.search.presentation.mvi.ShowDetailsViewEffect.DownloadQueuedViewEffect -> {
+                    is ShowDetailsViewEffect.DownloadQueuedViewEffect -> {
                         Snackbar.make(
                             binding.detailsContainer,
                             "Episode download has been queued",
@@ -147,7 +147,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<com.vmenon.mpo.search.presen
 
                 override fun onDownloadEpisode(episode: ShowSearchResultEpisodeModel) {
                     showDetailsViewModel.send(
-                        com.vmenon.mpo.search.presentation.mvi.ShowDetailsViewEvent.QueueDownloadEvent(
+                        ShowDetailsViewEvent.QueueDownloadEvent(
                             showDetails.show,
                             episode
                         )
