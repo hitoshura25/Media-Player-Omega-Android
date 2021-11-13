@@ -5,7 +5,6 @@ env:
   global:
   - ANDROID_SDK_CMD_TOOLS=commandlinetools-linux-7583922_latest.zip
   - SERVICE_ACCOUNT_FILE=./google_service_account.json
-  - BUNDLE_LOCATION=./app/build/outputs/bundle/release/app-release.aab
 cache:
   directories:
   - "$HOME/.gradle/caches/"
@@ -42,9 +41,7 @@ before_cache:
 - rm -f $HOME/.gradle/caches/user-id.txt.lock
 - ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
 script:
-- "./gradlew test lint :app:bundleRelease"
-after_success:
-- "./uploadBundle.sh"
+- "./buildTestDeploy.sh"
 deploy:
   provider: releases
   skip_cleanup: true

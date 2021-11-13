@@ -88,6 +88,9 @@ function sendNotification {
   TIMESTAMP=$(date -u +%FT%TZ)
   curl -d "from=$NOTIFICATION_SENDER&to=$NOTIFICATION_RECIPIENT&subject=New Build Available: $TRAVIS_BUILD_NUMBER&text=New build available ($TIMESTAMP): $DOWNLOAD_URL" -X POST "$NOTIFICATION_API_URL"
 }
+
+set -e
+
 # Parse service account JSON for authentication information
 AUTH_SERVER=$(jq -r '.token_uri' "${SERVICE_ACCOUNT_FILE}")
 AUTH_EMAIL=$(jq -r '.client_email' "${SERVICE_ACCOUNT_FILE}")

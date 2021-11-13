@@ -1,0 +1,37 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+android {
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
+}
+
+dependencies {
+    implementation project(':auth_framework')
+    implementation project(':common_framework')
+    implementation project(':login_framework')
+    implementation project(':navigation_framework')
+    implementation project(':common_view')
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.core_ktx
+    implementation Libs.constraintlayout
+    implementation Libs.legacy_support_v4
+    implementation Libs.lifecycle_viewmodel_ktx
+    implementation Libs.lifecycle_livedata_ktx
+    implementation Libs.material
+
+    implementation Libs.dagger
+    kapt Libs.dagger_compiler
+
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
+
+    testImplementation Libs.junit_junit
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.annotation
+}

@@ -36,4 +36,9 @@ dependencies {
     implementation Libs.gson
     api Libs.biometric
 
+    androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.espresso_core
+    androidTestImplementation Libs.fragment_testing
+    androidTestImplementation Libs.androidx_test_runner
+    androidTestImplementation Libs.androidx_test_rules
 }

@@ -36,6 +36,8 @@ public object Libs {
 
     public const val fragment_ktx: String = "androidx.fragment:fragment-ktx:_"
 
+    public const val fragment_testing: String = "androidx.fragment:fragment-testing:_"
+
     public const val legacy_support_v4: String = "androidx.legacy:legacy-support-v4:_"
 
     public const val lifecycle_livedata_ktx: String = "androidx.lifecycle:lifecycle-livedata-ktx:_"
@@ -77,6 +79,10 @@ public object Libs {
     public const val junit_ktx: String = "androidx.test.ext:junit-ktx:_"
 
     public const val uiautomator: String = "androidx.test.uiautomator:uiautomator:_"
+
+    public const val androidx_test_rules: String = "androidx.test:rules:_"
+
+    public const val androidx_test_runner: String = "androidx.test:runner:_"
 
     public const val work_runtime_ktx: String = "androidx.work:work-runtime-ktx:_"
 
