@@ -5,7 +5,7 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-def buildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+def buildNumber = System.getenv('BUILD_NUMBER')
 
 android {
     signingConfigs {

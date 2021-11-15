@@ -86,7 +86,7 @@ function uploadBundle {
 function sendNotification {
   DOWNLOAD_URL=$1
   TIMESTAMP=$(date -u +%FT%TZ)
-  curl -d "from=$NOTIFICATION_SENDER&to=$NOTIFICATION_RECIPIENT&subject=New Build Available: $TRAVIS_BUILD_NUMBER&text=New build available ($TIMESTAMP): $DOWNLOAD_URL" -X POST "$NOTIFICATION_API_URL"
+  curl -d "from=$NOTIFICATION_SENDER&to=$NOTIFICATION_RECIPIENT&subject=New Build Available: $BUILD_NUMBER&text=New build available ($TIMESTAMP): $DOWNLOAD_URL" -X POST "$NOTIFICATION_API_URL"
 }
 
 set -e
