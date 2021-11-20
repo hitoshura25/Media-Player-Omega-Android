@@ -9,6 +9,15 @@ version: 2.1
 orbs:
   android: circleci/android@1.0.3
 
+parameters:
+  run_workflow_feature_build:
+    default: true
+    type: boolean
+
+  run_workflow_release:
+    default: false
+    type: boolean
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -23,6 +32,13 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
       # The next step will run the unit tests
       #- android/run-tests:
@@ -40,7 +56,17 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  feature_build:
+    when: << pipeline.parameters.run_workflow_feature_build >>
     jobs:
-      - build-test-deploy
+      - build-test-deploy:
+          filters:
+            branches:
+              ignore: main
+  #release:
+  #  when: << pipeline.parameters.run_workflow_release >>
+  #  jobs:
+  #    - build-release-deploy:
+  #        filters:
+  #          branches:
+  #            only: main

@@ -1,0 +1,63 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+update_fastlane
+default_platform(:android)
+
+platform :android do
+  before_all do
+    setup_circle_ci
+  end
+  desc "Build and Test"
+  lane :build do
+    gradle(task: "clean test lint :app:bundleRelease")
+  end
+
+  desc "Deploy a new version to the alpha track on Google Play"
+  lane :deploy_alpha do
+    # increment_vc
+    # build
+    upload_to_play_store(
+     release_status: "draft",
+     track: "alpha"
+    )
+  end
+
+  desc "Deploy a new internal sharing build on Google Play"
+  lane :deploy_internal_share do
+    # increment_vc
+    build
+    url = upload_to_play_store_internal_app_sharing
+    email_build(url: url)
+  end
+
+  desc "Increment version code"
+   lane :increment_vc do
+   increment_version_code(
+    gradle_file_path: "./app/build.gradle"
+   )
+  end
+
+  desc "Email new build"
+  lane :email_build do |options|
+    mailgun(
+      postmaster: ENV['MAILGUN_POSTMASTER'],
+      apikey: ENV['MAILGUN_API_KEY'],
+      to: ENV['NOTIFICATION_RECIPIENT'],
+      from: "#{ENV['NOTIFICATION_SENDER']} <#{ENV['MAILGUN_POSTMASTER']}>",
+      subject: "New Build Available: #{ENV['BUILD_NUMBER']}",
+      message: "New build available (#{Time.now})",
+      app_link: "#{options[:url]}",
+      template_path: "new_build_template.erb"
+    )
+  end
+end

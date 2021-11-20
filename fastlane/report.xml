@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="2.766755">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000213">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: Switch to android build lane" time="0.000157">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: clean test lint :app:bundleRelease" time="184.761019">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: upload_to_play_store_internal_app_sharing" time="11.790425">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: Switch to android email_build lane" time="0.000318">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="6: mailgun" time="1.269645">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

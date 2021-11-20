@@ -26,7 +26,8 @@ checkVar "android_keystore_password"
 checkVar "android_keystore_key_alias"
 checkVar "android_keystore_key_password"
 checkVar "android_keystore_file"
-checkVar "NOTIFICATION_API_URL"
+checkVar "MAILGUN_POSTMASTER"
+checkVar "MAILGUN_API_KEY"
 checkVar "NOTIFICATION_RECIPIENT"
 checkVar "NOTIFICATION_SENDER"
 checkVar "MPO_ENCRYPTION_KEY"
@@ -43,6 +44,4 @@ fi
 
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $android_keystore_file -d $android_keystore_file.gpg"
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $SERVICE_ACCOUNT_FILE -d $SERVICE_ACCOUNT_FILE.gpg"
-
-safeRunCommand "./gradlew clean test lint :app:bundleRelease"
-safeRunCommand "./uploadBundle.sh"
+safeRunCommand "fastlane deploy_internal_share"
