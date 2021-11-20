@@ -44,4 +44,4 @@ fi
 
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $android_keystore_file -d $android_keystore_file.gpg"
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $SERVICE_ACCOUNT_FILE -d $SERVICE_ACCOUNT_FILE.gpg"
-safeRunCommand "fastlane deploy_internal_share"
+safeRunCommand "bundle exec fastlane deploy_internal_share"
