@@ -24,8 +24,7 @@ platform :android do
 
   desc "Deploy a new version to the alpha track on Google Play"
   lane :deploy_alpha do
-    # increment_vc
-    # build
+    build
     upload_to_play_store(
      release_status: "draft",
      track: "alpha"
@@ -34,17 +33,9 @@ platform :android do
 
   desc "Deploy a new internal sharing build on Google Play"
   lane :deploy_internal_share do
-    # increment_vc
     build
     url = upload_to_play_store_internal_app_sharing
     email_build(url: url)
-  end
-
-  desc "Increment version code"
-   lane :increment_vc do
-   increment_version_code(
-    gradle_file_path: "./app/build.gradle"
-   )
   end
 
   desc "Email new build"
