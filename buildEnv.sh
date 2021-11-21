@@ -20,3 +20,13 @@ function safeRunCommand() {
 }
 
 export BUNDLE_LOCATION="./app/build/outputs/bundle/release/app-release.aab"
+
+if [[ -z "${TRAVIS_BUILD_NUMBER}" ]]; then
+  if [[ -z "${CIRCLE_BUILD_NUM}" ]]; then
+    export BUILD_NUMBER="0"
+  else
+    export BUILD_NUMBER="${CIRCLE_BUILD_NUM}"
+  fi
+else
+  export BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}"
+fi
