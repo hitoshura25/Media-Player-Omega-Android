@@ -17,14 +17,53 @@ platform :android do
   before_all do
     setup_circle_ci
   end
+
+  desc "Feature build"
+  lane :build_feature do
+    build
+    deploy_internal_share
+  end
+
+  desc "Release"
+  lane :release do
+    build
+    deploy_alpha
+  end
+
   desc "Build and Test"
   lane :build do
     gradle(tasks: ["clean", "test", "lint", ":app:bundleRelease"])
   end
 
+  desc "Increment release version"
+  lane :increment_version do |options|
+    if (options[:version] == 'major')
+      gradle(task: "incrementMajorVersion")
+    elsif (options[:version] == 'minor')
+      gradle(task: "incrementMinorVersion")
+    elsif (options[:version] == 'patch')
+      gradle(task: "incrementPatchVersion")
+    elsif (options[:version] == 'rc')
+      gradle(task: "incrementReleaseCandidate")
+    end
+    version_props_file = '../appVersion.properties'
+    version_props = {}
+    File.open(version_props_file) do |version_file|
+      version_file.read.each_line do |line|
+        line.strip!
+        version_prop = line.split("=")
+        version_props[version_prop[0]] = version_prop[1]
+      end
+    end
+    tag_name = "#{version_props['major']}.#{version_props['minor']}.#{version_props['patch']}-rc#{version_props['rc']}"
+    git_commit(path: version_props_file, message: "Incrementing Version For Release")
+    push_to_git_remote
+    add_git_tag(tag: tag_name)
+    push_to_git_remote
+  end
+
   desc "Deploy a new version to the alpha track on Google Play"
   lane :deploy_alpha do
-    build
     upload_to_play_store(
      release_status: "draft",
      track: "alpha"
@@ -33,7 +72,6 @@ platform :android do
 
   desc "Deploy a new internal sharing build on Google Play"
   lane :deploy_internal_share do
-    build
     url = upload_to_play_store_internal_app_sharing
     email_internal_share_build(url: url)
   end

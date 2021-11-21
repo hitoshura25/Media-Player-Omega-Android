@@ -18,6 +18,10 @@ parameters:
     default: false
     type: boolean
 
+  release_version_increment:
+    default: patch
+    type: string
+
 jobs:
   build-feature:
     executor:
@@ -62,7 +66,7 @@ jobs:
       - run:
           name: Release
           command: |
-            ./release.sh
+            ./incrementVersion.sh << pipeline.parameters.release_version_increment >>
 
 workflows:
   feature_build:

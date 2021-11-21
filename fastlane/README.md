@@ -16,11 +16,26 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## Android
+### android build_feature
+```
+fastlane android build_feature
+```
+Feature build
+### android release
+```
+fastlane android release
+```
+Release
 ### android build
 ```
 fastlane android build
 ```
 Build and Test
+### android increment_version
+```
+fastlane android increment_version
+```
+Increment release version
 ### android deploy_alpha
 ```
 fastlane android deploy_alpha
@@ -31,11 +46,11 @@ Deploy a new version to the alpha track on Google Play
 fastlane android deploy_internal_share
 ```
 Deploy a new internal sharing build on Google Play
-### android email_build
+### android email_internal_share_build
 ```
-fastlane android email_build
+fastlane android email_internal_share_build
 ```
-Email new build
+Email new internal share build
 
 ----
 

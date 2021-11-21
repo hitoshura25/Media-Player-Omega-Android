@@ -5,42 +5,22 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="3.10885">
+      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="2.352912">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000209">
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000214">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: setup_circle_ci" time="0.000532">
+      <testcase classname="fastlane.lanes" name="2: setup_circle_ci" time="0.000565">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: Switch to android build lane" time="0.000166">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: clean test lint :app:bundleRelease" time="241.193317">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="5: upload_to_play_store_internal_app_sharing" time="13.042413">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="6: Switch to android email_build lane" time="0.000387">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="7: mailgun" time="0.638553">
+      <testcase classname="fastlane.lanes" name="3: incrementPatchVersion" time="2.341403">
         
       </testcase>
     
