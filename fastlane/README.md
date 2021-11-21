@@ -36,9 +36,9 @@ Build and Test
 fastlane android increment_version
 ```
 Increment release version
-### android deploy_alpha
+### android deploy_play_store
 ```
-fastlane android deploy_alpha
+fastlane android deploy_play_store
 ```
 Deploy a new version to the alpha track on Google Play
 ### android deploy_internal_share

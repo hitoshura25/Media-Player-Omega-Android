@@ -27,7 +27,7 @@ platform :android do
   desc "Release"
   lane :release do
     build
-    deploy_play_store track:internal
+    deploy_play_store(track:internal)
   end
 
   desc "Build and Test"
