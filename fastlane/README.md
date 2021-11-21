@@ -31,11 +31,6 @@ Deploy a new version to the alpha track on Google Play
 fastlane android deploy_internal_share
 ```
 Deploy a new internal sharing build on Google Play
-### android increment_vc
-```
-fastlane android increment_vc
-```
-Increment version code
 ### android email_build
 ```
 fastlane android email_build

@@ -18,19 +18,12 @@ parameters:
     default: false
     type: boolean
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-test-deploy:
-    # These next lines define the Android machine image executor.
-    # See: https://circleci.com/docs/2.0/executor-types/
+  build-feature:
     executor:
       name: android/android-machine
 
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      # Checkout the code as the first step.
       - checkout
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
@@ -49,12 +42,28 @@ jobs:
       #    test-command: ./gradlew connectedDebugAndroidTest
       #    system-image: system-images;android-25;google_apis;x86
       - run:
-          name: Build, Test, and Deploy
+          name: Build Feature
           command: |
-            ./buildTestDeploy.sh
+            ./buildFeature.sh
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  build-release:
+    executor:
+      name: android/android-machine
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Release
+          command: |
+            ./release.sh
+
 workflows:
   feature_build:
     when: << pipeline.parameters.run_workflow_feature_build >>
@@ -63,10 +72,10 @@ workflows:
           filters:
             branches:
               ignore: main
-  #release:
-  #  when: << pipeline.parameters.run_workflow_release >>
-  #  jobs:
-  #    - build-release-deploy:
-  #        filters:
-  #          branches:
-  #            only: main
+  release:
+    when: << pipeline.parameters.run_workflow_release >>
+    jobs:
+      - build-release-deploy:
+          filters:
+            branches:
+              only: main

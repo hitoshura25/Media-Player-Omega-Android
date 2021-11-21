@@ -19,7 +19,7 @@ platform :android do
   end
   desc "Build and Test"
   lane :build do
-    gradle(task: "clean test lint :app:bundleRelease")
+    gradle(tasks: ["clean", "test", "lint", ":app:bundleRelease"])
   end
 
   desc "Deploy a new version to the alpha track on Google Play"
@@ -35,11 +35,11 @@ platform :android do
   lane :deploy_internal_share do
     build
     url = upload_to_play_store_internal_app_sharing
-    email_build(url: url)
+    email_internal_share_build(url: url)
   end
 
-  desc "Email new build"
-  lane :email_build do |options|
+  desc "Email new internal share build"
+  lane :email_internal_share_build do |options|
     mailgun(
       postmaster: ENV['MAILGUN_POSTMASTER'],
       apikey: ENV['MAILGUN_API_KEY'],
