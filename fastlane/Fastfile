@@ -32,6 +32,7 @@ platform :android do
 
   desc "Build and Test"
   lane :build do
+    puts "Build number: #{ENV['BUILD_NUMBER']}"
     gradle(tasks: ["clean", "test", "lint", ":app:bundleRelease"])
   end
 
