@@ -46,7 +46,7 @@ jobs:
           command: |
             ./buildFeature.sh
 
-  build-release:
+  release:
     executor:
       name: android/android-machine
 
@@ -68,14 +68,14 @@ workflows:
   feature_build:
     when: << pipeline.parameters.run_workflow_feature_build >>
     jobs:
-      - build-test-deploy:
+      - build-feature:
           filters:
             branches:
               ignore: main
   release:
     when: << pipeline.parameters.run_workflow_release >>
     jobs:
-      - build-release-deploy:
+      - release:
           filters:
             branches:
               only: main
