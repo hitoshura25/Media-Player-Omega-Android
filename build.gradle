@@ -156,3 +156,14 @@ tasks.register('incrementReleaseCandidate') {
         incrementVersion('rc')
     }
 }
+
+tasks.register('getVersions') {
+    doLast {
+        def versionProps = readVersion()
+        versionProps.each { prop ->
+            println("${prop.key}=${prop.value}")
+        }
+        println("versionName=${readVersionName()}")
+        println("versionCode=${generateVersionCode()}")
+    }
+}
