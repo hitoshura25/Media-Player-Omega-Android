@@ -5,42 +5,47 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="2.900507">
+      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="2.425752">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000235">
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000247">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: setup_circle_ci" time="0.000786">
+      <testcase classname="fastlane.lanes" name="2: setup_circle_ci" time="0.000661">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: incrementPatchVersion" time="6.235086">
+      <testcase classname="fastlane.lanes" name="3: Switch to android build lane" time="0.000177">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: git_commit" time="0.093507">
+      <testcase classname="fastlane.lanes" name="4: clean test lint :app:bundleRelease" time="301.026168">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: push_to_git_remote" time="1.035282">
+      <testcase classname="fastlane.lanes" name="5: Switch to android deploy_play_store lane" time="0.000931">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: add_git_tag" time="0.016008">
+      <testcase classname="fastlane.lanes" name="6: Switch to android get_versions lane" time="0.000298">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: push_to_git_remote" time="0.83762">
+      <testcase classname="fastlane.lanes" name="7: -q getVersions" time="2.972036">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="8: upload_to_play_store" time="28.611458">
         
       </testcase>
     

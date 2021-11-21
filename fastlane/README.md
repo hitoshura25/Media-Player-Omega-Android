@@ -51,6 +51,11 @@ Deploy a new internal sharing build on Google Play
 fastlane android email_internal_share_build
 ```
 Email new internal share build
+### android get_versions
+```
+fastlane android get_versions
+```
+Get app version information from the build
 
 ----
 
