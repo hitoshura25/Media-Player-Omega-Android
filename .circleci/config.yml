@@ -28,8 +28,8 @@ commands:
       - run:
           name: Hash gradle dependency info
           command: |
-            mkdir -p build
-            md5sum appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/build.gradle >build/deps.md5
+            mkdir -p $CIRCLE_WORKING_DIRECTORY/build
+            md5sum $CIRCLE_WORKING_DIRECTORY/gradle/wrapper/gradle-wrapper.properties $CIRCLE_WORKING_DIRECTORY/appVersion.properties $CIRCLE_WORKING_DIRECTORY/versions.properties $CIRCLE_WORKING_DIRECTORY/gradle.properties $CIRCLE_WORKING_DIRECTORY/settings.gradle $CIRCLE_WORKING_DIRECTORY/build.gradle $CIRCLE_WORKING_DIRECTORY/**/*build.gradle > $CIRCLE_WORKING_DIRECTORY/build/deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
@@ -37,7 +37,7 @@ commands:
   restore_gradle_cache:
     steps:
       - restore_cache:
-          key: gradle-{{ checksum "build/deps.md5" }}
+          key: gradle-{{ checksum "$CIRCLE_WORKING_DIRECTORY/build/deps.md5" }}
   save_gem_cache:
     steps:
       - save_cache:
@@ -47,9 +47,9 @@ commands:
   save_gradle_cache:
     steps:
       - save_cache:
-          key: gradle-{{ checksum "build/deps.md5" }}
+          key: gradle-{{ checksum "$CIRCLE_WORKING_DIRECTORY/build/deps.md5" }}
           paths:
-            - ~/.gradle
+            - $CIRCLE_WORKING_DIRECTORY/.gradle
 jobs:
   build-feature:
     executor:
@@ -72,8 +72,7 @@ jobs:
       #    system-image: system-images;android-25;google_apis;x86
       - run:
           name: Build Feature
-          command: |
-            ./buildFeature.sh
+          command: ./buildFeature.sh
       - save_gradle_cache
   release:
     executor:
