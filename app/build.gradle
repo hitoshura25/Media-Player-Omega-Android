@@ -21,8 +21,6 @@ android {
         applicationId "com.vmenon.mpo"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 8
-        versionName "1.8"
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
         buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
@@ -58,6 +56,13 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+}
+
+androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    variant.outputs.forEach { output ->
+        output.versionName.set(readVersionName())
+        output.versionCode.set(generateVersionCode())
     }
 }
 

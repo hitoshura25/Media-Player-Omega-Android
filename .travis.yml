@@ -36,7 +36,7 @@ before_cache:
 - rm -f $HOME/.gradle/caches/user-id.txt.lock
 - ls -d $HOME/.gradle/wrapper/dists/* -1t | tail -n +2 | xargs rm -rf
 script:
-- "./buildTestDeploy.sh"
+- "./buildFeature.sh"
 deploy:
   provider: releases
   skip_cleanup: true

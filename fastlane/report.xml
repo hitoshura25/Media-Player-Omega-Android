@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: update_fastlane" time="2.352912">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: default_platform" time="0.000214">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: setup_circle_ci" time="0.000565">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: incrementPatchVersion" time="2.341403">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

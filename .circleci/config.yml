@@ -9,20 +9,33 @@ version: 2.1
 orbs:
   android: circleci/android@1.0.3
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+parameters:
+  run_workflow_feature_build:
+    default: true
+    type: boolean
+
+  run_workflow_release:
+    default: false
+    type: boolean
+
+  release_version_increment:
+    default: patch
+    type: string
+
 jobs:
-  build-test-deploy:
-    # These next lines define the Android machine image executor.
-    # See: https://circleci.com/docs/2.0/executor-types/
+  build-feature:
     executor:
       name: android/android-machine
 
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      # Checkout the code as the first step.
       - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
       # The next step will run the unit tests
       #- android/run-tests:
@@ -33,14 +46,65 @@ jobs:
       #    test-command: ./gradlew connectedDebugAndroidTest
       #    system-image: system-images;android-25;google_apis;x86
       - run:
-          name: Build, Test, and Deploy
+          name: Build Feature
           command: |
-            ./buildTestDeploy.sh
+            ./buildFeature.sh
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  release:
+    executor:
+      name: android/android-machine
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Release
+          command: |
+            ./incrementVersion.sh << pipeline.parameters.release_version_increment >>
+  deploy_release:
+    executor:
+      name: android/android-machine
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Release
+          command: |
+            ./release.sh
+
 workflows:
-  build: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  feature_build:
+    when: << pipeline.parameters.run_workflow_feature_build >>
     jobs:
-      - build-test-deploy
+      - build-feature:
+          filters:
+            branches:
+              ignore: main
+  release:
+    when: << pipeline.parameters.run_workflow_release >>
+    jobs:
+      - release:
+          filters:
+            branches:
+              only: main
+  deploy_release:
+    jobs:
+      - deploy_release:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
