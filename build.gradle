@@ -31,3 +31,128 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+def readVersion() {
+    def versionFile = project.rootProject.file('appVersion.properties')
+    def version = new Properties()
+    def stream
+    try {
+        stream = new FileInputStream(versionFile)
+        version.load(stream)
+    } catch (FileNotFoundException e) {
+
+    } finally {
+        if (stream != null) stream.close()
+    }
+    return version
+}
+
+class OrderedProperties extends Properties {
+    @Override
+    Set<Map.Entry<Object, Object>> entrySet() {
+        def sortedMap = new LinkedHashMap<String, String>()
+        sortedMap["major"] = this.get("major")
+        sortedMap["minor"] = this.get("minor")
+        sortedMap["patch"] = this.get("patch")
+        sortedMap["rc"] = this.get("rc")
+        return Collections.synchronizedSet(new Properties.EntrySet(sortedMap.entrySet()), this);
+    }
+}
+
+def incrementVersion(def type="patch") {
+    def versionFile = project.rootProject.file('appVersion.properties')
+    def version = new OrderedProperties(readVersion())
+    def major = version['major'] as int
+    def minor = version['minor'] as int
+    def patch = version['patch'] as int
+    def candidate = version['rc'] as int
+
+    if (type == 'major') {
+        major++
+        minor = 0
+        patch = 0
+        candidate = 0
+    } else if (type == 'minor') {
+        minor++
+        patch = 0
+        candidate = 0
+    } else if (type == 'rc') {
+        candidate++
+    } else {
+        patch++
+        candidate = 0
+    }
+
+    if (major == 100) {
+        println("Major cannot be incremented!")
+        exit(-1)
+    }
+
+    if (minor == 1000) {
+        println("Minor cannot be incremented!")
+        exit(-1)
+    }
+
+    if (patch == 100) {
+        println("Patch cannot be incremented!")
+        exit(-1)
+    }
+
+    if (candidate == 100) {
+        println("Release candidate cannot be incremented!")
+        exit(-1)
+    }
+
+    version['major'] = major.toString()
+    version['minor'] = minor.toString()
+    version['patch'] = patch.toString()
+    version['rc'] = candidate.toString()
+
+    def stream = new FileOutputStream(versionFile)
+    try {
+        version.store(stream, null)
+    } finally {
+        stream.close()
+    }
+    println "Version is now $major.$minor.$patch, release candidate is $candidate"
+}
+
+def readVersionName() {
+    def version = readVersion()
+    return "${version['major']}.${version['minor']}.${version['patch']}"
+}
+
+def generateVersionCode() {
+    def version = readVersion()
+    def major = version['major'] as int
+    def minor = version['minor'] as int
+    def patch = version['patch'] as int
+    def candidate = version['rc'] as int
+
+    // Giving minor 3 digits as opposed to just 2 (since major release are probably rare)
+    (major * 10000000) + (minor * 10000) + (patch * 100) + candidate
+}
+
+tasks.register('incrementMajorVersion') {
+    doLast {
+        incrementVersion('major')
+    }
+}
+
+tasks.register('incrementMinorVersion') {
+    doLast {
+        incrementVersion('minor')
+    }
+}
+
+tasks.register('incrementPatchVersion') {
+    doLast {
+        incrementVersion('patch')
+    }
+}
+
+tasks.register('incrementReleaseCandidate') {
+    doLast {
+        incrementVersion('rc')
+    }
+}
