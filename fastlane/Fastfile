@@ -48,7 +48,7 @@ platform :android do
     end
     version_props = get_versions
     tag_name = "#{version_props['major']}.#{version_props['minor']}.#{version_props['patch']}-rc#{version_props['rc']}"
-    git_commit(path: 'appVersion.properties', message: "Incrementing Version For Release")
+    git_commit(path: 'appVersion.properties', message: "[skip ci] Incrementing Version For Release")
     push_to_git_remote
     add_git_tag(tag: tag_name)
     push_to_git_remote
