@@ -12,7 +12,5 @@ checkVar "NOTIFICATION_RECIPIENT"
 checkVar "NOTIFICATION_SENDER"
 checkVar "MPO_ENCRYPTION_KEY"
 
-echo "buildSetup.sh, build number: $BUILD_NUMBER"
-
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $android_keystore_file -d $android_keystore_file.gpg"
 safeRunCommand "gpg --passphrase $MPO_ENCRYPTION_KEY --pinentry-mode loopback -o $SERVICE_ACCOUNT_FILE -d $SERVICE_ACCOUNT_FILE.gpg"
