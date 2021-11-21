@@ -58,7 +58,8 @@ jobs:
       - checkout
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
-      - run: git config user.email "circleci@circleci" || git config user.name "Circle CI"
+      - run: git config --global user.email "circleci@circleci"
+      - run: git config --global user.name "Circle CI"
       - run: bundle check || bundle install --path vendor/bundle
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
