@@ -29,14 +29,24 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: Hash gradle dependency info
+          command: |
+            mkdir -p build
+            md5sum appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/build.gradle >build/deps.md5
       - restore_cache:
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          keys:
+            - 1-gems-{{ checksum "Gemfile.lock" }}
+            - gradle-{{ checksum "build/deps.md5" }}
       - run: bundle check || bundle install --path vendor/bundle
       - save_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
-
+      - save_cache:
+          key: gradle-{{ checksum "build/deps.md5" }}
+          paths:
+            - ~/.gradle
       # The next step will run the unit tests
       #- android/run-tests:
       #    test-command: ./gradlew lint testDebug --continue
