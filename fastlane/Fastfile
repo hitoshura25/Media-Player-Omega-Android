@@ -60,6 +60,7 @@ platform :android do
     upload_to_play_store(
       aab: "#{Dir.pwd}/../app/build/outputs/bundle/release/app-release.aab",
       release_status: "draft",
+      version_name: version_props['versionName'],
       track: options[:track]
     )
     email_play_store_internal_testing_release(version_name: version_props['versionName'])
@@ -94,6 +95,7 @@ platform :android do
         from: "#{ENV['NOTIFICATION_SENDER']} <#{ENV['MAILGUN_POSTMASTER']}>",
         subject: "#{options[:version_name]} Release Draft Available",
         message: "#{options[:version_name]} Release Draft Is Now Available On The Internal Testing Track In The Play Console (#{Time.now})",
+        app_link: "",
         template_path: "new_release_draft_template.erb",
         custom_placeholders: {
           :version_name => options[:version_name]
