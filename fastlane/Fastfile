@@ -9,8 +9,6 @@
 #
 #     https://docs.fastlane.tools/plugins/available-plugins
 #
-
-update_fastlane
 default_platform(:android)
 
 platform :android do
@@ -45,6 +43,8 @@ platform :android do
       gradle(task: "incrementPatchVersion")
     elsif (options[:version] == 'rc')
       gradle(task: "incrementReleaseCandidate")
+    elsif (options[:version] == 'ci')
+      gradle(task: "ciIncrementVersion")
     end
     version_props = get_versions
     tag_name = "#{version_props['major']}.#{version_props['minor']}.#{version_props['patch']}-rc#{version_props['rc']}"
