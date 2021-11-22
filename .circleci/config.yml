@@ -35,9 +35,8 @@ commands:
             pwd
             echo $HOME
             echo $CIRCLE_WORKING_DIRECTORY
-            mkdir -p build
-            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > build/deps.md5
-            cat build/deps.md5
+            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > /tmp/gradle_deps.md5
+            cat /tmp/gradle_deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
@@ -45,7 +44,7 @@ commands:
   restore_gradle_cache:
     steps:
       - restore_cache:
-          key: gradle-{{ checksum "build/deps.md5" }}
+          key: gradle-{{ checksum "/tmp/gradle_deps.md5" }}
   save_gem_cache:
     steps:
       - save_cache:
@@ -55,9 +54,9 @@ commands:
   save_gradle_cache:
     steps:
       - save_cache:
-          key: gradle-{{ checksum "build/deps.md5" }}
+          key: gradle-{{ checksum "/tmp/gradle_deps.md5" }}
           paths:
-            - .gradle
+            - ~/.gradle
 jobs:
   build-feature:
     executor:
