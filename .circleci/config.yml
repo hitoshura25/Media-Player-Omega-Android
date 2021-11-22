@@ -25,7 +25,8 @@ parameters:
 commands:
   update_bundler:
     steps:
-      - run: gem install bundler || bundle check || bundle install --path vendor/bundle
+      - run: gem install bundler
+      - run: bundle check || bundle install --path vendor/bundle
   create_gradle_cache_key:
     steps:
       - run:
