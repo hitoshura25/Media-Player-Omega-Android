@@ -23,6 +23,9 @@ parameters:
     type: string
 
 commands:
+  update_bundler:
+    steps:
+      - run: gem install bundler || bundle check || bundle install --path vendor/bundle
   create_gradle_cache_key:
     steps:
       - run:
@@ -64,7 +67,7 @@ jobs:
       - create_gradle_cache_key
       - restore_gem_cache
       - restore_gradle_cache
-      - run: bundle check || bundle install --path vendor/bundle
+      - update_bundler
       - save_gem_cache
       # The next step will run the unit tests
       #- android/run-tests:
@@ -87,7 +90,7 @@ jobs:
       - restore_gem_cache
       - run: git config --global user.email "circleci@circleci"
       - run: git config --global user.name "Circle CI"
-      - run: bundle check || bundle install --path vendor/bundle
+      - update_bundler
       - save_gem_cache
       - run:
           name: Release
@@ -100,7 +103,7 @@ jobs:
     steps:
       - checkout
       - restore_gem_cache
-      - run: bundle check || bundle install --path vendor/bundle
+      - update_bundler
       - save_gem_cache
       - run:
           name: Release
