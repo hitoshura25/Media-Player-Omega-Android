@@ -59,8 +59,8 @@ jobs:
       name: android/android-machine
     steps:
       - checkout
-      - create_gradle_cache_key
       - restore_gem_cache
+      - create_gradle_cache_key
       - restore_gradle_cache
       - update_bundler
       - save_gem_cache
@@ -85,6 +85,8 @@ jobs:
     steps:
       - checkout
       - restore_gem_cache
+      - create_gradle_cache_key
+      - restore_gradle_cache
       - run: git config --global user.email "circleci@circleci"
       - run: git config --global user.name "Circle CI"
       - update_bundler
@@ -99,13 +101,15 @@ jobs:
     steps:
       - checkout
       - restore_gem_cache
+      - create_gradle_cache_key
+      - restore_gradle_cache
       - update_bundler
       - save_gem_cache
       - run:
           name: Release
           command: |
             ./release.sh
-
+      - save_gradle_cache
 workflows:
   feature_build:
     when: << pipeline.parameters.run_workflow_feature_build >>
