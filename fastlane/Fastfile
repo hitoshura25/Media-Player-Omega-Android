@@ -93,7 +93,11 @@ platform :android do
         to: ENV['NOTIFICATION_RECIPIENT'],
         from: "#{ENV['NOTIFICATION_SENDER']} <#{ENV['MAILGUN_POSTMASTER']}>",
         subject: "#{options[:version_name]} Release Draft Available",
-        message: "#{options[:version_name]} Release Draft Is Now Available On The Internal Testing Track In The Play Console (#{Time.now})"
+        message: "#{options[:version_name]} Release Draft Is Now Available On The Internal Testing Track In The Play Console (#{Time.now})",
+        template_path: "new_release_draft_template.erb",
+        custom_placeholders: {
+          :version_name => options[:version_name]
+        }
       )
     end
 
