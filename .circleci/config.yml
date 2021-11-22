@@ -31,8 +31,9 @@ commands:
             pwd
             echo $HOME
             echo $CIRCLE_WORKING_DIRECTORY
-            mkdir -p $CIRCLE_WORKING_DIRECTORY/build
-            md5sum $CIRCLE_WORKING_DIRECTORY/gradle/wrapper/gradle-wrapper.properties $CIRCLE_WORKING_DIRECTORY/appVersion.properties $CIRCLE_WORKING_DIRECTORY/versions.properties $CIRCLE_WORKING_DIRECTORY/gradle.properties $CIRCLE_WORKING_DIRECTORY/settings.gradle $CIRCLE_WORKING_DIRECTORY/build.gradle $CIRCLE_WORKING_DIRECTORY/**/*build.gradle > $CIRCLE_WORKING_DIRECTORY/build/deps.md5
+            mkdir -p build
+            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > build/deps.md5
+            cat build/deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
