@@ -79,7 +79,7 @@ jobs:
   release:
     parameters:
       release_version_increment:
-        type: boolean
+        type: string
     executor:
       name: android/android-machine
     steps:
