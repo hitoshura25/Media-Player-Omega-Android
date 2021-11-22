@@ -157,6 +157,26 @@ tasks.register('incrementReleaseCandidate') {
     }
 }
 
+tasks.register('ciIncrementVersion') {
+    doLast {
+        def version = readVersion()
+        def major = version['major'] as int
+        def minor = version['minor'] as int
+        def patch = version['patch'] as int
+
+        if (patch < 99) {
+            incrementVersion('patch')
+        } else if (minor < 999) {
+            incrementVersion('minor')
+        } else if (major < 99) {
+            incrementVersion('major')
+        } else {
+            println("Impossibly...you cannot increment the version any more...")
+            exit(-1)
+        }
+    }
+}
+
 tasks.register('getVersions') {
     doLast {
         def versionProps = readVersion()

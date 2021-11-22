@@ -32,11 +32,7 @@ commands:
       - run:
           name: Hash gradle dependency info
           command: |
-            pwd
-            echo $HOME
-            echo $CIRCLE_WORKING_DIRECTORY
             md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > /tmp/gradle_deps.md5
-            cat /tmp/gradle_deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
@@ -61,7 +57,6 @@ jobs:
   build-feature:
     executor:
       name: android/android-machine
-
     steps:
       - checkout
       - create_gradle_cache_key
@@ -82,9 +77,11 @@ jobs:
           command: ./buildFeature.sh
       - save_gradle_cache
   release:
+    parameters:
+      release_version_increment:
+        type: boolean
     executor:
       name: android/android-machine
-
     steps:
       - checkout
       - restore_gem_cache
@@ -95,11 +92,10 @@ jobs:
       - run:
           name: Release
           command: |
-            ./incrementVersion.sh << pipeline.parameters.release_version_increment >>
+            ./incrementVersion.sh << parameters.release_version_increment >>
   deploy_release:
     executor:
       name: android/android-machine
-
     steps:
       - checkout
       - restore_gem_cache
@@ -122,6 +118,14 @@ workflows:
     when: << pipeline.parameters.run_workflow_release >>
     jobs:
       - release:
+          release_version_increment: << pipeline.parameters.release_version_increment >>
+          filters:
+            branches:
+              only: main
+  ci_release:
+    jobs:
+      - release:
+          release_version_increment: ci
           filters:
             branches:
               only: main
