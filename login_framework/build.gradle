@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     api project(':login_domain')
+    api project(':auth_domain')
     implementation project(':login_data')
 
     implementation project(':common_framework')

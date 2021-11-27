@@ -7,6 +7,7 @@ import com.vmenon.mpo.login.data.GetUserException
 import com.vmenon.mpo.login.data.UserRegistry
 import com.vmenon.mpo.login.domain.User
 import retrofit2.HttpException
+import java.lang.RuntimeException
 
 class MpoApiUserRegistry(
     private val api: MediaPlayerOmegaRetrofitService
@@ -44,6 +45,8 @@ class MpoApiUserRegistry(
             )
         } catch (httpException: HttpException) {
             throw GetUserException(httpException)
+        } catch (exception: RuntimeException) {
+            throw exception.cause ?: exception
         }
     }
 }

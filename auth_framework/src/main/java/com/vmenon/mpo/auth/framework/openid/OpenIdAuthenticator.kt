@@ -41,10 +41,8 @@ class OpenIdAuthenticator(
         }
     }
 
-    override suspend fun refreshToken(refreshToken: String) {
-        val credentials = authenticatorEngine.refreshToken(refreshToken)
-        authState.storeCredentials(credentials)
-    }
+    override suspend fun refreshToken(refreshToken: String): Result<Boolean> =
+        authenticatorEngine.refreshToken(refreshToken).mapCatching { true }
 
     suspend fun performAuthenticate(launcher: ActivityResultLauncher<Intent>) {
         authenticatorEngine.performAuthenticate(launcher)

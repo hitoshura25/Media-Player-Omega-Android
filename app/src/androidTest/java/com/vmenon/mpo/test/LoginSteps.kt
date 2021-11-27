@@ -7,14 +7,14 @@ class LoginSteps : BaseSteps() {
     fun i_have_signed_out_of_the_app() {
         clickOn(nav_accounts)
         i_choose_not_to_enroll_in_biometrics()
-        clickOnIfVisible("logout_link", "com.vmenon.mpo.login_feature")
-        waitFor("login_link", "com.vmenon.mpo.login_feature", 4000L)
+        clickOnIfVisible("com.vmenon.mpo.login_feature.logout_link")
+        waitFor("com.vmenon.mpo.login_feature.login_link")
     }
 
     @Given("I have launched sign in in the app")
     fun i_have_launched_sign_in() {
         clickOn(nav_accounts)
-        clickOn("login_link", "com.vmenon.mpo.login_feature")
+        clickOn("com.vmenon.mpo.login_feature.login_link")
     }
 
     @Given("I have completed sign in with username {string} and password {string}")

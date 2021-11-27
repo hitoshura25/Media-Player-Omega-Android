@@ -53,8 +53,8 @@ class LoginRepository(
                 userCache.cacheUser(freshUser)
                 Result.success(freshUser)
             }
-        } catch (exception: GetUserException) {
-            logger.println("Clearing out credentials", exception)
+        } catch (exception: Exception) {
+            logger.println("Clearing out user cache", exception)
             userCache.clear()
             Result.failure(exception)
         }

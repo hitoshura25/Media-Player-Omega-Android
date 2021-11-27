@@ -34,12 +34,12 @@ open class BaseSteps {
         context.startActivity(intent)
     }
 
-    fun clickOn(resName: String, packageName: String = appPackage) {
-        find(resName, packageName)!!.click()
+    fun clickOn(resName: String) {
+        find(resName)!!.click()
     }
 
-    fun clickOnIfVisible(resName: String, packageName: String = appPackage): Boolean {
-        val element = find(resName, packageName)
+    fun clickOnIfVisible(resName: String): Boolean {
+        val element = find(resName)
         return if (element == null) {
             false
         } else {
@@ -49,7 +49,7 @@ open class BaseSteps {
     }
 
     fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
-        val element = find(text, timeout)
+        val element = findText(text, timeout)
         return if (element == null) {
             false
         } else {
@@ -60,21 +60,32 @@ open class BaseSteps {
 
     fun find(
             resName: String,
-            packageName: String = appPackage,
             timeout: Long = TRANSITION_TIMEOUT
-    ): UiObject2? = device.wait(
-            Until.findObject(By.res(packageName, resName)), timeout
-    )
+    ): UiObject2? {
+        val packageName: String
+        val resourceId: String
+        if (resName.indexOf(".") != -1) {
+            val resNameStart = resName.lastIndexOf(".")
+            packageName = resName.substring(0, resNameStart)
+            resourceId = resName.substring(resNameStart + 1, resName.length)
+        } else {
+            packageName = appPackage
+            resourceId = resName
+        }
+        return device.wait(
+                Until.findObject(By.res(packageName, resourceId)), timeout
+        )
+    }
 
-    fun find(
+    fun findText(
             text: String,
             timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? = device.wait(
             Until.findObject(By.text(text)), timeout
     )
 
-    fun text(input: String, resName: String, packageName: String = appPackage) {
-        find(resName, packageName)!!.text = input
+    fun text(input: String, resName: String) {
+        find(resName)!!.text = input
     }
 
     fun waitForApp(packageName: String = appPackage, timeout: Long = TRANSITION_TIMEOUT) {
@@ -83,10 +94,9 @@ open class BaseSteps {
 
     fun waitFor(
             resName: String,
-            packageName: String = appPackage,
             timeout: Long = TRANSITION_TIMEOUT
     ) {
-        assertNotNull(device.wait(Until.findObject(By.res(packageName, resName)), timeout))
+        assertNotNull(find(resName, timeout))
     }
 
     fun waitForBrowser() {

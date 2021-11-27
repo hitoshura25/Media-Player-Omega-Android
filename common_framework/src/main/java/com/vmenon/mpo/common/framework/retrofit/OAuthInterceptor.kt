@@ -45,7 +45,8 @@ class OAuthInterceptor(
         chain: Interceptor.Chain,
         request: Request
     ): ResponseWithCredentials {
-        return authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { refreshed ->
+        return authService.runWithFreshCredentialsIfNecessary(clock.currentTimeMillis()) { result ->
+            val refreshed = result.getOrThrow()
             logger.println("Refreshed token $refreshed")
             val newRequest = when (val credentialsResult = authService.getCredentials()) {
                 is CredentialsResult.Success -> {
