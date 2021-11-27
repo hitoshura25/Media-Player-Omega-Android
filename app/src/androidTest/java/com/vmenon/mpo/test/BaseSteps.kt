@@ -58,9 +58,22 @@ open class BaseSteps {
         }
     }
 
+    fun clickOnContentDescription(
+        description: String,
+        timeout: Long = TRANSITION_TIMEOUT
+    ): Boolean {
+        val element = findContentDescription(description, timeout)
+        return if (element == null) {
+            false
+        } else {
+            element.click()
+            true
+        }
+    }
+
     fun find(
-            resName: String,
-            timeout: Long = TRANSITION_TIMEOUT
+        resName: String,
+        timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? {
         val packageName: String
         val resourceId: String
@@ -73,15 +86,22 @@ open class BaseSteps {
             resourceId = resName
         }
         return device.wait(
-                Until.findObject(By.res(packageName, resourceId)), timeout
+            Until.findObject(By.res(packageName, resourceId)), timeout
         )
     }
 
     fun findText(
-            text: String,
-            timeout: Long = TRANSITION_TIMEOUT
+        text: String,
+        timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? = device.wait(
-            Until.findObject(By.text(text)), timeout
+        Until.findObject(By.text(text)), timeout
+    )
+
+    fun findContentDescription(
+        description: String,
+        timeout: Long = TRANSITION_TIMEOUT
+    ): UiObject2? = device.wait(
+        Until.findObject(By.desc(description)), timeout
     )
 
     fun text(input: String, resName: String) {
@@ -93,10 +113,24 @@ open class BaseSteps {
     }
 
     fun waitFor(
-            resName: String,
-            timeout: Long = TRANSITION_TIMEOUT
+        resName: String,
+        timeout: Long = TRANSITION_TIMEOUT
     ) {
         assertNotNull(find(resName, timeout))
+    }
+
+    fun waitForText(
+        text: String,
+        timeout: Long = TRANSITION_TIMEOUT
+    ) {
+        assertNotNull(findText(text, timeout))
+    }
+
+    fun waitForContentDescription(
+        description: String,
+        timeout: Long = TRANSITION_TIMEOUT
+    ) {
+        assertNotNull(findContentDescription(description, timeout))
     }
 
     fun waitForBrowser() {
@@ -111,6 +145,10 @@ open class BaseSteps {
 
     fun browserClickOn(resName: String) {
         device.findObject(selector.resourceId(resName)).click()
+    }
+
+    fun pressKeyCode(keyCode: Int) {
+        device.pressKeyCode(keyCode)
     }
 
     @Throws(UiObjectNotFoundException::class)

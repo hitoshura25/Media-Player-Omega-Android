@@ -42,7 +42,10 @@ class OpenIdAuthenticator(
     }
 
     override suspend fun refreshToken(refreshToken: String): Result<Boolean> =
-        authenticatorEngine.refreshToken(refreshToken).mapCatching { true }
+        authenticatorEngine.refreshToken(refreshToken).mapCatching { credentials ->
+            authState.storeCredentials(credentials)
+            true
+        }
 
     suspend fun performAuthenticate(launcher: ActivityResultLauncher<Intent>) {
         authenticatorEngine.performAuthenticate(launcher)
