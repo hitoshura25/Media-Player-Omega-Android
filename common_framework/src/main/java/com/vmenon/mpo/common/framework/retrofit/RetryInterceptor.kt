@@ -40,6 +40,8 @@ class RetryInterceptor(
                 } else {
                     break
                 }
+            } else {
+                break
             }
         }
 
