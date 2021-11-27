@@ -38,8 +38,18 @@ open class BaseSteps {
         find(resName, packageName)!!.click()
     }
 
-    fun clickOnIfVisible(resName: String): Boolean {
-        val element = find(resName)
+    fun clickOnIfVisible(resName: String, packageName: String = appPackage): Boolean {
+        val element = find(resName, packageName)
+        return if (element == null) {
+            false
+        } else {
+            element.click()
+            true
+        }
+    }
+
+    fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
+        val element = find(text, timeout)
         return if (element == null) {
             false
         } else {
@@ -49,11 +59,18 @@ open class BaseSteps {
     }
 
     fun find(
-        resName: String,
-        packageName: String = appPackage,
-        timeout: Long = TRANSITION_TIMEOUT
+            resName: String,
+            packageName: String = appPackage,
+            timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? = device.wait(
-        Until.findObject(By.res(packageName, resName)), timeout
+            Until.findObject(By.res(packageName, resName)), timeout
+    )
+
+    fun find(
+            text: String,
+            timeout: Long = TRANSITION_TIMEOUT
+    ): UiObject2? = device.wait(
+            Until.findObject(By.text(text)), timeout
     )
 
     fun text(input: String, resName: String, packageName: String = appPackage) {
@@ -65,9 +82,9 @@ open class BaseSteps {
     }
 
     fun waitFor(
-        resName: String,
-        packageName: String = appPackage,
-        timeout: Long = TRANSITION_TIMEOUT
+            resName: String,
+            packageName: String = appPackage,
+            timeout: Long = TRANSITION_TIMEOUT
     ) {
         assertNotNull(device.wait(Until.findObject(By.res(packageName, resName)), timeout))
     }
@@ -104,7 +121,7 @@ open class BaseSteps {
     companion object {
         const val nav_accounts = "login_nav_graph"
         const val CHROME_STABLE = "com.android.chrome"
-        const val TRANSITION_TIMEOUT = 2000L
+        const val TRANSITION_TIMEOUT = 4000L
         const val NETWORK_TIMEOUT = 20000L
         const val ID_NO_THANKS = "com.android.chrome:id/negative_button"
         const val ID_ACCEPT = "com.android.chrome:id/terms_accept"
