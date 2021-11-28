@@ -13,4 +13,6 @@ class TestMPOApplication : MPOApplication() {
         DaggerTestPersistenceComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
+
+    override fun apiUrl(): String = "http://localhost:8080/"
 }

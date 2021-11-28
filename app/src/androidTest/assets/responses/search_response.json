@@ -1,0 +1,600 @@
+[
+  {
+    "name": "The IGN Movies Show",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/25/d2/13/25d2130e-c0fd-ff1d-813a-c8818204fbcb/mza_17892953427563498346.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/25/d2/13/25d2130e-c0fd-ff1d-813a-c8818204fbcb/mza_17892953427563498346.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/ignfeeds/podcasts/movies"
+  },
+  {
+    "name": "Podcast Beyond - IGN's PlayStation Show",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/2d/db/83/2ddb8363-d44e-6eb7-ad63-086fbf9b6fd6/mza_10262668860733347625.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/2d/db/83/2ddb8363-d44e-6eb7-ad63-086fbf9b6fd6/mza_10262668860733347625.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/beyond/"
+  },
+  {
+    "name": "Fireteam Chat: IGN's Destiny Podcast",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/1f/07/d4/1f07d4cd-6bb7-97fe-b198-fa4e0d57cd9e/mza_1421171826140483621.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/1f/07/d4/1f07d4cd-6bb7-97fe-b198-fa4e0d57cd9e/mza_1421171826140483621.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/FireteamChatIgnsDestinyPodcast"
+  },
+  {
+    "name": "IGN.com - Daily Fix (Video)",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts4/v4/c6/43/8b/c6438bf3-7de0-8fe1-b011-4dcf59150f1e/mza_4047074851483677426.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts4/v4/c6/43/8b/c6438bf3-7de0-8fe1-b011-4dcf59150f1e/mza_4047074851483677426.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "TV & Film"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/video/dailyfix/"
+  },
+  {
+    "name": "IGN.com - Game Scoop! TV (Video)",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Features4/v4/d6/d5/98/d6d59873-2ee5-1f88-1e9d-224cc4a67b53/mza_1229187100463163224.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Features4/v4/d6/d5/98/d6d59873-2ee5-1f88-1e9d-224cc4a67b53/mza_1229187100463163224.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/video/gamescoop/"
+  },
+  {
+    "name": "IGN Unfiltered",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/cc/2c/7a/cc2c7a87-5345-848a-6f10-37d99e9ae060/mza_16745177686153017269.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/cc/2c/7a/cc2c7a87-5345-848a-6f10-37d99e9ae060/mza_16745177686153017269.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/IgnUnfiltered"
+  },
+  {
+    "name": "Game Scoop!",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Features2/v4/d4/f6/47/d4f64716-423e-8403-851d-a8e107bbe769/mza_4624406836823011967.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Features2/v4/d4/f6/47/d4f64716-423e-8403-851d-a8e107bbe769/mza_4624406836823011967.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/gamescoop/"
+  },
+  {
+    "name": "Podcast Unlocked",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/f2/ab/9d/f2ab9daa-47c6-1ea6-eead-421283d4edc6/mza_1077606742100591634.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/f2/ab/9d/f2ab9daa-47c6-1ea6-eead-421283d4edc6/mza_1077606742100591634.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/xbox360/"
+  },
+  {
+    "name": "IGN Anime Club",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/75/e4/68/75e46829-f451-c0f8-45ca-9a4d3319c327/mza_7794788571529837443.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/75/e4/68/75e46829-f451-c0f8-45ca-9a4d3319c327/mza_7794788571529837443.png/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/IgnAnimeClub"
+  },
+  {
+    "name": "Nintendo Voice Chat",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ca/cf/53/cacf538f-ee20-ce46-3cb3-a2bb5b434238/mza_9282933565128932238.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ca/cf/53/cacf538f-ee20-ce46-3cb3-a2bb5b434238/mza_9282933565128932238.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "Technology"
+    ],
+    "author": "IGN Staff",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/wii/"
+  },
+  {
+    "name": "IGN UK Podcast",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/5e/a8/f9/5ea8f91f-c7b1-a883-b2ed-3ae930cf9990/mza_7673501694785856901.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/5e/a8/f9/5ea8f91f-c7b1-a883-b2ed-3ae930cf9990/mza_7673501694785856901.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN Staff",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/uk/"
+  },
+  {
+    "name": "The History of Awesome - IGN Presents",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/08/7f/13/087f1347-864e-da99-67d9-7143be611cb3/mza_13398106560912142097.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/08/7f/13/087f1347-864e-da99-67d9-7143be611cb3/mza_13398106560912142097.jpg/100x100bb.jpg",
+    "genres": [
+      "Society & Culture",
+      "Podcasts",
+      "History"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/IGNHistoryAwesome"
+  },
+  {
+    "name": "IGN Game Reviews",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/a8/ac/02/a8ac02ce-349d-9fb4-3946-fb2887ab50d8/mza_5062581601832880954.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/a8/ac/02/a8ac02ce-349d-9fb4-3946-fb2887ab50d8/mza_5062581601832880954.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "https://api.spokenlayer.com/feed/channel/v1-ign-game-reviews-ext/3c9929b72538c12bd92ac6762f8d798b9d4e8cdca7692ea74f466061d01816cb"
+  },
+  {
+    "name": "IGN AU Pubcast",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts123/v4/75/c0/da/75c0da0f-97a2-7a3f-1980-3b35263d4fa4/mza_2369712636002295584.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts123/v4/75/c0/da/75c0da0f-97a2-7a3f-1980-3b35263d4fa4/mza_2369712636002295584.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/au/"
+  },
+  {
+    "name": "IGN Game and Entertainment News",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/9f/c9/aa/9fc9aad8-2e8d-f2da-29ff-adfe3bb465bb/mza_2808877638119948967.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/9f/c9/aa/9fc9aad8-2e8d-f2da-29ff-adfe3bb465bb/mza_2808877638119948967.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "News",
+      "Entertainment News"
+    ],
+    "author": "IGN",
+    "feedUrl": "https://api.spokenlayer.com/feed/channel/v1-ign-game-and-entertainment-news-ext/3c9929b72538c12bd92ac6762f8d798b9d4e8cdca7692ea74f466061d01816cb"
+  },
+  {
+    "name": "Channel Surfing",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts/v4/58/8c/51/588c51c0-314a-a578-485e-f0b6d16b90a8/mza_1892788507120004470.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts/v4/58/8c/51/588c51c0-314a-a578-485e-f0b6d16b90a8/mza_1892788507120004470.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/tv/"
+  },
+  {
+    "name": "IGN Movie Reviews",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/0a/a8/bb/0aa8bbb7-f91d-2904-8f54-bc4099a213eb/mza_16785645405389846788.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/0a/a8/bb/0aa8bbb7-f91d-2904-8f54-bc4099a213eb/mza_16785645405389846788.jpg/100x100bb.jpg",
+    "genres": [
+      "Film Reviews",
+      "Podcasts",
+      "TV & Film",
+      "TV Reviews"
+    ],
+    "author": "IGN",
+    "feedUrl": "https://api.spokenlayer.com/feed/channel/v1-ign-movie-reviews-ext/3c9929b72538c12bd92ac6762f8d798b9d4e8cdca7692ea74f466061d01816cb"
+  },
+  {
+    "name": "IGN's Review Crew",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/20/79/a5/2079a5ed-1655-6943-7744-29bbd29aa28d/mza_7431916985096826947.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/20/79/a5/2079a5ed-1655-6943-7744-29bbd29aa28d/mza_7431916985096826947.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "Technology"
+    ],
+    "author": "IGN Entertainment",
+    "feedUrl": "http://feeds.feedburner.com/IgnsReviewCrew"
+  },
+  {
+    "name": "Dragons on the Wall",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts125/v4/c4/8a/58/c48a5813-6c89-d820-6a5e-3a0d3ed23aee/mza_10734118993994131256.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts125/v4/c4/8a/58/c48a5813-6c89-d820-6a5e-3a0d3ed23aee/mza_10734118993994131256.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/WatchersOnTheWall"
+  },
+  {
+    "name": "IGN News + Games + More",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/37/c4/d1/37c4d121-c029-0ea7-5184-bd12c2cc3a8a/mza_11662155808038116922.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/37/c4/d1/37c4d121-c029-0ea7-5184-bd12c2cc3a8a/mza_11662155808038116922.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/NewsGamePlus"
+  },
+  {
+    "name": "Humans Who Make Games with Adam Conover",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/9c/4f/8a/9c4f8a4b-822b-4a62-98c3-489095e95929/mza_8920442671949346331.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/9c/4f/8a/9c4f8a4b-822b-4a62-98c3-489095e95929/mza_8920442671949346331.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "Society & Culture"
+    ],
+    "author": "IGN | Starburns Audio",
+    "feedUrl": "https://feeds.megaphone.fm/humans-who-make-games"
+  },
+  {
+    "name": "IGN JAPAN しゃべりすぎGAMER ポッドキャスト",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts113/v4/45/c1/17/45c11713-0e3c-90b4-503a-5fda21df5d64/mza_7499842334329861356.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts113/v4/45/c1/17/45c11713-0e3c-90b4-503a-5fda21df5d64/mza_7499842334329861356.jpg/100x100bb.jpg",
+    "genres": [
+      "Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "Hiroshi Noguchi",
+    "feedUrl": "https://jp.ign.com/podcast-shaberisugi-gamer.xml"
+  },
+  {
+    "name": "Rebel Base",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/44/9d/16/449d16d9-507d-3b73-1051-c18d12e822ef/mza_3129180579315692516.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/44/9d/16/449d16d9-507d-3b73-1051-c18d12e822ef/mza_3129180579315692516.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/ignRebelBase"
+  },
+  {
+    "name": "IGN Boards Modcast",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Features/v4/5f/88/96/5f8896e9-9be5-529a-af14-cc807367568a/mza_1382744875394257421.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Features/v4/5f/88/96/5f8896e9-9be5-529a-af14-cc807367568a/mza_1382744875394257421.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "Society & Culture"
+    ],
+    "author": "IGN Mods",
+    "feedUrl": "http://feeds.feedburner.com/IgnBoardsModcast"
+  },
+  {
+    "name": "The IGN Movies Show",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/2a/43/87/2a438789-0569-524d-a3f9-4d9e42d55ba6/mza_17748046679044402743.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/2a/43/87/2a438789-0569-524d-a3f9-4d9e42d55ba6/mza_17748046679044402743.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.ign.com/ignfeeds/podcasts/movies/"
+  },
+  {
+    "name": "IGN RADIO",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts115/v4/51/19/87/511987dd-4490-2394-d883-78fc6e1ce243/mza_12161989705579641038.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts115/v4/51/19/87/511987dd-4490-2394-d883-78fc6e1ce243/mza_12161989705579641038.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN_ES",
+    "feedUrl": "https://www.ivoox.com/feed_fg_f150052_filtro_1.xml"
+  },
+  {
+    "name": "Igun Eyza",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts124/v4/60/70/9f/60709f4a-85e4-3ee9-9198-d3fa185ba6e5/mza_11816396961545784450.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts124/v4/60/70/9f/60709f4a-85e4-3ee9-9198-d3fa185ba6e5/mza_11816396961545784450.jpg/100x100bb.jpg",
+    "genres": [
+      "Music Commentary",
+      "Podcasts",
+      "Music"
+    ],
+    "author": "Igun Eyza",
+    "feedUrl": "https://anchor.fm/s/31275b74/podcast/rss"
+  },
+  {
+    "name": "What's IGN Crushing On",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts124/v4/73/8a/5a/738a5aa9-ae69-c0de-7e68-711ca8be3322/mza_13503311136661653025.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts124/v4/73/8a/5a/738a5aa9-ae69-c0de-7e68-711ca8be3322/mza_13503311136661653025.jpg/100x100bb.jpg",
+    "genres": [
+      "TV Reviews",
+      "Podcasts",
+      "TV & Film",
+      "Film Reviews"
+    ],
+    "author": "Crushing On",
+    "feedUrl": "https://feeds.simplecast.com/AbYsB3UL"
+  },
+  {
+    "name": "IGN Deutschland",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/e3/01/2c/e3012cf9-349c-643b-666b-78e11720b869/mza_7158134175886421204.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts115/v4/e3/01/2c/e3012cf9-349c-643b-666b-78e11720b869/mza_7158134175886421204.jpg/100x100bb.jpg",
+    "genres": [
+      "Leisure",
+      "Podcasts"
+    ],
+    "author": "IGN Deutschland",
+    "feedUrl": "https://feeds.soundcloud.com/users/soundcloud:users:216219495/sounds.rss"
+  },
+  {
+    "name": "IGN Overclocked",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/06/05/39/06053998-eb83-ad1d-215c-c6fe2a794bd5/mza_18168595682861153864.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/06/05/39/06053998-eb83-ad1d-215c-c6fe2a794bd5/mza_18168595682861153864.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/ignOverclocked"
+  },
+  {
+    "name": "IGN Daily Update",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/d5/57/45/d557453d-1cf1-e703-2f11-773a9831db8e/mza_9474732139207119210.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/d5/57/45/d557453d-1cf1-e703-2f11-773a9831db8e/mza_9474732139207119210.jpg/100x100bb.jpg",
+    "genres": [
+      "Entertainment News",
+      "Podcasts",
+      "News",
+      "Tech News"
+    ],
+    "author": "IGN",
+    "feedUrl": "https://api.spokenlayer.com/feed/channel/ign-podcasts-ext/3c9929b72538c12bd92ac6762f8d798b9d4e8cdca7692ea74f466061d01816cb"
+  },
+  {
+    "name": "IGN All-Star Community Podcast",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/50/a5/c5/50a5c531-8724-b2da-9d4a-7ecdedc6824a/mza_645368412423921794.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/50/a5/c5/50a5c531-8724-b2da-9d4a-7ecdedc6824a/mza_645368412423921794.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "TV & Film"
+    ],
+    "author": "Jakejames Lugo, Peter Lopez, and David Quigley",
+    "feedUrl": "http://feeds.feedburner.com/allstarpodcast"
+  },
+  {
+    "name": "IGN Downey",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/99/1a/c9/991ac95d-2dd7-9ed1-2ae0-12b5ac8ba2f1/mza_11512638264511824427.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/99/1a/c9/991ac95d-2dd7-9ed1-2ae0-12b5ac8ba2f1/mza_11512638264511824427.jpg/100x100bb.jpg",
+    "genres": [
+      "Christianity",
+      "Podcasts",
+      "Religion & Spirituality"
+    ],
+    "author": "IGN Downey",
+    "feedUrl": "https://sermons.faithlife.com/api/channels/5246610/feed"
+  },
+  {
+    "name": "Low Life",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts125/v4/74/0c/50/740c5054-68d8-4914-34c4-cf65b974860c/mza_11607640453824945201.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts125/v4/74/0c/50/740c5054-68d8-4914-34c4-cf65b974860c/mza_11607640453824945201.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "JP Spencer III (IGN: Aradus Gunnell)",
+    "feedUrl": "https://feed.podbean.com/evelowlife/feed.xml"
+  },
+  {
+    "name": "IGN Benelux Podcast",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/d7/85/b4/d785b455-ab23-bf73-54fb-46c2125d3fe2/mza_10300303366167066698.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/d7/85/b4/d785b455-ab23-bf73-54fb-46c2125d3fe2/mza_10300303366167066698.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure",
+      "TV & Film"
+    ],
+    "author": "IGN Benelux",
+    "feedUrl": "https://emense.libsyn.com/rss"
+  },
+  {
+    "name": "Inventaire forestier",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/CobaltPublic2/v4/e4/ea/7d/e4ea7dd5-03fa-8dbe-6081-3c69fca8ecda/mza_4970667909757779517.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/CobaltPublic2/v4/e4/ea/7d/e4ea7dd5-03fa-8dbe-6081-3c69fca8ecda/mza_4970667909757779517.jpg/100x100bb.jpg",
+    "genres": [
+      "Science",
+      "Podcasts"
+    ],
+    "author": "AgroParisTech - INRA - IGN"
+  },
+  {
+    "name": "IGN JAPAN 銀幕にポップコーン",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts124/v4/86/a8/16/86a81698-a1a6-4bdf-75b9-2eb93ce26567/mza_14851101162740225175.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts124/v4/86/a8/16/86a81698-a1a6-4bdf-75b9-2eb93ce26567/mza_14851101162740225175.jpg/100x100bb.jpg",
+    "genres": [
+      "Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "Hiroshi Noguchi",
+    "feedUrl": "https://jp.ign.com/podcast-ginmaku-podcast.xml"
+  },
+  {
+    "name": "IGN Benelux Video Take Podcast",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/bc/a4/a0/bca4a0ee-d93d-680f-9b2b-ea1055adf929/mza_2285197437339877084.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/bc/a4/a0/bca4a0ee-d93d-680f-9b2b-ea1055adf929/mza_2285197437339877084.png/100x100bb.jpg",
+    "genres": [
+      "Film History",
+      "Podcasts",
+      "TV & Film"
+    ],
+    "author": "IGN Benelux",
+    "feedUrl": "https://ign-benelu-video-take.libsyn.com/rss"
+  },
+  {
+    "name": "Netflix Or Not",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/d3/4c/3f/d34c3f2d-c946-4674-8ac8-e274ad494c6a/mza_18173901859340016360.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/d3/4c/3f/d34c3f2d-c946-4674-8ac8-e274ad494c6a/mza_18173901859340016360.jpg/100x100bb.jpg",
+    "genres": [
+      "TV & Film",
+      "Podcasts"
+    ],
+    "author": "IGN Middle East",
+    "feedUrl": "https://anchor.fm/s/2fd3174/podcast/rss"
+  },
+  {
+    "name": "Overwatch HQ",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/fa/b8/23/fab823f8-3ffa-843f-178f-5351eb5cd883/mza_4412156153991138457.png/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/fa/b8/23/fab823f8-3ffa-843f-178f-5351eb5cd883/mza_4412156153991138457.png/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN",
+    "feedUrl": "http://feeds.feedburner.com/OverwatchHqIgn"
+  },
+  {
+    "name": "IGN Game Show",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/00/18/92/00189214-0604-0034-8512-320b58298669/mza_7240613773643595726.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/00/18/92/00189214-0604-0034-8512-320b58298669/mza_7240613773643595726.jpg/100x100bb.jpg",
+    "genres": [
+      "Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN Middle East",
+    "feedUrl": "https://anchor.fm/s/dd42e54/podcast/rss"
+  },
+  {
+    "name": "IGN's Watchlist",
+    "artworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/12/6c/2c/126c2caa-a10d-4466-e55c-e678a8000da0/mza_11507086063294205004.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is4-ssl.mzstatic.com/image/thumb/Podcasts125/v4/12/6c/2c/126c2caa-a10d-4466-e55c-e678a8000da0/mza_11507086063294205004.jpg/100x100bb.jpg",
+    "genres": [
+      "Leisure",
+      "Podcasts"
+    ],
+    "author": "IGN Africa",
+    "feedUrl": "https://anchor.fm/s/703fd70/podcast/rss"
+  },
+  {
+    "name": "Entrevista de Ign. Edith Ayala",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/03/f8/fb/03f8fb40-85d1-1aac-d9d0-b09e3835e37f/mza_2001120859370577801.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/03/f8/fb/03f8fb40-85d1-1aac-d9d0-b09e3835e37f/mza_2001120859370577801.jpg/100x100bb.jpg",
+    "genres": [
+      "Careers",
+      "Podcasts",
+      "Business"
+    ],
+    "author": "Veronica Mercedes Rivas Castillo",
+    "feedUrl": "https://anchor.fm/s/585c5ed8/podcast/rss"
+  },
+  {
+    "name": "IGN Talk",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3a/de/3f/3ade3f13-9dd3-eaca-017a-019abe726e48/mza_13987724477983005952.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/3a/de/3f/3ade3f13-9dd3-eaca-017a-019abe726e48/mza_13987724477983005952.jpg/100x100bb.jpg",
+    "genres": [
+      "How To",
+      "Podcasts",
+      "Education"
+    ],
+    "author": "International Global Network",
+    "feedUrl": "https://anchor.fm/s/13bdc0f0/podcast/rss"
+  },
+  {
+    "name": "MR IGN",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/8c/c5/2f/8cc52f29-c488-9403-27bf-0f141b4afbb0/mza_16526001787296402541.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/8c/c5/2f/8cc52f29-c488-9403-27bf-0f141b4afbb0/mza_16526001787296402541.jpg/100x100bb.jpg",
+    "genres": [
+      "Leisure",
+      "Podcasts"
+    ],
+    "author": "Marcellus Deontaè Hardin",
+    "feedUrl": "https://anchor.fm/s/3178678/podcast/rss"
+  },
+  {
+    "name": "IGN's Watchlist",
+    "artworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/7f/81/41/7f8141d7-4d3f-26cf-f9d4-6d3e9bea9b32/mza_5684680224022120912.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is3-ssl.mzstatic.com/image/thumb/Podcasts125/v4/7f/81/41/7f8141d7-4d3f-26cf-f9d4-6d3e9bea9b32/mza_5684680224022120912.jpg/100x100bb.jpg",
+    "genres": [
+      "Leisure",
+      "Podcasts"
+    ],
+    "author": "IGN Africa",
+    "feedUrl": "https://anchor.fm/s/703fd70/podcast/rss"
+  },
+  {
+    "name": "Sector 7 - El Podcast retro de IGN España",
+    "artworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/1c/9b/c7/1c9bc783-30b4-a094-68eb-aec963989103/mza_14690082607216646335.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is5-ssl.mzstatic.com/image/thumb/Podcasts115/v4/1c/9b/c7/1c9bc783-30b4-a094-68eb-aec963989103/mza_14690082607216646335.jpg/100x100bb.jpg",
+    "genres": [
+      "Video Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "Juan García Garrido",
+    "feedUrl": "https://www.ivoox.com/sector-7-el-podcast-retro-ign_fg_f1692313_filtro_1.xml"
+  },
+  {
+    "name": "Money $ign",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/f7/7a/6e/f77a6eed-c022-943b-7e0c-62289fc85e81/mza_18399052784500371631.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts115/v4/f7/7a/6e/f77a6eed-c022-943b-7e0c-62289fc85e81/mza_18399052784500371631.jpg/100x100bb.jpg",
+    "genres": [
+      "Music",
+      "Podcasts"
+    ],
+    "author": "Money $ign",
+    "feedUrl": "https://anchor.fm/s/644ace64/podcast/rss"
+  },
+  {
+    "name": "FantasticAnime",
+    "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/29/26/32/2926328a-a56c-f60c-5364-f49d18fffc16/mza_3969530763418574302.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/29/26/32/2926328a-a56c-f60c-5364-f49d18fffc16/mza_3969530763418574302.jpg/100x100bb.jpg",
+    "genres": [
+      "Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN Latinoamérica",
+    "feedUrl": "https://latam.ign.com/podcast-fantasticanime.xml"
+  },
+  {
+    "name": "De Zero a Dez",
+    "artworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/c7/96/86/c7968681-782d-14c4-703c-2a5fb565567d/mza_3365712758271091476.jpg/600x600bb.jpg",
+    "smallArtworkUrl": "https://is2-ssl.mzstatic.com/image/thumb/Podcasts125/v4/c7/96/86/c7968681-782d-14c4-703c-2a5fb565567d/mza_3365712758271091476.jpg/100x100bb.jpg",
+    "genres": [
+      "Games",
+      "Podcasts",
+      "Leisure"
+    ],
+    "author": "IGN Portugal",
+    "feedUrl": "https://anchor.fm/s/6acc4a10/podcast/rss"
+  }
+]

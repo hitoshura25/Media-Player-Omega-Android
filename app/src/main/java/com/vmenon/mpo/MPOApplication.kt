@@ -20,6 +20,7 @@ import com.vmenon.mpo.downloads.framework.di.dagger.DaggerDownloadsFrameworkComp
 import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
 import com.vmenon.mpo.navigation.framework.di.dagger.DaggerNavigationFrameworkComponent
 import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
+import com.vmenon.mpo.persistence.di.dagger.PersistenceComponent
 import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
@@ -72,6 +73,7 @@ open class MPOApplication : SplitCompatApplication(),
             .authComponent(authComponent)
             .persistenceComponent(persistenceComponent)
             .navigationFrameworkComponent(navigationFrameworkComponent)
+            .apiUrl(apiUrl())
             .build()
 
         val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()
@@ -112,6 +114,8 @@ open class MPOApplication : SplitCompatApplication(),
             ).build()
         )
     }
+
+    protected open fun apiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
 
     protected open fun createPersistenceComponent(): PersistenceComponent =
         DaggerPersistenceComponent.builder()

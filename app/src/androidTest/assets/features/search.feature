@@ -6,6 +6,9 @@ Feature: Search feature
   @search_scenario_1
   Scenario Outline: Search for shows from home page, view a show's details, and subscribe to it
     Given I have launched the app
+    And The API responds to request "/podcasts?keyword=ign" with code 200 and body "search_response.json"
+    And The API responds to request "/podcastdetails?feedUrl=http%3A%2F%2Ffeeds.ign.com%2Fignfeeds%2Fpodcasts%2Fgamescoop%2F&maxEpisodes=10" with code 200 and body "show_details.json"
+    And The API responds to request "/podcastupdate?feedUrl=http%3A%2F%2Ffeeds.ign.com%2Fignfeeds%2Fpodcasts%2Fgamescoop%2F&publishTimestamp=0" with code 200 and body "show_update.json"
     When I click on "subscribed_shows_nav_graph"
     And I click on "com.vmenon.mpo.my_library_feature.search"
     And I enter "<Keyword>" into the "com.vmenon.mpo.search_src_text" field

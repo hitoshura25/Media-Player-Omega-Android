@@ -1,27 +1,43 @@
 package com.vmenon.mpo.test
 
 import android.view.KeyEvent
+import androidx.test.platform.app.InstrumentationRegistry
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 
 class CommonSteps : BaseSteps() {
+    private val mockWebDispatcher = MockWebDispatcher()
+    private val mockWebServer = MockWebServer().apply {
+        dispatcher = mockWebDispatcher
+    }
 
     @Before
     fun setup() {
+        mockWebServer.start(8080)
         launchApp()
     }
 
     @After
     fun cleanup() {
-
+        mockWebDispatcher.clear()
+        mockWebServer.shutdown()
     }
 
     @Given("I have launched the app")
     fun i_start_the_app() {
 
+    }
+
+    @Given("The API responds to request {string} with code {int} and body {string}")
+    fun the_api_responds_to_request(request: String, code: Int, responseFile: String) {
+        mockWebDispatcher.setup(request, code, responseFile)
     }
 
     @When("I click on {string}")
@@ -62,5 +78,25 @@ class CommonSteps : BaseSteps() {
     @Then("I should see content description {string} on the display")
     fun i_should_see_content_description_s_on_the_display(description: String) {
         waitForContentDescription(description)
+    }
+
+    inner class MockWebDispatcher : Dispatcher() {
+        private val requestMap = HashMap<String, MockResponse>()
+
+        fun setup(path: String, code: Int, bodyJSONFile: String) {
+            val bodyJSON =
+                InstrumentationRegistry.getInstrumentation().context.assets.open("responses/$bodyJSONFile")
+                    .use { it.reader().readText() }
+            requestMap[path] = MockResponse().setResponseCode(code).setBody(bodyJSON)
+        }
+
+        fun clear() {
+            requestMap.clear()
+        }
+
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            println("MockWebDispatcher handling request: ${request.path}")
+            return requestMap[request.path]!!
+        }
     }
 }

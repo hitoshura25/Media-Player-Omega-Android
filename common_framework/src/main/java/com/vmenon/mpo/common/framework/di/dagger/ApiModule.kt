@@ -31,11 +31,6 @@ object ApiModule {
 
     @Provides
     @CommonFrameworkScope
-    @Named("mpoApiUrl")
-    fun provideMpoApiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
-
-    @Provides
-    @CommonFrameworkScope
     fun provideHttpClient(
         authService: AuthService,
         logger: Logger,

@@ -113,6 +113,7 @@ dependencies {
 
     debugImplementation Libs.stetho
     debugImplementation Libs.leakcanary_android
+    debugImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
     androidTestImplementation project(':persistence_room_test')
     androidTestImplementation Libs.androidx_test_ext_junit
@@ -121,6 +122,8 @@ dependencies {
     androidTestImplementation Libs.annotation
     androidTestImplementation Libs.cucumber_android
     androidTestImplementation Libs.junit_ktx
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
+    androidTestImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }
 ext {
     BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar"
