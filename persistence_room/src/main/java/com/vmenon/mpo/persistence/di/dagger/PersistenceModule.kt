@@ -14,16 +14,6 @@ import dagger.Provides
 object PersistenceModule {
     @Provides
     @PersistenceScope
-    fun provideMPODatabase(application: Application): MPODatabase {
-        return Room.databaseBuilder(
-            application.applicationContext,
-            MPODatabase::class.java,
-            "mpo-database"
-        ).build()
-    }
-
-    @Provides
-    @PersistenceScope
     fun provideShowDao(database: MPODatabase): ShowDao {
         return database.showDao()
     }

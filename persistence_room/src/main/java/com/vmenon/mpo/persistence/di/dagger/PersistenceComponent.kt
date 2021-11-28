@@ -11,7 +11,7 @@ import dagger.Component
 // common_framework
 @Component(
     dependencies = [SystemFrameworkComponent::class],
-    modules = [PersistenceModule::class]
+    modules = [PersistenceModule::class, DatabaseModule::class]
 )
 @PersistenceScope
 interface PersistenceComponent {

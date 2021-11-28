@@ -1,6 +1,9 @@
 package com.vmenon.mpo.test
 
+import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import com.vmenon.mpo.TestMPOApplication
 import io.cucumber.android.runner.CucumberAndroidJUnitRunner
 import io.cucumber.junit.CucumberOptions
 import java.io.File
@@ -15,6 +18,14 @@ class CucumberTestRunner : CucumberAndroidJUnitRunner() {
         //it crashes on Android R without it
         File(getAbsoluteFilesPath()).mkdirs()
         super.onCreate(bundle)
+    }
+
+    override fun newApplication(
+        cl: ClassLoader?,
+        className: String?,
+        context: Context?
+    ): Application {
+        return super.newApplication(cl, TestMPOApplication::class.java.name, context)
     }
 
     /**

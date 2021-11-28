@@ -114,6 +114,7 @@ dependencies {
     debugImplementation Libs.stetho
     debugImplementation Libs.leakcanary_android
 
+    androidTestImplementation project(':persistence_room_test')
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
     androidTestImplementation Libs.uiautomator

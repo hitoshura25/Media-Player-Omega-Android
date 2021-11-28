@@ -29,14 +29,14 @@ import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvide
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import java.util.concurrent.TimeUnit
 
-class MPOApplication : SplitCompatApplication(),
+open class MPOApplication : SplitCompatApplication(),
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider,
     PlayerFrameworkComponentProvider {
     lateinit var appComponent: AppComponent
     lateinit var commonFrameworkComponent: CommonFrameworkComponent
     lateinit var playerFrameworkComponent: PlayerFrameworkComponent
 
-    private lateinit var systemFrameworkComponent: SystemFrameworkComponent
+    protected lateinit var systemFrameworkComponent: SystemFrameworkComponent
     private lateinit var authComponent: AuthComponent
 
     override fun attachBaseContext(base: Context?) {
@@ -61,10 +61,7 @@ class MPOApplication : SplitCompatApplication(),
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
 
-        val persistenceComponent = DaggerPersistenceComponent.builder()
-            .systemFrameworkComponent(systemFrameworkComponent)
-            .build()
-
+        val persistenceComponent = createPersistenceComponent()
         val navigationFrameworkComponent = DaggerNavigationFrameworkComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
             .hostFragmentId(R.id.nav_host_fragment)
@@ -115,6 +112,11 @@ class MPOApplication : SplitCompatApplication(),
             ).build()
         )
     }
+
+    protected open fun createPersistenceComponent(): PersistenceComponent =
+        DaggerPersistenceComponent.builder()
+            .systemFrameworkComponent(systemFrameworkComponent)
+            .build()
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent = commonFrameworkComponent
     override fun systemFrameworkComponent(): SystemFrameworkComponent = systemFrameworkComponent
