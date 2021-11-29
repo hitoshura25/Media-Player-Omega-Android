@@ -1,31 +1,41 @@
 package com.vmenon.mpo.test
 
+import android.app.Activity
+import android.app.Instrumentation
+import android.content.ComponentName
+import android.content.Intent
 import android.view.KeyEvent
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.init
+import androidx.test.espresso.intent.Intents.release
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
+import org.hamcrest.core.AllOf
 
-class CommonSteps : BaseSteps() {
-    private val mockWebDispatcher = MockWebDispatcher()
-    private val mockWebServer = MockWebServer().apply {
-        dispatcher = mockWebDispatcher
-    }
-
+open class CommonSteps : BaseSteps() {
     @Before
     fun setup() {
+        val serverCertificates = HandshakeCertificates.Builder()
+            .heldCertificate(HeldCertificate.Companion.decode(readFromAssets("mockWebServer.pem")))
+            .build()
+        init()
+        mockWebServer.useHttps(
+            serverCertificates.sslSocketFactory(),
+            tunnelProxy = false,
+        )
         mockWebServer.start(8080)
         launchApp()
     }
 
     @After
     fun cleanup() {
+        release()
         mockWebDispatcher.clear()
         mockWebServer.shutdown()
     }
@@ -80,23 +90,90 @@ class CommonSteps : BaseSteps() {
         waitForContentDescription(description)
     }
 
-    inner class MockWebDispatcher : Dispatcher() {
-        private val requestMap = HashMap<String, MockResponse>()
+    @Given("I have signed out of the app")
+    fun i_have_signed_out_of_the_app() {
+        clickOn(nav_accounts)
+        i_choose_not_to_enroll_in_biometrics()
+        clickOnIfVisible("com.vmenon.mpo.login_feature.logout_link")
+        waitFor("com.vmenon.mpo.login_feature.login_link")
+    }
 
-        fun setup(path: String, code: Int, bodyJSONFile: String) {
-            val bodyJSON =
-                InstrumentationRegistry.getInstrumentation().context.assets.open("responses/$bodyJSONFile")
-                    .use { it.reader().readText() }
-            requestMap[path] = MockResponse().setResponseCode(code).setBody(bodyJSON)
-        }
+    @Given("I have signed out of the app using mock authentication")
+    fun i_have_signed_out_of_the_app_with_mock_authentication() {
+        Intents.intending(
+            AllOf.allOf(
+                IntentMatchers.hasComponent(
+                    ComponentName(
+                        "com.vmenon.mpo",
+                        "net.openid.appauth.AuthorizationManagementActivity"
+                    )
+                )
+            )
+        ).respondWith(
+            Instrumentation.ActivityResult(Activity.RESULT_OK, Intent())
+        )
+        clickOn(nav_accounts)
+        i_choose_not_to_enroll_in_biometrics()
+        clickOnIfVisible("com.vmenon.mpo.login_feature.logout_link")
+        waitFor("com.vmenon.mpo.login_feature.login_link")
+    }
 
-        fun clear() {
-            requestMap.clear()
-        }
+    @Given("I have launched sign in in the app")
+    fun i_have_launched_sign_in() {
+        clickOn(nav_accounts)
+        clickOn("com.vmenon.mpo.login_feature.login_link")
+    }
 
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            println("MockWebDispatcher handling request: ${request.path}")
-            return requestMap[request.path]!!
-        }
+    @Given("I have launched sign in in the app using mock authentication")
+    fun i_have_launched_sign_in_using_mock_authentication() {
+        mockWebDispatcher.setup(
+            "/oauth2/default/v1/token", 200, "token_response.json",
+            mapOf(
+                Pair(
+                    "id_token",
+                    getUnsignedIdToken(
+                        issuer = "https://localhost:8080/oauth2/default",
+                        audience = "mock_client_id",
+                        nonce = "mock_nonce",
+                        subject = "SUBJECT"
+                    )
+                ),
+                Pair("access_token", "mock_access_token"),
+                Pair("refresh_token", "mock_refresh_token")
+            )
+        )
+        Intents.intending(
+            AllOf.allOf(
+                IntentMatchers.hasComponent(
+                    ComponentName(
+                        "com.vmenon.mpo",
+                        "net.openid.appauth.AuthorizationManagementActivity"
+                    )
+                )
+            )
+        ).respondWith(
+            Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().apply {
+                putExtra(
+                    "net.openid.appauth.AuthorizationResponse",
+                    readFromAssets("responses/authorization_response.json")
+                )
+            })
+        )
+        clickOn(nav_accounts)
+        clickOn("com.vmenon.mpo.login_feature.login_link")
+    }
+
+    @Given("I have completed sign in with username {string} and password {string}")
+    fun i_have_signed_in_with_username_password(username: String, password: String) {
+        waitForBrowser()
+        browserText(username, "okta-signin-username")
+        browserText(password, "okta-signin-password")
+        browserClickOn("okta-signin-submit")
+        waitForApp()
+    }
+
+    @Given("I choose not to enroll in biometrics")
+    fun i_choose_not_to_enroll_in_biometrics() {
+        clickOnTextIfVisible("NO", timeout = 200L)
     }
 }

@@ -14,5 +14,5 @@ class TestMPOApplication : MPOApplication() {
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
 
-    override fun apiUrl(): String = "http://localhost:8080/"
+    override fun apiUrl(): String = "https://localhost:8080/"
 }

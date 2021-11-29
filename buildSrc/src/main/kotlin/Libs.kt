@@ -74,6 +74,8 @@ public object Libs {
 
     public const val espresso_core: String = "androidx.test.espresso:espresso-core:_"
 
+    public const val espresso_intents: String = "androidx.test.espresso:espresso-intents:_"
+
     public const val androidx_test_ext_junit: String = "androidx.test.ext:junit:_"
 
     public const val junit_ktx: String = "androidx.test.ext:junit-ktx:_"
@@ -137,6 +139,12 @@ public object Libs {
     public const val guava: String = "com.google.guava:guava:_"
 
     public const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:_"
+
+    public const val mockwebserver: String = "com.squareup.okhttp3:mockwebserver:_"
+
+    public const val okhttp: String = "com.squareup.okhttp3:okhttp:_"
+
+    public const val okhttp_tls: String = "com.squareup.okhttp3:okhttp-tls:_"
 
     public const val adapter_rxjava2: String = "com.squareup.retrofit2:adapter-rxjava2:_"
 

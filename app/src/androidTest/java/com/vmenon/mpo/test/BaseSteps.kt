@@ -2,6 +2,7 @@ package com.vmenon.mpo.test
 
 import android.content.Context
 import android.content.Intent
+import android.util.Base64
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -11,12 +12,22 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import org.json.JSONObject
 import org.junit.Assert.assertNotNull
 
 open class BaseSteps {
     private val device: UiDevice
     private val selector = UiSelector()
     private val appPackage: String
+
+    protected val mockWebDispatcher = MockWebDispatcher()
+    protected val mockWebServer = MockWebServer().apply {
+        dispatcher = mockWebDispatcher
+    }
 
     init {
         InstrumentationRegistry.getInstrumentation().apply {
@@ -163,6 +174,63 @@ open class BaseSteps {
         noThanks.waitForExists(TRANSITION_TIMEOUT)
         if (noThanks.exists()) {
             noThanks.click()
+        }
+    }
+
+    protected fun readFromAssets(fileName: String): String =
+        InstrumentationRegistry.getInstrumentation().context.assets.open(fileName)
+            .use { it.reader().readText() }
+
+    protected fun getUnsignedIdToken(
+        issuer: String,
+        subject: String,
+        audience: String,
+        expiration: Long = (System.currentTimeMillis() / 1000) + (10 * 60).toLong(),
+        issuedAt: Long = (System.currentTimeMillis() / 1000),
+        nonce: String
+    ): String {
+        val header = JSONObject()
+        header.put("typ", "JWT")
+        val claims = JSONObject()
+        claims.put("iss", issuer)
+        claims.put("sub", subject)
+        claims.put("aud", audience)
+        claims.put("exp", expiration.toString())
+        claims.put("iat", issuedAt.toString())
+        claims.put("nonce", nonce)
+
+        val encodedHeader: String = base64UrlNoPaddingEncode(header.toString().toByteArray())
+        val encodedClaims: String = base64UrlNoPaddingEncode(claims.toString().toByteArray())
+        return "$encodedHeader.$encodedClaims"
+    }
+
+    private fun base64UrlNoPaddingEncode(data: ByteArray): String {
+        return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+    }
+
+    inner class MockWebDispatcher : Dispatcher() {
+        private val requestMap = HashMap<String, MockResponse>()
+
+        fun setup(
+            path: String,
+            code: Int,
+            bodyJSONFile: String,
+            vars: Map<String, String>? = null
+        ) {
+            var bodyJSON = readFromAssets("responses/$bodyJSONFile")
+            vars?.forEach { entry ->
+                bodyJSON = bodyJSON.replace("\${${entry.key}}", entry.value)
+            }
+            requestMap[path] = MockResponse().setResponseCode(code).setBody(bodyJSON)
+        }
+
+        fun clear() {
+            requestMap.clear()
+        }
+
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            println("MockWebDispatcher handling request: ${request.path}")
+            return requestMap[request.path]!!
         }
     }
 
