@@ -1,1 +1,3 @@
 /build
+src/androidTest/assets/mockWebServer.pem
+src/debug/res/raw/localhost_cert
