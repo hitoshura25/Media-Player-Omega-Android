@@ -1,7 +1,6 @@
 Feature: Login successful
   Login works
 
-  @smoke
   @e2e
   @login_scenario_1
   Scenario Outline: Valid login is successful
@@ -18,7 +17,7 @@ Feature: Login successful
 
   @smoke
   @login_scenario_2
-  Scenario Outline: Valid login is successful
+  Scenario Outline: Valid login is successful using mock authentication
     Given I have launched the app
     And The API responds to request "/user" with code 200 and body "user_details.json"
     And I have signed out of the app using mock authentication
