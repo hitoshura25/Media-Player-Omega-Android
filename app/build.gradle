@@ -203,7 +203,7 @@ task generateMockWebServerCertificate() {
         def certBuilder = new HeldCertificate.Builder()
         def localhostCertificate = certBuilder
                 .addSubjectAlternativeName(localhost)
-                .duration((10 * 365).toLong(), TimeUnit.DAYS)
+                .duration(1L, TimeUnit.DAYS)
                 .build()
         def pemFile = project.file('src/androidTest/assets/mockWebServer.pem')
         def debugCertFile = project.file('src/debug/res/raw/localhost_cert')
@@ -213,4 +213,6 @@ task generateMockWebServerCertificate() {
     }
 }
 
-
+project.afterEvaluate {
+    connectedAndroidTest.dependsOn generateMockWebServerCertificate
+}

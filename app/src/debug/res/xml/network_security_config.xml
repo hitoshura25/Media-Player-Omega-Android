@@ -8,6 +8,7 @@
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">mpospboot.herokuapp.com</domain>
     </domain-config>
+    <!-- Https is needed in order to mock the responses used by the appauth library for the instrumentation tests -->
     <domain-config>
         <domain includeSubdomains="true">localhost</domain>
         <trust-anchors>
