@@ -1,4 +1,6 @@
 import okhttp3.tls.HeldCertificate
+
+import java.security.cert.CertificateExpiredException
 import java.util.concurrent.TimeUnit
 
 apply plugin: 'com.android.application'
@@ -199,20 +201,38 @@ task deployBundleApksRelease(dependsOn: 'buildBundleApksRelease') {
  */
 task generateMockWebServerCertificate() {
     doLast {
-        def localhost = InetAddress.getByName("localhost").canonicalHostName
-        def certBuilder = new HeldCertificate.Builder()
-        def localhostCertificate = certBuilder
-                .addSubjectAlternativeName(localhost)
-                .duration(1L, TimeUnit.DAYS)
-                .build()
         def pemFile = project.file('src/androidTest/assets/mockWebServer.pem')
         def debugCertFile = project.file('src/debug/res/raw/localhost_cert')
-        pemFile.write(localhostCertificate.certificatePem())
-        pemFile.append(localhostCertificate.privateKeyPkcs8Pem())
-        debugCertFile.write(localhostCertificate.certificatePem())
+        def generateCert = false
+
+        if (pemFile.exists() && debugCertFile.exists()) {
+            def currentCert = HeldCertificate.decode(pemFile.text)
+            try {
+                currentCert.certificate().checkValidity()
+                println("MockWebServer certificate is still valid")
+            } catch (CertificateExpiredException e) {
+                println("Need to regenerate MockWebServer certificate")
+                generateCert = true
+            }
+        } else {
+            generateCert = true
+        }
+
+        if (generateCert) {
+            println("Generating MockWebServer certificate ")
+            def localhost = InetAddress.getByName("localhost").canonicalHostName
+            def certBuilder = new HeldCertificate.Builder()
+            def localhostCertificate = certBuilder
+                    .addSubjectAlternativeName(localhost)
+                    .duration(398L, TimeUnit.DAYS)
+                    .build()
+            pemFile.write(localhostCertificate.certificatePem())
+            pemFile.append(localhostCertificate.privateKeyPkcs8Pem())
+            debugCertFile.write(localhostCertificate.certificatePem())
+        }
     }
 }
 
 project.afterEvaluate {
-    connectedAndroidTest.dependsOn generateMockWebServerCertificate
+    processDebugResources.dependsOn generateMockWebServerCertificate
 }
