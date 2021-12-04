@@ -134,7 +134,7 @@ dependencies {
     androidTestImplementation Libs.okhttp_tls
 }
 ext {
-    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar"
+    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.8.2.jar"
 }
 
 def buildBundleApks(buildType) {
