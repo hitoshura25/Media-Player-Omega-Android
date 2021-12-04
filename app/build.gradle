@@ -221,7 +221,7 @@ task generateMockWebServerCertificate {
         def certBuilder = new HeldCertificate.Builder()
         def localhostCertificate = certBuilder
                 .addSubjectAlternativeName(localhost)
-                .duration(398L, TimeUnit.DAYS)
+                .duration(7L, TimeUnit.DAYS)
                 .build()
         mockWebServerPemFile.write(localhostCertificate.certificatePem())
         mockWebServerPemFile.append(localhostCertificate.privateKeyPkcs8Pem())
@@ -231,4 +231,5 @@ task generateMockWebServerCertificate {
 
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
+    mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
 }
