@@ -234,5 +234,5 @@ task generateMockWebServerCertificate() {
 }
 
 project.afterEvaluate {
-    processDebugResources.dependsOn generateMockWebServerCertificate
+    generateDebugResources.dependsOn generateMockWebServerCertificate
 }
