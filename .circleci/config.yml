@@ -70,12 +70,12 @@ jobs:
 
       # Then start the emulator and run the Instrumentation tests!
       - android/start-emulator-and-run-tests:
-          post-emulator-launch-assemble-command: ./buildFeature.sh
+          post-emulator-launch-assemble-command: ./prepareForInstrumentationTests.sh
           test-command: ./runInstrumentationTests.sh
           system-image: system-images;android-30;google_apis;x86
-      #- run:
-      #    name: Build Feature
-      #    command: ./buildFeature.sh
+      - run:
+          name: Build Feature
+          command: ./buildFeature.sh
       - save_gradle_cache
   release:
     parameters:
