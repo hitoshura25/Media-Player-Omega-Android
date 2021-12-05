@@ -70,7 +70,8 @@ jobs:
 
       # Then start the emulator and run the Instrumentation tests!
       - android/start-emulator-and-run-tests:
-          test-command: ./buildFeature.sh
+          post-emulator-launch-assemble-command: ./buildFeature.sh
+          test-command: ./runInstrumentationTests.sh
           system-image: system-images;android-30;google_apis;x86
       #- run:
       #    name: Build Feature
