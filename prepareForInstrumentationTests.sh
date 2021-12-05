@@ -1,4 +1,4 @@
 #!/bin/bash
 source ./buildEnv.sh
 set -e
-safeRunCommand "./gradlew assembleAndroidTest app:buildBundleApksDebug"
+safeRunCommand "./gradlew assembleAndroidTest"
