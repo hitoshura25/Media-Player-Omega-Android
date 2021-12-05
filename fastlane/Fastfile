@@ -30,7 +30,7 @@ platform :android do
 
   desc "Build and Test"
   lane :build do
-    gradle(tasks: ["clean", "test", "lint", ":app:bundleRelease"])
+    gradle(tasks: ["clean", "test", "lint", "assembleAndroidTest", "build"])
   end
 
   desc "Increment release version"

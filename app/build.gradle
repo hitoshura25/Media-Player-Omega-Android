@@ -232,4 +232,9 @@ task generateMockWebServerCertificate {
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
     mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+
+    // Skip connectedAndroidTest in this module since we're using Cucumber and need to use the
+    // bundleTool in order to test with the dynamic feature modules
+    connectedDebugAndroidTest.onlyIf { false }
+    connectedAndroidTest.onlyIf { false }
 }
