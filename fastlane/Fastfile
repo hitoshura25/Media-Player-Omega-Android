@@ -68,7 +68,9 @@ platform :android do
 
   desc "Deploy a new internal sharing build on Google Play"
   lane :deploy_internal_share do
-    url = upload_to_play_store_internal_app_sharing
+    url = upload_to_play_store_internal_app_sharing(
+      aab: "#{Dir.pwd}/../app/build/outputs/bundle/release/app-release.aab"
+    )
     email_internal_share_build(url: url)
   end
 
