@@ -68,9 +68,12 @@ jobs:
       #- android/run-tests:
       #    test-command: ./gradlew lint testDebug --continue
 
+      - run:
+          name: Run Unit Tests and Prepare for Instrumentation tests
+          command: ./prepareForInstrumentationTests.sh
       # Then start the emulator and run the Instrumentation tests!
       - android/start-emulator-and-run-tests:
-          post-emulator-launch-assemble-command: ./prepareForInstrumentationTests.sh
+          wait-for-emulator: false
           test-command: ./runInstrumentationTests.sh
           system-image: system-images;android-31;google_apis;x86_64
       - run:
