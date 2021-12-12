@@ -28,7 +28,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
-        testInstrumentationRunnerArguments clearPackageData: 'true'
+        testInstrumentationRunnerArguments clearPackageData:"true",listener:"com.vmenon.mpo.test.TestListener"
         buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
     }
     dynamicFeatures = [

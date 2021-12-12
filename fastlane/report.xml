@@ -5,17 +5,17 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000375">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000778">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.001055">
+      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.001284">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: mailgun" time="0.71165">
+      <testcase classname="fastlane.lanes" name="2: clean test lint assembleAndroidTest :app:bundleRelease" time="722.867004">
         
       </testcase>
     

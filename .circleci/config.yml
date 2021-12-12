@@ -80,6 +80,8 @@ jobs:
           name: Build Feature
           command: ./buildFeature.sh
       - save_gradle_cache
+      - store_artifacts:
+          path: /tmp/android_test_screenshots
   release:
     parameters:
       release_version_increment:
