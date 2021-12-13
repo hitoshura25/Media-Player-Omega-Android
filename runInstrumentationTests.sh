@@ -1,8 +1,8 @@
 #!/bin/bash
 
 function exitTestRun() {
-  safeRunCommand "adb pull /sdcard/Pictures/screenshots /tmp/android_test/screenshots"
-  safeRunCommand "adb logcat -d > /tmp/android_test/logcat.log"
+  safeRunCommand "adb pull /sdcard/Pictures/screenshots /tmp/android_test/screenshots || true"
+  safeRunCommand "adb logcat -d > /tmp/android_test/logcat.log || true"
 }
 
 trap exitTestRun EXIT
