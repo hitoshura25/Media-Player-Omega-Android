@@ -75,7 +75,7 @@ jobs:
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           test-command: ./runInstrumentationTests.sh
-          system-image: system-images;android-31;google_apis;x86_64
+          system-image: system-images;android-29;default;x86_64
       - run:
           name: Build Feature
           command: ./buildFeature.sh
