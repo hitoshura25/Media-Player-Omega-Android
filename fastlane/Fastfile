@@ -18,19 +18,24 @@ platform :android do
 
   desc "Feature build"
   lane :build_feature do
-    build
+    build(clean:false)
     deploy_internal_share
   end
 
   desc "Release"
   lane :release do
-    build
+    build(clean:true)
     deploy_play_store(track:"internal")
   end
 
   desc "Build and Test"
-  lane :build do
-    gradle(tasks: ["clean", "test", "lint", ":app:bundleRelease"])
+  lane :build do |options|
+    tasks = []
+    if (options[:clean])
+      tasks << "clean"
+    end
+    tasks << ["test", "lint", ":app:bundleRelease"]
+    gradle(tasks: tasks)
   end
 
   desc "Increment release version"
