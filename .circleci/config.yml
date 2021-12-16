@@ -64,17 +64,14 @@ jobs:
       - restore_gradle_cache
       - update_bundler
       - save_gem_cache
-      # The next step will run the unit tests
-      #- android/run-tests:
-      #    test-command: ./gradlew lint testDebug --continue
-
       - run:
           name: Run Unit Tests and Prepare for Instrumentation tests
-          command: ./prepareForInstrumentationTests.sh
-      # Then start the emulator and run the Instrumentation tests!
+          command: ./runUnitTestsAndAssembleAndroidTests.sh
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
-          test-command: ./runInstrumentationTests.sh
+          save-gradle-cache: false
+          restore-gradle-cache-post-emulator-launch: false
+          test-command: ./runAndroidTests.sh
           system-image: system-images;android-29;default;x86_64
       - run:
           name: Build Feature
