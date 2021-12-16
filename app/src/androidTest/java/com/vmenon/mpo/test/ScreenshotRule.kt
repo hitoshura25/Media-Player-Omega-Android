@@ -1,7 +1,6 @@
 package com.vmenon.mpo.test
 
 import android.graphics.Bitmap
-import androidx.test.runner.screenshot.BasicScreenCaptureProcessor
 import androidx.test.runner.screenshot.Screenshot
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
@@ -14,7 +13,7 @@ class ScreenshotRule : TestWatcher() {
         capture.name = filename
         capture.format = Bitmap.CompressFormat.PNG
         try {
-            capture.process(setOf(BasicScreenCaptureProcessor()))
+            capture.process(setOf(CustomScreenCaptureProcessor()))
         } catch (e: Exception) {
             e.printStackTrace()
         }
