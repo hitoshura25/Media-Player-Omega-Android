@@ -1,5 +1,6 @@
 package com.vmenon.mpo.test
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.ComponentName
@@ -9,6 +10,8 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.rule.GrantPermissionRule
+import androidx.test.rule.GrantPermissionRule.grant
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -17,8 +20,12 @@ import io.cucumber.java.en.When
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import org.hamcrest.core.AllOf
+import org.junit.Rule
 
 open class CommonSteps : BaseSteps() {
+    @Rule
+    val runtimePermissionRule: GrantPermissionRule = grant(WRITE_EXTERNAL_STORAGE)
+
     @Before
     fun setup() {
         val serverCertificates = HandshakeCertificates.Builder()
