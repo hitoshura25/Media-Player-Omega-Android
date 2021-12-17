@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function exitTestRun() {
-  safeRunCommand "adb pull /sdcard/Pictures/screenshots /tmp/android_test/screenshots || true"
+  safeRunCommand "adb pull /sdcard/Android/data/com.vmenon.mpo/files/Pictures/test_run_screenshots /tmp/android_test/screenshots || true"
   safeRunCommand "adb logcat -d > /tmp/android_test/logcat.log || true"
 }
 
