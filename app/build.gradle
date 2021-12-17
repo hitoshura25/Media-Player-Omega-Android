@@ -63,6 +63,9 @@ android {
     lintOptions {
         abortOnError false
     }
+    adbOptions {
+        installOptions '-g'
+    }
 }
 
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
