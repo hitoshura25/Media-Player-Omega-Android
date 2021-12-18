@@ -181,6 +181,6 @@ open class CommonSteps : BaseSteps() {
 
     @Given("I choose not to enroll in biometrics")
     fun i_choose_not_to_enroll_in_biometrics() {
-        clickOnTextIfVisible("NO", timeout = 200L)
+        clickOnTextIfVisible("NO")
     }
 }
