@@ -65,7 +65,7 @@ open class CommonSteps : BaseSteps() {
             AllOf.allOf(
                 IntentMatchers.hasComponent(
                     ComponentName(
-                        "com.vmenon.mpo",
+                        appPackage,
                         "net.openid.appauth.AuthorizationManagementActivity"
                     )
                 )
@@ -109,7 +109,7 @@ open class CommonSteps : BaseSteps() {
             AllOf.allOf(
                 IntentMatchers.hasComponent(
                     ComponentName(
-                        "com.vmenon.mpo",
+                        appPackage,
                         "net.openid.appauth.AuthorizationManagementActivity"
                     )
                 )

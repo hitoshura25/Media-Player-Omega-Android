@@ -23,7 +23,7 @@ import org.junit.Assert.assertTrue
 open class BaseSteps {
     private val device: UiDevice
     private val selector = UiSelector()
-    private val appPackage: String
+    protected val appPackage: String
 
     protected val mockWebDispatcher = MockWebDispatcher()
     protected val mockWebServer = MockWebServer().apply {
@@ -242,7 +242,7 @@ open class BaseSteps {
     companion object {
         const val nav_accounts = "login_nav_graph"
         const val CHROME_STABLE = "com.android.chrome"
-        const val APP_LAUNCH_TIMEOUT = 5000L
+        const val APP_LAUNCH_TIMEOUT = 8000L
         const val TRANSITION_TIMEOUT = 1000L
         const val DYNAMIC_MODULE_TIMEOUT = 5000L
         const val DYNAMIC_MODULE_LOADING = "Installing module:"
