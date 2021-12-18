@@ -7,6 +7,7 @@ Feature: Downloads tab is launched
   Scenario Outline: Downloads UI Displayed when Downloads tab is launched
     Given I have launched the app
     When I click on "downloads_nav_graph"
+    And The dynamic feature module download completes
     Then I should see "com.vmenon.mpo.downloads_feature.downloadsList" on the display
     Examples:
       |

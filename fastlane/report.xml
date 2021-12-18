@@ -5,17 +5,27 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.001443">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000636">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.001069">
+      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.000752">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: clean test lint :app:bundleRelease" time="1.487804">
+      <testcase classname="fastlane.lanes" name="2: upload_to_play_store_internal_app_sharing" time="35.392319">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to android email_internal_share_build lane" time="0.000284">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: mailgun" time="0.537733">
         
       </testcase>
     

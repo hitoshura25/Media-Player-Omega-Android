@@ -119,7 +119,7 @@ open class BaseSteps {
         find(resName)!!.text = input
     }
 
-    fun waitForApp(packageName: String = appPackage, timeout: Long = TRANSITION_TIMEOUT) {
+    fun waitForApp(packageName: String = appPackage, timeout: Long = APP_LAUNCH_TIMEOUT) {
         assertNotNull(device.wait(Until.findObject(By.pkg(packageName)), timeout))
     }
 
@@ -147,6 +147,10 @@ open class BaseSteps {
     fun waitForBrowser() {
         waitForApp(CHROME_STABLE)
         acceptChromePrivacyOption()
+    }
+
+    fun waitForDynamicFeatureToDownload() {
+        device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT)
     }
 
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
@@ -237,7 +241,10 @@ open class BaseSteps {
     companion object {
         const val nav_accounts = "login_nav_graph"
         const val CHROME_STABLE = "com.android.chrome"
-        const val TRANSITION_TIMEOUT = 4000L
+        const val APP_LAUNCH_TIMEOUT = 2000L
+        const val TRANSITION_TIMEOUT = 1000L
+        const val DYNAMIC_MODULE_TIMEOUT = 4000L
+        const val DYNAMIC_MODULE_LOADING = "Installing module:"
         const val NETWORK_TIMEOUT = 20000L
         const val ID_NO_THANKS = "com.android.chrome:id/negative_button"
         const val ID_ACCEPT = "com.android.chrome:id/terms_accept"
