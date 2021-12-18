@@ -151,7 +151,10 @@ open class BaseSteps {
     }
 
     fun waitForDynamicFeatureToDownload() {
-        assertTrue(device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT))
+        val condition =
+            device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT)
+        println("Dynamic feature download complete: $condition")
+        assertTrue(condition)
     }
 
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
