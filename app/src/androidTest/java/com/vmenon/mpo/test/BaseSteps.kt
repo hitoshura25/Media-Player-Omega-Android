@@ -18,6 +18,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 
 open class BaseSteps {
     private val device: UiDevice
@@ -150,7 +151,7 @@ open class BaseSteps {
     }
 
     fun waitForDynamicFeatureToDownload() {
-        device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT)
+        assertTrue(device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT))
     }
 
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
