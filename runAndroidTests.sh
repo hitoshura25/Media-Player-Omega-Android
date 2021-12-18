@@ -12,8 +12,8 @@ safeRunCommand "rm -rf /tmp/android_test || true"
 safeRunCommand "mkdir -p /tmp/android_test"
 safeRunCommand "./android-wait-for-emulator"
 safeRunCommand "./gradlew app:deployBundleApksDebug app:installDebugAndroidTest"
-safeRunCommand "adb shell pm grant com.vmenon.mpo android.permission.WRITE_EXTERNAL_STORAGE"
-safeRunCommand "adb shell pm grant com.vmenon.mpo android.permission.READ_EXTERNAL_STORAGE"
+#safeRunCommand "adb shell pm grant com.vmenon.mpo android.permission.WRITE_EXTERNAL_STORAGE"
+#safeRunCommand "adb shell pm grant com.vmenon.mpo android.permission.READ_EXTERNAL_STORAGE"
 safeRunCommand "adb shell am instrument -e listener \"com.vmenon.mpo.test.TestListener\" -e clearPackageData \"true\" -e tags \"@smoke\" -w com.vmenon.mpo.test/com.vmenon.mpo.test.CucumberTestRunner | tee -a /tmp/android_test/adb-test.log"
 
 # adb doesn't propagate exit code from tests, see https://code.google.com/p/android/issues/detail?id=3254
