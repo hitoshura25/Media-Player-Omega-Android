@@ -243,7 +243,7 @@ open class BaseSteps {
         const val CHROME_STABLE = "com.android.chrome"
         const val APP_LAUNCH_TIMEOUT = 2000L
         const val TRANSITION_TIMEOUT = 1000L
-        const val DYNAMIC_MODULE_TIMEOUT = 4000L
+        const val DYNAMIC_MODULE_TIMEOUT = 5000L
         const val DYNAMIC_MODULE_LOADING = "Installing module:"
         const val NETWORK_TIMEOUT = 20000L
         const val ID_NO_THANKS = "com.android.chrome:id/negative_button"
