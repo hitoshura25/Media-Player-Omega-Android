@@ -242,7 +242,7 @@ open class BaseSteps {
     companion object {
         const val nav_accounts = "login_nav_graph"
         const val CHROME_STABLE = "com.android.chrome"
-        const val APP_LAUNCH_TIMEOUT = 2000L
+        const val APP_LAUNCH_TIMEOUT = 5000L
         const val TRANSITION_TIMEOUT = 1000L
         const val DYNAMIC_MODULE_TIMEOUT = 5000L
         const val DYNAMIC_MODULE_LOADING = "Installing module:"
