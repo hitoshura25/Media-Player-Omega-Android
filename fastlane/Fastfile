@@ -73,8 +73,14 @@ platform :android do
 
   desc "Deploy a new internal sharing build on Google Play"
   lane :deploy_internal_share do
+    lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS] = nil
+    lane_context[SharedValues::GRADLE_ALL_AAB_OUTPUT_PATHS] = nil
+    lane_context[SharedValues::GRADLE_ALL_OUTPUT_JSON_OUTPUT_PATHS] = nil
+    lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH] = nil
+    lane_context[SharedValues::GRADLE_OUTPUT_JSON_OUTPUT_PATH] = nil
+
     url = upload_to_play_store_internal_app_sharing(
-      aab: "#{Dir.pwd}/../app/build/outputs/bundle/release/app-release.aab"
+      aab: "#{Dir.pwd}/../app/build/outputs/bundle/release/app-release.aab",
     )
     email_internal_share_build(url: url)
   end
