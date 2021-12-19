@@ -125,6 +125,16 @@ open class CommonSteps : BaseSteps() {
         clickOn(nav_accounts)
         waitForDynamicFeatureToDownload()
         clickOn("com.vmenon.mpo.login_feature.login_link")
+        Intents.intending(
+            AllOf.allOf(
+                IntentMatchers.hasComponent(
+                    ComponentName(
+                        appPackage,
+                        "net.openid.appauth.AuthorizationManagementActivity"
+                    )
+                )
+            )
+        )
     }
 
     @Given("I have completed sign in with username {string} and password {string}")

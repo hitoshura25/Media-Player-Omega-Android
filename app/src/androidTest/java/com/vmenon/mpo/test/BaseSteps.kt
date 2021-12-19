@@ -3,6 +3,7 @@ package com.vmenon.mpo.test
 import android.content.Context
 import android.content.Intent
 import android.util.Base64
+import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -47,12 +48,12 @@ open class BaseSteps {
     }
 
     fun clickOn(resName: String) {
-        println("clickOn $resName")
+        log("clickOn $resName")
         find(resName)!!.click()
     }
 
     fun clickOnIfVisible(resName: String): Boolean {
-        println("clickOnIfVisible $resName")
+        log("clickOnIfVisible $resName")
         val element = find(resName)
         return if (element == null) {
             false
@@ -63,7 +64,7 @@ open class BaseSteps {
     }
 
     fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
-        println("clickOnTextIfVisible $text")
+        log("clickOnTextIfVisible $text")
         val element = findText(text, timeout)
         return if (element == null) {
             false
@@ -77,7 +78,7 @@ open class BaseSteps {
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
     ): Boolean {
-        println("clickOnContentDescription $description")
+        log("clickOnContentDescription $description")
         val element = findContentDescription(description, timeout)
         return if (element == null) {
             false
@@ -121,12 +122,12 @@ open class BaseSteps {
     )
 
     fun text(input: String, resName: String) {
-        println("text $input $resName")
+        log("text $input $resName")
         find(resName)!!.text = input
     }
 
     fun waitForApp(packageName: String = appPackage, timeout: Long = APP_LAUNCH_TIMEOUT) {
-        println("waitForApp $packageName")
+        log("waitForApp $packageName")
         assertNotNull(device.wait(Until.findObject(By.pkg(packageName)), timeout))
     }
 
@@ -134,7 +135,7 @@ open class BaseSteps {
         resName: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
-        println("waitFor $resName")
+        log("waitFor $resName")
         assertNotNull(find(resName, timeout))
     }
 
@@ -142,7 +143,7 @@ open class BaseSteps {
         text: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
-        println("waitForText $text")
+        log("waitForText $text")
         assertNotNull(findText(text, timeout))
     }
 
@@ -150,7 +151,7 @@ open class BaseSteps {
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
-        println("waitForTextContentDescription $description")
+        log("waitForTextContentDescription $description")
         assertNotNull(findContentDescription(description, timeout))
     }
 
@@ -160,26 +161,26 @@ open class BaseSteps {
     }
 
     fun waitForDynamicFeatureToDownload() {
-        println("waitForDynamicFeatureToDownload")
+        log("waitForDynamicFeatureToDownload")
         val condition =
             device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT)
-        println("Dynamic feature download complete: $condition")
+        log("Dynamic feature download complete: $condition")
         assertTrue(condition)
     }
 
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
     fun browserText(input: String, resName: String) {
-        println("browserText $input $resName")
+        log("browserText $input $resName")
         device.findObject(selector.resourceId(resName)).text = input
     }
 
     fun browserClickOn(resName: String) {
-        println("browserClickOn $resName")
+        log("browserClickOn $resName")
         device.findObject(selector.resourceId(resName)).click()
     }
 
     fun pressKeyCode(keyCode: Int) {
-        println("pressKeyCode $keyCode")
+        log("pressKeyCode $keyCode")
         device.pressKeyCode(keyCode)
     }
 
@@ -229,6 +230,10 @@ open class BaseSteps {
         return Base64.encodeToString(data, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
     }
 
+    private fun log(message: String) {
+        Log.d(LOG_TAG, message)
+    }
+
     inner class MockWebDispatcher : Dispatcher() {
         private val requestMap = HashMap<String, MockResponse>()
 
@@ -250,7 +255,7 @@ open class BaseSteps {
         }
 
         override fun dispatch(request: RecordedRequest): MockResponse {
-            println("MockWebDispatcher handling request: ${request.path}")
+            log("MockWebDispatcher handling request: ${request.path}")
             return requestMap[request.path]!!
         }
     }
@@ -266,5 +271,6 @@ open class BaseSteps {
         const val ID_NO_THANKS = "com.android.chrome:id/negative_button"
         const val ID_ACCEPT = "com.android.chrome:id/terms_accept"
         const val ID_CLOSE_BROWSER = "com.android.chrome:id/close_button"
+        const val LOG_TAG = "cucumber-android"
     }
 }
