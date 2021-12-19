@@ -4,7 +4,6 @@ function exitTestRun() {
   safeRunCommand "adb pull /sdcard/Android/data/com.vmenon.mpo/files/Pictures/test_run_screenshots /tmp/android_test/screenshots || true"
   safeRunCommand "adb pull /sdcard/cucumber_tests_screenrecord.mp4 /tmp/android_test/cucumber_tests_screenrecord.mp4 || true"
   safeRunCommand "adb logcat -d > /tmp/android_test/logcat.log || true"
-  safeRunCommand "kill 0 || true"
 }
 
 trap exitTestRun EXIT
