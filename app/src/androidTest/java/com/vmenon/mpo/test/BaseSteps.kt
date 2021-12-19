@@ -47,10 +47,12 @@ open class BaseSteps {
     }
 
     fun clickOn(resName: String) {
+        println("clickOn $resName")
         find(resName)!!.click()
     }
 
     fun clickOnIfVisible(resName: String): Boolean {
+        println("clickOnIfVisible $resName")
         val element = find(resName)
         return if (element == null) {
             false
@@ -61,6 +63,7 @@ open class BaseSteps {
     }
 
     fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
+        println("clickOnTextIfVisible $text")
         val element = findText(text, timeout)
         return if (element == null) {
             false
@@ -74,6 +77,7 @@ open class BaseSteps {
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
     ): Boolean {
+        println("clickOnContentDescription $description")
         val element = findContentDescription(description, timeout)
         return if (element == null) {
             false
@@ -83,7 +87,7 @@ open class BaseSteps {
         }
     }
 
-    fun find(
+    private fun find(
         resName: String,
         timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? {
@@ -102,14 +106,14 @@ open class BaseSteps {
         )
     }
 
-    fun findText(
+    private fun findText(
         text: String,
         timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? = device.wait(
         Until.findObject(By.text(text)), timeout
     )
 
-    fun findContentDescription(
+    private fun findContentDescription(
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
     ): UiObject2? = device.wait(
@@ -117,10 +121,12 @@ open class BaseSteps {
     )
 
     fun text(input: String, resName: String) {
+        println("text $input $resName")
         find(resName)!!.text = input
     }
 
     fun waitForApp(packageName: String = appPackage, timeout: Long = APP_LAUNCH_TIMEOUT) {
+        println("waitForApp $packageName")
         assertNotNull(device.wait(Until.findObject(By.pkg(packageName)), timeout))
     }
 
@@ -128,6 +134,7 @@ open class BaseSteps {
         resName: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
+        println("waitFor $resName")
         assertNotNull(find(resName, timeout))
     }
 
@@ -135,6 +142,7 @@ open class BaseSteps {
         text: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
+        println("waitForText $text")
         assertNotNull(findText(text, timeout))
     }
 
@@ -142,6 +150,7 @@ open class BaseSteps {
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
     ) {
+        println("waitForTextContentDescription $description")
         assertNotNull(findContentDescription(description, timeout))
     }
 
@@ -151,6 +160,7 @@ open class BaseSteps {
     }
 
     fun waitForDynamicFeatureToDownload() {
+        println("waitForDynamicFeatureToDownload")
         val condition =
             device.wait(Until.gone(By.text(DYNAMIC_MODULE_LOADING)), DYNAMIC_MODULE_TIMEOUT)
         println("Dynamic feature download complete: $condition")
@@ -159,14 +169,17 @@ open class BaseSteps {
 
     // Apparently selector() is the only mechanism that works...for Chrome browser at least
     fun browserText(input: String, resName: String) {
+        println("browserText $input $resName")
         device.findObject(selector.resourceId(resName)).text = input
     }
 
     fun browserClickOn(resName: String) {
+        println("browserClickOn $resName")
         device.findObject(selector.resourceId(resName)).click()
     }
 
     fun pressKeyCode(keyCode: Int) {
+        println("pressKeyCode $keyCode")
         device.pressKeyCode(keyCode)
     }
 
