@@ -23,4 +23,4 @@ safeRunCommand "sleep 3"
 # adb doesn't propagate exit code from tests, see https://code.google.com/p/android/issues/detail?id=3254
 # So we need to parse saved terminal log
 safeRunCommand "cat /tmp/android_test/adb-test.log | grep \"OK (\""
-#safeRunCommand "./gradlew connectedAndroidTest"
+safeRunCommand "./gradlew connectedAndroidTest"

@@ -37,6 +37,6 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_compiler
 
-    implementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
-    api 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
+    implementation Libs.mockito_kotlin
+    api Libs.dexmaker_mockito
 }

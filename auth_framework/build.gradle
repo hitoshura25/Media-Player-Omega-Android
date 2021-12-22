@@ -17,6 +17,7 @@ android {
                 "OAUTH_CLIENT_ID",
                 "\"0oavpdvnegnKXHu9F5d6\""
         )
+        testInstrumentationRunner "com.vmenon.mpo.CommonTestRunner"
     }
 }
 
@@ -36,6 +37,7 @@ dependencies {
     implementation Libs.gson
     api Libs.biometric
 
+    androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
     androidTestImplementation Libs.fragment_testing
