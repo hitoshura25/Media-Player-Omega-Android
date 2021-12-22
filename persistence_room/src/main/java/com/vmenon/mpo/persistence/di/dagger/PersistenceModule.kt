@@ -1,7 +1,5 @@
 package com.vmenon.mpo.persistence.di.dagger
 
-import android.app.Application
-import androidx.room.Room
 import com.vmenon.mpo.persistence.room.MPODatabase
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao

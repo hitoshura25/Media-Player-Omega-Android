@@ -12,6 +12,7 @@ set -e
 safeRunCommand "rm -rf /tmp/android_test || true"
 safeRunCommand "mkdir -p /tmp/android_test"
 safeRunCommand "./android-wait-for-emulator"
+safeRunCommand "adb uninstall com.vmenon.mpo || true"
 safeRunCommand "./gradlew app:deployBundleApksDebug app:installDebugAndroidTest"
 safeRunCommand "adb shell screenrecord /sdcard/cucumber_tests_screenrecord.mp4 &"
 SCREENRECORD_PID=$!

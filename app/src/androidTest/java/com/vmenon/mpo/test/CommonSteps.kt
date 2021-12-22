@@ -87,6 +87,43 @@ open class CommonSteps : BaseSteps() {
         clickOn("com.vmenon.mpo.login_feature.login_link")
     }
 
+    @Given("I am using mock authentication")
+    fun i_am_using_mock_authentication() {
+        mockWebDispatcher.setup(
+            "/oauth2/default/v1/token", 200, "token_response.json",
+            mapOf(
+                Pair(
+                    "id_token",
+                    getUnsignedIdToken(
+                        issuer = "https://localhost:8080/oauth2/default",
+                        audience = "mock_client_id",
+                        nonce = "mock_nonce",
+                        subject = "SUBJECT"
+                    )
+                ),
+                Pair("access_token", "mock_access_token"),
+                Pair("refresh_token", "mock_refresh_token")
+            )
+        )
+        Intents.intending(
+            AllOf.allOf(
+                IntentMatchers.hasComponent(
+                    ComponentName(
+                        appPackage,
+                        "net.openid.appauth.AuthorizationManagementActivity"
+                    )
+                )
+            )
+        ).respondWith(
+            Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().apply {
+                putExtra(
+                    "net.openid.appauth.AuthorizationResponse",
+                    readFromAssets("responses/authorization_response.json")
+                )
+            })
+        )
+    }
+
     @Given("I have launched sign in in the app using mock authentication")
     fun i_have_launched_sign_in_using_mock_authentication() {
         mockWebDispatcher.setup(
@@ -146,9 +183,9 @@ open class CommonSteps : BaseSteps() {
         waitForApp()
     }
 
-    @Given("I choose not to enroll in biometrics")
+    @When("I choose not to enroll in biometrics")
     fun i_choose_not_to_enroll_in_biometrics() {
-        clickOnTextIfVisible("NO", 1000)
+        clickOnText("NO")
     }
 
     @When("I click on {string}")
@@ -158,7 +195,7 @@ open class CommonSteps : BaseSteps() {
 
     @When("I click on text {string}")
     fun i_click_on_text(text: String) {
-        clickOnTextIfVisible(text)
+        clickOnText(text)
     }
 
     @When("I enter {string} into the {string} field")
@@ -181,6 +218,26 @@ open class CommonSteps : BaseSteps() {
         println("Waiting for Dynamic module")
         waitForDynamicFeatureToDownload()
         println("Dynamic module completed")
+    }
+
+    @When("I wait for the browser to launch")
+    fun i_wait_for_the_browser_to_launch() {
+        waitForBrowser()
+    }
+
+    @When("I enter {string} into the {string} field in the web browser")
+    fun i_enter_into_web_browser_field(input: String, resName: String) {
+        browserText(input, resName)
+    }
+
+    @When("I click on the {string} field in the web browser")
+    fun i_click_on_web_browser_field(resName: String) {
+        browserClickOn(resName)
+    }
+
+    @When("I wait to return to the app")
+    fun i_wait_to_return_to_app() {
+        waitForApp()
     }
 
     @Then("I should see {string} on the display")
