@@ -1,0 +1,8 @@
+{
+  "authenticationProvider": "OPEN_ID",
+  "userDetails": {
+    "firstName": "test",
+    "lastName": "test",
+    "email": "anspannenden@polccat.com"
+   }
+}
