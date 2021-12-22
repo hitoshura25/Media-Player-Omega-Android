@@ -18,9 +18,17 @@ dependencies {
     api project(':common_room')
     implementation project(':system_framework')
     implementation project(':persistence_room')
+    implementation project(':auth_framework')
+    implementation project(':common_framework')
+    implementation project(':persistence_room')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
 
+    implementation Libs.androidx_test_ext_junit
+    implementation Libs.espresso_core
+    implementation Libs.androidx_test_runner
+    implementation Libs.androidx_test_rules
     implementation Libs.room_runtime
     implementation Libs.room_rxjava2
     implementation Libs.room_ktx
@@ -28,4 +36,7 @@ dependencies {
 
     implementation Libs.dagger
     kapt Libs.dagger_compiler
+
+    implementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    api 'com.linkedin.dexmaker:dexmaker-mockito:2.28.1'
 }

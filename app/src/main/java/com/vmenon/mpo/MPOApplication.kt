@@ -9,10 +9,7 @@ import com.google.android.play.core.splitcompat.SplitCompat
 import com.google.android.play.core.splitcompat.SplitCompatApplication
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
-import com.vmenon.mpo.auth.framework.di.dagger.DaggerAuthComponent
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponent
-import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
-import com.vmenon.mpo.common.framework.di.dagger.DaggerCommonFrameworkComponent
+import com.vmenon.mpo.common.framework.di.dagger.*
 import com.vmenon.mpo.core.work.RetryDownloadWorker
 import com.vmenon.mpo.di.*
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
@@ -33,12 +30,12 @@ import java.util.concurrent.TimeUnit
 open class MPOApplication : SplitCompatApplication(),
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider,
     PlayerFrameworkComponentProvider {
+
     lateinit var appComponent: AppComponent
-    lateinit var commonFrameworkComponent: CommonFrameworkComponent
     lateinit var playerFrameworkComponent: PlayerFrameworkComponent
 
-    protected lateinit var systemFrameworkComponent: SystemFrameworkComponent
-    private lateinit var authComponent: AuthComponent
+    lateinit var systemFrameworkComponent: SystemFrameworkComponent
+    private lateinit var componentProviders: DaggerComponentProviders
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -48,7 +45,6 @@ open class MPOApplication : SplitCompatApplication(),
 
     override fun onCreate() {
         super.onCreate()
-
         systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
             .application(this)
             .buildConfigProvider(
@@ -57,35 +53,25 @@ open class MPOApplication : SplitCompatApplication(),
                     BuildConfig.buildNumber
                 )
             ).build()
-
-        authComponent = DaggerAuthComponent.builder()
-            .systemFrameworkComponent(systemFrameworkComponent)
-            .build()
-
-        val persistenceComponent = createPersistenceComponent()
-        val navigationFrameworkComponent = DaggerNavigationFrameworkComponent.builder()
-            .systemFrameworkComponent(systemFrameworkComponent)
-            .hostFragmentId(R.id.nav_host_fragment)
-            .build()
-
-        commonFrameworkComponent = DaggerCommonFrameworkComponent.builder()
-            .systemFrameworkComponent(systemFrameworkComponent)
-            .authComponent(authComponent)
-            .persistenceComponent(persistenceComponent)
-            .navigationFrameworkComponent(navigationFrameworkComponent)
-            .apiUrl(apiUrl())
-            .build()
-
+        componentProviders = DaggerComponentProviders(
+            systemFrameworkComponent,
+            DaggerNavigationFrameworkComponent.builder()
+                .systemFrameworkComponent(systemFrameworkComponent)
+                .hostFragmentId(R.id.nav_host_fragment)
+                .build(),
+            createPersistenceComponent(),
+            apiUrl()
+        )
         val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()
-            .commonFrameworkComponent(commonFrameworkComponent)
+            .commonFrameworkComponent(commonFrameworkComponent())
             .build()
 
         val libraryFrameworkComponent = DaggerLibraryFrameworkComponent.builder()
-            .commonFrameworkComponent(commonFrameworkComponent)
+            .commonFrameworkComponent(commonFrameworkComponent())
             .build()
 
         appComponent = DaggerAppComponent.builder()
-            .commonFrameworkComponent(commonFrameworkComponent)
+            .commonFrameworkComponent(commonFrameworkComponent())
             .downloadsFrameworkComponent(downloadsFrameworkComponent)
             .libraryFrameworkComponent(libraryFrameworkComponent)
             .build()
@@ -93,7 +79,7 @@ open class MPOApplication : SplitCompatApplication(),
         appComponent.thirdPartyIntegrator().initialize(this)
 
         playerFrameworkComponent = DaggerPlayerFrameworkComponent.builder()
-            .commonFrameworkComponent(commonFrameworkComponent)
+            .commonFrameworkComponent(commonFrameworkComponent())
             .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -115,15 +101,20 @@ open class MPOApplication : SplitCompatApplication(),
         )
     }
 
-    protected open fun apiUrl(): String = "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
+    protected open fun apiUrl(): String =
+        "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
 
     protected open fun createPersistenceComponent(): PersistenceComponent =
         DaggerPersistenceComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
 
-    override fun commonFrameworkComponent(): CommonFrameworkComponent = commonFrameworkComponent
-    override fun systemFrameworkComponent(): SystemFrameworkComponent = systemFrameworkComponent
-    override fun authComponent(): AuthComponent = authComponent
+    override fun commonFrameworkComponent(): CommonFrameworkComponent =
+        componentProviders.commonFrameworkComponent()
+
+    override fun systemFrameworkComponent(): SystemFrameworkComponent =
+        componentProviders.systemFrameworkComponent()
+
+    override fun authComponent(): AuthComponent = componentProviders.authComponent()
     override fun playerFrameworkComponent(): PlayerFrameworkComponent = playerFrameworkComponent
 }

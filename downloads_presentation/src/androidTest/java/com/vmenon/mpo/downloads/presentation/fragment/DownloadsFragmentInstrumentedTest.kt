@@ -15,11 +15,10 @@ class DownloadsFragmentInstrumentedTest {
 
     @Test
     fun launch() {
-        launchFragmentInContainer<DownloadsFragment>()
+        launchFragmentInContainer<DownloadsFragment>(themeResId = R.style.Theme_AppCompat)
         onView(
             allOf(
-                withId(R.id.toolbar),
-                withText("Downloads")
+                withId(R.id.downloadsList),
             )
         ).check(matches(isDisplayed()))
     }

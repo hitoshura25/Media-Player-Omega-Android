@@ -123,7 +123,7 @@ dependencies {
     debugImplementation Libs.leakcanary_android
     debugImplementation Libs.okhttp
 
-    androidTestImplementation project(':persistence_room_test')
+    androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.androidx_test_rules
     androidTestImplementation Libs.espresso_core
