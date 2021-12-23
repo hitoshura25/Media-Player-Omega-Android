@@ -42,11 +42,13 @@ Feature: Subscribe feature
   @e2e
   @subscribe_feature
   @subscribe_scenario_library
-  Scenario Outline: Check library for queued show
+  Scenario Outline: Play episode from the library
     Given I have launched the app
     When I click on "my_library_nav_graph"
-    Then I should see "com.vmenon.mpo.my_library_feature.libraryList" on the display
-    And I should see text "The 100 Questions Challenge (2021 Edition)" on the display
+    And I click on text "The 100 Questions Challenge (2021 Edition)"
+    And I click on "com.vmenon.mpo.my_library_feature.fab"
+    And The dynamic feature module download completes
+    Then I should see "com.vmenon.mpo.player_feature.actionButton" on the display
     Examples:
       |
       |
