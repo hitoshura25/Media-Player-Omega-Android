@@ -9,6 +9,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply from: "$rootProject.projectDir/coverage.gradle"
 
 def buildNumber = System.getenv('BUILD_NUMBER')
 
@@ -47,6 +48,9 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -91,9 +95,7 @@ dependencies {
     implementation project(':persistence_room')
 
     implementation Libs.com_google_android_play_core
-
     implementation Libs.constraintlayout
-
     implementation Libs.lifecycle_viewmodel_ktx
     implementation Libs.lifecycle_livedata_ktx
 
@@ -104,13 +106,10 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_android_processor
 
-    testImplementation Libs.junit_junit
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
-
     implementation Libs.multidex
     implementation Libs.work_runtime_ktx
-
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
 
@@ -122,6 +121,10 @@ dependencies {
     debugImplementation Libs.stetho
     debugImplementation Libs.leakcanary_android
     debugImplementation Libs.okhttp
+
+    testImplementation project(':common_test')
+    testImplementation Libs.junit_junit
+    testImplementation Libs.mockito_kotlin
 
     androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
