@@ -206,6 +206,7 @@ open class BaseSteps {
                 ViewMatchers.isDisplayed()
             )
         )
+        IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
     @Throws(UiObjectNotFoundException::class)
