@@ -240,6 +240,11 @@ open class CommonSteps : BaseSteps() {
         waitForApp()
     }
 
+    @When("I wait for episode {string} to finish downloading")
+    fun i_wait_for_episode_to_finish_downloading(episodeName: String) {
+        waitForEpisodeToDownload(episodeName)
+    }
+
     @Then("I should see {string} on the display")
     fun i_should_see_s_on_the_display(resName: String) {
         waitFor(resName)
@@ -248,6 +253,11 @@ open class CommonSteps : BaseSteps() {
     @Then("I should see text {string} on the display")
     fun i_should_see_text_s_on_the_display(text: String) {
         waitForText(text)
+    }
+
+    @Then("I should not see text {string} on the display")
+    fun i_should_not_see_text_s_on_the_display(text: String) {
+        waitForTextToBeGone(text)
     }
 
     @Then("I should see content description {string} on the display")

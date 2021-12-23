@@ -18,6 +18,14 @@ abstract class DownloadDao :
     @Query(
         """
         SELECT * from downloads
+        WHERE requesterId = :id
+        """
+    )
+    abstract suspend fun getByRequesterId(id: Long): DownloadEntity?
+
+    @Query(
+        """
+        SELECT * from downloads
         """
     )
     abstract suspend fun getAll(): List<DownloadEntity>

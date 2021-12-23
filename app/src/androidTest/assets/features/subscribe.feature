@@ -34,6 +34,8 @@ Feature: Subscribe feature
     And The dynamic feature module download completes
     Then I should see "com.vmenon.mpo.downloads_feature.downloadsList" on the display
     And I should see text "The 100 Questions Challenge (2021 Edition)" on the display
+    When I wait for episode "The 100 Questions Challenge (2021 Edition)" to finish downloading
+    Then I should not see text "The 100 Questions Challenge (2021 Edition)" on the display
     Examples:
       |
       |

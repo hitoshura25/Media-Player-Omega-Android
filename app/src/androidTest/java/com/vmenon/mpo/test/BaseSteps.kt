@@ -5,14 +5,15 @@ import android.content.Intent
 import android.util.Base64
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResource
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject
-import androidx.test.uiautomator.UiObject2
-import androidx.test.uiautomator.UiObjectNotFoundException
-import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
+import androidx.test.uiautomator.*
+import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
+import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -152,6 +153,14 @@ open class BaseSteps {
         assertNotNull(findText(text, timeout))
     }
 
+    fun waitForTextToBeGone(
+        text: String,
+        timeout: Long = TRANSITION_TIMEOUT
+    ) {
+        log("waitForTextToBeGone $text")
+        assertTrue(device.wait(Until.gone(By.text(text)), timeout))
+    }
+
     fun waitForContentDescription(
         description: String,
         timeout: Long = TRANSITION_TIMEOUT
@@ -187,6 +196,16 @@ open class BaseSteps {
     fun pressKeyCode(keyCode: Int) {
         log("pressKeyCode $keyCode")
         device.pressKeyCode(keyCode)
+    }
+
+    fun waitForEpisodeToDownload(episodeName: String) {
+        val idlingResource = EpisodeDownloadedIdlingResource(episodeName)
+        IdlingRegistry.getInstance().register(idlingResource)
+        Espresso.onView(ViewMatchers.isRoot()).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
     }
 
     @Throws(UiObjectNotFoundException::class)
@@ -262,6 +281,34 @@ open class BaseSteps {
         override fun dispatch(request: RecordedRequest): MockResponse {
             log("MockWebDispatcher handling request: ${request.path}")
             return requestMap[request.path]!!
+        }
+    }
+
+    inner class EpisodeDownloadedIdlingResource(private val episodeName: String) : IdlingResource {
+        private var resourceCallback: IdlingResource.ResourceCallback? = null
+        override fun getName(): String = EpisodeDownloadedIdlingResource::class.java.name
+
+        override fun isIdleNow(): Boolean {
+            val commonFrameworkComponentProvider =
+                ApplicationProvider.getApplicationContext<Context>() as CommonFrameworkComponentProvider
+            val commonFrameworkComponent =
+                commonFrameworkComponentProvider.commonFrameworkComponent()
+            val downloadDao = commonFrameworkComponent.downloadDao()
+            val episodeDao = commonFrameworkComponent.episodeDao()
+
+            return runBlocking {
+                val episode = episodeDao.getByNameWithShowDetails(episodeName)!!
+                val download = downloadDao.getByRequesterId(episode.episode.episodeId)
+                val idle = download == null
+                if (idle) {
+                    resourceCallback?.onTransitionToIdle()
+                }
+                idle
+            }
+        }
+
+        override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback) {
+            resourceCallback = callback
         }
     }
 
