@@ -1,9 +1,10 @@
-Feature: Search feature
-  Search for shows as well as subscribe to one
+Feature: Subscribe feature
+  Search for shows, subscribe, and make sure download was launched
 
   @smoke
   @e2e
-  @search_scenario_1
+  @subscribe_feature
+  @subscribe_scenario_search
   Scenario Outline: Search for shows from home page, view a show's details, and subscribe to it
     Given I have launched the app
     And The API responds to request "/podcasts?keyword=ign" with code 200 and body "search_response.json"
@@ -22,3 +23,30 @@ Feature: Search feature
     Examples:
       | Keyword |
       | ign    |
+
+  @smoke
+  @e2e
+  @subscribe_feature
+  @subscribe_scenario_downloads
+  Scenario Outline: Check download queued for subscribed show
+    Given I have launched the app
+    When I click on "downloads_nav_graph"
+    And The dynamic feature module download completes
+    Then I should see "com.vmenon.mpo.downloads_feature.downloadsList" on the display
+    And I should see text "The 100 Questions Challenge (2021 Edition)" on the display
+    Examples:
+      |
+      |
+
+  @smoke
+  @e2e
+  @subscribe_feature
+  @subscribe_scenario_library
+  Scenario Outline: Check library for queued show
+    Given I have launched the app
+    When I click on "my_library_nav_graph"
+    Then I should see "com.vmenon.mpo.my_library_feature.libraryList" on the display
+    And I should see text "The 100 Questions Challenge (2021 Edition)" on the display
+    Examples:
+      |
+      |
