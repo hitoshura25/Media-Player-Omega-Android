@@ -172,6 +172,8 @@ public object Libs {
 
     public const val org_jacoco_ant: String = "org.jacoco:org.jacoco.ant:_"
 
+    public const val org_jacoco_core: String = "org.jacoco:org.jacoco.core:_"
+
     public const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:_"
 

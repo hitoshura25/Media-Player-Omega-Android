@@ -67,6 +67,9 @@ jobs:
       - run:
           name: Run Unit Tests and Prepare for Instrumentation tests
           command: ./runUnitTests.sh
+      - run:
+          name: Upload coverage report to CodeCov
+          command: bash <(curl -s https://codecov.io/bash)
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           save-gradle-cache: false
