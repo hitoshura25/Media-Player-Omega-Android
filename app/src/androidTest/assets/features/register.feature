@@ -23,7 +23,7 @@ Feature: Register User Successful
 
   @smoke
   @register_scenario_smoke
-  Scenario Outline: Valid Registration is successful
+  Scenario Outline: Valid Registration is successful using mock authentication
     Given I have launched the app
     And I am using mock authentication
     And The API responds to request "/register_user" with code 200 and body "register_user.json"
