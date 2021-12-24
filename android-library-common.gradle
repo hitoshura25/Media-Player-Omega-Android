@@ -33,4 +33,5 @@ android {
         exclude 'META-INF/licenses/ASM'
         exclude 'META-INF/LGPL2.1'
     }
+    testCoverage.jacocoVersion = '0.8.7'
 }

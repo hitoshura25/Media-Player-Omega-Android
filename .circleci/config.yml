@@ -69,7 +69,8 @@ jobs:
       - run:
           name: Run Unit Tests and Prepare for Instrumentation tests
           command: ./runUnitTests.sh
-      - codecov/upload
+      - codecov/upload:
+          - file: '*/build/reports/jacoco'
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           save-gradle-cache: false

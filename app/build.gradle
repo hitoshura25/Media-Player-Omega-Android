@@ -75,6 +75,7 @@ android {
     adbOptions {
         installOptions '-g'
     }
+    testCoverage.jacocoVersion = '0.8.7'
 }
 
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
@@ -248,4 +249,5 @@ project.afterEvaluate {
     // bundleTool in order to test with the dynamic feature modules
     connectedDebugAndroidTest.onlyIf { false }
     connectedAndroidTest.onlyIf { false }
+    createDebugAndroidTestCoverageReport.onlyIf { false }
 }
