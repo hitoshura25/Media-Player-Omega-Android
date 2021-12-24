@@ -58,7 +58,7 @@ android {
         }
     }
     packagingOptions {
-        excludes 'META-INF/rxjava.properties'
+        exclude 'META-INF/rxjava.properties'
         pickFirst 'jacoco-agent.properties'
     }
     buildFeatures {
