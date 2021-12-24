@@ -16,6 +16,7 @@ android {
 
 dependencies {
     api project(':common_room')
+    api project(':common_test')
     implementation project(':system_framework')
     implementation project(':persistence_room')
     implementation project(':auth_framework')
@@ -25,10 +26,12 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Libs.kotlin_stdlib_jdk8
 
+    api Libs.core_testing
     implementation Libs.androidx_test_ext_junit
     implementation Libs.espresso_core
     implementation Libs.androidx_test_runner
     implementation Libs.androidx_test_rules
+
     implementation Libs.room_runtime
     implementation Libs.room_rxjava2
     implementation Libs.room_ktx

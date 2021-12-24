@@ -9,8 +9,8 @@ java {
 }
 
 dependencies {
+    implementation Libs.junit_junit
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
-    implementation Libs.core_testing
     implementation Libs.kotlinx_coroutines_test
 }

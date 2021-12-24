@@ -10,7 +10,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
         debug {
             testCoverageEnabled true
@@ -26,5 +25,8 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    packagingOptions {
+        pickFirst 'jacoco-agent.properties'
     }
 }

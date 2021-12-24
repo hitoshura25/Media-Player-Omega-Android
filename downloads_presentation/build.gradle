@@ -40,6 +40,10 @@ dependencies {
     implementation Libs.navigation_ui_ktx
     implementation Libs.work_runtime_ktx
 
+    testImplementation project(':common_framework_test')
+    testImplementation Libs.junit_junit
+    testImplementation Libs.mockito_kotlin
+
     androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
