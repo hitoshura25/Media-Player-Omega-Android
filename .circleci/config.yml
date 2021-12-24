@@ -80,7 +80,7 @@ jobs:
             done
       - run:
           name: Upload coverage reports to Codecov
-          command: bash ./codecov
+          command: bash ./codecov -f '*/build/reports/jacoco/testDebugUnitTestCoverage/testDebugUnitTestCoverage.xml'
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           save-gradle-cache: false
