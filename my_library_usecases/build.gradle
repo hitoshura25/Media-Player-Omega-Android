@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'kotlin'
 }
+apply from: "$rootProject.projectDir/coverage.gradle"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,4 +20,6 @@ dependencies {
 
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
+
+    testImplementation project(':common_test')
 }

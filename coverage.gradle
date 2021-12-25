@@ -4,13 +4,23 @@ jacoco {
     toolVersion = "0.8.7"
 }
 project.afterEvaluate {
-    if (android.hasProperty("applicationVariants")) {
+    plugins.withId('com.android.application') {
         android.applicationVariants.all { variant ->
             createVariantCoverage(variant)
         }
-    } else if (android.hasProperty("libraryVariants")) {
+    }
+    plugins.withId('com.android.library') {
         android.libraryVariants.all { variant ->
             createVariantCoverage(variant)
+        }
+    }
+    plugins.withId('java-library') {
+        project.tasks.withType(JacocoReport).forEach { task ->
+            task.reports {
+                html.enabled = true
+                xml.enabled = true
+            }
+            task.dependsOn(project.tasks.findByName('test'))
         }
     }
 }

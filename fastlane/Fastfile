@@ -30,7 +30,7 @@ platform :android do
 
   desc "Test"
   lane :test do
-    gradle(tasks: ["testDebugUnitTestCoverage", "lint", "assembleAndroidTest"])
+    gradle(tasks: ["jacocoTestReport", "testDebugUnitTestCoverage", "lint", "assembleAndroidTest"])
   end
 
   desc "Increment release version"
