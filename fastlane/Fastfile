@@ -24,7 +24,7 @@ platform :android do
 
   desc "Release"
   lane :release do
-    gradle(tasks: ["clean", "app:bundleRelease"])
+    gradle(tasks: ["clean", "jacocoTestReport", "testReleaseUnitTestCoverage" "app:bundleRelease"])
     deploy_play_store(track:"internal")
   end
 
