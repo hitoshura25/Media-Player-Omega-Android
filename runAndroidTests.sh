@@ -24,4 +24,5 @@ safeRunCommand "sleep 3"
 # So we need to parse saved terminal log
 safeRunCommand "cat /tmp/android_test/adb-test.log | grep \"OK (\""
 safeRunCommand "./gradlew connectedAndroidTest"
+safeRunCommand "mkdir -p ./app/build/outputs/code_coverage/debugAndroidTest/connected"
 safeRunCommand "adb pull /sdcard/Android/data/com.vmenon.mpo/files/coverage.ec ./app/build/outputs/code_coverage/debugAndroidTest/connected"
