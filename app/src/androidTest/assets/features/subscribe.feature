@@ -25,19 +25,6 @@ Feature: Subscribe feature
   @smoke
   @e2e
   @subscribe_feature
-  @subscribe_scenario_home
-  Scenario Outline: Should see subscribed shows on Home
-    Given I have launched the app
-    When I click on "subscribed_shows_nav_graph"
-    Then I should see "com.vmenon.mpo.my_library_feature.showList" on the display
-    And I should see content description "Game Scoop!" on the display
-    Examples:
-      |
-      |
-
-  @smoke
-  @e2e
-  @subscribe_feature
   @subscribe_scenario_downloads
   Scenario Outline: Check download queued for subscribed show
     Given I have launched the app
@@ -47,6 +34,19 @@ Feature: Subscribe feature
     And I should see text "The 100 Questions Challenge (2021 Edition)" on the display
     When I wait for episode "The 100 Questions Challenge (2021 Edition)" to finish downloading
     Then I should not see text "The 100 Questions Challenge (2021 Edition)" on the display
+    Examples:
+      |
+      |
+
+  @smoke
+  @e2e
+  @subscribe_feature
+  @subscribe_scenario_home
+  Scenario Outline: Should see subscribed shows on Home
+    Given I have launched the app
+    When I click on "subscribed_shows_nav_graph"
+    Then I should see "com.vmenon.mpo.my_library_feature.showList" on the display
+    And I should see content description "Game Scoop!" on the display
     Examples:
       |
       |

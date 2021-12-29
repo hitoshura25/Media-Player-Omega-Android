@@ -24,13 +24,18 @@ platform :android do
 
   desc "Release"
   lane :release do
-    gradle(tasks: ["clean", "jacocoTestReport", "testReleaseUnitTestCoverage" "app:bundleRelease"])
+    gradle(tasks: ["app:bundleRelease"])
     deploy_play_store(track:"internal")
   end
 
   desc "Test"
   lane :test do
-    gradle(tasks: ["jacocoTestReport", "testDebugUnitTestCoverage", "lint", "assembleAndroidTest"])
+    gradle(tasks: ["test", "lint", "assembleAndroidTest"])
+  end
+
+  desc "Test Coverage Report"
+  lane :test_coverage_report do
+    gradle(tasks: ["aggregateDebugTestCoverage"])
   end
 
   desc "Increment release version"
