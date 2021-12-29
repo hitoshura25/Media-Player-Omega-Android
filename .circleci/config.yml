@@ -53,12 +53,17 @@ commands:
           key: gradle-{{ checksum "/tmp/gradle_deps.md5" }}
           paths:
             - ~/.gradle
+  increase_inotify_limit:
+    steps:
+      - run: sudo sysctl fs.inotify.max_user_watches=524288
+      - run: sudo sysctl -p
 jobs:
   build-feature:
     executor:
       name: android/android-machine
       tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
