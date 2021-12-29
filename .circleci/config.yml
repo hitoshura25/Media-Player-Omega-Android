@@ -112,6 +112,7 @@ jobs:
       name: android/android-machine
       tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
@@ -153,6 +154,7 @@ jobs:
       name: android/android-machine
       tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
