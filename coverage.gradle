@@ -47,77 +47,8 @@ ext.excludes = [
 ]
 project.afterEvaluate {
     if (project == rootProject) {
-        JacocoReport aggregateDebugTask = tasks.create(name: "aggregateDebugTestCoverage", type: JacocoReport, group: 'reporting') {
-            reports {
-                html.enabled = true
-                xml.enabled = true
-            }
-            doLast {
-                def m = new File("${project.buildDir}/reports/jacoco/aggregateDebugTestCoverage/html/index.html")
-                        .text =~ /Total[^%]*>(\d?\d?\d?%)/
-                if (m) {
-                    println "Test coverage: ${m[0][1]}"
-                }
-            }
-        }
-       JacocoReport aggregateReleaseTask = tasks.create(name: "aggregateReleaseTestCoverage", type: JacocoReport, group: 'reporting') {
-            reports {
-                html.enabled = true
-                xml.enabled = true
-            }
-           doLast {
-               def m = new File("${project.buildDir}/reports/jacoco/aggregateReleaseTestCoverage/html/index.html")
-                       .text =~ /Total[^%]*>(\d?\d?\d?%)/
-               if (m) {
-                   println "Test coverage: ${m[0][1]}"
-               }
-           }
-        }
-
-        tasks.create(name: "aggregateDebugTestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateDebugTask) {
-            group = "Reporting"
-            description = "Verifies Jacoco coverage for the debug build."
-            violationRules {
-                rule {
-                    limit {
-                        minimum = 0
-                    }
-                }
-                rule {
-                    element = 'BUNDLE'
-                    limit {
-                        counter = 'LINE'
-                        value = 'COVEREDRATIO'
-                        minimum = 0.30
-                    }
-                }
-            }
-            getClassDirectories().setFrom(aggregateDebugTask.getClassDirectories())
-            getSourceDirectories().setFrom(aggregateDebugTask.getSourceDirectories())
-            getExecutionData().setFrom(aggregateDebugTask.getExecutionData())
-        }
-        tasks.create(name: "aggregateReleaseTestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateReleaseTask) {
-            group = "Reporting"
-            description = "Verifies Jacoco coverage for the release build."
-            violationRules {
-                rule {
-                    limit {
-                        minimum = 0
-                    }
-                }
-                rule {
-                    element = 'BUNDLE'
-                    limit {
-                        counter = 'LINE'
-                        value = 'COVEREDRATIO'
-                        minimum = 0.30
-                    }
-                }
-            }
-            getClassDirectories().setFrom(aggregateReleaseTask.getClassDirectories())
-            getSourceDirectories().setFrom(aggregateReleaseTask.getSourceDirectories())
-            getExecutionData().setFrom(aggregateReleaseTask.getExecutionData())
-        }
+        createAggregateCoverage('debug')
+        createAggregateCoverage('release')
     }
     plugins.withId('com.android.application') {
         android.applicationVariants.all { variant ->
@@ -149,6 +80,45 @@ project.afterEvaluate {
             aggregateDebugTask.getExecutionData().setFrom(aggregateDebugTask.getExecutionData() + task.executionData)
             aggregateReleaseTask.getExecutionData().setFrom(aggregateReleaseTask.getExecutionData() + task.executionData)
         }
+    }
+}
+
+def createAggregateCoverage(variantName) {
+    JacocoReport aggregateTask = tasks.create(name: "aggregate${variantName.capitalize()}TestCoverage", type: JacocoReport, group: 'reporting') {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+        doLast {
+            def m = new File("${project.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
+                    .text =~ /Total[^%]*>(\d?\d?\d?%)/
+            if (m) {
+                println "Test coverage: ${m[0][1]}"
+            }
+        }
+    }
+
+    tasks.create(name: "aggregate${variantName.capitalize()}TestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateTask) {
+        group = "Reporting"
+        description = "Verifies Jacoco coverage for the $variantName build."
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0
+                }
+            }
+            rule {
+                element = 'BUNDLE'
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.30
+                }
+            }
+        }
+        getClassDirectories().setFrom(aggregateTask.getClassDirectories())
+        getSourceDirectories().setFrom(aggregateTask.getSourceDirectories())
+        getExecutionData().setFrom(aggregateTask.getExecutionData())
     }
 }
 
