@@ -255,7 +255,7 @@ project.afterEvaluate {
         if (androidTestCoverageReportTask != null) {
             def cucumberTask = tasks.create(name: "run${variant.name.capitalize()}CucumberTests", type: Exec) {
                 workingDir "$rootProject.projectDir"
-                commandLine 'sh', './runCucumberTests.sh'
+                commandLine './runCucumberTests.sh'
             }.dependsOn(["deployBundleApks${variant.name.capitalize()}", "install${variant.name.capitalize()}AndroidTest"])
             androidTestCoverageReportTask.dependsOn(cucumberTask)
         }
