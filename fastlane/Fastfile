@@ -16,21 +16,26 @@ platform :android do
     setup_circle_ci
   end
 
-  desc "Feature build"
-  lane :build_feature do
-    gradle(tasks: ["app:bundleRelease"])
+  desc "Build and Deploy Feature Branch"
+  lane :build_and_deploy_feature do
+    build_release_bundle
     deploy_internal_share
   end
 
-  desc "Release"
-  lane :release do
-    gradle(tasks: ["app:bundleRelease"])
+  desc "Build and Deploy Release"
+  lane :build_and_deploy_release do
+    build_release_bundle
     deploy_play_store(track:"internal")
   end
 
   desc "Test"
   lane :test do
     gradle(tasks: ["lint", "aggregateDebugTestCoverage"])
+  end
+
+  desc "Build Release Bundle"
+  lane :build_release_bundle do
+    gradle(tasks: ["app:bundleRelease"])
   end
 
   desc "Increment release version"
@@ -94,22 +99,22 @@ platform :android do
     )
   end
 
-    desc "Email Play Store Internal Testing Release Ready"
-    lane :email_play_store_internal_testing_release do |options|
-      mailgun(
-        postmaster: ENV['MAILGUN_POSTMASTER'],
-        apikey: ENV['MAILGUN_API_KEY'],
-        to: ENV['NOTIFICATION_RECIPIENT'],
-        from: "#{ENV['NOTIFICATION_SENDER']} <#{ENV['MAILGUN_POSTMASTER']}>",
-        subject: "#{options[:version_name]} Release Draft Available",
-        message: "#{options[:version_name]} Release Draft Is Now Available On The Internal Testing Track In The Play Console (#{Time.now})",
-        app_link: "",
-        template_path: "new_release_draft_template.erb",
-        custom_placeholders: {
-          :version_name => options[:version_name]
-        }
-      )
-    end
+  desc "Email Play Store Internal Testing Release Ready"
+  lane :email_play_store_internal_testing_release do |options|
+    mailgun(
+      postmaster: ENV['MAILGUN_POSTMASTER'],
+      apikey: ENV['MAILGUN_API_KEY'],
+      to: ENV['NOTIFICATION_RECIPIENT'],
+      from: "#{ENV['NOTIFICATION_SENDER']} <#{ENV['MAILGUN_POSTMASTER']}>",
+      subject: "#{options[:version_name]} Release Draft Available",
+      message: "#{options[:version_name]} Release Draft Is Now Available On The Internal Testing Track In The Play Console (#{Time.now})",
+      app_link: "",
+      template_path: "new_release_draft_template.erb",
+      custom_placeholders: {
+        :version_name => options[:version_name]
+      }
+    )
+  end
 
   desc "Get app version information from the build"
   lane :get_versions do

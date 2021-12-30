@@ -58,7 +58,7 @@ commands:
       - run: sudo sysctl fs.inotify.max_user_watches=524288
       - run: sudo sysctl -p
 jobs:
-  build-feature:
+  build-deploy-feature:
     executor:
       name: android/android-machine
       tag: 2021.10.1
@@ -89,15 +89,15 @@ jobs:
           name: Upload Test coverage reports to Codecov
           command: bash ./codecov -f './build/reports/jacoco/aggregateDebugTestCoverage/aggregateDebugTestCoverage.xml'
       - run:
-          name: Build Feature
-          command: ./buildFeature.sh
+          name: Build and Deploy Feature
+          command: ./buildAndDeployFeature.sh
       - save_gradle_cache
       - store_artifacts:
           path: /tmp/android_test
       - store_artifacts:
           path: ./app/build/outputs
       - store_artifacts:
-          path: ./app/build/reports
+          path: ./build/reports
   release:
     parameters:
       release_version_increment:
@@ -136,7 +136,13 @@ jobs:
       - run:
           name: Release
           command: |
-            ./incrementVersion.sh << parameters.release_version_increment >>
+            ./release.sh << parameters.release_version_increment >>
+      - store_artifacts:
+          path: /tmp/android_test
+      - store_artifacts:
+          path: ./app/build/outputs
+      - store_artifacts:
+          path: ./build/reports
   deploy_release:
     executor:
       name: android/android-machine
@@ -150,15 +156,15 @@ jobs:
       - update_bundler
       - save_gem_cache
       - run:
-          name: Release
+          name: Deploy Release
           command: |
-            ./release.sh
+            ./deployRelease.sh
       - save_gradle_cache
 workflows:
-  feature_build:
+  feature_build_and_deploy:
     when: << pipeline.parameters.run_workflow_feature_build >>
     jobs:
-      - build-feature:
+      - build-deploy-feature:
           filters:
             branches:
               ignore: main
