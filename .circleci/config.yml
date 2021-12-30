@@ -70,18 +70,12 @@ jobs:
       - restore_gradle_cache
       - update_bundler
       - save_gem_cache
-      - run:
-          name: Run Unit Tests and Prepare for Instrumentation tests
-          command: ./runUnitTests.sh
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           save-gradle-cache: false
           restore-gradle-cache-post-emulator-launch: false
-          test-command: ./runAndroidTests.sh
+          test-command: ./runTests.sh
           system-image: system-images;android-29;default;x86_64
-      - run:
-          name: Generate Test Coverage Report
-          command: ./coverageReport.sh
       - run:
           name: Download and validate Codecov script
           command: |
@@ -121,18 +115,12 @@ jobs:
       - run: git config --global user.name "Circle CI"
       - update_bundler
       - save_gem_cache
-      - run:
-          name: Run Unit Tests and Prepare for Instrumentation tests
-          command: ./runUnitTests.sh
       - android/start-emulator-and-run-tests:
           wait-for-emulator: false
           save-gradle-cache: false
           restore-gradle-cache-post-emulator-launch: false
-          test-command: ./runAndroidTests.sh
+          test-command: ./runTests.sh
           system-image: system-images;android-29;default;x86_64
-      - run:
-          name: Generate Test Coverage Report
-          command: ./coverageReport.sh
       - run:
           name: Download and validate Codecov script
           command: |

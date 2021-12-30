@@ -29,7 +29,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
-        testInstrumentationRunnerArguments clearPackageData:"true",listener:"com.vmenon.mpo.test.TestListener"
+        testInstrumentationRunnerArguments clearPackageData: "true", listener: "com.vmenon.mpo.test.TestListener"
         buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
     }
     dynamicFeatures = [
@@ -249,5 +249,15 @@ project.afterEvaluate {
     // bundleTool in order to test with the dynamic feature modules
     connectedDebugAndroidTest.onlyIf { false }
     connectedAndroidTest.onlyIf { false }
-    createDebugAndroidTestCoverageReport.onlyIf { false }
+
+    android.applicationVariants.all { variant ->
+        def androidTestCoverageReportTask = tasks.findByName("create${variant.name.capitalize()}AndroidTestCoverageReport")
+        if (androidTestCoverageReportTask != null) {
+            def cucumberTask = tasks.create(name: "run${variant.name.capitalize()}CucumberTests", type: Exec) {
+                workingDir "$rootProject.projectDir"
+                commandLine 'sh', './runCucumberTests.sh'
+            }.dependsOn(["deployBundleApks${variant.name.capitalize()}", "install${variant.name.capitalize()}AndroidTest"])
+            androidTestCoverageReportTask.dependsOn(cucumberTask)
+        }
+    }
 }

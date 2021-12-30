@@ -30,12 +30,7 @@ platform :android do
 
   desc "Test"
   lane :test do
-    gradle(tasks: ["test", "lint", "assembleAndroidTest"])
-  end
-
-  desc "Test Coverage Report"
-  lane :test_coverage_report do
-    gradle(tasks: ["aggregateDebugTestCoverage"])
+    gradle(tasks: ["lint", "aggregateDebugTestCoverage"])
   end
 
   desc "Increment release version"

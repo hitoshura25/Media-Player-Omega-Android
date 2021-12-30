@@ -52,12 +52,12 @@ project.afterEvaluate {
     }
     plugins.withId('com.android.application') {
         android.applicationVariants.all { variant ->
-            createVariantCoverage(variant, true)
+            createVariantCoverage(variant)
         }
     }
     plugins.withId('com.android.library') {
         android.libraryVariants.all { variant ->
-            createVariantCoverage(variant, false)
+            createVariantCoverage(variant)
         }
     }
     plugins.withId('java-library') {
@@ -123,7 +123,7 @@ def createAggregateCoverage(variantName) {
     }
 }
 
-def createVariantCoverage(variant, isApp) {
+def createVariantCoverage(variant) {
     def variantName = variant.name
     def testTaskName = "test${variantName.capitalize()}UnitTest"
     def aggregateTask = rootProject.tasks.findByName("aggregate${variantName.capitalize()}TestCoverage") as JacocoReport
@@ -146,63 +146,61 @@ def createVariantCoverage(variant, isApp) {
     aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + moduleSourceDirectories)
     aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + moduleExecutionData)
 
-    if (!isApp) {
-        // Add unit test coverage tasks for module
-        def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
-        JacocoReport reportTask = tasks.create(name: "${testTaskName}Coverage", type: JacocoReport) {
-            group = "Reporting"
-            description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
+    // Add unit test coverage tasks for module
+    def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+    JacocoReport reportTask = tasks.create(name: "${testTaskName}Coverage", type: JacocoReport) {
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
 
-            reports {
-                html.enabled = true
-                xml.enabled = true
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+
+        getClassDirectories().setFrom(moduleClassDirectories)
+        getSourceDirectories().setFrom(moduleSourceDirectories)
+        getExecutionData().setFrom(moduleExecutionData)
+
+        doLast {
+            def m = new File("${project.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
+                    .text =~ /Total[^%]*>(\d?\d?\d?%)/
+            if (m) {
+                println "Test coverage: ${m[0][1]}"
             }
+        }
+    }
 
-            getClassDirectories().setFrom(moduleClassDirectories)
-            getSourceDirectories().setFrom(moduleSourceDirectories)
-            getExecutionData().setFrom(moduleExecutionData)
+    if (hasUnitTests) {
+        reportTask.dependsOn(testTaskName)
+        aggregateTask.dependsOn(":${project.name}:$testTaskName")
+    }
 
-            doLast {
-                def m = new File("${project.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
-                        .text =~ /Total[^%]*>(\d?\d?\d?%)/
-                if (m) {
-                    println "Test coverage: ${m[0][1]}"
+    if (hasAndroidTests) {
+        reportTask.dependsOn(androidTestCoverageTask)
+        aggregateTask.dependsOn(":${project.name}:$androidTestCoverageTask")
+    }
+
+    // Add unit test coverage verification tasks
+    tasks.create(name: "${testTaskName}CoverageVerification", type: JacocoCoverageVerification, dependsOn: reportTask) {
+        group = "Reporting"
+        description = "Verifies Jacoco coverage for the ${variantName.capitalize()} build."
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0
+                }
+            }
+            rule {
+                element = 'BUNDLE'
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.30
                 }
             }
         }
-
-        if (hasUnitTests) {
-            reportTask.dependsOn(testTaskName)
-            aggregateTask.dependsOn(":${project.name}:$testTaskName")
-        }
-
-        if (hasAndroidTests) {
-            reportTask.dependsOn(androidTestCoverageTask)
-            aggregateTask.dependsOn(":${project.name}:$androidTestCoverageTask")
-        }
-
-        // Add unit test coverage verification tasks
-        tasks.create(name: "${testTaskName}CoverageVerification", type: JacocoCoverageVerification, dependsOn: reportTask) {
-            group = "Reporting"
-            description = "Verifies Jacoco coverage for the ${variantName.capitalize()} build."
-            violationRules {
-                rule {
-                    limit {
-                        minimum = 0
-                    }
-                }
-                rule {
-                    element = 'BUNDLE'
-                    limit {
-                        counter = 'LINE'
-                        value = 'COVEREDRATIO'
-                        minimum = 0.30
-                    }
-                }
-            }
-            getClassDirectories().setFrom(reportTask.classDirectories)
-            getSourceDirectories().setFrom(reportTask.sourceDirectories)
-            getExecutionData().setFrom(reportTask.executionData)
-        }
+        getClassDirectories().setFrom(reportTask.classDirectories)
+        getSourceDirectories().setFrom(reportTask.sourceDirectories)
+        getExecutionData().setFrom(reportTask.executionData)
     }
 }
