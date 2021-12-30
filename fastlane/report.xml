@@ -5,17 +5,17 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000709">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000567">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.000689">
+      <testcase classname="fastlane.lanes" name="1: setup_circle_ci" time="0.000768">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: lint aggregateDebugTestCoverage" time="141.927316">
+      <testcase classname="fastlane.lanes" name="2: lint aggregateDebugTestCoverage" time="255.293137">
         
       </testcase>
     

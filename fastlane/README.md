@@ -31,11 +31,6 @@ Release
 fastlane android test
 ```
 Test
-### android test_coverage_report
-```
-fastlane android test_coverage_report
-```
-Test Coverage Report
 ### android increment_version
 ```
 fastlane android increment_version
