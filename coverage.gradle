@@ -155,6 +155,17 @@ def createVariantCoverage(variant, isApp) {
                 xml.enabled = true
             }
 
+            getClassDirectories().setFrom(moduleClassDirectories)
+            getSourceDirectories().setFrom(moduleSourceDirectories)
+
+            if (unitTestExecutionData.exists()) {
+                getExecutionData().setFrom(unitTestExecutionData)
+            }
+            if (androidTestsDataDir.exists()) {
+                def androidTestData = fileTree(dir: androidTestsDataDir, includes: ["**/*.ec"])
+                getExecutionData().setFrom(androidTestData)
+            }
+
             doLast {
                 def m = new File("${project.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
                         .text =~ /Total[^%]*>(\d?\d?\d?%)/
@@ -162,17 +173,6 @@ def createVariantCoverage(variant, isApp) {
                     println "Test coverage: ${m[0][1]}"
                 }
             }
-        }
-
-        reportTask.getClassDirectories().setFrom(moduleClassDirectories)
-        reportTask.getSourceDirectories().setFrom(moduleSourceDirectories)
-
-        if (unitTestExecutionData.exists()) {
-            reportTask.getExecutionData().setFrom(reportTask.getExecutionData() + unitTestExecutionData)
-        }
-        if (androidTestsDataDir.exists()) {
-            def androidTestData = fileTree(dir: androidTestsDataDir, includes: ["**/*.ec"])
-            reportTask.getExecutionData().setFrom(reportTask.getExecutionData() + androidTestData)
         }
 
         // Add unit test coverage verification tasks
