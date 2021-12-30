@@ -132,13 +132,15 @@ def createVariantCoverage(variant, isApp) {
     def moduleSourceDirectories = project.files(variant.sourceSets.java.srcDirs.collect { it.path }.flatten())
     def unitTestExecutionData = file("${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/${testTaskName}.exec")
     def androidTestsDataDir = file("${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/")
+    def hasUnitTests = fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt'])
+    def hasAndroidTests = fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt'])
 
     aggregateTask.getClassDirectories().setFrom(aggregateTask.getClassDirectories() + moduleClassDirectories)
     aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + moduleSourceDirectories)
-    if (unitTestExecutionData.exists()) {
+    if (hasUnitTests) {
         aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + unitTestExecutionData)
     }
-    if (androidTestsDataDir.exists()) {
+    if (hasAndroidTests) {
         def androidTestData = fileTree(dir: androidTestsDataDir, includes: ["**/*.ec"])
         aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + androidTestData)
     }
@@ -158,10 +160,10 @@ def createVariantCoverage(variant, isApp) {
             getClassDirectories().setFrom(moduleClassDirectories)
             getSourceDirectories().setFrom(moduleSourceDirectories)
 
-            if (unitTestExecutionData.exists()) {
+            if (hasUnitTests) {
                 getExecutionData().setFrom(unitTestExecutionData)
             }
-            if (androidTestsDataDir.exists()) {
+            if (hasAndroidTests) {
                 def androidTestData = fileTree(dir: androidTestsDataDir, includes: ["**/*.ec"])
                 getExecutionData().setFrom(androidTestData)
             }
@@ -173,6 +175,14 @@ def createVariantCoverage(variant, isApp) {
                     println "Test coverage: ${m[0][1]}"
                 }
             }
+        }
+
+        if (hasUnitTests) {
+            reportTask.dependsOn(testTaskName)
+        }
+
+        if (hasAndroidTests) {
+            reportTask.dependsOn(androidTestCoverageTask)
         }
 
         // Add unit test coverage verification tasks
