@@ -66,12 +66,13 @@ project.afterEvaluate {
                 html.enabled = true
                 xml.enabled = true
             }
-            task.dependsOn(project.tasks.findByName('test'))
+            def testTask = project.tasks.findByName('test')
+            task.dependsOn(testTask)
             def aggregateDebugTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
             def aggregateReleaseTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
 
-            aggregateDebugTask.dependsOn(task)
-            aggregateReleaseTask.dependsOn(task)
+            aggregateDebugTask.dependsOn(testTask)
+            aggregateReleaseTask.dependsOn(testTask)
 
             aggregateDebugTask.getClassDirectories().setFrom(aggregateDebugTask.getClassDirectories() + task.classDirectories)
             aggregateReleaseTask.getClassDirectories().setFrom(aggregateReleaseTask.getClassDirectories() + task.classDirectories)
@@ -131,11 +132,11 @@ def createVariantCoverage(variant, isApp) {
     def moduleClassDirectories = files([javaClasses, kotlinClasses])
     def moduleSourceDirectories = project.files(variant.sourceSets.java.srcDirs.collect { it.path }.flatten())
     def moduleExecutionData = []
-    def hasUnitTests = fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt'])
-    def hasAndroidTests = fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt'])
+    def hasUnitTests = !fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt']).isEmpty()
+    def hasAndroidTests = !fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt']).isEmpty()
 
     if (hasUnitTests) {
-        moduleExecutionData.add(file("${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/${testTaskName}.exec"))
+        moduleExecutionData.add(fileTree(dir: "${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/", includes: ["**/*.exec"]))
     }
     if (hasAndroidTests) {
         moduleExecutionData.add(fileTree(dir: "${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"]))
@@ -160,7 +161,7 @@ def createVariantCoverage(variant, isApp) {
             getClassDirectories().setFrom(moduleClassDirectories)
             getSourceDirectories().setFrom(moduleSourceDirectories)
             getExecutionData().setFrom(moduleExecutionData)
-            
+
             doLast {
                 def m = new File("${project.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
                         .text =~ /Total[^%]*>(\d?\d?\d?%)/
@@ -172,10 +173,12 @@ def createVariantCoverage(variant, isApp) {
 
         if (hasUnitTests) {
             reportTask.dependsOn(testTaskName)
+            aggregateTask.dependsOn(":${project.name}:$testTaskName")
         }
 
         if (hasAndroidTests) {
             reportTask.dependsOn(androidTestCoverageTask)
+            aggregateTask.dependsOn(":${project.name}:$androidTestCoverageTask")
         }
 
         // Add unit test coverage verification tasks
