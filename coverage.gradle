@@ -85,13 +85,13 @@ project.afterEvaluate {
 }
 
 def createAggregateCoverage(variantName) {
-    JacocoReport aggregateTask = tasks.create(name: "aggregate${variantName.capitalize()}TestCoverage", type: JacocoReport, group: 'reporting') {
+    JacocoReport aggregateTask = rootProject.tasks.create(name: "aggregate${variantName.capitalize()}TestCoverage", type: JacocoReport, group: 'reporting') {
         reports {
             html.enabled = true
             xml.enabled = true
         }
         doLast {
-            def m = new File("${project.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
+            def m = new File("${rootProject.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
                     .text =~ /Total[^%]*>(\d?\d?\d?%)/
             if (m) {
                 println "Test coverage: ${m[0][1]}"
@@ -99,7 +99,7 @@ def createAggregateCoverage(variantName) {
         }
     }
 
-    tasks.create(name: "aggregate${variantName.capitalize()}TestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateTask) {
+    rootProject.tasks.create(name: "aggregate${variantName.capitalize()}TestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateTask) {
         group = "Reporting"
         description = "Verifies Jacoco coverage for the $variantName build."
         violationRules {
