@@ -1,9 +1,15 @@
+import okhttp3.tls.HeldCertificate
+
+import java.security.cert.CertificateExpiredException
+import java.util.concurrent.TimeUnit
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply from: "$rootProject.projectDir/coverage.gradle"
 
 def buildNumber = System.getenv('BUILD_NUMBER')
 
@@ -23,6 +29,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         multiDexEnabled true
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true", listener: "com.vmenon.mpo.test.TestListener"
         buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
     }
     dynamicFeatures = [
@@ -41,6 +48,9 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -49,6 +59,11 @@ android {
     }
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+        exclude '**/attach_hotspot_windows.dll'
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/licenses/ASM'
+        exclude 'META-INF/LGPL2.1'
+        pickFirst 'jacoco-agent.properties'
     }
     buildFeatures {
         viewBinding true
@@ -57,6 +72,10 @@ android {
     lintOptions {
         abortOnError false
     }
+    adbOptions {
+        installOptions '-g'
+    }
+    testCoverage.jacocoVersion = '0.8.7'
 }
 
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
@@ -82,9 +101,7 @@ dependencies {
     implementation project(':persistence_room')
 
     implementation Libs.com_google_android_play_core
-
     implementation Libs.constraintlayout
-
     implementation Libs.lifecycle_viewmodel_ktx
     implementation Libs.lifecycle_livedata_ktx
 
@@ -95,13 +112,10 @@ dependencies {
     implementation Libs.dagger
     kapt Libs.dagger_android_processor
 
-    testImplementation Libs.junit_junit
     implementation Libs.kotlin_stdlib
     implementation Libs.kotlinx_coroutines_core
-
     implementation Libs.multidex
     implementation Libs.work_runtime_ktx
-
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
 
@@ -112,16 +126,27 @@ dependencies {
 
     debugImplementation Libs.stetho
     debugImplementation Libs.leakcanary_android
+    debugImplementation Libs.okhttp
 
+    testImplementation project(':common_test')
+    testImplementation Libs.junit_junit
+    testImplementation Libs.mockito_kotlin
+
+    androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
+    androidTestImplementation Libs.androidx_test_rules
     androidTestImplementation Libs.espresso_core
     androidTestImplementation Libs.uiautomator
     androidTestImplementation Libs.annotation
     androidTestImplementation Libs.cucumber_android
     androidTestImplementation Libs.junit_ktx
+    androidTestImplementation Libs.espresso_intents
+    androidTestImplementation Libs.mockwebserver
+    androidTestImplementation Libs.okhttp
+    androidTestImplementation Libs.okhttp_tls
 }
 ext {
-    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.6.1.jar"
+    BUNDLE_TOOL = "${rootProject.projectDir}/tools/bundletool-all-1.8.2.jar"
 }
 
 def buildBundleApks(buildType) {
@@ -157,6 +182,20 @@ def deployBundleApks(buildType) {
     }
 }
 
+def isMockWebServerCertValid(mockWebServerPemFile, mockWebServerCertFile) {
+    if (mockWebServerPemFile.exists() && mockWebServerCertFile.exists()) {
+        def currentCert = HeldCertificate.decode(mockWebServerPemFile.text)
+        try {
+            currentCert.certificate().checkValidity()
+            println("MockWebServer certificate is still valid")
+            return true
+        } catch (CertificateExpiredException e) {
+            println("Need to regenerate MockWebServer certificate")
+        }
+    }
+    return false
+}
+
 task buildBundleApksDebug(dependsOn: 'bundleDebug') {
     outputs.files("${project.buildDir}/outputs/bundle/debug/app-debug.apks")
     doLast {
@@ -183,3 +222,42 @@ task deployBundleApksRelease(dependsOn: 'buildBundleApksRelease') {
     }
 }
 
+task generateMockWebServerCertificate {
+    def mockWebServerPemFile = project.file('src/androidTest/assets/mockWebServer.pem')
+    def mockWebServerCertFile = project.file('src/debug/res/raw/localhost_cert')
+    outputs.files(mockWebServerPemFile, mockWebServerCertFile)
+    outputs.upToDateWhen { isMockWebServerCertValid(mockWebServerPemFile, mockWebServerCertFile) }
+    doLast {
+        println("Generating MockWebServer certificate ")
+        def localhost = InetAddress.getByName("localhost").canonicalHostName
+        def certBuilder = new HeldCertificate.Builder()
+        def localhostCertificate = certBuilder
+                .addSubjectAlternativeName(localhost)
+                .duration(7L, TimeUnit.DAYS)
+                .build()
+        mockWebServerPemFile.write(localhostCertificate.certificatePem())
+        mockWebServerPemFile.append(localhostCertificate.privateKeyPkcs8Pem())
+        mockWebServerCertFile.write(localhostCertificate.certificatePem())
+    }
+}
+
+project.afterEvaluate {
+    generateDebugResources.dependsOn generateMockWebServerCertificate
+    mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+
+    // Skip connectedAndroidTest in this module since we're using Cucumber and need to use the
+    // bundleTool in order to test with the dynamic feature modules
+    connectedDebugAndroidTest.onlyIf { false }
+    connectedAndroidTest.onlyIf { false }
+
+    android.applicationVariants.all { variant ->
+        def androidTestCoverageReportTask = tasks.findByName("create${variant.name.capitalize()}AndroidTestCoverageReport")
+        if (androidTestCoverageReportTask != null) {
+            def cucumberTask = tasks.create(name: "run${variant.name.capitalize()}CucumberTests", type: Exec) {
+                workingDir "$rootProject.projectDir"
+                commandLine './runCucumberTests.sh'
+            }.dependsOn(["deployBundleApks${variant.name.capitalize()}", "install${variant.name.capitalize()}AndroidTest"])
+            androidTestCoverageReportTask.dependsOn(cucumberTask)
+        }
+    }
+}

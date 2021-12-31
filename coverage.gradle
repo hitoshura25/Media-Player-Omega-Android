@@ -1,0 +1,202 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+ext.excludes = [
+        '**/databinding/*Binding.*',
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*',
+        // butterKnife
+        '**/*$ViewInjector*.*',
+        '**/*$ViewBinder*.*',
+        '**/Lambda$*.class',
+        '**/Lambda.class',
+        '**/*Lambda.class',
+        '**/*Lambda*.class',
+        '**/*_MembersInjector.class',
+        '**/Dagger*Component*.*',
+        '**/*Module_*Factory.class',
+        '**/di/module/*',
+        '**/*_Factory*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        // kotlin
+        '**/*MapperImpl*.*',
+        '**/*$ViewInjector*.*',
+        '**/*$ViewBinder*.*',
+        '**/BuildConfig.*',
+        '**/*Component*.*',
+        '**/*BR*.*',
+        '**/Manifest*.*',
+        '**/*$Lambda$*.*',
+        '**/*Companion*.*',
+        '**/*Module*.*',
+        '**/*Dagger*.*',
+        '**/*Hilt*.*',
+        '**/*MembersInjector*.*',
+        '**/*_MembersInjector.class',
+        '**/*_Factory*.*',
+        '**/*_Provide*Factory*.*',
+        '**/*Extensions*.*'
+]
+project.afterEvaluate {
+    if (project == rootProject) {
+        createAggregateCoverage('debug')
+        createAggregateCoverage('release')
+    }
+    plugins.withId('com.android.application') {
+        android.applicationVariants.all { variant ->
+            createVariantCoverage(variant)
+        }
+    }
+    plugins.withId('com.android.library') {
+        android.libraryVariants.all { variant ->
+            createVariantCoverage(variant)
+        }
+    }
+    plugins.withId('java-library') {
+        project.tasks.withType(JacocoReport).forEach { task ->
+            task.reports {
+                html.enabled = true
+                xml.enabled = true
+            }
+            def testTask = project.tasks.findByName('test')
+            task.dependsOn(testTask)
+            def aggregateDebugTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
+            def aggregateReleaseTask = rootProject.tasks.findByName("aggregateReleaseTestCoverage") as JacocoReport
+
+            aggregateDebugTask.dependsOn(testTask)
+            aggregateReleaseTask.dependsOn(testTask)
+
+            aggregateDebugTask.getClassDirectories().setFrom(aggregateDebugTask.getClassDirectories() + task.classDirectories)
+            aggregateReleaseTask.getClassDirectories().setFrom(aggregateReleaseTask.getClassDirectories() + task.classDirectories)
+            aggregateDebugTask.getSourceDirectories().setFrom(aggregateDebugTask.getSourceDirectories() + task.sourceDirectories)
+            aggregateReleaseTask.getSourceDirectories().setFrom(aggregateReleaseTask.getSourceDirectories() + task.sourceDirectories)
+            aggregateDebugTask.getExecutionData().setFrom(aggregateDebugTask.getExecutionData() + task.executionData)
+            aggregateReleaseTask.getExecutionData().setFrom(aggregateReleaseTask.getExecutionData() + task.executionData)
+        }
+    }
+}
+
+def createAggregateCoverage(variantName) {
+    JacocoReport aggregateTask = rootProject.tasks.create(name: "aggregate${variantName.capitalize()}TestCoverage", type: JacocoReport, group: 'reporting') {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+        doLast {
+            def m = new File("${rootProject.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
+                    .text =~ /Total[^%]*>(\d?\d?\d?%)/
+            if (m) {
+                println "Test coverage: ${m[0][1]}"
+            }
+        }
+    }
+
+    rootProject.tasks.create(name: "aggregate${variantName.capitalize()}TestCoverageVerification", type: JacocoCoverageVerification, dependsOn: aggregateTask) {
+        group = "Reporting"
+        description = "Verifies Jacoco coverage for the $variantName build."
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0
+                }
+            }
+            rule {
+                element = 'BUNDLE'
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.30
+                }
+            }
+        }
+        getClassDirectories().setFrom(aggregateTask.getClassDirectories())
+        getSourceDirectories().setFrom(aggregateTask.getSourceDirectories())
+        getExecutionData().setFrom(aggregateTask.getExecutionData())
+    }
+}
+
+def createVariantCoverage(variant) {
+    def variantName = variant.name
+    def testTaskName = "test${variantName.capitalize()}UnitTest"
+    def aggregateTask = rootProject.tasks.findByName("aggregate${variantName.capitalize()}TestCoverage") as JacocoReport
+    def javaClasses = fileTree(dir: variant.javaCompileProvider.get().destinationDir, excludes: project.excludes)
+    def kotlinClasses = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variantName}", excludes: project.excludes)
+    def moduleClassDirectories = files([javaClasses, kotlinClasses])
+    def moduleSourceDirectories = project.files(variant.sourceSets.java.srcDirs.collect { it.path }.flatten())
+    def moduleExecutionData = files([
+            fileTree(dir: "${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/", includes: ["**/*.exec"]),
+            fileTree(dir: "${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
+    ])
+    def hasUnitTests = !fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt']).isEmpty()
+    def hasAndroidTests = !fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt']).isEmpty()
+
+    aggregateTask.getClassDirectories().setFrom(aggregateTask.getClassDirectories() + moduleClassDirectories)
+    aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + moduleSourceDirectories)
+    aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + moduleExecutionData)
+
+    // Add unit test coverage tasks for module
+    def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+    JacocoReport reportTask = tasks.create(name: "${testTaskName}Coverage", type: JacocoReport) {
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
+
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+
+        getClassDirectories().setFrom(moduleClassDirectories)
+        getSourceDirectories().setFrom(moduleSourceDirectories)
+        getExecutionData().setFrom(moduleExecutionData)
+
+        doLast {
+            def m = new File("${project.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
+                    .text =~ /Total[^%]*>(\d?\d?\d?%)/
+            if (m) {
+                println "Test coverage: ${m[0][1]}"
+            }
+        }
+    }
+
+    if (hasUnitTests) {
+        reportTask.dependsOn(testTaskName)
+        aggregateTask.dependsOn(":${project.name}:$testTaskName")
+    }
+
+    if (hasAndroidTests) {
+        reportTask.dependsOn(androidTestCoverageTask)
+        aggregateTask.dependsOn(":${project.name}:$androidTestCoverageTask")
+    }
+
+    // Add unit test coverage verification tasks
+    tasks.create(name: "${testTaskName}CoverageVerification", type: JacocoCoverageVerification, dependsOn: reportTask) {
+        group = "Reporting"
+        description = "Verifies Jacoco coverage for the ${variantName.capitalize()} build."
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0
+                }
+            }
+            rule {
+                element = 'BUNDLE'
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.30
+                }
+            }
+        }
+        getClassDirectories().setFrom(reportTask.classDirectories)
+        getSourceDirectories().setFrom(reportTask.sourceDirectories)
+        getExecutionData().setFrom(reportTask.executionData)
+    }
+}

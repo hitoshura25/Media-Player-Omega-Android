@@ -7,7 +7,7 @@ interface AuthService {
     fun credentials(): Flow<CredentialsResult>
     suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
-        operation: suspend (Boolean) -> T
+        operation: suspend (Result<Boolean>) -> T
     ): T
 
     suspend fun startAuthentication(context: Any)

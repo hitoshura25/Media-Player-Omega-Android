@@ -16,6 +16,8 @@ public object Libs {
 
     public const val appcompat: String = "androidx.appcompat:appcompat:_"
 
+    public const val core_testing: String = "androidx.arch.core:core-testing:_"
+
     public const val biometric: String = "androidx.biometric:biometric:_"
 
     public const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:_"
@@ -73,6 +75,8 @@ public object Libs {
     public const val room_testing: String = "androidx.room:room-testing:_"
 
     public const val espresso_core: String = "androidx.test.espresso:espresso-core:_"
+
+    public const val espresso_intents: String = "androidx.test.espresso:espresso-intents:_"
 
     public const val androidx_test_ext_junit: String = "androidx.test.ext:junit:_"
 
@@ -136,7 +140,15 @@ public object Libs {
 
     public const val guava: String = "com.google.guava:guava:_"
 
+    public const val dexmaker_mockito: String = "com.linkedin.dexmaker:dexmaker-mockito:_"
+
     public const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:_"
+
+    public const val mockwebserver: String = "com.squareup.okhttp3:mockwebserver:_"
+
+    public const val okhttp: String = "com.squareup.okhttp3:okhttp:_"
+
+    public const val okhttp_tls: String = "com.squareup.okhttp3:okhttp-tls:_"
 
     public const val adapter_rxjava2: String = "com.squareup.retrofit2:adapter-rxjava2:_"
 
@@ -160,7 +172,11 @@ public object Libs {
 
     public const val appauth: String = "net.openid:appauth:_"
 
+    public const val org_jacoco_agent: String = "org.jacoco:org.jacoco.agent:_"
+
     public const val org_jacoco_ant: String = "org.jacoco:org.jacoco.ant:_"
+
+    public const val org_jacoco_core: String = "org.jacoco:org.jacoco.core:_"
 
     public const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:_"
@@ -178,6 +194,11 @@ public object Libs {
 
     public const val kotlinx_coroutines_core: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:_"
+
+    public const val kotlinx_coroutines_test: String =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-test:_"
+
+    public const val mockito_kotlin: String = "org.mockito.kotlin:mockito-kotlin:_"
 
     public const val mockito_core: String = "org.mockito:mockito-core:_"
 }

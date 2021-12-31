@@ -7,7 +7,7 @@ version: 2.1
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
-  android: circleci/android@1.0.3
+  android: circleci/android@2.0.0
 
 parameters:
   run_workflow_feature_build:
@@ -32,7 +32,7 @@ commands:
       - run:
           name: Hash gradle dependency info
           command: |
-            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > /tmp/gradle_deps.md5
+            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties **/*.gradle > /tmp/gradle_deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
@@ -53,36 +53,70 @@ commands:
           key: gradle-{{ checksum "/tmp/gradle_deps.md5" }}
           paths:
             - ~/.gradle
+  increase_inotify_limit:
+    steps:
+      - run: sudo sysctl fs.inotify.max_user_watches=524288
+      - run: sudo sysctl -p
+  run_tests:
+    steps:
+      - android/start-emulator-and-run-tests:
+          wait-for-emulator: false
+          save-gradle-cache: false
+          restore-gradle-cache-post-emulator-launch: false
+          test-command: ./runTests.sh
+          system-image: system-images;android-29;default;x86_64
+  archive_artifacts:
+    steps:
+      - run:
+          name: Compress Artifacts
+          command: >-
+            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
+      - store_artifacts:
+          path: artifacts.tar
+  upload_coverage:
+    steps:
+      - run:
+          name: Download and validate Codecov script
+          command: |
+            curl -fLso codecov https://codecov.io/bash;
+            VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
+            for i in 1 256 512
+            do
+            shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
+            done
+      - run:
+          name: Upload Test coverage reports to Codecov
+          command: bash ./codecov -f './build/reports/jacoco/aggregateDebugTestCoverage/aggregateDebugTestCoverage.xml'
 jobs:
-  build-feature:
+  build-deploy-feature:
     executor:
       name: android/android-machine
+      tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
       - restore_gradle_cache
       - update_bundler
       - save_gem_cache
-      # The next step will run the unit tests
-      #- android/run-tests:
-      #    test-command: ./gradlew lint testDebug --continue
-
-      # Then start the emulator and run the Instrumentation tests!
-      #- android/start-emulator-and-run-tests:
-      #    test-command: ./gradlew connectedDebugAndroidTest
-      #    system-image: system-images;android-25;google_apis;x86
+      - run_tests
+      - upload_coverage
       - run:
-          name: Build Feature
-          command: ./buildFeature.sh
+          name: Build and Deploy Feature
+          command: ./buildAndDeployFeature.sh
       - save_gradle_cache
+      - archive_artifacts
+
   release:
     parameters:
       release_version_increment:
         type: string
     executor:
       name: android/android-machine
+      tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
@@ -91,14 +125,19 @@ jobs:
       - run: git config --global user.name "Circle CI"
       - update_bundler
       - save_gem_cache
+      - run_tests
+      - upload_coverage
       - run:
           name: Release
           command: |
-            ./incrementVersion.sh << parameters.release_version_increment >>
+            ./release.sh << parameters.release_version_increment >>
+      - archive_artifacts
   deploy_release:
     executor:
       name: android/android-machine
+      tag: 2021.10.1
     steps:
+      - increase_inotify_limit
       - checkout
       - restore_gem_cache
       - create_gradle_cache_key
@@ -106,15 +145,15 @@ jobs:
       - update_bundler
       - save_gem_cache
       - run:
-          name: Release
+          name: Deploy Release
           command: |
-            ./release.sh
+            ./deployRelease.sh
       - save_gradle_cache
 workflows:
-  feature_build:
+  feature_build_and_deploy:
     when: << pipeline.parameters.run_workflow_feature_build >>
     jobs:
-      - build-feature:
+      - build-deploy-feature:
           filters:
             branches:
               ignore: main

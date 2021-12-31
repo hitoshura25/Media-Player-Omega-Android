@@ -52,22 +52,23 @@ class AuthServiceImpl(
 
     override suspend fun <T> runWithFreshCredentialsIfNecessary(
         comparisonTime: Long,
-        operation: suspend (Boolean) -> T
+        operation: suspend (Result<Boolean>) -> T
     ): T {
         return when (val result = getCredentials()) {
             is CredentialsResult.None -> {
-                operation(false)
+                operation(Result.success(false))
             }
             is CredentialsResult.Success -> {
                 if (result.credentials.accessTokenExpiration >= comparisonTime + EXPIRATION_WINDOW_MS) {
-                    operation(false)
+                    operation(Result.success(false))
                 } else {
-                    authenticator.refreshToken(result.credentials.refreshToken)
-                    operation(true)
+                    operation(
+                        authenticator.refreshToken(result.credentials.refreshToken)
+                            .mapCatching { true })
                 }
             }
             else -> {
-                operation(false)
+                operation(Result.success(false))
             }
         }
     }

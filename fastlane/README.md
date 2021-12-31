@@ -26,11 +26,11 @@ Feature build
 fastlane android release
 ```
 Release
-### android build
+### android test
 ```
-fastlane android build
+fastlane android test
 ```
-Build and Test
+Test
 ### android increment_version
 ```
 fastlane android increment_version

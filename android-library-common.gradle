@@ -1,5 +1,6 @@
 apply plugin:'com.android.library'
 apply plugin:'kotlin-android'
+apply from: "$rootProject.projectDir/coverage.gradle"
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -9,8 +10,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -23,4 +26,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    packagingOptions {
+        pickFirst 'jacoco-agent.properties'
+        exclude '**/attach_hotspot_windows.dll'
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/licenses/ASM'
+        exclude 'META-INF/LGPL2.1'
+    }
+    testCoverage.jacocoVersion = '0.8.7'
 }

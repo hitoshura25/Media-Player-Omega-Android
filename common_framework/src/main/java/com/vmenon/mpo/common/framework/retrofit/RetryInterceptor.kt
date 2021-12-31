@@ -27,6 +27,7 @@ class RetryInterceptor(
                 doRetry = !response.isSuccessful
                         && response.code() != HttpURLConnection.HTTP_UNAUTHORIZED
             } catch (exception: Exception) {
+                logger.println("Encountered error with request ${chain.request()}", exception)
                 doRetry = shouldDoRetry(exception)
             }
 
@@ -40,6 +41,8 @@ class RetryInterceptor(
                 } else {
                     break
                 }
+            } else {
+                break
             }
         }
 

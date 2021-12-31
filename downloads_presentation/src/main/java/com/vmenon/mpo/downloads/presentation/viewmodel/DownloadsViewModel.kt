@@ -11,10 +11,9 @@ class DownloadsViewModel : ViewModel() {
     @Inject
     lateinit var downloadsInteractors: DownloadsInteractors
 
-    val downloads =
-        liveData {
-            emitSource(
-                downloadsInteractors.queuedDownloads().asLiveData()
-            )
-        }
+    val downloads = liveData {
+        emitSource(
+            downloadsInteractors.queuedDownloads().asLiveData()
+        )
+    }
 }

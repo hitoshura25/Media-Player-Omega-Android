@@ -1,4 +1,3 @@
 #!/bin/bash
 source ./buildEnv.sh
-./buildSetup.sh
-safeRunCommand "bundle exec fastlane release"
+safeRunCommand "bundle exec fastlane increment_version version:$1"

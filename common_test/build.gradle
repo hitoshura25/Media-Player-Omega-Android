@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    api Libs.junit_junit
+    api Libs.kotlin_stdlib
+    api Libs.kotlinx_coroutines_core
+    api Libs.kotlinx_coroutines_test
+    api Libs.mockito_kotlin
+}

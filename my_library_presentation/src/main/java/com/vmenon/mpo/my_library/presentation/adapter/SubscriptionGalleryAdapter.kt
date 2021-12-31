@@ -48,7 +48,7 @@ class SubscriptionGalleryAdapter(private val shows: List<ShowModel>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val show = shows[position]
         holder.show = show
-
+        holder.imageView.contentDescription = show.name
         Glide.with(holder.itemView.context)
             .load(show.artworkUrl)
             .transition(DrawableTransitionOptions.withCrossFade())

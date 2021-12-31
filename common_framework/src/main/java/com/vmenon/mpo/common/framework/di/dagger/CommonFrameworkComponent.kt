@@ -20,7 +20,9 @@ import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
 import com.vmenon.mpo.system.domain.ThreadUtil
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
+import dagger.BindsInstance
 import dagger.Component
+import javax.inject.Named
 
 @Component(
     dependencies = [
@@ -35,6 +37,7 @@ import dagger.Component
 interface CommonFrameworkComponent {
     @Component.Builder
     interface Builder {
+        @BindsInstance fun apiUrl(@Named("mpoApiUrl") baseUrl: String): Builder
         fun authComponent(component: AuthComponent): Builder
         fun persistenceComponent(component: PersistenceComponent): Builder
         fun systemFrameworkComponent(component: SystemFrameworkComponent): Builder

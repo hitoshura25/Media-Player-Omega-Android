@@ -4,7 +4,7 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
     defaultConfig {
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.vmenon.mpo.CommonTestRunner"
     }
     buildFeatures {
         viewBinding true
@@ -40,9 +40,14 @@ dependencies {
     implementation Libs.navigation_ui_ktx
     implementation Libs.work_runtime_ktx
 
+    testImplementation project(':common_framework_test')
+    testImplementation Libs.junit_junit
+    testImplementation Libs.mockito_kotlin
+
+    androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
-    androidTestImplementation "androidx.fragment:fragment-testing:1.3.6"
-    androidTestImplementation('androidx.test:runner:1.4.0')
-    androidTestImplementation('androidx.test:rules:1.4.0')
+    androidTestImplementation Libs.fragment_testing
+    androidTestImplementation Libs.androidx_test_runner
+    androidTestImplementation Libs.androidx_test_rules
 }

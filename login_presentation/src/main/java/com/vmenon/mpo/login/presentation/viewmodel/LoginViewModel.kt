@@ -138,7 +138,8 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             mutableLiveData.postValue(LoadingState.toContentEvent())
             if (authenticated) {
-                loginService.getUser().onSuccess { user ->
+                val userResult = loginService.getUser()
+                userResult.onSuccess { user ->
                     mutableLiveData.postValue(
                         LoggedInState(
                             user,
@@ -148,16 +149,23 @@ class LoginViewModel : ViewModel() {
                         ).toContentEvent()
                     )
                 }
+                userResult.onFailure {
+                    postLoginState(mutableLiveData)
+                }
             } else {
-                mutableLiveData.postValue(
-                    LoginState(
-                        canUseBiometrics(),
-                        buildConfigProvider.appVersion(),
-                        buildConfigProvider.buildNumber()
-                    ).toContentEvent()
-                )
+                postLoginState(mutableLiveData)
             }
         }
+    }
+
+    private suspend fun postLoginState(mutableLiveData: MutableLiveData<ContentEvent<AccountState>>) {
+        mutableLiveData.postValue(
+            LoginState(
+                canUseBiometrics(),
+                buildConfigProvider.appVersion(),
+                buildConfigProvider.buildNumber()
+            ).toContentEvent()
+        )
     }
 
     private suspend fun canUseBiometrics() =

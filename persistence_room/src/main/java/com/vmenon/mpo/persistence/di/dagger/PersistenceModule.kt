@@ -1,7 +1,5 @@
 package com.vmenon.mpo.persistence.di.dagger
 
-import android.app.Application
-import androidx.room.Room
 import com.vmenon.mpo.persistence.room.MPODatabase
 import com.vmenon.mpo.persistence.room.dao.DownloadDao
 import com.vmenon.mpo.persistence.room.dao.EpisodeDao
@@ -12,16 +10,6 @@ import dagger.Provides
 
 @Module
 object PersistenceModule {
-    @Provides
-    @PersistenceScope
-    fun provideMPODatabase(application: Application): MPODatabase {
-        return Room.databaseBuilder(
-            application.applicationContext,
-            MPODatabase::class.java,
-            "mpo-database"
-        ).build()
-    }
-
     @Provides
     @PersistenceScope
     fun provideShowDao(database: MPODatabase): ShowDao {

@@ -16,11 +16,14 @@ buildscript {
         classpath Libs.navigation_safe_args_gradle_plugin
         classpath Libs.google_services
         classpath Libs.firebase_crashlytics_gradle
+        classpath Libs.okhttp_tls
+        classpath Libs.org_jacoco_core
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+apply from: "$rootProject.projectDir/coverage.gradle"
 allprojects {
     repositories {
         mavenCentral()
