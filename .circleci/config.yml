@@ -92,12 +92,13 @@ jobs:
           name: Build and Deploy Feature
           command: ./buildAndDeployFeature.sh
       - save_gradle_cache
+      - run:
+          name: Compress Artifacts
+          command: >-
+            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
       - store_artifacts:
-          path: /tmp/android_test
-      - store_artifacts:
-          path: ./app/build/outputs
-      - store_artifacts:
-          path: ./build/reports
+          path: artifacts.tar
+
   release:
     parameters:
       release_version_increment:
@@ -137,12 +138,12 @@ jobs:
           name: Release
           command: |
             ./release.sh << parameters.release_version_increment >>
+      - run:
+          name: Compress Artifacts
+          command: >-
+            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
       - store_artifacts:
-          path: /tmp/android_test
-      - store_artifacts:
-          path: ./app/build/outputs
-      - store_artifacts:
-          path: ./build/reports
+          path: artifacts.tar
   deploy_release:
     executor:
       name: android/android-machine
