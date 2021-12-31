@@ -32,7 +32,7 @@ commands:
       - run:
           name: Hash gradle dependency info
           command: |
-            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties settings.gradle build.gradle **/*build.gradle > /tmp/gradle_deps.md5
+            md5sum gradle/wrapper/gradle-wrapper.properties appVersion.properties versions.properties gradle.properties **/*.gradle > /tmp/gradle_deps.md5
   restore_gem_cache:
     steps:
       - restore_cache:
