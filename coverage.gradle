@@ -90,11 +90,6 @@ def createAggregateCoverage(variantName) {
             html.enabled = true
             xml.enabled = true
         }
-        doFirst {
-            getExecutionData().each { file ->
-                println("execution data file: $file.absolutePath")
-            }
-        }
         doLast {
             def m = new File("${rootProject.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
                     .text =~ /Total[^%]*>(\d?\d?\d?%)/
