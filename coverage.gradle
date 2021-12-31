@@ -46,10 +46,6 @@ ext.excludes = [
         '**/*Extensions*.*'
 ]
 project.afterEvaluate {
-    if (project == rootProject) {
-        createAggregateCoverage('debug')
-        createAggregateCoverage('release')
-    }
     plugins.withId('com.android.application') {
         android.applicationVariants.all { variant ->
             createVariantCoverage(variant)
@@ -62,26 +58,22 @@ project.afterEvaluate {
     }
     plugins.withId('java-library') {
         project.tasks.withType(JacocoReport).forEach { task ->
-            task.reports {
-                html.enabled = true
-                xml.enabled = true
-            }
-            def testTask = project.tasks.findByName('test')
-            task.dependsOn(testTask)
-            def aggregateDebugTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
-            def aggregateReleaseTask = rootProject.tasks.findByName("aggregateReleaseTestCoverage") as JacocoReport
-
-            aggregateDebugTask.dependsOn(testTask)
-            aggregateReleaseTask.dependsOn(testTask)
-
-            aggregateDebugTask.getClassDirectories().setFrom(aggregateDebugTask.getClassDirectories() + task.classDirectories)
-            aggregateReleaseTask.getClassDirectories().setFrom(aggregateReleaseTask.getClassDirectories() + task.classDirectories)
-            aggregateDebugTask.getSourceDirectories().setFrom(aggregateDebugTask.getSourceDirectories() + task.sourceDirectories)
-            aggregateReleaseTask.getSourceDirectories().setFrom(aggregateReleaseTask.getSourceDirectories() + task.sourceDirectories)
-            aggregateDebugTask.getExecutionData().setFrom(aggregateDebugTask.getExecutionData() + task.executionData)
-            aggregateReleaseTask.getExecutionData().setFrom(aggregateReleaseTask.getExecutionData() + task.executionData)
+            createJavaLibraryCoverage(task)
         }
     }
+}
+
+def setupWithAggregateCoverage(variantName, JacocoReport projectTask) {
+    def aggregateTaskName = "aggregate${variantName.capitalize()}TestCoverage"
+    def aggregateTask = rootProject.tasks.findByName(aggregateTaskName)
+    if (aggregateTask == null) {
+        aggregateTask = createAggregateCoverage(variantName)
+    }
+
+    aggregateTask.getClassDirectories().setFrom(aggregateTask.getClassDirectories() + projectTask.getClassDirectories())
+    aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + projectTask.getSourceDirectories())
+    aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + projectTask.getExecutionData())
+    aggregateTask.dependsOn(projectTask.getDependsOn())
 }
 
 def createAggregateCoverage(variantName) {
@@ -121,12 +113,26 @@ def createAggregateCoverage(variantName) {
         getSourceDirectories().setFrom(aggregateTask.getSourceDirectories())
         getExecutionData().setFrom(aggregateTask.getExecutionData())
     }
+
+    // Add JavaLibrary report data
+    if (variantName != 'javaLibrary') {
+        def aggregateJavaTask = rootProject.tasks.findByName('aggregateJavaLibraryTestCoverage')
+        if (aggregateJavaTask != null) {
+            setupWithAggregateCoverage(variantName, aggregateJavaTask)
+        } else {
+            rootProject.tasks.whenTaskAdded { addedTask ->
+                if (addedTask.name == 'aggregateJavaLibraryTestCoverage') {
+                    setupWithAggregateCoverage(variantName, addedTask)
+                }
+            }
+        }
+    }
+
+    return aggregateTask
 }
 
 def createVariantCoverage(variant) {
     def variantName = variant.name
-    def testTaskName = "test${variantName.capitalize()}UnitTest"
-    def aggregateTask = rootProject.tasks.findByName("aggregate${variantName.capitalize()}TestCoverage") as JacocoReport
     def javaClasses = fileTree(dir: variant.javaCompileProvider.get().destinationDir, excludes: project.excludes)
     def kotlinClasses = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variantName}", excludes: project.excludes)
     def moduleClassDirectories = files([javaClasses, kotlinClasses])
@@ -135,15 +141,10 @@ def createVariantCoverage(variant) {
             fileTree(dir: "${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/", includes: ["**/*.exec"]),
             fileTree(dir: "${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
     ])
-    def hasUnitTests = !fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt']).isEmpty()
-    def hasAndroidTests = !fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt']).isEmpty()
-
-    aggregateTask.getClassDirectories().setFrom(aggregateTask.getClassDirectories() + moduleClassDirectories)
-    aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + moduleSourceDirectories)
-    aggregateTask.getExecutionData().setFrom(aggregateTask.getExecutionData() + moduleExecutionData)
+    def testTaskName = "test${variantName.capitalize()}UnitTest"
+    def androidTestTaskName = "create${variantName.capitalize()}CoverageReport"
 
     // Add unit test coverage tasks for module
-    def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
     JacocoReport reportTask = tasks.create(name: "${testTaskName}Coverage", type: JacocoReport) {
         group = "Reporting"
         description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
@@ -166,14 +167,14 @@ def createVariantCoverage(variant) {
         }
     }
 
-    if (hasUnitTests) {
-        reportTask.dependsOn(testTaskName)
-        aggregateTask.dependsOn(":${project.name}:$testTaskName")
+    def testTask = project.tasks.findByName(testTaskName)
+    def androidCoverageTask = project.tasks.findByName(androidTestTaskName)
+    if (testTask != null) {
+        reportTask.dependsOn(testTask)
     }
 
-    if (hasAndroidTests) {
-        reportTask.dependsOn(androidTestCoverageTask)
-        aggregateTask.dependsOn(":${project.name}:$androidTestCoverageTask")
+    if (androidCoverageTask != null) {
+        reportTask.dependsOn(androidCoverageTask)
     }
 
     // Add unit test coverage verification tasks
@@ -199,4 +200,14 @@ def createVariantCoverage(variant) {
         getSourceDirectories().setFrom(reportTask.sourceDirectories)
         getExecutionData().setFrom(reportTask.executionData)
     }
+    setupWithAggregateCoverage(variant.name, reportTask)
+}
+
+def createJavaLibraryCoverage(JacocoReport reportTask) {
+    reportTask.reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+    reportTask.dependsOn(project.tasks.findByName('test'))
+    setupWithAggregateCoverage("javaLibrary", reportTask)
 }
