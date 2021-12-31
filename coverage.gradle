@@ -69,7 +69,7 @@ project.afterEvaluate {
             def testTask = project.tasks.findByName('test')
             task.dependsOn(testTask)
             def aggregateDebugTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
-            def aggregateReleaseTask = rootProject.tasks.findByName("aggregateDebugTestCoverage") as JacocoReport
+            def aggregateReleaseTask = rootProject.tasks.findByName("aggregateReleaseTestCoverage") as JacocoReport
 
             aggregateDebugTask.dependsOn(testTask)
             aggregateReleaseTask.dependsOn(testTask)
