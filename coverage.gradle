@@ -90,6 +90,11 @@ def createAggregateCoverage(variantName) {
             html.enabled = true
             xml.enabled = true
         }
+        doFirst {
+            getExecutionData().each { file ->
+                println("execution data file: $file.absolutePath")
+            }
+        }
         doLast {
             def m = new File("${rootProject.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
                     .text =~ /Total[^%]*>(\d?\d?\d?%)/
@@ -131,16 +136,12 @@ def createVariantCoverage(variant) {
     def kotlinClasses = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variantName}", excludes: project.excludes)
     def moduleClassDirectories = files([javaClasses, kotlinClasses])
     def moduleSourceDirectories = project.files(variant.sourceSets.java.srcDirs.collect { it.path }.flatten())
-    def moduleExecutionData = []
+    def moduleExecutionData = files([
+            fileTree(dir: "${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/", includes: ["**/*.exec"]),
+            fileTree(dir: "${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
+    ])
     def hasUnitTests = !fileTree(dir: "${project.projectDir}/src/test", includes: ['**/*.java', '**/*.kt']).isEmpty()
     def hasAndroidTests = !fileTree(dir: "${project.projectDir}/src/androidTest", includes: ['**/*.java', '**/*.kt']).isEmpty()
-
-    if (hasUnitTests) {
-        moduleExecutionData.add(fileTree(dir: "${project.buildDir}/outputs/unit_test_code_coverage/${variantName}UnitTest/", includes: ["**/*.exec"]))
-    }
-    if (hasAndroidTests) {
-        moduleExecutionData.add(fileTree(dir: "${project.buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"]))
-    }
 
     aggregateTask.getClassDirectories().setFrom(aggregateTask.getClassDirectories() + moduleClassDirectories)
     aggregateTask.getSourceDirectories().setFrom(aggregateTask.getSourceDirectories() + moduleSourceDirectories)
