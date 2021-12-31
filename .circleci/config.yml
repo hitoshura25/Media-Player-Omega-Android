@@ -57,6 +57,36 @@ commands:
     steps:
       - run: sudo sysctl fs.inotify.max_user_watches=524288
       - run: sudo sysctl -p
+  run_tests:
+    steps:
+      - android/start-emulator-and-run-tests:
+          wait-for-emulator: false
+          save-gradle-cache: false
+          restore-gradle-cache-post-emulator-launch: false
+          test-command: ./runTests.sh
+          system-image: system-images;android-29;default;x86_64
+  archive_artifacts:
+    steps:
+      - run:
+          name: Compress Artifacts
+          command: >-
+            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
+      - store_artifacts:
+          path: artifacts.tar
+  upload_coverage:
+    steps:
+      - run:
+          name: Download and validate Codecov script
+          command: |
+            curl -fLso codecov https://codecov.io/bash;
+            VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
+            for i in 1 256 512
+            do
+            shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
+            done
+      - run:
+          name: Upload Test coverage reports to Codecov
+          command: bash ./codecov -f './build/reports/jacoco/aggregateDebugTestCoverage/aggregateDebugTestCoverage.xml'
 jobs:
   build-deploy-feature:
     executor:
@@ -70,34 +100,13 @@ jobs:
       - restore_gradle_cache
       - update_bundler
       - save_gem_cache
-      - android/start-emulator-and-run-tests:
-          wait-for-emulator: false
-          save-gradle-cache: false
-          restore-gradle-cache-post-emulator-launch: false
-          test-command: ./runTests.sh
-          system-image: system-images;android-29;default;x86_64
-      - run:
-          name: Download and validate Codecov script
-          command: |
-            curl -fLso codecov https://codecov.io/bash;
-            VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-            for i in 1 256 512
-            do
-            shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-            done
-      - run:
-          name: Upload Test coverage reports to Codecov
-          command: bash ./codecov -f './build/reports/jacoco/aggregateDebugTestCoverage/aggregateDebugTestCoverage.xml'
+      - run_tests
+      - upload_coverage
       - run:
           name: Build and Deploy Feature
           command: ./buildAndDeployFeature.sh
       - save_gradle_cache
-      - run:
-          name: Compress Artifacts
-          command: >-
-            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
-      - store_artifacts:
-          path: artifacts.tar
+      - archive_artifacts
 
   release:
     parameters:
@@ -116,34 +125,13 @@ jobs:
       - run: git config --global user.name "Circle CI"
       - update_bundler
       - save_gem_cache
-      - android/start-emulator-and-run-tests:
-          wait-for-emulator: false
-          save-gradle-cache: false
-          restore-gradle-cache-post-emulator-launch: false
-          test-command: ./runTests.sh
-          system-image: system-images;android-29;default;x86_64
-      - run:
-          name: Download and validate Codecov script
-          command: |
-            curl -fLso codecov https://codecov.io/bash;
-            VERSION=$(grep -o 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-            for i in 1 256 512
-            do
-            shasum -a $i -c --ignore-missing <(curl -s "https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM")
-            done
-      - run:
-          name: Upload Test coverage reports to Codecov
-          command: bash ./codecov -f './build/reports/jacoco/aggregateDebugTestCoverage/aggregateDebugTestCoverage.xml'
+      - run_tests
+      - upload_coverage
       - run:
           name: Release
           command: |
             ./release.sh << parameters.release_version_increment >>
-      - run:
-          name: Compress Artifacts
-          command: >-
-            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
-      - store_artifacts:
-          path: artifacts.tar
+      - archive_artifacts
   deploy_release:
     executor:
       name: android/android-machine
