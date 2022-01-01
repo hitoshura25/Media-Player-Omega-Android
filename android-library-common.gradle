@@ -1,6 +1,5 @@
 apply plugin:'com.android.library'
 apply plugin:'kotlin-android'
-apply from: "$rootProject.projectDir/coverage.gradle"
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
