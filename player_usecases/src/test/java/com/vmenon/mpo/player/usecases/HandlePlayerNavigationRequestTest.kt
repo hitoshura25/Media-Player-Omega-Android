@@ -19,7 +19,7 @@ class HandlePlayerNavigationRequestTest {
 
     @Test
     fun handlePlayerNavigationRequest() = runBlockingTest {
-        val usecase = HandlePlayerNavigationRequest(converter)
+        val useCase = HandlePlayerNavigationRequest(converter)
         val params = PlayerNavigationParams(
             media = Media(
                 mediaId = "mediaId",
@@ -27,6 +27,6 @@ class HandlePlayerNavigationRequestTest {
             )
         )
         whenever(converter.createPlaybackMediaRequest(params)).thenReturn(TestData.playbackMediaRequest)
-        assertEquals(TestData.playbackMediaRequest, usecase.invoke(params))
+        assertEquals(TestData.playbackMediaRequest, useCase.invoke(params))
     }
 }

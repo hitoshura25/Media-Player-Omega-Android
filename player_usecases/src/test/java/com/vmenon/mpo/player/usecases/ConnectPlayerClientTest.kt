@@ -16,8 +16,8 @@ class ConnectPlayerClientTest {
 
     @Test
     fun connectPlayerClient() = runBlockingTest {
-        val usecase = ConnectPlayerClient(playerEngine)
+        val useCase = ConnectPlayerClient(playerEngine)
         whenever(playerEngine.connectClient(playerClient)).thenReturn(true)
-        assertTrue(usecase.invoke(playerClient))
+        assertTrue(useCase.invoke(playerClient))
     }
 }

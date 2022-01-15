@@ -12,8 +12,8 @@ class PlayMediaTest {
     private val playerEngine: MediaPlayerEngine = mock()
     @Test
     fun playMedia() = runBlockingTest {
-        val usecase = PlayMedia(playerEngine)
-        usecase.invoke(TestData.playbackMediaRequest)
+        val useCase = PlayMedia(playerEngine)
+        useCase.invoke(TestData.playbackMediaRequest)
         verify(playerEngine).play(TestData.playbackMediaRequest)
     }
 }

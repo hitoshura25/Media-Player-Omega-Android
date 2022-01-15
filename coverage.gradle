@@ -50,20 +50,22 @@ subprojects.each {subproject ->
     subproject.afterEvaluate {
         subproject.plugins.withId('com.android.application') {
             subproject.apply plugin: 'jacoco'
+            subproject.android.testCoverage.jacocoVersion = jacoco.toolVersion
             subproject.android.applicationVariants.all { variant ->
                 createVariantCoverage(subproject, variant)
             }
         }
         subproject.plugins.withId('com.android.library') {
             subproject.apply plugin: 'jacoco'
+            subproject.android.testCoverage.jacocoVersion = jacoco.toolVersion
             subproject.android.libraryVariants.all { variant ->
                 createVariantCoverage(subproject, variant)
             }
         }
         subproject.plugins.withId('java-library') {
             subproject.apply plugin: 'jacoco'
+            subproject.jacoco.toolVersion = jacoco.toolVersion
             subproject.tasks.withType(JacocoReport).forEach { task ->
-                println("creatingJavaLibraryCoverage for ${subproject.name} and task ${task.name}")
                 createJavaLibraryCoverage(subproject, task)
             }
         }

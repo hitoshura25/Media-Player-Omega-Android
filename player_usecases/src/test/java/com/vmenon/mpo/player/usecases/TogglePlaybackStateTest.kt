@@ -16,8 +16,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.PLAYING)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).pause()
     }
 
@@ -26,8 +26,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.BUFFERING)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).pause()
     }
 
@@ -36,8 +36,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.PAUSED)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).resume()
     }
 
@@ -46,8 +46,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.STOPPED)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).play(request)
     }
 
@@ -56,8 +56,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.NONE)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).play(request)
     }
 
@@ -66,8 +66,8 @@ class TogglePlaybackStateTest {
         val request = TestData.playbackMediaRequest
         val playbackState = TestData.playbackState.copy(state = PlaybackState.State.UNKNOWN)
         whenever(playerEngine.getCurrentPlaybackState()).thenReturn(playbackState)
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).getCurrentPlaybackState()
         verifyNoMoreInteractions(playerEngine)
     }
@@ -76,8 +76,8 @@ class TogglePlaybackStateTest {
     @Test
     fun doesNothingIfStateIsNull() = runBlockingTest {
         val request = TestData.playbackMediaRequest
-        val usecase = TogglePlaybackState(playerEngine)
-        usecase.invoke(request)
+        val useCase = TogglePlaybackState(playerEngine)
+        useCase.invoke(request)
         verify(playerEngine).getCurrentPlaybackState()
         verifyNoMoreInteractions(playerEngine)
     }

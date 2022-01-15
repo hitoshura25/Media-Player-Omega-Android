@@ -13,8 +13,8 @@ class SeekToPositionTest {
 
     @Test
     fun seekToPosition() = runBlockingTest {
-        val usecase = SeekToPosition(playerEngine)
-        usecase.invoke(100L)
+        val useCase = SeekToPosition(playerEngine)
+        useCase.invoke(100L)
         verify(playerEngine).seekTo(100L)
     }
 }
