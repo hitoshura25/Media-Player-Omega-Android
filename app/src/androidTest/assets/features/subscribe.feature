@@ -63,6 +63,10 @@ Feature: Subscribe feature
     And I click on "com.vmenon.mpo.my_library_feature.fab"
     And The dynamic feature module download completes
     Then I should see "com.vmenon.mpo.player_feature.actionButton" on the display
+    When I click on "com.vmenon.mpo.player_feature.actionButton"
+    Then I should see content description "Play Media" on the display
+    When I click on "com.vmenon.mpo.player_feature.actionButton"
+    Then I should see content description "Pause Media" on the display
     Examples:
       |
       |
