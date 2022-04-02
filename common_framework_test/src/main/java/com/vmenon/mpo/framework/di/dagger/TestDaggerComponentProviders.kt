@@ -3,6 +3,7 @@ package com.vmenon.mpo.framework.di.dagger
 import android.app.Application
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
+import com.vmenon.mpo.auth.test.di.dagger.DaggerTestBiometricsComponent
 import com.vmenon.mpo.common.framework.di.dagger.*
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
@@ -27,7 +28,11 @@ class TestDaggerComponentProviders(
         .buildConfigProvider(buildConfigProvider)
         .build()
 
-    private val authComponentProvider = DaggerAuthComponentProvider(systemFrameworkComponent)
+    private val authComponentProvider = DaggerAuthComponentProvider(
+        systemFrameworkComponent,
+        DaggerTestBiometricsComponent.builder().systemFrameworkComponent(systemFrameworkComponent)
+            .build()
+    )
 
     val navigationController: NavigationController = mock()
     val playerNavigationDestination: NavigationDestination<PlayerNavigationLocation> = mock()

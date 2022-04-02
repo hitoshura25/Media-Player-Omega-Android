@@ -19,8 +19,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 
 open class BaseSteps {
     private val device: UiDevice
@@ -64,9 +63,13 @@ open class BaseSteps {
         }
     }
 
-    fun clickOnText(text: String, timeout: Long = TRANSITION_TIMEOUT) {
+    fun clickOnText(
+        text: String,
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
+    ) {
         log("clickOnText $text")
-        findText(text, timeout)!!.click()
+        findText(text, timeout, useSubstring)!!.click()
     }
 
     fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
@@ -113,11 +116,12 @@ open class BaseSteps {
         )
     }
 
-    private fun findText(
+    protected fun findText(
         text: String,
-        timeout: Long = TRANSITION_TIMEOUT
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
     ): UiObject2? = device.wait(
-        Until.findObject(By.text(text)), timeout
+        Until.findObject(if (useSubstring) By.textContains(text) else By.text(text)), timeout
     )
 
     private fun findContentDescription(
@@ -207,6 +211,19 @@ open class BaseSteps {
             )
         )
         IdlingRegistry.getInstance().unregister(idlingResource)
+    }
+
+    fun clickOnTextUntilOtherTextIsVisible(
+        clickOnText: String,
+        displayText: String,
+        retries: Int = 3,
+        currentTry: Int = 0
+    ) {
+        log("clickOnTextUntilOtherTextIsVisible $clickOnText, $displayText, attempt $currentTry")
+        if (findText(text = displayText, timeout = 100L) == null) {
+            clickOnText(clickOnText)
+            clickOnTextUntilOtherTextIsVisible(clickOnText, displayText, retries, currentTry + 1)
+        }
     }
 
     @Throws(UiObjectNotFoundException::class)

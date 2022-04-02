@@ -1,6 +1,7 @@
 package com.vmenon.mpo.auth.framework.biometrics
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -21,25 +22,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import javax.crypto.Cipher
 
-class AndroidBiometricsManager(context: Context, private val logger: Logger) : BiometricsManager {
+open class AndroidBiometricsManager(context: Context, private val logger: Logger) :
+    BiometricsManager {
     private val appContext = context.applicationContext
     private val cryptographyManager = CryptographyManager()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    @VisibleForTesting
+    protected open val userAuthenticationRequired: Boolean = true
 
     override val promptResponse = MutableSharedFlow<PromptResponse>()
     override val promptToEnroll = MutableSharedFlow<PromptRequest>()
 
     override fun deviceSupportsBiometrics(): Boolean =
-        when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
+        when (canAuthenticate(BIOMETRIC_WEAK)) {
             BiometricManager.BIOMETRIC_SUCCESS,
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> true
             else -> false
         }
 
-    override fun enrollmentRequired(): Boolean = BiometricManager.from(appContext)
-        .canAuthenticate(BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
+    override fun enrollmentRequired(): Boolean =
+        canAuthenticate(BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
 
+    @Suppress("SameParameterValue")
     override fun <T : Any> requestBiometricPrompt(requester: T, request: PromptRequest) {
         when (requester) {
             is AppCompatActivity -> {
@@ -56,8 +63,23 @@ class AndroidBiometricsManager(context: Context, private val logger: Logger) : B
         }
     }
 
+    @Suppress("SameParameterValue")
+    protected open fun canAuthenticate(authType: Int) =
+        BiometricManager.from(appContext).canAuthenticate(authType)
+
+    protected open fun authenticate(
+        activity: AppCompatActivity,
+        request: PromptRequest,
+        cipher: Cipher,
+        processSuccess: (BiometricPrompt.CryptoObject?) -> Unit
+    ) {
+        val biometricPrompt = createBiometricPrompt(activity, processSuccess)
+        val promptInfo = createPromptInfo(request)
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+    }
+
     private fun handleBiometricFlow(activity: AppCompatActivity, request: PromptRequest) {
-        when (BiometricManager.from(appContext).canAuthenticate(BIOMETRIC_WEAK)) {
+        when (canAuthenticate(BIOMETRIC_WEAK)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 when (request.reason) {
                     is Encryption -> handleBiometricFlowForEncryption(activity, request)
@@ -88,42 +110,38 @@ class AndroidBiometricsManager(context: Context, private val logger: Logger) : B
     ) {
         val cipher = cryptographyManager.getInitializedCipherForDecryption(
             secretKeyName,
-            cipherEncryptedData.initializationVector
+            cipherEncryptedData.initializationVector,
+            userAuthenticationRequired
         )
-        val biometricPrompt = createBiometricPrompt(activity) { authResult ->
-            authResult.cryptoObject?.let { cryptoObject ->
-                cryptoObject.cipher?.let { biometricCipher ->
-                    scope.launch {
-                        promptResponse.emit(DecryptionSuccess(request, biometricCipher))
-                    }
+        authenticate(activity, request, cipher) { cryptoObject ->
+            cryptoObject?.cipher?.let { biometricCipher ->
+                scope.launch {
+                    promptResponse.emit(DecryptionSuccess(request, biometricCipher))
                 }
             }
         }
-        val promptInfo = createPromptInfo(request)
-        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
 
     private fun handleBiometricFlowForEncryption(
         activity: AppCompatActivity,
         request: PromptRequest
     ) {
-        val cipher = cryptographyManager.getInitializedCipherForEncryption(secretKeyName)
-        val biometricPrompt = createBiometricPrompt(activity) { authResult ->
-            authResult.cryptoObject?.let { cryptoObject ->
-                cryptoObject.cipher?.let { biometricCipher ->
-                    scope.launch {
-                        promptResponse.emit(EncryptionSuccess(request, biometricCipher))
-                    }
+        val cipher = cryptographyManager.getInitializedCipherForEncryption(
+            secretKeyName,
+            userAuthenticationRequired
+        )
+        authenticate(activity, request, cipher) { cryptoObject ->
+            cryptoObject?.cipher?.let { biometricCipher ->
+                scope.launch {
+                    promptResponse.emit(EncryptionSuccess(request, biometricCipher))
                 }
             }
         }
-        val promptInfo = createPromptInfo(request)
-        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
 
     private fun createBiometricPrompt(
         activity: AppCompatActivity,
-        processSuccess: (BiometricPrompt.AuthenticationResult) -> Unit
+        processSuccess: (BiometricPrompt.CryptoObject?) -> Unit
     ): BiometricPrompt {
         val executor = ContextCompat.getMainExecutor(activity)
 
@@ -142,7 +160,7 @@ class AndroidBiometricsManager(context: Context, private val logger: Logger) : B
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
                 logger.println("Authentication was successful")
-                processSuccess(result)
+                processSuccess(result.cryptoObject)
             }
         }
         return BiometricPrompt(activity, executor, callback)

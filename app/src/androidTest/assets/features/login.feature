@@ -7,6 +7,7 @@ Feature: Login successful
     Given I have launched the app
     When I click on "login_nav_graph"
     And The dynamic feature module download completes
+    And I click on "com.vmenon.mpo.login_feature.logout_link" if visible
     And I click on "com.vmenon.mpo.login_feature.login_link"
     And I wait for the browser to launch
     And I enter "<E-mail>" into the "okta-signin-username" field in the web browser
@@ -28,6 +29,7 @@ Feature: Login successful
     And The API responds to request "/user" with code 200 and body "user_details.json"
     When I click on "login_nav_graph"
     And The dynamic feature module download completes
+    And I click on "com.vmenon.mpo.login_feature.logout_link" if visible
     And I click on "com.vmenon.mpo.login_feature.login_link"
     And I choose not to enroll in biometrics
     Then I should see "com.vmenon.mpo.login_feature.settings" on the display
@@ -36,5 +38,24 @@ Feature: Login successful
     Examples:
       |
       |
+
+  @smoke
+  @login_scenario_3
+  Scenario Outline: Valid login is successful using mock authentication and enroll in biometrics
+    Given I have launched the app
+    And I am using mock authentication
+    And The API responds to request "/user" with code 200 and body "user_details.json"
+    When I click on "login_nav_graph"
+    And The dynamic feature module download completes
+    And I click on "com.vmenon.mpo.login_feature.logout_link" if visible
+    And I click on "com.vmenon.mpo.login_feature.login_link"
+    And I choose to enroll in biometrics
+    Then I should see "com.vmenon.mpo.login_feature.settings" on the display
+    When I click on "com.vmenon.mpo.login_feature.logout_link"
+    Then I should see "com.vmenon.mpo.login_feature.login_link" on the display
+    Examples:
+      |
+      |
+
 
 

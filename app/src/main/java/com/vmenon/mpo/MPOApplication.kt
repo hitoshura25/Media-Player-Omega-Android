@@ -9,6 +9,8 @@ import com.google.android.play.core.splitcompat.SplitCompat
 import com.google.android.play.core.splitcompat.SplitCompatApplication
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
+import com.vmenon.mpo.auth.framework.di.dagger.BiometricsComponent
+import com.vmenon.mpo.auth.framework.di.dagger.DaggerBiometricsComponent
 import com.vmenon.mpo.common.framework.di.dagger.*
 import com.vmenon.mpo.core.work.RetryDownloadWorker
 import com.vmenon.mpo.di.*
@@ -60,6 +62,7 @@ open class MPOApplication : SplitCompatApplication(),
                 .hostFragmentId(R.id.nav_host_fragment)
                 .build(),
             createPersistenceComponent(),
+            createBiometricsComponent(),
             apiUrl()
         )
         val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()
@@ -106,6 +109,11 @@ open class MPOApplication : SplitCompatApplication(),
 
     protected open fun createPersistenceComponent(): PersistenceComponent =
         DaggerPersistenceComponent.builder()
+            .systemFrameworkComponent(systemFrameworkComponent)
+            .build()
+
+    protected open fun createBiometricsComponent(): BiometricsComponent =
+        DaggerBiometricsComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
 
