@@ -1,9 +1,6 @@
 package com.vmenon.mpo.test
 
-import com.vmenon.mpo.downloads.domain.DownloadModel
-import com.vmenon.mpo.downloads.domain.DownloadRequestType
-import com.vmenon.mpo.downloads.domain.QueuedDownloadModel
-import com.vmenon.mpo.downloads.domain.QueuedDownloadStatus
+import com.vmenon.mpo.downloads.domain.*
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.ShowModel
 import com.vmenon.mpo.my_library.domain.ShowUpdateModel
@@ -74,6 +71,10 @@ object TestData {
         total = 100,
         progress = 0,
         status = QueuedDownloadStatus.NOT_QUEUED
+    )
+    val completedDownload = CompletedDownloadModel(
+        download = download,
+        pathToFile = "/path/file.mp4"
     )
     val playbackMedia = PlaybackMedia(
         mediaId = "mediaId",
