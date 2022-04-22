@@ -31,12 +31,12 @@ import java.util.concurrent.TimeUnit
 
 open class MPOApplication : SplitCompatApplication(),
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider,
-    PlayerFrameworkComponentProvider {
+    PlayerFrameworkComponentProvider, AppComponentProvider {
 
-    lateinit var appComponent: AppComponent
-    lateinit var playerFrameworkComponent: PlayerFrameworkComponent
+    protected lateinit var systemFrameworkComponent: SystemFrameworkComponent
 
-    lateinit var systemFrameworkComponent: SystemFrameworkComponent
+    private lateinit var appComponent: AppComponent
+    private lateinit var playerFrameworkComponent: PlayerFrameworkComponent
     private lateinit var componentProviders: DaggerComponentProviders
 
     override fun attachBaseContext(base: Context?) {
@@ -125,4 +125,5 @@ open class MPOApplication : SplitCompatApplication(),
 
     override fun authComponent(): AuthComponent = componentProviders.authComponent()
     override fun playerFrameworkComponent(): PlayerFrameworkComponent = playerFrameworkComponent
+    override fun appComponent(): AppComponent = appComponent
 }

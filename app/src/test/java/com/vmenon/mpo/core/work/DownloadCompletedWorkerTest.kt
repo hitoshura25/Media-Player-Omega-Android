@@ -1,10 +1,12 @@
 package com.vmenon.mpo.core.work
 
+import android.content.Context
 import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import androidx.work.impl.utils.taskexecutor.TaskExecutor
 import com.vmenon.mpo.core.usecases.Interactors
+import com.vmenon.mpo.di.AppComponentProvider
 import com.vmenon.mpo.test.TestCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
@@ -29,6 +31,7 @@ class DownloadCompletedWorkerTest {
         notifyDownloadCompleted = mock()
     )
 
+    val app: Context = mock(extraInterfaces = arrayOf(AppComponentProvider::class))
     val data: Data = mock()
 
     lateinit var downloadCompletedWorker: DownloadCompleteWorker
@@ -40,8 +43,9 @@ class DownloadCompletedWorkerTest {
         whenever(workerParams.taskExecutor).thenReturn(taskExecutor)
         whenever(workerParams.backgroundExecutor).thenReturn(mock())
         whenever(workerParams.inputData).thenReturn(data)
-        downloadCompletedWorker = DownloadCompleteWorker(mock(), workerParams)
-        downloadCompletedWorker.appComponent = mock()
+        whenever((app as AppComponentProvider).appComponent()).thenReturn(mock())
+
+        downloadCompletedWorker = DownloadCompleteWorker(app, workerParams)
         downloadCompletedWorker.logger = mock()
         downloadCompletedWorker.interactors = interactors
         assertEquals(interactors, downloadCompletedWorker.interactors)
@@ -51,7 +55,7 @@ class DownloadCompletedWorkerTest {
     fun invokeUseCaseIfDownloadIdValid() {
         testCoroutineRule.runBlockingTest {
             whenever(data.getLong(DownloadCompleteWorker.INPUT_DOWNLOAD_ID, -1L)).thenReturn(100L)
-            assertEquals(ListenableWorker.Result.success(), downloadCompletedWorker.doMyWork())
+            assertEquals(ListenableWorker.Result.success(), downloadCompletedWorker.doWork())
             verify(interactors.notifyDownloadCompleted).invoke(100L)
         }
     }
@@ -60,7 +64,7 @@ class DownloadCompletedWorkerTest {
     fun doNotInvokeUseCaseIfDownloadIdInvalid() {
         testCoroutineRule.runBlockingTest {
             whenever(data.getLong(DownloadCompleteWorker.INPUT_DOWNLOAD_ID, -1L)).thenReturn(-1L)
-            assertEquals(ListenableWorker.Result.success(), downloadCompletedWorker.doMyWork())
+            assertEquals(ListenableWorker.Result.success(), downloadCompletedWorker.doWork())
             verifyNoInteractions(interactors.notifyDownloadCompleted)
         }
     }

@@ -1,9 +1,11 @@
 package com.vmenon.mpo.core.work
 
+import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import androidx.work.impl.utils.taskexecutor.TaskExecutor
 import com.vmenon.mpo.core.usecases.Interactors
+import com.vmenon.mpo.di.AppComponentProvider
 import com.vmenon.mpo.test.TestCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
@@ -26,6 +28,7 @@ class UpdateAllShowsWorkerTest {
         retryDownloads = mock(),
         notifyDownloadCompleted = mock()
     )
+    val app: Context = mock(extraInterfaces = arrayOf(AppComponentProvider::class))
 
     lateinit var updateAllShowsWorker: UpdateAllShowsWorker
 
@@ -35,8 +38,9 @@ class UpdateAllShowsWorkerTest {
         whenever(taskExecutor.backgroundExecutor).thenReturn(mock())
         whenever(workerParams.taskExecutor).thenReturn(taskExecutor)
         whenever(workerParams.backgroundExecutor).thenReturn(mock())
-        updateAllShowsWorker = UpdateAllShowsWorker(mock(), workerParams)
-        updateAllShowsWorker.appComponent = mock()
+        whenever((app as AppComponentProvider).appComponent()).thenReturn(mock())
+
+        updateAllShowsWorker = UpdateAllShowsWorker(app, workerParams)
         updateAllShowsWorker.interactors = interactors
         assertEquals(interactors, updateAllShowsWorker.interactors)
     }
@@ -44,7 +48,7 @@ class UpdateAllShowsWorkerTest {
     @Test
     fun invokeUseCase() {
         testCoroutineRule.runBlockingTest {
-            assertEquals(ListenableWorker.Result.success(), updateAllShowsWorker.doMyWork())
+            assertEquals(ListenableWorker.Result.success(), updateAllShowsWorker.doWork())
             verify(interactors.updateAllShows).invoke()
         }
     }
