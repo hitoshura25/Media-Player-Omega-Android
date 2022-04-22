@@ -14,4 +14,9 @@ dependencies {
     api Libs.kotlinx_coroutines_core
     api Libs.kotlinx_coroutines_test
     api Libs.mockito_kotlin
+
+    api project(':downloads_domain')
+    api project(':my_library_domain')
+    api project(':player_domain')
+    api project(':search_domain')
 }

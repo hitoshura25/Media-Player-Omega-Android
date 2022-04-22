@@ -4,8 +4,7 @@ import com.vmenon.mpo.navigation.domain.player.FileMediaSource
 import com.vmenon.mpo.navigation.domain.player.Media
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams
 import com.vmenon.mpo.player.domain.NavigationParamsConverter
-import com.vmenon.mpo.player.domain.PlaybackMedia
-import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import com.vmenon.mpo.test.TestData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals

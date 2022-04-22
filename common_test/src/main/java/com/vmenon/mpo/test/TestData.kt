@@ -1,14 +1,40 @@
-package com.vmenon.mpo.search.usecases
+package com.vmenon.mpo.test
 
 import com.vmenon.mpo.downloads.domain.DownloadModel
 import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.ShowModel
+import com.vmenon.mpo.my_library.domain.ShowUpdateModel
+import com.vmenon.mpo.player.domain.PlaybackMedia
+import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import com.vmenon.mpo.player.domain.PlaybackState
 import com.vmenon.mpo.search.domain.ShowSearchResultDetailsModel
 import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 
 object TestData {
+    val show = ShowModel(
+        name = "show",
+        artworkUrl = "artwork.com",
+        genres = emptyList(),
+        author = "author",
+        feedUrl = "feedUrl",
+        description = "description",
+        lastUpdate = 0L,
+        lastEpisodePublished = 0L
+    )
+    val episode = EpisodeModel(
+        name = "episode",
+        description = "description",
+        published = 0L,
+        type = "show",
+        downloadUrl = "www.download.com",
+        lengthInSeconds = 100,
+        artworkUrl = "artworkurl",
+        filename = "filename",
+        show = show
+    )
+    val showUpdate = ShowUpdateModel(episode)
     val showSearchResultModel = ShowSearchResultModel(
         name = "show",
         artworkUrl = "artwork.com",
@@ -32,27 +58,6 @@ object TestData {
         episodes = listOf(showSearchResultEpisodeModel),
         subscribed = true
     )
-    val show = ShowModel(
-        name = "show",
-        artworkUrl = "artwork.com",
-        genres = emptyList(),
-        author = "author",
-        feedUrl = "feedUrl",
-        description = "description",
-        lastUpdate = 0L,
-        lastEpisodePublished = 0L
-    )
-    val episode = EpisodeModel(
-        name = "episode",
-        description = "description",
-        published = 0L,
-        type = "show",
-        downloadUrl = "www.download.com",
-        lengthInSeconds = 100,
-        artworkUrl = "artworkurl",
-        filename = "filename",
-        show = show
-    )
     val download = DownloadModel(
         name = "download",
         downloadUrl = "www.download.com",
@@ -61,5 +66,20 @@ object TestData {
         requesterId = 1L,
         downloadAttempt = 0,
         imageUrl = null
+    )
+
+    val playbackMedia = PlaybackMedia(
+        mediaId = "mediaId",
+        durationInMillis = 120000L
+    )
+    val playbackMediaRequest = PlaybackMediaRequest(
+        media = playbackMedia,
+        mediaFile = "file"
+    )
+    val playbackState = PlaybackState(
+        media = playbackMedia,
+        positionInMillis = 0L,
+        state = PlaybackState.State.NONE,
+        playbackSpeed = 1F
     )
 }
