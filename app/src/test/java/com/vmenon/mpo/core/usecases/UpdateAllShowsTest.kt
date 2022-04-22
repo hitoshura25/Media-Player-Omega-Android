@@ -1,6 +1,5 @@
-package com.vmenon.mpo.usecases
+package com.vmenon.mpo.core.usecases
 
-import com.vmenon.mpo.core.usecases.UpdateAllShows
 import com.vmenon.mpo.downloads.domain.DownloadRequest
 import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.downloads.domain.DownloadsService

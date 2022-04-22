@@ -1,6 +1,5 @@
-package com.vmenon.mpo.usecases
+package com.vmenon.mpo.core.usecases
 
-import com.vmenon.mpo.core.usecases.NotifyDownloadCompleted
 import com.vmenon.mpo.downloads.domain.DownloadRequestType
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.my_library.domain.MyLibraryService

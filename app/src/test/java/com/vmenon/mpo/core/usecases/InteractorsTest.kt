@@ -1,9 +1,5 @@
-package com.vmenon.mpo.usecases
+package com.vmenon.mpo.core.usecases
 
-import com.vmenon.mpo.core.usecases.Interactors
-import com.vmenon.mpo.core.usecases.NotifyDownloadCompleted
-import com.vmenon.mpo.core.usecases.RetryDownloads
-import com.vmenon.mpo.core.usecases.UpdateAllShows
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.kotlin.mock

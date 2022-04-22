@@ -1,6 +1,5 @@
-package com.vmenon.mpo.usecases
+package com.vmenon.mpo.core.usecases
 
-import com.vmenon.mpo.core.usecases.RetryDownloads
 import com.vmenon.mpo.downloads.domain.DownloadsService
 import com.vmenon.mpo.downloads.domain.QueuedDownloadStatus
 import com.vmenon.mpo.system.domain.Logger
