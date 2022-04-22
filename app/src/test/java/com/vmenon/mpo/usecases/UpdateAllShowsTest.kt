@@ -19,10 +19,10 @@ class UpdateAllShowsTest {
     val testCoroutineRule = TestCoroutineRule()
 
     val myLibraryService: MyLibraryService = mock()
-    val downloadService: DownloadsService = mock()
+    val downloadsService: DownloadsService = mock()
     val logger: Logger = mock()
 
-    val updateAllShows = UpdateAllShows(myLibraryService, downloadService, logger)
+    val updateAllShows = UpdateAllShows(myLibraryService, downloadsService, logger)
 
     @Test
     fun testShowsThatNeedUpdateNull() {
@@ -30,7 +30,7 @@ class UpdateAllShowsTest {
             whenever(myLibraryService.getShowsSubscribedAndLastUpdatedBefore(any())).thenReturn(null)
             updateAllShows.invoke()
             verify(myLibraryService, times(0)).saveEpisode(any())
-            verify(downloadService, times(0)).queueDownload(any())
+            verify(downloadsService, times(0)).queueDownload(any())
         }
     }
 
@@ -42,7 +42,7 @@ class UpdateAllShowsTest {
             )
             updateAllShows.invoke()
             verify(myLibraryService, times(0)).saveEpisode(any())
-            verify(downloadService, times(0)).queueDownload(any())
+            verify(downloadsService, times(0)).queueDownload(any())
         }
     }
 
@@ -59,7 +59,7 @@ class UpdateAllShowsTest {
             whenever(myLibraryService.getShowUpdate(show)).thenReturn(showUpdate)
             whenever(myLibraryService.saveEpisode(showUpdate.newEpisode)).thenReturn(savedEpisode)
             updateAllShows.invoke()
-            verify(downloadService).queueDownload(
+            verify(downloadsService).queueDownload(
                 DownloadRequest(
                     downloadUrl = savedEpisode.downloadUrl,
                     downloadRequestType = DownloadRequestType.EPISODE,
@@ -81,7 +81,7 @@ class UpdateAllShowsTest {
             whenever(myLibraryService.getShowUpdate(show)).thenReturn(null)
             updateAllShows.invoke()
             verify(myLibraryService, times(0)).saveEpisode(any())
-            verify(downloadService, times(0)).queueDownload(any())
+            verify(downloadsService, times(0)).queueDownload(any())
         }
     }
 }
