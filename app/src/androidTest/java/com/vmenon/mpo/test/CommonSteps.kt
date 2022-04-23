@@ -305,6 +305,11 @@ open class CommonSteps : BaseSteps() {
         waitForEpisodeToDownload(episodeName)
     }
 
+    @When("I go back")
+    fun i_go_back() {
+        pressBack()
+    }
+
     @Then("I should see {string} on the display")
     fun i_should_see_s_on_the_display(resName: String) {
         waitFor(resName)

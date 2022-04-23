@@ -19,7 +19,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
-import org.junit.Assert.*
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 
 open class BaseSteps {
     private val device: UiDevice
@@ -224,6 +225,10 @@ open class BaseSteps {
             clickOnText(clickOnText)
             clickOnTextUntilOtherTextIsVisible(clickOnText, displayText, retries, currentTry + 1)
         }
+    }
+
+    fun pressBack() {
+        device.pressBack()
     }
 
     @Throws(UiObjectNotFoundException::class)
