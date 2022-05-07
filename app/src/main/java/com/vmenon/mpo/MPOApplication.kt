@@ -57,12 +57,12 @@ open class MPOApplication : SplitCompatApplication(),
             ).build()
         componentProviders = DaggerComponentProviders(
             systemFrameworkComponent,
+            createBiometricsComponent(),
             DaggerNavigationFrameworkComponent.builder()
                 .systemFrameworkComponent(systemFrameworkComponent)
                 .hostFragmentId(R.id.nav_host_fragment)
                 .build(),
             createPersistenceComponent(),
-            createBiometricsComponent(),
             apiUrl()
         )
         val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()

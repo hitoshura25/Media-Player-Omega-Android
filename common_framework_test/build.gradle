@@ -19,6 +19,7 @@ dependencies {
     api project(':common_test')
     implementation project(':system_framework')
     implementation project(':persistence_room')
+    implementation project(':auth_data')
     implementation project(':auth_framework')
     implementation project(':common_framework')
     implementation project(':persistence_room')

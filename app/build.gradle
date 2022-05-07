@@ -241,6 +241,7 @@ task generateMockWebServerCertificate {
 
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
+    generateDebugResValues.dependsOn generateMockWebServerCertificate
     mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
     buildBundleApksDebug.dependsOn generateMockWebServerCertificate
 

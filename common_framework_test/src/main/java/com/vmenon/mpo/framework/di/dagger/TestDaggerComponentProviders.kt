@@ -3,6 +3,7 @@ package com.vmenon.mpo.framework.di.dagger
 import android.app.Application
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
 import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
+import com.vmenon.mpo.auth.test.di.dagger.DaggerTestAuthComponent
 import com.vmenon.mpo.auth.test.di.dagger.DaggerTestBiometricsComponent
 import com.vmenon.mpo.common.framework.di.dagger.*
 import com.vmenon.mpo.navigation.domain.*
@@ -21,18 +22,21 @@ class TestDaggerComponentProviders(
 ) : SystemFrameworkComponentProvider, AuthComponentProvider,
     CommonFrameworkComponentProvider {
 
-    val buildConfigProvider: BuildConfigProvider = mock()
+    private val buildConfigProvider: BuildConfigProvider = mock()
 
     private val systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
         .application(application)
         .buildConfigProvider(buildConfigProvider)
         .build()
 
-    private val authComponentProvider = DaggerAuthComponentProvider(
-        systemFrameworkComponent,
-        DaggerTestBiometricsComponent.builder().systemFrameworkComponent(systemFrameworkComponent)
-            .build()
-    )
+    private val authComponent = DaggerTestAuthComponent.builder()
+        .systemFrameworkComponent(systemFrameworkComponent)
+        .testBiometricsComponent(
+            DaggerTestBiometricsComponent.builder()
+                .systemFrameworkComponent(systemFrameworkComponent)
+                .build()
+        )
+        .build()
 
     val navigationController: NavigationController = mock()
     val playerNavigationDestination: NavigationDestination<PlayerNavigationLocation> = mock()
@@ -50,7 +54,7 @@ class TestDaggerComponentProviders(
 
     private val commonFrameworkComponentProvider = DaggerCommonFrameworkComponentProvider(
         systemFrameworkComponent,
-        authComponentProvider.authComponent(),
+        authComponent,
         DaggerTestPersistenceComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
             .build(),
@@ -58,7 +62,7 @@ class TestDaggerComponentProviders(
         "https://localhost:8080/"
     )
 
-    override fun authComponent(): AuthComponent = authComponentProvider.authComponent()
+    override fun authComponent(): AuthComponent = authComponent
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent =
         commonFrameworkComponentProvider.commonFrameworkComponent()

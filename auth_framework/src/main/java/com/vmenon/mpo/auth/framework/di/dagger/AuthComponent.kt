@@ -8,7 +8,7 @@ import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Component
 
 @Component(
-    modules = [AuthModule::class],
+    modules = [AuthModule::class, AuthStateModule::class],
     dependencies = [SystemFrameworkComponent::class, BiometricsComponent::class]
 )
 @AuthScope
