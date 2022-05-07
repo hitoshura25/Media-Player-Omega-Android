@@ -6,7 +6,7 @@ import com.vmenon.mpo.auth.test.di.dagger.DaggerTestBiometricsComponent
 import com.vmenon.mpo.persistence.di.dagger.PersistenceComponent
 import com.vmenon.mpo.persistence.room.test.di.dagger.DaggerTestPersistenceComponent
 
-class TestMPOApplication : MPOApplication() {
+class CucumberTestMPOApplication : MPOApplication() {
     lateinit var mockBiometricsManager: MockAndroidBiometricsManager
 
     override fun onCreate() {

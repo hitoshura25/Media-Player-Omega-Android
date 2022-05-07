@@ -14,7 +14,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import com.vmenon.mpo.TestMPOApplication
+import com.vmenon.mpo.CucumberTestMPOApplication
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -207,7 +207,7 @@ open class CommonSteps : BaseSteps() {
                 IntentMatchers.hasAction(intentAction)
             )
         ).respondWithFunction {
-            (ApplicationProvider.getApplicationContext<Context>() as TestMPOApplication).mockBiometricsManager.mockedAuthType =
+            (ApplicationProvider.getApplicationContext<Context>() as CucumberTestMPOApplication).mockBiometricsManager.mockedAuthType =
                 BiometricManager.BIOMETRIC_SUCCESS
             Instrumentation.ActivityResult(Activity.RESULT_OK, Intent())
         }

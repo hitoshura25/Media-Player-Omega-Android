@@ -3,7 +3,7 @@ package com.vmenon.mpo.test
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import com.vmenon.mpo.TestMPOApplication
+import com.vmenon.mpo.CucumberTestMPOApplication
 import io.cucumber.android.runner.CucumberAndroidJUnitRunner
 import io.cucumber.junit.CucumberOptions
 import java.io.File
@@ -25,7 +25,7 @@ class CucumberTestRunner : CucumberAndroidJUnitRunner() {
         className: String?,
         context: Context?
     ): Application {
-        return super.newApplication(cl, TestMPOApplication::class.java.name, context)
+        return super.newApplication(cl, CucumberTestMPOApplication::class.java.name, context)
     }
 
     /**
