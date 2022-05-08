@@ -1,10 +1,9 @@
 package com.vmenon.mpo.framework.di.dagger
 
 import android.app.Application
-import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
-import com.vmenon.mpo.auth.framework.di.dagger.AuthComponentProvider
 import com.vmenon.mpo.auth.test.di.dagger.DaggerTestAuthComponent
 import com.vmenon.mpo.auth.test.di.dagger.DaggerTestBiometricsComponent
+import com.vmenon.mpo.auth.test.di.dagger.TestAuthComponent
 import com.vmenon.mpo.common.framework.di.dagger.*
 import com.vmenon.mpo.navigation.domain.*
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
@@ -13,23 +12,19 @@ import com.vmenon.mpo.navigation.framework.di.dagger.NavigationFrameworkComponen
 import com.vmenon.mpo.persistence.room.test.di.dagger.DaggerTestPersistenceComponent
 import com.vmenon.mpo.system.domain.BuildConfigProvider
 import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
-import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
-import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import org.mockito.kotlin.mock
 
 class TestDaggerComponentProviders(
     application: Application
-) : SystemFrameworkComponentProvider, AuthComponentProvider,
-    CommonFrameworkComponentProvider {
-
+) {
     private val buildConfigProvider: BuildConfigProvider = mock()
 
-    private val systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
+    val systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
         .application(application)
         .buildConfigProvider(buildConfigProvider)
         .build()
 
-    private val authComponent = DaggerTestAuthComponent.builder()
+    val authComponent: TestAuthComponent = DaggerTestAuthComponent.builder()
         .systemFrameworkComponent(systemFrameworkComponent)
         .testBiometricsComponent(
             DaggerTestBiometricsComponent.builder()
@@ -52,20 +47,13 @@ class TestDaggerComponentProviders(
         override fun navigationController(): NavigationController = navigationController
     }
 
-    private val commonFrameworkComponentProvider = DaggerCommonFrameworkComponentProvider(
-        systemFrameworkComponent,
-        authComponent,
-        DaggerTestPersistenceComponent.builder()
+    val commonFrameworkComponent = DaggerCommonFrameworkComponent.builder()
+        .systemFrameworkComponent(systemFrameworkComponent)
+        .authComponent(authComponent)
+        .persistenceComponent(DaggerTestPersistenceComponent.builder()
             .systemFrameworkComponent(systemFrameworkComponent)
-            .build(),
-        navigationFrameworkComponent,
-        "https://localhost:8080/"
-    )
-
-    override fun authComponent(): AuthComponent = authComponent
-
-    override fun commonFrameworkComponent(): CommonFrameworkComponent =
-        commonFrameworkComponentProvider.commonFrameworkComponent()
-
-    override fun systemFrameworkComponent(): SystemFrameworkComponent = systemFrameworkComponent
+            .build())
+        .navigationFrameworkComponent(navigationFrameworkComponent)
+        .apiUrl("https://localhost:8080/")
+        .build()
 }

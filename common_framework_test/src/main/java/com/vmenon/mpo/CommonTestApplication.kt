@@ -16,10 +16,10 @@ class CommonTestApplication : Application(), CommonFrameworkComponentProvider,
     private val componentProviders = TestDaggerComponentProviders(this)
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent =
-        componentProviders.commonFrameworkComponent()
+        componentProviders.commonFrameworkComponent
 
     override fun systemFrameworkComponent(): SystemFrameworkComponent =
-        componentProviders.systemFrameworkComponent()
+        componentProviders.systemFrameworkComponent
 
-    override fun authComponent(): AuthComponent = componentProviders.authComponent()
+    override fun authComponent(): AuthComponent = componentProviders.authComponent
 }
