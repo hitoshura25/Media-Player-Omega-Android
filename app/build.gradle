@@ -242,7 +242,7 @@ task generateMockWebServerCertificate {
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
     generateDebugResValues.dependsOn generateMockWebServerCertificate
-    mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+    generateDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
     buildBundleApksDebug.dependsOn generateMockWebServerCertificate
 
     // Skip connectedAndroidTest in this module since we're using Cucumber and need to use the

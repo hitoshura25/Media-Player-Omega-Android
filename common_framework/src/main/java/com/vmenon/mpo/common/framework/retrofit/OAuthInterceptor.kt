@@ -66,7 +66,7 @@ class OAuthInterceptor(
         }
     }
 
-    private data class ResponseWithCredentials(
+    internal data class ResponseWithCredentials(
         val newRequest: Request,
         val response: Response,
         val tokenRefreshed: Boolean
