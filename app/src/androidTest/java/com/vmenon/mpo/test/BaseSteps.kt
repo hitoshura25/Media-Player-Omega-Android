@@ -203,6 +203,10 @@ open class BaseSteps {
         device.pressKeyCode(keyCode)
     }
 
+    fun swipeSeekBar(resName: String, direction: Direction, percent: Float) {
+        find(resName)!!.swipe(direction, percent)
+    }
+
     fun waitForEpisodeToDownload(episodeName: String) {
         val idlingResource = EpisodeDownloadedIdlingResource(episodeName)
         IdlingRegistry.getInstance().register(idlingResource)
@@ -303,6 +307,9 @@ open class BaseSteps {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             log("MockWebDispatcher handling request: ${request.path}")
+            assert(requestMap[request.path] != null) {
+                "No response exists for path: ${request.path}"
+            }
             return requestMap[request.path]!!
         }
     }

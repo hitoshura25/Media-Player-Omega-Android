@@ -14,6 +14,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.UiScrollable
+import androidx.test.uiautomator.UiSelector
 import com.vmenon.mpo.CucumberTestMPOApplication
 import io.cucumber.java.After
 import io.cucumber.java.Before
@@ -263,6 +266,15 @@ open class CommonSteps : BaseSteps() {
         clickOnContentDescription(description)
     }
 
+    @When("I scroll and click on text {string}")
+    fun i_scroll_and_click_on_text(text: String) {
+        UiScrollable(UiSelector().scrollable(true)).getChildByText(
+            UiSelector().text(text),
+            text,
+            true
+        ).click()
+    }
+
     @When("I press enter")
     fun i_press_enter() {
         pressKeyCode(KeyEvent.KEYCODE_ENTER)
@@ -308,6 +320,11 @@ open class CommonSteps : BaseSteps() {
     @When("I go back")
     fun i_go_back() {
         pressBack()
+    }
+
+    @When("I slide seekbar field {string} to the right")
+    fun i_slide_seekbar_field(resName: String) {
+        swipeSeekBar(resName, Direction.RIGHT, .5f)
     }
 
     @Then("I should see {string} on the display")
