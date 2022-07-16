@@ -11,6 +11,8 @@ ext.excludes = [
         '**/Manifest*.*',
         '**/*Test*.*',
         'android/**/*.*',
+        '**/*_Impl*',
+        '**/AndroidBiometricsManager*',
         // butterKnife
         '**/*$ViewInjector*.*',
         '**/*$ViewBinder*.*',
@@ -43,7 +45,7 @@ ext.excludes = [
         '**/*_MembersInjector.class',
         '**/*_Factory*.*',
         '**/*_Provide*Factory*.*',
-        '**/*Extensions*.*'
+        '**/*Extensions*.*',
 ]
 
 subprojects.each {subproject ->

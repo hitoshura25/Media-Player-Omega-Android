@@ -21,6 +21,8 @@ dependencies {
     implementation project(':navigation_framework')
     implementation project(':common_view')
 
+    testImplementation project(':common_test')
+
     implementation Libs.kotlin_stdlib_jdk8
     implementation Libs.lifecycle_viewmodel_ktx
     implementation Libs.lifecycle_runtime_ktx
