@@ -322,9 +322,9 @@ open class CommonSteps : BaseSteps() {
         pressBack()
     }
 
-    @When("I slide seekbar field {string} to the right")
+    @When("I click on center of field {string}")
     fun i_slide_seekbar_field(resName: String) {
-        swipeSeekBar(resName, Direction.RIGHT, .5f)
+        clickOnCenter(resName)
     }
 
     @Then("I should see {string} on the display")

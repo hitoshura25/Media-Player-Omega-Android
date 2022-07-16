@@ -70,7 +70,7 @@ Feature: Subscribe feature
     And The dynamic feature module download completes
     Then I should see "com.vmenon.mpo.player_feature.actionButton" on the display
     When I click on "com.vmenon.mpo.player_feature.actionButton"
-    And I slide seekbar field "com.vmenon.mpo.player_feature.seekBar" to the right
+    And I click on center of field "com.vmenon.mpo.player_feature.seekBar"
     Then I should see content description "Play Media" on the display
     When I click on "com.vmenon.mpo.player_feature.actionButton"
     Then I should see content description "Pause Media" on the display

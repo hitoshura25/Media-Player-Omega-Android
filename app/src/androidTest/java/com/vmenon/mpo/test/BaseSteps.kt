@@ -203,8 +203,10 @@ open class BaseSteps {
         device.pressKeyCode(keyCode)
     }
 
-    fun swipeSeekBar(resName: String, direction: Direction, percent: Float) {
-        find(resName)!!.swipe(direction, percent)
+    fun clickOnCenter(resName: String) {
+        val seekBar = find(resName)!!
+        val bounds = seekBar.visibleBounds
+        device.click(bounds.centerX(), bounds.centerY())
     }
 
     fun waitForEpisodeToDownload(episodeName: String) {
