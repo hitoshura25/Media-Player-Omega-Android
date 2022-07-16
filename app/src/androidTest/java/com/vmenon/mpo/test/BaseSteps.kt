@@ -64,9 +64,13 @@ open class BaseSteps {
         }
     }
 
-    fun clickOnText(text: String, timeout: Long = TRANSITION_TIMEOUT) {
+    fun clickOnText(
+        text: String,
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
+    ) {
         log("clickOnText $text")
-        findText(text, timeout)!!.click()
+        findText(text, timeout, useSubstring)!!.click()
     }
 
     fun clickOnTextIfVisible(text: String, timeout: Long = TRANSITION_TIMEOUT): Boolean {
@@ -113,11 +117,12 @@ open class BaseSteps {
         )
     }
 
-    private fun findText(
+    protected fun findText(
         text: String,
-        timeout: Long = TRANSITION_TIMEOUT
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
     ): UiObject2? = device.wait(
-        Until.findObject(By.text(text)), timeout
+        Until.findObject(if (useSubstring) By.textContains(text) else By.text(text)), timeout
     )
 
     private fun findContentDescription(
@@ -198,6 +203,12 @@ open class BaseSteps {
         device.pressKeyCode(keyCode)
     }
 
+    fun clickOnCenter(resName: String) {
+        val seekBar = find(resName)!!
+        val bounds = seekBar.visibleBounds
+        device.click(bounds.centerX(), bounds.centerY())
+    }
+
     fun waitForEpisodeToDownload(episodeName: String) {
         val idlingResource = EpisodeDownloadedIdlingResource(episodeName)
         IdlingRegistry.getInstance().register(idlingResource)
@@ -207,6 +218,23 @@ open class BaseSteps {
             )
         )
         IdlingRegistry.getInstance().unregister(idlingResource)
+    }
+
+    fun clickOnTextUntilOtherTextIsVisible(
+        clickOnText: String,
+        displayText: String,
+        retries: Int = 3,
+        currentTry: Int = 0
+    ) {
+        log("clickOnTextUntilOtherTextIsVisible $clickOnText, $displayText, attempt $currentTry")
+        if (findText(text = displayText, timeout = 100L) == null) {
+            clickOnText(clickOnText)
+            clickOnTextUntilOtherTextIsVisible(clickOnText, displayText, retries, currentTry + 1)
+        }
+    }
+
+    fun pressBack() {
+        device.pressBack()
     }
 
     @Throws(UiObjectNotFoundException::class)
@@ -281,6 +309,9 @@ open class BaseSteps {
 
         override fun dispatch(request: RecordedRequest): MockResponse {
             log("MockWebDispatcher handling request: ${request.path}")
+            assert(requestMap[request.path] != null) {
+                "No response exists for path: ${request.path}"
+            }
             return requestMap[request.path]!!
         }
     }

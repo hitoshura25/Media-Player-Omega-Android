@@ -9,7 +9,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.NavDestination
@@ -43,22 +42,7 @@ class DefaultNavigationController(
         navigationDestination: NavigationDestination<L>,
         navigationParams: P
     ) {
-        if (navigationDestination is DrawerNavigationDestination) {
-            handleDrawerNavigationRequest(navigationDestination, navigationOrigin)
-            return
-        }
-
         when (navigationDestination) {
-            is ActivityDestination -> handleActivityDestination(
-                navigationOrigin,
-                navigationDestination,
-                navigationParams
-            )
-            is FragmentDestination -> handleFragmentDestination(
-                navigationOrigin,
-                navigationDestination,
-                navigationParams
-            )
             is AndroidNavigationDestination -> handleAndroidNavigationDestination(
                 navigationOrigin,
                 navigationDestination,
@@ -252,67 +236,6 @@ class DefaultNavigationController(
                 .setLaunchSingleTop(true)
                 .build()
         )
-    }
-
-    private fun handleDrawerNavigationRequest(
-        navigationDestination: DrawerNavigationDestination,
-        navigationOrigin: NavigationOrigin<*>
-    ) {
-        val context = when (navigationOrigin) {
-            is Context -> navigationOrigin
-            is Fragment -> navigationOrigin.requireActivity()
-            else -> null
-        } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
-
-        startActivityForNavigation(
-            Intent(context, navigationDestination.destinationClazz),
-            context
-        )
-    }
-
-    private fun handleActivityDestination(
-        navigationOrigin: NavigationOrigin<*>,
-        navigationDestination: ActivityDestination<*>,
-        params: NavigationParams
-    ) {
-        val context = when (navigationOrigin) {
-            is Context -> navigationOrigin
-            is Fragment -> navigationOrigin.activity
-            else -> null
-        } ?: throw IllegalArgumentException("navigationOrigin needs to be a Context or a Fragment!")
-        val intent = navigationDestination.createIntent(
-            context,
-            NAVIGATION_PARAMS_NAME,
-            params
-        )
-        startActivityForNavigation(intent, context)
-    }
-
-    private fun handleFragmentDestination(
-        navigationOrigin: NavigationOrigin<*>,
-        navigationDestination: FragmentDestination<*>,
-        params: NavigationParams
-    ) {
-        val fragmentManager: FragmentManager = when (navigationOrigin) {
-            is FragmentActivity -> {
-                navigationOrigin.supportFragmentManager
-            }
-            is Fragment -> {
-                navigationOrigin.parentFragmentManager
-            }
-            else -> {
-                throw IllegalArgumentException("navigationOrigin needs to be an Activity or a Fragment!")
-            }
-        }
-
-        val fragment =
-            fragmentManager.findFragmentByTag(navigationDestination.tag)
-                ?: navigationDestination.fragmentCreator()
-        fragment.arguments = Bundle().apply { putSerializable(NAVIGATION_PARAMS_NAME, params) }
-        fragmentManager.beginTransaction()
-            .replace(navigationDestination.containerId, fragment, navigationDestination.tag)
-            .addToBackStack(null)
-            .commit()
     }
 
     private fun startActivityForNavigation(intent: Intent, context: Context) {

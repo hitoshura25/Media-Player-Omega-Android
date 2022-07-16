@@ -10,13 +10,15 @@ import kotlinx.coroutines.flow.transformLatest
 class ListenForPlaybackStateChanges(
     private val playerEngine: MediaPlayerEngine,
     private val clock: Clock,
-    private val threadUtil: ThreadUtil
+    private val threadUtil: ThreadUtil,
+    private val initialDelay: Long = 100L,
+    private val delay: Long = 1000L
 ) {
     @ExperimentalCoroutinesApi
     operator fun invoke() = playerEngine.playbackStateChanges.transformLatest { playbackState ->
         emit(playbackState)
         val comparisonTime = clock.currentTimeMillis()
-        threadUtil.delay(100) // Initial delay
+        threadUtil.delay(initialDelay) // Initial delay
         while (true) {
             var estimatedPosition = playbackState.positionInMillis
             if (playbackState.state == PlaybackState.State.PLAYING) {
@@ -27,7 +29,7 @@ class ListenForPlaybackStateChanges(
                 estimatedPosition += (timeDelta.toInt() * playbackState.playbackSpeed).toLong()
             }
             emit(playbackState.copy(positionInMillis = estimatedPosition))
-            threadUtil.delay(1000L)
+            threadUtil.delay(delay)
         }
     }
 }

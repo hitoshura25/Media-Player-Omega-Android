@@ -16,21 +16,26 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## Android
-### android build_feature
+### android build_and_deploy_feature
 ```
-fastlane android build_feature
+fastlane android build_and_deploy_feature
 ```
-Feature build
-### android release
+Build and Deploy Feature Branch
+### android build_and_deploy_release
 ```
-fastlane android release
+fastlane android build_and_deploy_release
 ```
-Release
+Build and Deploy Release
 ### android test
 ```
 fastlane android test
 ```
 Test
+### android build_release_bundle
+```
+fastlane android build_release_bundle
+```
+Build Release Bundle
 ### android increment_version
 ```
 fastlane android increment_version

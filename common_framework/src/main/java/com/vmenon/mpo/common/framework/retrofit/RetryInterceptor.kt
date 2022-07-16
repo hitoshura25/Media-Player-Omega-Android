@@ -10,10 +10,13 @@ import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 
 class RetryInterceptor(
-    private val maxRetries: Int,
+    maxRetries: Int,
     private val logger: Logger,
     private val threadUtil: ThreadUtil
 ) : Interceptor {
+
+    private val maxAttempts = maxRetries + 1 // Don't include first attempt as a retry
+
     override fun intercept(chain: Interceptor.Chain): Response {
         var currentAttempt = 0
         var response: Response? = null
@@ -36,7 +39,7 @@ class RetryInterceptor(
                 logger.println("Going to retry with attempt $currentAttempt after delay of $currentDelay")
                 threadUtil.sleep(currentDelay)
 
-                if (currentAttempt < maxRetries) {
+                if (currentAttempt < maxAttempts) {
                     currentDelay = (currentDelay * delayFactor)
                 } else {
                     break

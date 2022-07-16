@@ -97,6 +97,7 @@
                 android:layout_width="128dp"
                 android:layout_height="128dp"
                 android:layout_marginRight="32dp"
+                android:contentDescription="@string/play_media"
                 android:src="@drawable/ic_play_circle_filled_white_48dp"/>
 
             <ImageView

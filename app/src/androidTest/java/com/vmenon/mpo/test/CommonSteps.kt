@@ -3,12 +3,21 @@ package com.vmenon.mpo.test
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 import android.view.KeyEvent
+import androidx.biometric.BiometricManager
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.UiScrollable
+import androidx.test.uiautomator.UiSelector
+import com.vmenon.mpo.CucumberTestMPOApplication
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -188,6 +197,45 @@ open class CommonSteps : BaseSteps() {
         clickOnText("NO")
     }
 
+    @Suppress("DEPRECATION")
+    @When("I choose to enroll in biometrics")
+    fun i_choose_to_enroll_in_biometrics() {
+        val intentAction = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> Settings.ACTION_BIOMETRIC_ENROLL
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> Settings.ACTION_FINGERPRINT_ENROLL
+            else -> Settings.ACTION_SECURITY_SETTINGS
+        }
+        Intents.intending(
+            AllOf.allOf(
+                IntentMatchers.hasAction(intentAction)
+            )
+        ).respondWithFunction {
+            (ApplicationProvider.getApplicationContext<Context>() as CucumberTestMPOApplication).mockBiometricsManager.mockedAuthType =
+                BiometricManager.BIOMETRIC_SUCCESS
+            Instrumentation.ActivityResult(Activity.RESULT_OK, Intent())
+        }
+        clickOnText("YES")
+    }
+
+    // TODO: Currently unused, but maybe can be if we actually want to do REAL test of Biometrics
+    @When("I setup my device pin with {string}")
+    fun i_setup_device_pin_with(pin: String) {
+        if (findText(text = "Re-enter your PIN", timeout = 200L) != null) {
+            i_enter_into_field("1111", "com.android.settings.password_entry")
+            i_press_enter()
+        } else {
+            i_click_on_text_containing("PIN")
+            i_enter_into_field("1111", "com.android.settings.password_entry")
+            i_click_on_text("NEXT")
+            i_enter_into_field("1111", "com.android.settings.password_entry")
+            i_click_on_text("CONFIRM")
+            i_click_on_text("DONE")
+        }
+
+        i_click_on_text_until_text_is_displayed("MORE", "I AGREE")
+        i_click_on_text("I AGREE")
+    }
+
     @When("I click on {string}")
     fun i_click_on(resName: String) {
         clickOn(resName)
@@ -196,6 +244,16 @@ open class CommonSteps : BaseSteps() {
     @When("I click on text {string}")
     fun i_click_on_text(text: String) {
         clickOnText(text)
+    }
+
+    @When("I click on text containing {string}")
+    fun i_click_on_text_containing(text: String) {
+        clickOnText(text = text, useSubstring = true)
+    }
+
+    @When("I click on {string} if visible")
+    fun i_click_on_if_visible(resName: String) {
+        clickOnIfVisible(resName)
     }
 
     @When("I enter {string} into the {string} field")
@@ -208,9 +266,23 @@ open class CommonSteps : BaseSteps() {
         clickOnContentDescription(description)
     }
 
+    @When("I scroll and click on text {string}")
+    fun i_scroll_and_click_on_text(text: String) {
+        UiScrollable(UiSelector().scrollable(true)).getChildByText(
+            UiSelector().text(text),
+            text,
+            true
+        ).click()
+    }
+
     @When("I press enter")
     fun i_press_enter() {
         pressKeyCode(KeyEvent.KEYCODE_ENTER)
+    }
+
+    @When("I click on text {string} until text {string} is displayed")
+    fun i_click_on_text_until_text_is_displayed(clickOnText: String, displayText: String) {
+        clickOnTextUntilOtherTextIsVisible(clickOnText, displayText)
     }
 
     @When("The dynamic feature module download completes")
@@ -243,6 +315,16 @@ open class CommonSteps : BaseSteps() {
     @When("I wait for episode {string} to finish downloading")
     fun i_wait_for_episode_to_finish_downloading(episodeName: String) {
         waitForEpisodeToDownload(episodeName)
+    }
+
+    @When("I go back")
+    fun i_go_back() {
+        pressBack()
+    }
+
+    @When("I click on center of field {string}")
+    fun i_slide_seekbar_field(resName: String) {
+        clickOnCenter(resName)
     }
 
     @Then("I should see {string} on the display")

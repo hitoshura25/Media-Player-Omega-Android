@@ -1,6 +1,7 @@
 package com.vmenon.mpo.player.usecases
 
 import com.vmenon.mpo.player.domain.MediaPlayerEngine
+import com.vmenon.mpo.test.TestData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
@@ -12,8 +13,8 @@ class PlayMediaTest {
     private val playerEngine: MediaPlayerEngine = mock()
     @Test
     fun playMedia() = runBlockingTest {
-        val usecase = PlayMedia(playerEngine)
-        usecase.invoke(TestData.playbackMediaRequest)
+        val useCase = PlayMedia(playerEngine)
+        useCase.invoke(TestData.playbackMediaRequest)
         verify(playerEngine).play(TestData.playbackMediaRequest)
     }
 }

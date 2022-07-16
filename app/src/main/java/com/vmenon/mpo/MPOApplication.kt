@@ -15,26 +15,19 @@ import com.vmenon.mpo.di.*
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.downloads.framework.di.dagger.DaggerDownloadsFrameworkComponent
 import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
-import com.vmenon.mpo.navigation.framework.di.dagger.DaggerNavigationFrameworkComponent
-import com.vmenon.mpo.persistence.di.dagger.DaggerPersistenceComponent
-import com.vmenon.mpo.persistence.di.dagger.PersistenceComponent
 import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
-import com.vmenon.mpo.system.framework.AndroidBuildConfigProvider
-import com.vmenon.mpo.system.framework.di.dagger.DaggerSystemFrameworkComponent
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import java.util.concurrent.TimeUnit
 
 open class MPOApplication : SplitCompatApplication(),
     CommonFrameworkComponentProvider, SystemFrameworkComponentProvider, AuthComponentProvider,
-    PlayerFrameworkComponentProvider {
+    PlayerFrameworkComponentProvider, AppComponentProvider {
 
-    lateinit var appComponent: AppComponent
-    lateinit var playerFrameworkComponent: PlayerFrameworkComponent
-
-    lateinit var systemFrameworkComponent: SystemFrameworkComponent
+    private lateinit var appComponent: AppComponent
+    private lateinit var playerFrameworkComponent: PlayerFrameworkComponent
     private lateinit var componentProviders: DaggerComponentProviders
 
     override fun attachBaseContext(base: Context?) {
@@ -45,23 +38,7 @@ open class MPOApplication : SplitCompatApplication(),
 
     override fun onCreate() {
         super.onCreate()
-        systemFrameworkComponent = DaggerSystemFrameworkComponent.builder()
-            .application(this)
-            .buildConfigProvider(
-                AndroidBuildConfigProvider(
-                    BuildConfig.VERSION_NAME,
-                    BuildConfig.buildNumber
-                )
-            ).build()
-        componentProviders = DaggerComponentProviders(
-            systemFrameworkComponent,
-            DaggerNavigationFrameworkComponent.builder()
-                .systemFrameworkComponent(systemFrameworkComponent)
-                .hostFragmentId(R.id.nav_host_fragment)
-                .build(),
-            createPersistenceComponent(),
-            apiUrl()
-        )
+        componentProviders = createComponentProviders()
         val downloadsFrameworkComponent = DaggerDownloadsFrameworkComponent.builder()
             .commonFrameworkComponent(commonFrameworkComponent())
             .build()
@@ -69,7 +46,6 @@ open class MPOApplication : SplitCompatApplication(),
         val libraryFrameworkComponent = DaggerLibraryFrameworkComponent.builder()
             .commonFrameworkComponent(commonFrameworkComponent())
             .build()
-
         appComponent = DaggerAppComponent.builder()
             .commonFrameworkComponent(commonFrameworkComponent())
             .downloadsFrameworkComponent(downloadsFrameworkComponent)
@@ -101,20 +77,22 @@ open class MPOApplication : SplitCompatApplication(),
         )
     }
 
-    protected open fun apiUrl(): String =
-        "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
-
-    protected open fun createPersistenceComponent(): PersistenceComponent =
-        DaggerPersistenceComponent.builder()
-            .systemFrameworkComponent(systemFrameworkComponent)
-            .build()
+    protected open fun createComponentProviders(): DaggerComponentProviders =
+        DaggerComponentProviders(
+            this, "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
+        )
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent =
-        componentProviders.commonFrameworkComponent()
+        componentProviders.commonFrameworkComponent
 
     override fun systemFrameworkComponent(): SystemFrameworkComponent =
-        componentProviders.systemFrameworkComponent()
+        componentProviders.systemFrameworkComponent
 
-    override fun authComponent(): AuthComponent = componentProviders.authComponent()
-    override fun playerFrameworkComponent(): PlayerFrameworkComponent = playerFrameworkComponent
+    override fun authComponent(): AuthComponent =
+        componentProviders.authComponent
+
+    override fun playerFrameworkComponent(): PlayerFrameworkComponent =
+        playerFrameworkComponent
+
+    override fun appComponent(): AppComponent = appComponent
 }

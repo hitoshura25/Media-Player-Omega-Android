@@ -74,7 +74,6 @@ android {
     adbOptions {
         installOptions '-g'
     }
-    testCoverage.jacocoVersion = '0.8.7'
 }
 
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
@@ -242,7 +241,9 @@ task generateMockWebServerCertificate {
 
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
-    mergeDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+    generateDebugResValues.dependsOn generateMockWebServerCertificate
+    generateDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+    buildBundleApksDebug.dependsOn generateMockWebServerCertificate
 
     // Skip connectedAndroidTest in this module since we're using Cucumber and need to use the
     // bundleTool in order to test with the dynamic feature modules

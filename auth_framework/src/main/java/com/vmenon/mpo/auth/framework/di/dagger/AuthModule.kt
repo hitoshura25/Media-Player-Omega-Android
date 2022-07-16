@@ -6,8 +6,6 @@ import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
 import com.vmenon.mpo.auth.framework.AuthServiceImpl
 import com.vmenon.mpo.auth.framework.Authenticator
-import com.vmenon.mpo.auth.framework.SharedPrefsAuthState
-import com.vmenon.mpo.auth.framework.biometrics.AndroidBiometricsManager
 import com.vmenon.mpo.auth.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.system.domain.Logger
 import dagger.Module
@@ -24,12 +22,6 @@ object AuthModule {
     ): AuthService =
         AuthServiceImpl(authState, authenticator, biometricsManager)
 
-    @Provides
-    @AuthScope
-    fun provideAuthState(
-        application: Application
-    ): AuthState = SharedPrefsAuthState(application)
-
     // TODO: Probably makes more sense to move this into OpenIdAuthModule and have AuthComponent
     // depend on OpenIdAuthComponent
     @Provides
@@ -40,9 +32,4 @@ object AuthModule {
         logger: Logger
     ): Authenticator =
         OpenIdAuthenticator(application, authState, logger)
-
-    @Provides
-    @AuthScope
-    fun provideBiometricsManager(application: Application, logger: Logger): BiometricsManager =
-        AndroidBiometricsManager(application, logger)
 }

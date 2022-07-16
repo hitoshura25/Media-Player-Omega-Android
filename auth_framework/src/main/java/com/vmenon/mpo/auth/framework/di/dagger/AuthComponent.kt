@@ -7,12 +7,16 @@ import com.vmenon.mpo.auth.framework.Authenticator
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.Component
 
-@Component(modules = [AuthModule::class], dependencies = [SystemFrameworkComponent::class])
+@Component(
+    modules = [AuthModule::class, AuthStateModule::class],
+    dependencies = [SystemFrameworkComponent::class, BiometricsComponent::class]
+)
 @AuthScope
 interface AuthComponent {
     @Component.Builder
     interface Builder {
         fun systemFrameworkComponent(component: SystemFrameworkComponent): Builder
+        fun biometricsComponent(component: BiometricsComponent): Builder
         fun build(): AuthComponent
     }
 

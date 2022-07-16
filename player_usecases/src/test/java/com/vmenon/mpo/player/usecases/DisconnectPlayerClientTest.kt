@@ -15,8 +15,8 @@ class DisconnectPlayerClientTest {
 
     @Test
     fun disconnectPlayerClient() = runBlockingTest {
-        val usecase = DisconnectPlayerClient(playerEngine)
-        usecase.invoke(playerClient)
+        val useCase = DisconnectPlayerClient(playerEngine)
+        useCase.invoke(playerClient)
         verify(playerEngine).disconnectClient(playerClient)
     }
 }

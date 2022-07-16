@@ -2,9 +2,8 @@ package com.vmenon.mpo.my_library.usecases
 
 import com.vmenon.mpo.common.domain.LoadingState
 import com.vmenon.mpo.common.domain.SuccessState
-import com.vmenon.mpo.my_library.domain.EpisodeModel
 import com.vmenon.mpo.my_library.domain.MyLibraryService
-import com.vmenon.mpo.my_library.domain.ShowModel
+import com.vmenon.mpo.test.TestData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest

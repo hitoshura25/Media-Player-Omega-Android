@@ -1,6 +1,7 @@
 package com.vmenon.mpo.auth.framework
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.vmenon.mpo.auth.data.AuthState
 import com.vmenon.mpo.auth.domain.CipherEncryptedData
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
-class SharedPrefsAuthState(context: Context) : AuthState {
+open class SharedPrefsAuthState(context: Context) : AuthState {
     private val cryptographyManager = CryptographyManager()
     private val gson = Gson()
     private val sharedPreferences = context.getSharedPreferences(
@@ -23,13 +24,16 @@ class SharedPrefsAuthState(context: Context) : AuthState {
         Context.MODE_PRIVATE
     )
     private var biometricEncryptionCipher: Cipher? = null
-    private var biometricDecryptionCipher: Cipher? = null
+
+    @VisibleForTesting
+    protected var biometricDecryptionCipher: Cipher? = null
 
     private val credentialState = MutableSharedFlow<CredentialsResult>(replay = 1)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private var storedCredentials: CredentialsResult? = null
-        private set(value) {
+    @VisibleForTesting
+    protected var storedCredentials: CredentialsResult? = null
+        protected set(value) {
             if (field != value) {
                 field = value
                 scope.launch {

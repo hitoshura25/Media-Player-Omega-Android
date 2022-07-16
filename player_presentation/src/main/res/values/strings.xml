@@ -1,3 +1,4 @@
 <resources>
-
+    <string name="play_media">Play Media</string>
+    <string name="pause_media">Pause Media</string>
 </resources>

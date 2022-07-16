@@ -151,12 +151,15 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
         when (state) {
             PlaybackState.State.PLAYING -> {
                 binding.actionButton.setImageResource(R.drawable.ic_pause_circle_filled_white_48dp)
+                binding.actionButton.contentDescription = getString(com.vmenon.mpo.player.presentation.R.string.pause_media)
             }
             PlaybackState.State.PAUSED -> {
                 binding.actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
+                binding.actionButton.contentDescription = getString(com.vmenon.mpo.player.presentation.R.string.play_media)
             }
             PlaybackState.State.NONE, PlaybackState.State.STOPPED -> {
                 binding.actionButton.setImageResource(R.drawable.ic_play_circle_filled_white_48dp)
+                binding.actionButton.contentDescription = getString(com.vmenon.mpo.player.presentation.R.string.play_media)
             }
             PlaybackState.State.BUFFERING -> {
             }

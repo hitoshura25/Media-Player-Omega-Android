@@ -15,9 +15,16 @@ import javax.crypto.spec.GCMParameterSpec
  */
 interface CryptographyManager {
 
-    fun getInitializedCipherForEncryption(keyName: String): Cipher
+    fun getInitializedCipherForEncryption(
+        keyName: String,
+        userAuthenticationRequired: Boolean
+    ): Cipher
 
-    fun getInitializedCipherForDecryption(keyName: String, initializationVector: ByteArray): Cipher
+    fun getInitializedCipherForDecryption(
+        keyName: String,
+        initializationVector: ByteArray,
+        userAuthenticationRequired: Boolean
+    ): Cipher
 
     /**
      * The Cipher created with [getInitializedCipherForEncryption] is used here
@@ -44,19 +51,23 @@ private class CryptographyManagerImpl : CryptographyManager {
     private val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
     private val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 
-    override fun getInitializedCipherForEncryption(keyName: String): Cipher {
+    override fun getInitializedCipherForEncryption(
+        keyName: String,
+        userAuthenticationRequired: Boolean
+    ): Cipher {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(keyName)
+        val secretKey = getOrCreateSecretKey(keyName, userAuthenticationRequired)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         return cipher
     }
 
     override fun getInitializedCipherForDecryption(
         keyName: String,
-        initializationVector: ByteArray
+        initializationVector: ByteArray,
+        userAuthenticationRequired: Boolean
     ): Cipher {
         val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey(keyName)
+        val secretKey = getOrCreateSecretKey(keyName, userAuthenticationRequired)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
         return cipher
     }
@@ -76,7 +87,10 @@ private class CryptographyManagerImpl : CryptographyManager {
         return Cipher.getInstance(transformation)
     }
 
-    private fun getOrCreateSecretKey(keyName: String): SecretKey {
+    private fun getOrCreateSecretKey(
+        keyName: String,
+        userAuthenticationRequired: Boolean
+    ): SecretKey {
         // If Secretkey was previously created for that keyName, then grab and return it.
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
         keyStore.load(null) // Keystore must be loaded before it can be accessed
@@ -91,7 +105,7 @@ private class CryptographyManagerImpl : CryptographyManager {
             setBlockModes(ENCRYPTION_BLOCK_MODE)
             setEncryptionPaddings(ENCRYPTION_PADDING)
             setKeySize(KEY_SIZE)
-            setUserAuthenticationRequired(true)
+            setUserAuthenticationRequired(userAuthenticationRequired)
         }
 
         val keyGenParams = paramsBuilder.build()

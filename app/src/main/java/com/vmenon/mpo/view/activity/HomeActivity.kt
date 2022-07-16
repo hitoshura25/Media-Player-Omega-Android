@@ -10,11 +10,11 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.splitcompat.SplitCompat
-import com.vmenon.mpo.MPOApplication
 import com.vmenon.mpo.R
 import com.vmenon.mpo.common.framework.livedata.observeUnhandled
 import com.vmenon.mpo.databinding.ActivityMainBinding
 import com.vmenon.mpo.di.ActivityComponent
+import com.vmenon.mpo.di.AppComponentProvider
 import com.vmenon.mpo.model.BiometricsState.*
 import com.vmenon.mpo.navigation.domain.NavigationOrigin
 import com.vmenon.mpo.navigation.domain.NoNavigationParams
@@ -28,7 +28,7 @@ class HomeActivity : BaseActivity<ActivityComponent>(),
     private lateinit var binding: ActivityMainBinding
 
     override fun setupComponent(context: Context): ActivityComponent =
-        (context as MPOApplication).appComponent.activityComponent().create()
+        (context as AppComponentProvider).appComponent().activityComponent().create()
 
     override fun inject(component: ActivityComponent) {
         component.inject(this)

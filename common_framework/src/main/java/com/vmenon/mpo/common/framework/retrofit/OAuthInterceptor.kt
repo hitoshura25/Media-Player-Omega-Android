@@ -36,7 +36,8 @@ class OAuthInterceptor(
         if (response.response.code() == HttpURLConnection.HTTP_UNAUTHORIZED
             && !response.tokenRefreshed
         ) {
-            return proceedWithCredentials(chain, response.newRequest).response
+            val retriedResponse = proceedWithCredentials(chain, response.newRequest)
+            return retriedResponse.response
         }
         return response.response
     }
@@ -66,7 +67,7 @@ class OAuthInterceptor(
         }
     }
 
-    private data class ResponseWithCredentials(
+    internal data class ResponseWithCredentials(
         val newRequest: Request,
         val response: Response,
         val tokenRefreshed: Boolean
