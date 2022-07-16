@@ -79,6 +79,7 @@ open class AndroidBiometricsManager(context: Context, private val logger: Logger
     }
 
     private fun handleBiometricFlow(activity: AppCompatActivity, request: PromptRequest) {
+        logger.println("AndroidBiometrics::handleBiometricFlow")
         when (canAuthenticate(BIOMETRIC_WEAK)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
                 when (request.reason) {
@@ -95,6 +96,7 @@ open class AndroidBiometricsManager(context: Context, private val logger: Logger
                 }
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> scope.launch {
+                logger.println("AndroidBiometricsManager::promptToEnroll.emit(${request.reason})")
                 promptToEnroll.emit(request)
             }
             else -> {
@@ -108,6 +110,7 @@ open class AndroidBiometricsManager(context: Context, private val logger: Logger
         request: PromptRequest,
         cipherEncryptedData: CipherEncryptedData
     ) {
+        logger.println("AndroidBiometricsManager::handleBiometricFlowForDecryption(${request.reason})")
         val cipher = cryptographyManager.getInitializedCipherForDecryption(
             secretKeyName,
             cipherEncryptedData.initializationVector,
@@ -126,6 +129,7 @@ open class AndroidBiometricsManager(context: Context, private val logger: Logger
         activity: AppCompatActivity,
         request: PromptRequest
     ) {
+        logger.println("AndroidBiometricsManager::handleBiometricFlowForEncryption(${request.reason})")
         val cipher = cryptographyManager.getInitializedCipherForEncryption(
             secretKeyName,
             userAuthenticationRequired
@@ -149,17 +153,17 @@ open class AndroidBiometricsManager(context: Context, private val logger: Logger
 
             override fun onAuthenticationError(errCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errCode, errString)
-                logger.println("errCode is $errCode and errString is: $errString")
+                logger.println("AndroidBiometricsManager::errCode is $errCode and errString is: $errString")
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                logger.println("User biometric rejected.")
+                logger.println("AndroidBiometricsManager::User biometric rejected.")
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                logger.println("Authentication was successful")
+                logger.println("AndroidBiometricsManager::Authentication was successful")
                 processSuccess(result.cryptoObject)
             }
         }

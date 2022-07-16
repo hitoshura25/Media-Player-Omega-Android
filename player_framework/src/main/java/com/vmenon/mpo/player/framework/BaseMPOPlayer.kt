@@ -2,25 +2,27 @@ package com.vmenon.mpo.player.framework
 
 import android.media.MediaMetadataRetriever
 import android.os.Handler
-import android.os.Looper
 import com.vmenon.mpo.extensions.useFileDescriptor
 import com.vmenon.mpo.player.framework.MPOPlayer.MediaPlayerListener
 import com.vmenon.mpo.player.framework.MPOPlayer.VideoSizeListener
-import java.io.*
+import java.io.File
 import java.lang.ref.WeakReference
-import java.util.concurrent.Executors
+import java.util.concurrent.Executor
 
-abstract class BaseMPOPlayer : MPOPlayer {
+abstract class BaseMPOPlayer(
+    private val mainThreadHandler: Handler,
+    private val executor: Executor,
+) : MPOPlayer {
 
     protected var mListener: MediaPlayerListener? = null
     protected var mVideoSizeListener: VideoSizeListener? = null
 
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
-    private val executor = Executors.newSingleThreadExecutor()
     @Volatile
     private var videoSizeCalculated = false
+
     @Volatile
     private var videoWidth = -1
+
     @Volatile
     private var videoHeight = -1
 

@@ -12,6 +12,7 @@ import com.vmenon.mpo.search.domain.ShowSearchResultEpisodeModel
 import com.vmenon.mpo.search.domain.ShowSearchResultModel
 
 object TestData {
+    const val SHOW_RESULT_ID = 1L
     val show = ShowModel(
         name = "show",
         artworkUrl = "artwork.com",
@@ -41,7 +42,7 @@ object TestData {
         author = "author",
         feedUrl = "feedUrl",
         description = "description",
-        id = 1L
+        id = SHOW_RESULT_ID
     )
     val showSearchResultEpisodeModel = ShowSearchResultEpisodeModel(
         name = "episode",

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/subscribed_shows_navigation_graph">
+
+    <include-dynamic
+        android:id="@+id/search_nav_graph"
+        app:graphResName="search_nav_graph_dynamic"
+        app:moduleName="search_feature"/>
+
+    <include-dynamic
+        android:id="@+id/subscribed_shows_navigation_graph"
+        app:graphResName="subscribed_shows_navigation_graph_dynamic"
+        app:moduleName="my_library_feature"/>
+
+    <include-dynamic
+        android:id="@+id/my_library_nav_graph"
+        app:graphResName="my_library_nav_graph_dynamic"
+        app:moduleName="my_library_feature"/>
+
+    <include-dynamic
+        android:id="@+id/downloads_nav_graph"
+        app:graphResName="downloads_nav_graph_dynamic"
+        app:moduleName="downloads_feature"/>
+
+    <include-dynamic
+        android:id="@+id/login_nav_graph"
+        app:graphResName="login_nav_graph_dynamic"
+        app:moduleName="login_feature"/>
+
+    <include-dynamic
+        android:id="@+id/player_nav_graph"
+        app:graphResName="player_nav_graph_dynamic"
+        app:moduleName="player_feature" />
+
+    <action
+        android:id="@+id/action_global_player_nav_graph"
+        app:destination="@id/player_nav_graph">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.navigation.domain.player.PlayerNavigationParams"
+            app:nullable="true" />
+    </action>
+    <action
+        android:id="@+id/action_global_search_nav_graph"
+        app:destination="@id/search_nav_graph">
+        <argument
+            android:name="params"
+            app:argType="com.vmenon.mpo.navigation.domain.search.SearchNavigationParams" />
+    </action>
+</navigation>

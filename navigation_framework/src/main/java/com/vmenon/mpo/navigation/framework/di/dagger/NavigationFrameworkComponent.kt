@@ -5,9 +5,7 @@ import com.vmenon.mpo.navigation.domain.NavigationDestination
 import com.vmenon.mpo.navigation.domain.player.PlayerNavigationLocation
 import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
-import dagger.BindsInstance
 import dagger.Component
-import javax.inject.Named
 
 @Component(
     dependencies = [SystemFrameworkComponent::class],
@@ -17,9 +15,8 @@ import javax.inject.Named
 interface NavigationFrameworkComponent {
     @Component.Builder
     interface Builder {
+        fun navigationFrameworkModule(module: NavigationFrameworkModule): Builder
         fun systemFrameworkComponent(component: SystemFrameworkComponent): Builder
-        @BindsInstance
-        fun hostFragmentId(@Named("navigationHostFragmentId") hostFragmentId: Int): Builder
         fun build(): NavigationFrameworkComponent
     }
 

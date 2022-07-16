@@ -36,7 +36,7 @@ class ShowSearchResultsFragment :
     private val showSearchResultsViewModel: ShowSearchResultsViewModel by viewModel()
 
     private lateinit var adapter: ShowSearchResultsAdapter
-    private lateinit var loadingStateHelper: LoadingStateHelper
+    private var loadingStateHelper: LoadingStateHelper? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingStateHelper = LoadingStateHelper.switchWithContent(
@@ -74,9 +74,9 @@ class ShowSearchResultsFragment :
         showSearchResultsViewModel.states().observe(viewLifecycleOwner, { state ->
             state.unhandledContent()?.let { stateContent ->
                 if (stateContent.loading) {
-                    loadingStateHelper.showLoadingState()
+                    loadingStateHelper?.showLoadingState()
                 } else {
-                    loadingStateHelper.showContentState()
+                    loadingStateHelper?.showContentState()
                 }
 
                 if (stateContent.currentResults.isEmpty()) {
@@ -111,5 +111,6 @@ class ShowSearchResultsFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         showSearchResultsViewModel.clearState()
+        loadingStateHelper = null
     }
 }

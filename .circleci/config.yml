@@ -65,12 +65,19 @@ commands:
           restore-gradle-cache-post-emulator-launch: false
           test-command: ./runTests.sh
           system-image: system-images;android-29;default;x86_64
+          disable-animations: true
+          max-tries: 1
+      - store_test_results:
+          path: "*/build/reports/tests/testDebugUnitTest/*"
+
   archive_artifacts:
     steps:
       - run:
           name: Compress Artifacts
-          command: >-
-            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports
+          command: |
+            ls /tmp/android_test;
+            tar -cvzf artifacts.tar /tmp/android_test ./app/build/outputs ./build/reports */build/reports/tests/testDebugUnitTest/;
+          when: always
       - store_artifacts:
           path: artifacts.tar
   upload_coverage:
@@ -91,6 +98,7 @@ jobs:
   build-deploy-feature:
     executor:
       name: android/android-machine
+      resource-class: large
       tag: 2021.10.1
     steps:
       - increase_inotify_limit
@@ -114,6 +122,7 @@ jobs:
         type: string
     executor:
       name: android/android-machine
+      resource-class: large
       tag: 2021.10.1
     steps:
       - increase_inotify_limit
@@ -135,6 +144,7 @@ jobs:
   deploy_release:
     executor:
       name: android/android-machine
+      resource-class: large
       tag: 2021.10.1
     steps:
       - increase_inotify_limit

@@ -1,0 +1,12 @@
+apply from: "$rootProject.projectDir/android-library-common.gradle"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+dependencies {
+    implementation project(':common_view')
+
+    implementation Libs.kotlin_stdlib
+    implementation Libs.navigation_fragment_ktx
+    implementation Libs.navigation_ui_ktx
+    implementation Libs.navigation_dynamic_features_fragment
+}

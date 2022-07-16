@@ -7,11 +7,17 @@ android {
         viewBinding true
         dataBinding true
     }
+    testOptions {
+        // Used for Unit testing Android dependent elements in /test folder
+        unitTests.includeAndroidResources  = true
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
     implementation project(':auth_framework')
     implementation project(':common_framework')
+    implementation project(':login_data')
     implementation project(':login_framework')
     implementation project(':navigation_framework')
     implementation project(':common_view')
@@ -30,7 +36,9 @@ dependencies {
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
 
+    testImplementation project(':common_framework_test')
     testImplementation Libs.junit_junit
+
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.espresso_core
     androidTestImplementation Libs.annotation

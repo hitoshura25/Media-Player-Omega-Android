@@ -28,7 +28,6 @@ abstract class BaseActivity<COMPONENT : Any> : AppCompatActivity() {
         inject(component)
     }
 
-    fun requireContentView() = getContentView()!!
     fun requireLoadingView() = getLoadingView()!!
 
     abstract fun getContentView(): View?

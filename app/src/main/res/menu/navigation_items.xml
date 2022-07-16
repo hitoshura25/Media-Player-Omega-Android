@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/subscribed_shows_nav_graph"
+            android:id="@+id/subscribed_shows_navigation_graph"
             android:icon="@drawable/ic_dashboard"
             android:title="@string/home"/>
         <item

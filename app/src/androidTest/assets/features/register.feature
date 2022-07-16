@@ -21,7 +21,7 @@ Feature: Register User Successful
       | First Name | Last Name | E-mail | Password | Confirm Password |
       | Test    | Test     | test@test.com | IamGreat | IamGreat |
 
-  @smoke
+  @regression
   @register_scenario_smoke
   Scenario Outline: Valid Registration is successful using mock authentication
     Given I have launched the app

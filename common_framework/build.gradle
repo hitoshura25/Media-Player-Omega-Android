@@ -12,6 +12,8 @@ dependencies {
     api project(':common_view')
     api project(':persistence_room')
 
+    implementation project(':auth_data')
+
     testImplementation project(':common_test')
 
     implementation Libs.kotlinx_coroutines_core

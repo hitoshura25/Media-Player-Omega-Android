@@ -26,10 +26,9 @@ android {
         jvmTarget = '1.8'
     }
     packagingOptions {
-        pickFirst 'jacoco-agent.properties'
-        exclude '**/attach_hotspot_windows.dll'
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/licenses/ASM'
-        exclude 'META-INF/LGPL2.1'
+        resources {
+            excludes += ['**/attach_hotspot_windows.dll', 'META-INF/AL2.0', 'META-INF/licenses/ASM', 'META-INF/LGPL2.1']
+            pickFirsts += ['jacoco-agent.properties']
+        }
     }
 }

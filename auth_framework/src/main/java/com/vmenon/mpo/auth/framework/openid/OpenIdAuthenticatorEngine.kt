@@ -1,9 +1,9 @@
 package com.vmenon.mpo.auth.framework.openid
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.VisibleForTesting
 import com.vmenon.mpo.auth.domain.AuthException
 import com.vmenon.mpo.auth.domain.Credentials
 import com.vmenon.mpo.auth.framework.BuildConfig
@@ -24,9 +24,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
-    private var serviceConfiguration: AuthorizationServiceConfiguration? = null
-    private var authorizationService = AuthorizationService(context.applicationContext)
+class OpenIdAuthenticatorEngine(
+    private val authorizationService: AuthorizationService,
+    private val logger: Logger,
+    private val scope: String? = null,
+) {
+    @VisibleForTesting
+    internal var serviceConfiguration: AuthorizationServiceConfiguration? = null
 
     suspend fun performAuthenticate(launcher: ActivityResultLauncher<Intent>) {
         val authRequest = AuthorizationRequest.Builder(
@@ -53,7 +57,6 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
             authorizationService.getEndSessionRequestIntent(endSessionRequest)
         launcher.launch(endSessionIntent)
     }
-
 
     suspend fun handleAuthResponse(
         authorizationResponse: AuthorizationResponse?,
@@ -82,7 +85,7 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
             BuildConfig.OAUTH_CLIENT_ID
         )
             .setGrantType(GrantTypeValues.REFRESH_TOKEN)
-            .setScope(null)
+            .setScope(scope)
             .setRefreshToken(refreshToken)
             .build()
 
@@ -121,10 +124,12 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
             ) { response, ex ->
                 if (ex != null) {
                     continuation.resumeWithException(AuthException(ex))
-                }
-
-                if (response != null) {
+                } else if (response != null) {
                     continuation.resume(handleTokenResponse(response))
+                } else {
+                    continuation.resumeWithException(
+                        IllegalArgumentException("No response or exception received!")
+                    )
                 }
             }
         }
@@ -150,7 +155,7 @@ class OpenIdAuthenticatorEngine(context: Context, private val logger: Logger) {
                 tokenType = tokenType
             )
         } else {
-            throw IllegalStateException("Invalid token response")
+            throw IllegalArgumentException("Invalid token response")
         }
     }
 

@@ -16,6 +16,7 @@ abstract class BaseViewBindingFragment<COMPONENT : Any, BINDING : ViewBinding> :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        logger.println("${javaClass.name} onCreateView")
         _binding = bind(inflater, container)
         return binding.root
     }

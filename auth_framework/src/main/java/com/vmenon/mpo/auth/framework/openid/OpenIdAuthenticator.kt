@@ -11,14 +11,17 @@ import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment
 import com.vmenon.mpo.system.domain.Logger
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
 
 class OpenIdAuthenticator(
     applicationContext: Context,
     private val authState: AuthState,
-    logger: Logger
+    logger: Logger,
+    private val authenticatorEngine: OpenIdAuthenticatorEngine = OpenIdAuthenticatorEngine(
+        AuthorizationService(applicationContext),
+        logger
+    ),
 ) : Authenticator {
-    private val authenticatorEngine = OpenIdAuthenticatorEngine(applicationContext, logger)
-
     override fun startAuthentication(context: Any) {
         if (context is FragmentActivity) {
             val fragment = OpenIdHandlerFragment.forAuthentication()

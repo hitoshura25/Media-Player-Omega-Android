@@ -31,6 +31,9 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
     @Inject
     lateinit var player: MPOPlayer
 
+    @Inject
+    lateinit var playbackStateTracker: PlaybackStateTracker
+
     private val viewModel: MediaPlayerViewModel by viewModel()
 
     private var lastPlaybackState: PlaybackState? = null
@@ -83,21 +86,22 @@ class MediaPlayerFragment : BaseViewBindingFragment<PlayerComponent, FragmentMed
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun setupObserver() {
-        viewModel.playBackState.observe(viewLifecycleOwner, { playbackState ->
+        viewModel.playBackState.observe(viewLifecycleOwner) { playbackState ->
+            playbackStateTracker.receivedPlaybackState(playbackState)
             updatePlaybackState(playbackState.state)
             updateProgress(playbackState)
             updateDuration(playbackState)
             updateUIFromMedia(playbackState.media)
             lastPlaybackState = playbackState
-        })
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.connectClient(this).observe(viewLifecycleOwner, {
+        viewModel.connectClient(this).observe(viewLifecycleOwner) {
             updateMediaDisplay()
             playMedia()
-        })
+        }
     }
 
     override fun onStop() {

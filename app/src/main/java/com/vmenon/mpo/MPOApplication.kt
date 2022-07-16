@@ -15,9 +15,12 @@ import com.vmenon.mpo.di.*
 import com.vmenon.mpo.core.work.UpdateAllShowsWorker
 import com.vmenon.mpo.downloads.framework.di.dagger.DaggerDownloadsFrameworkComponent
 import com.vmenon.mpo.my_library.framework.di.dagger.DaggerLibraryFrameworkComponent
+import com.vmenon.mpo.player.domain.PlaybackState
+import com.vmenon.mpo.player.domain.PlaybackStateTracker
 import com.vmenon.mpo.player.framework.di.dagger.DaggerPlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponent
 import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkComponentProvider
+import com.vmenon.mpo.player.framework.di.dagger.PlayerFrameworkModule
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponentProvider
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import java.util.concurrent.TimeUnit
@@ -56,6 +59,7 @@ open class MPOApplication : SplitCompatApplication(),
 
         playerFrameworkComponent = DaggerPlayerFrameworkComponent.builder()
             .commonFrameworkComponent(commonFrameworkComponent())
+            .playerFrameworkModule(PlayerFrameworkModule(createPlaybackStateTracker()))
             .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -79,8 +83,16 @@ open class MPOApplication : SplitCompatApplication(),
 
     protected open fun createComponentProviders(): DaggerComponentProviders =
         DaggerComponentProviders(
-            this, "https://mpospboot.herokuapp.com/" // "http://10.0.0.208:8080/"
+            application = this,
+            apiUrl = "https://mpospboot.herokuapp.com/", // "http://10.0.0.208:8080/",
         )
+
+    protected open fun createPlaybackStateTracker(): PlaybackStateTracker =
+        object : PlaybackStateTracker {
+            override fun receivedPlaybackState(playbackState: PlaybackState) {
+                // no-op
+            }
+        }
 
     override fun commonFrameworkComponent(): CommonFrameworkComponent =
         componentProviders.commonFrameworkComponent

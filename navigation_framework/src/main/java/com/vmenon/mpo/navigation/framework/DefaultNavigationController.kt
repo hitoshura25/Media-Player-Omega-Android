@@ -2,7 +2,6 @@ package com.vmenon.mpo.navigation.framework
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
@@ -20,7 +19,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
-import com.vmenon.mpo.navigation.domain.*
+import com.vmenon.mpo.navigation.domain.NavigationController
+import com.vmenon.mpo.navigation.domain.NavigationDestination
+import com.vmenon.mpo.navigation.domain.NavigationLocation
+import com.vmenon.mpo.navigation.domain.NavigationOrigin
+import com.vmenon.mpo.navigation.domain.NavigationParams
+import com.vmenon.mpo.navigation.domain.NoNavigationParams
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,8 +36,7 @@ class DefaultNavigationController(
     private val topLevelItems: Map<Int, NavigationDestination<out NavigationLocation<NoNavigationParams>>>,
     private val hostFragmentId: Int,
     private val navGraphId: Int
-) :
-    NavigationController {
+) : NavigationController {
     private val origin: MutableSharedFlow<NavigationLocation<*>> = MutableSharedFlow()
     private val mainScope = MainScope()
 
@@ -42,16 +45,14 @@ class DefaultNavigationController(
         navigationDestination: NavigationDestination<L>,
         navigationParams: P
     ) {
-        when (navigationDestination) {
-            is AndroidNavigationDestination -> handleAndroidNavigationDestination(
-                navigationOrigin,
-                navigationDestination,
-                navigationParams
-            )
-            else -> {
-                throw IllegalArgumentException("request.destination is invalid or unsupported!")
-            }
+        require(navigationDestination is AndroidNavigationDestination) {
+            "request.destination is invalid or unsupported!"
         }
+        handleAndroidNavigationDestination(
+            navigationOrigin,
+            navigationDestination,
+            navigationParams,
+        )
     }
 
     override fun setOrigin(navigationOrigin: NavigationOrigin<*>) {
@@ -64,8 +65,9 @@ class DefaultNavigationController(
     override fun <P : NavigationParams> getParams(
         navigationOrigin: NavigationOrigin<P>
     ): P {
-        return getOptionalParams(navigationOrigin)
-            ?: throw IllegalArgumentException("required parameters were not set!")
+        return requireNotNull(getOptionalParams(navigationOrigin)) {
+            "required parameters were not set!"
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -90,12 +92,11 @@ class DefaultNavigationController(
         params: P,
         navigationDestination: NavigationDestination<out NavigationLocation<P>>
     ): T {
-        if (context !is Context) {
-            throw IllegalArgumentException("context is not a Context!")
+        require(context is Context) {
+            "context is not a Context!"
         }
-
-        if (navigationDestination !is AndroidNavigationDestination) {
-            throw IllegalArgumentException("navigationDestination is not a AndroidNavigationDestination!")
+        require(navigationDestination is AndroidNavigationDestination) {
+            "navigationDestination is not a AndroidNavigationDestination!"
         }
 
         val directions = navigationDestination.navDirectionMapper(params)
@@ -236,12 +237,6 @@ class DefaultNavigationController(
                 .setLaunchSingleTop(true)
                 .build()
         )
-    }
-
-    private fun startActivityForNavigation(intent: Intent, context: Context) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
     }
 
     private fun getNavController(navigationOrigin: NavigationOrigin<*>) =

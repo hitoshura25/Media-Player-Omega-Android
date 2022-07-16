@@ -28,11 +28,6 @@ platform :android do
     deploy_play_store(track:"internal")
   end
 
-  desc "Test"
-  lane :test do
-    gradle(tasks: ["lint", "aggregateDebugTestCoverage"])
-  end
-
   desc "Build Release Bundle"
   lane :build_release_bundle do
     gradle(tasks: ["app:bundleRelease"])

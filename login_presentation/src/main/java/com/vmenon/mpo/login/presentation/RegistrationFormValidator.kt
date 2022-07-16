@@ -4,8 +4,6 @@ import android.util.Patterns
 import androidx.databinding.Observable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.vmenon.mpo.login.presentation.BR
-import com.vmenon.mpo.login.presentation.R
 import com.vmenon.mpo.login.presentation.model.RegistrationObservable
 import com.vmenon.mpo.login.presentation.model.RegistrationValid
 
