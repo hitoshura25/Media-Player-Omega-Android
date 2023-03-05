@@ -1,69 +1,52 @@
 package com.vmenon.mpo.login.presentation.model
 
-import androidx.databinding.BaseObservable
-import androidx.databinding.Bindable
-import com.vmenon.mpo.login.presentation.BR
+import com.vmenon.mpo.login.presentation.RegistrationFormValidator
 
-class RegistrationObservable : BaseObservable() {
+class RegistrationObservable(private val validator: RegistrationFormValidator) {
     private val registrationForm = RegistrationForm()
 
-    @Bindable
-    fun getFirstName(): String {
-        return registrationForm.firstName
-    }
-
-    fun setFirstName(value: String) {
+    fun getFirstName() = registrationForm.firstName
+    fun firstNameChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+        val value = input.toString()
         if (registrationForm.firstName != value) {
             registrationForm.firstName = value
-            notifyPropertyChanged(BR.firstName)
+            validator.onFirstNameChanged(this)
         }
     }
 
-    @Bindable
-    fun getLastName(): String {
-        return registrationForm.lastName
-    }
-
-    fun setLastName(value: String) {
+    fun getLastName() = registrationForm.lastName
+    fun lastNameChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+        val value = input.toString()
         if (registrationForm.lastName != value) {
             registrationForm.lastName = value
-            notifyPropertyChanged(BR.lastName)
+            validator.onLastNameChanged(this)
         }
     }
 
-    @Bindable
-    fun getEmail(): String {
-        return registrationForm.email
-    }
-
-    fun setEmail(value: String) {
+    fun getEmail() = registrationForm.email
+    fun emailChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+        val value = input.toString()
         if (registrationForm.email != value) {
             registrationForm.email = value
-            notifyPropertyChanged(BR.email)
+            validator.onEmailChanged(this)
         }
     }
 
-    @Bindable
-    fun getPassword(): String {
-        return registrationForm.password
-    }
-
-    fun setPassword(value: String) {
+    fun getPassword() = registrationForm.password
+    fun passwordChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+        val value = input.toString()
         if (registrationForm.password != value) {
             registrationForm.password = value
-            notifyPropertyChanged(BR.password)
+            validator.onPasswordChanged(this)
         }
     }
 
-    @Bindable
-    fun getConfirmPassword(): String {
-        return registrationForm.confirmPassword
-    }
-
-    fun setConfirmPassword(value: String) {
+    fun getConfirmPassword() = registrationForm.confirmPassword
+    fun confirmPasswordChanged(input: CharSequence, start: Int, before: Int, count: Int) {
+        val value = input.toString()
         if (registrationForm.confirmPassword != value) {
             registrationForm.confirmPassword = value
-            notifyPropertyChanged(BR.confirmPassword)
+            validator.onConfirmPasswordChanged(this)
         }
     }
 }

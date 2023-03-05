@@ -46,8 +46,7 @@ class LoginViewModel : ViewModel() {
     internal var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     val registration by lazy {
-        val registrationObservable = RegistrationObservable()
-        registrationObservable.addOnPropertyChangedCallback(validator)
+        val registrationObservable = RegistrationObservable(validator)
         registrationObservable
     }
 
