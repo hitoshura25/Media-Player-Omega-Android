@@ -2,7 +2,9 @@ package com.vmenon.mpo.system.framework.di.dagger
 
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
+import com.vmenon.mpo.system.domain.PatternMatcher
 import com.vmenon.mpo.system.domain.ThreadUtil
+import com.vmenon.mpo.system.framework.AndroidPatternMatcher
 import com.vmenon.mpo.system.framework.ClockImpl
 import com.vmenon.mpo.system.framework.LoggerImpl
 import com.vmenon.mpo.system.framework.ThreadUtilImpl
@@ -23,4 +25,8 @@ object SystemFrameworkModule {
     @Provides
     @Singleton
     fun threadUtil(): ThreadUtil = ThreadUtilImpl()
+
+    @Provides
+    @Singleton
+    fun patternMatcher(): PatternMatcher = AndroidPatternMatcher()
 }

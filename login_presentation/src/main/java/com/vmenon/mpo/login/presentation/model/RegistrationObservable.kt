@@ -4,7 +4,7 @@ import com.vmenon.mpo.login.presentation.RegistrationFormValidator
 
 class RegistrationObservable(
     private val validator: RegistrationFormValidator,
-    private val registrationForm: RegistrationForm = RegistrationForm()
+    private val registrationForm: RegistrationForm = RegistrationForm(),
 ) {
     fun getFirstName() = registrationForm.firstName
     fun firstNameChanged(input: CharSequence, start: Int, before: Int, count: Int) {

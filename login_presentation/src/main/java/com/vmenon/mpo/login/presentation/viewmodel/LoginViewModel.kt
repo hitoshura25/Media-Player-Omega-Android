@@ -43,6 +43,9 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var buildConfigProvider: BuildConfigProvider
 
+    @Inject
+    lateinit var validator: RegistrationFormValidator
+
     internal var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     val registration by lazy {
@@ -50,7 +53,6 @@ class LoginViewModel : ViewModel() {
         registrationObservable
     }
 
-    private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
 
     private val loginState by lazy {

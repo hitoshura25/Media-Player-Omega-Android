@@ -1,13 +1,17 @@
 package com.vmenon.mpo.login.presentation
 
-import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.vmenon.mpo.login.presentation.model.RegistrationObservable
 import com.vmenon.mpo.login.presentation.model.RegistrationValid
+import com.vmenon.mpo.system.domain.PatternMatcher
 
-class RegistrationFormValidator {
-    private val registrationValid = MutableLiveData(INITIAL_VALID_STATE)
+class RegistrationFormValidator(
+    private val patternMatcher: PatternMatcher,
+    initialValidState: RegistrationValid? = INITIAL_VALID_STATE,
+) {
+    private val registrationValid =
+        initialValidState?.let { MutableLiveData(it) } ?: MutableLiveData()
 
     fun registrationValid(): LiveData<RegistrationValid> = registrationValid
 
@@ -15,10 +19,10 @@ class RegistrationFormValidator {
         val firstNameError =
             if (sender.getFirstName().isNotBlank()) null else R.string.first_name_invalid
         registrationValid.postValue(
-            registrationValid.value?.copy(
+            (registrationValid.value ?: INITIAL_VALID_STATE).copy(
                 firstNameValid = firstNameError == null,
                 firstNameError = firstNameError
-            ) ?: INITIAL_VALID_STATE
+            )
         )
     }
 
@@ -26,25 +30,25 @@ class RegistrationFormValidator {
         val lastNameError =
             if (sender.getLastName().isNotBlank()) null else R.string.last_name_invalid
         registrationValid.postValue(
-            registrationValid.value?.copy(
+            (registrationValid.value ?: INITIAL_VALID_STATE).copy(
                 lastNameValid = lastNameError == null,
                 lastNameError = lastNameError
-            ) ?: INITIAL_VALID_STATE
+            )
         )
     }
 
     fun onEmailChanged(sender: RegistrationObservable) {
-        val emailError =
-            if (sender.getEmail().isNotBlank()
-                && Patterns.EMAIL_ADDRESS.matcher(
-                    sender.getEmail()
-                ).matches()
-            ) null else R.string.email_invalid
+        val email = sender.getEmail()
+        val emailError = if (email.isNotBlank() && patternMatcher.isEmail(email)) {
+            null
+        } else {
+            R.string.email_invalid
+        }
         registrationValid.postValue(
-            registrationValid.value?.copy(
+            (registrationValid.value ?: INITIAL_VALID_STATE).copy(
                 emailValid = emailError == null,
                 emailError = emailError
-            ) ?: INITIAL_VALID_STATE
+            )
         )
     }
 
@@ -52,19 +56,18 @@ class RegistrationFormValidator {
         val passwordError =
             if (sender.getPassword().isNotBlank()) null else R.string.password_invalid
         registrationValid.postValue(
-            registrationValid.value?.copy(
+            (registrationValid.value ?: INITIAL_VALID_STATE).copy(
                 passwordValid = passwordError == null,
                 passwordError = passwordError
-            ) ?: INITIAL_VALID_STATE
+            )
         )
     }
 
     fun onConfirmPasswordChanged(sender: RegistrationObservable) {
+        val confirmPassword = sender.getConfirmPassword()
         val confirmPasswordError =
-            if (sender.getConfirmPassword().isNotBlank()) {
-                if (sender.getConfirmPassword() ==
-                    sender.getPassword()
-                ) {
+            if (confirmPassword.isNotBlank()) {
+                if (confirmPassword == sender.getPassword()) {
                     null
                 } else {
                     R.string.confirm_password_does_not_match
@@ -73,10 +76,10 @@ class RegistrationFormValidator {
                 R.string.confirm_password_invalid
             }
         registrationValid.postValue(
-            registrationValid.value?.copy(
+            (registrationValid.value ?: INITIAL_VALID_STATE).copy(
                 confirmPasswordValid = confirmPasswordError == null,
                 confirmPasswordError = confirmPasswordError
-            ) ?: INITIAL_VALID_STATE
+            )
         )
     }
 
