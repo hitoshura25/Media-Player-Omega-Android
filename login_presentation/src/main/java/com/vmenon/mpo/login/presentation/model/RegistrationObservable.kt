@@ -2,9 +2,10 @@ package com.vmenon.mpo.login.presentation.model
 
 import com.vmenon.mpo.login.presentation.RegistrationFormValidator
 
-class RegistrationObservable(private val validator: RegistrationFormValidator) {
-    private val registrationForm = RegistrationForm()
-
+class RegistrationObservable(
+    private val validator: RegistrationFormValidator,
+    private val registrationForm: RegistrationForm = RegistrationForm()
+) {
     fun getFirstName() = registrationForm.firstName
     fun firstNameChanged(input: CharSequence, start: Int, before: Int, count: Int) {
         val value = input.toString()
