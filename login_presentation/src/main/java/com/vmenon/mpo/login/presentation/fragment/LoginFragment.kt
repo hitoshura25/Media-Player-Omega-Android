@@ -46,7 +46,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
             drawerLayout(),
             navigationView()
         )
-        viewModel.loginState().observeUnhandled(viewLifecycleOwner, { state ->
+        viewModel.loginState().observeUnhandled(viewLifecycleOwner) { state ->
             when (state) {
                 LoadingState -> {
                     loadingStateHelper.showLoadingState()
@@ -62,7 +62,7 @@ class LoginFragment : BaseViewBindingFragment<LoginComponent, FragmentLoginBindi
                 }
             }
             binding.state = state
-        })
+        }
 
         binding.registrationValid = viewModel.registrationValid()
         binding.registration = viewModel.registration

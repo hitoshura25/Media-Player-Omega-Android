@@ -21,6 +21,7 @@ dependencies {
     implementation project(':navigation_framework')
     implementation project(':common_view')
 
+    testImplementation project(':common_framework_test')
     testImplementation project(':common_test')
 
     implementation Libs.kotlin_stdlib_jdk8

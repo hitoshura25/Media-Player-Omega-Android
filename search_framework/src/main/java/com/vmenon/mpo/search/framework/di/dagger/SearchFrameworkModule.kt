@@ -16,7 +16,7 @@ object SearchFrameworkModule {
     @Provides
     @SearchFrameworkScope
     fun provideSearchApiDataSource(
-        api: MediaPlayerOmegaRetrofitService
+        api: MediaPlayerOmegaRetrofitService,
     ): SearchApiDataSource = MpoRetrofitApiSearchApiDataSource(api)
 
     @Provides

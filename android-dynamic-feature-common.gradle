@@ -9,6 +9,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     packagingOptions {
-        pickFirst 'jacoco-agent.properties'
+        resources {
+            pickFirsts += ['jacoco-agent.properties']
+        }
     }
 }

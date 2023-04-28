@@ -21,7 +21,7 @@ class ShowDetailsViewModel : ViewModel() {
 
     private val initialState = ShowDetailsViewState(loading = true)
     private val states =
-        MutableLiveData<ContentEvent<ShowDetailsViewState>>(ContentEvent(initialState))
+        MutableLiveData(ContentEvent(initialState))
     private val effects = MutableLiveData<ContentEvent<ShowDetailsViewEffect>>()
 
     private var currentState: ShowDetailsViewState
@@ -72,7 +72,10 @@ class ShowDetailsViewModel : ViewModel() {
                 )
             )
         )
-        currentState = currentState.copy(showDetails = showDetails.copy(subscribed = true))
+        currentState = currentState.copy(
+            showDetails = showDetails.copy(subscribed = true),
+            loading = false,
+        )
     }
 
     private suspend fun queueDownload(

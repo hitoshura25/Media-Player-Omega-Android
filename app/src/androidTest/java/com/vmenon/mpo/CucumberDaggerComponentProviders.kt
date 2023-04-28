@@ -1,7 +1,8 @@
 package com.vmenon.mpo
 
 import android.app.Application
-import com.vmenon.mpo.auth.framework.di.dagger.BiometricsComponent
+import com.vmenon.mpo.auth.framework.di.dagger.AuthComponent
+import com.vmenon.mpo.auth.test.di.dagger.DaggerTestAuthComponent
 import com.vmenon.mpo.auth.test.di.dagger.DaggerTestBiometricsComponent
 import com.vmenon.mpo.di.DaggerComponentProviders
 import com.vmenon.mpo.persistence.di.dagger.PersistenceComponent
@@ -14,8 +15,13 @@ class CucumberDaggerComponentProviders(application: Application, apiUrl: String)
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
 
-    override fun createBiometricsComponent(): BiometricsComponent {
-        return DaggerTestBiometricsComponent.builder()
+    override fun createAuthComponent(): AuthComponent {
+        return DaggerTestAuthComponent.builder()
+            .testBiometricsComponent(
+                DaggerTestBiometricsComponent.builder()
+                    .systemFrameworkComponent(systemFrameworkComponent)
+                    .build()
+            )
             .systemFrameworkComponent(systemFrameworkComponent)
             .build()
     }

@@ -12,7 +12,10 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
+import com.vmenon.mpo.CucumberTestMPOApplication
 import com.vmenon.mpo.common.framework.di.dagger.CommonFrameworkComponentProvider
+import com.vmenon.mpo.player.domain.PlaybackState
+import com.vmenon.mpo.test.BuildConfig.DYNAMIC_FEATURES
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -106,8 +109,15 @@ open class BaseSteps {
         val resourceId: String
         if (resName.indexOf(".") != -1) {
             val resNameStart = resName.lastIndexOf(".")
-            packageName = resName.substring(0, resNameStart)
+            val beforeResName = resName.substring(0, resNameStart)
             resourceId = resName.substring(resNameStart + 1, resName.length)
+            val potentialFeatureModuleName = beforeResName.substringAfterLast(".")
+            packageName =
+                if (!DYNAMIC_FEATURES && potentialFeatureModuleName.contains("_feature")) {
+                    beforeResName.substringBefore(".$potentialFeatureModuleName")
+                } else {
+                    beforeResName
+                }
         } else {
             packageName = appPackage
             resourceId = resName
@@ -152,18 +162,25 @@ open class BaseSteps {
 
     fun waitForText(
         text: String,
-        timeout: Long = TRANSITION_TIMEOUT
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
     ) {
         log("waitForText $text")
-        assertNotNull(findText(text, timeout))
+        assertNotNull(findText(text, timeout, useSubstring))
     }
 
     fun waitForTextToBeGone(
         text: String,
-        timeout: Long = TRANSITION_TIMEOUT
+        timeout: Long = TRANSITION_TIMEOUT,
+        useSubstring: Boolean = false
     ) {
         log("waitForTextToBeGone $text")
-        assertTrue(device.wait(Until.gone(By.text(text)), timeout))
+        assertTrue(
+            device.wait(
+                Until.gone(if (useSubstring) By.textContains(text) else By.text(text)),
+                timeout
+            )
+        )
     }
 
     fun waitForContentDescription(
@@ -211,6 +228,17 @@ open class BaseSteps {
 
     fun waitForEpisodeToDownload(episodeName: String) {
         val idlingResource = EpisodeDownloadedIdlingResource(episodeName)
+        IdlingRegistry.getInstance().register(idlingResource)
+        Espresso.onView(ViewMatchers.isRoot()).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        IdlingRegistry.getInstance().unregister(idlingResource)
+    }
+
+    fun waitForPlaybackState(state: PlaybackState.State) {
+        val idlingResource = PlaybackStateIdlingResource(state)
         IdlingRegistry.getInstance().register(idlingResource)
         Espresso.onView(ViewMatchers.isRoot()).check(
             ViewAssertions.matches(
@@ -337,6 +365,31 @@ open class BaseSteps {
                 }
                 idle
             }
+        }
+
+        override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback) {
+            resourceCallback = callback
+        }
+    }
+
+    inner class PlaybackStateIdlingResource(
+        private val state: PlaybackState.State
+    ) : IdlingResource {
+        private var resourceCallback: IdlingResource.ResourceCallback? = null
+        override fun getName(): String = PlaybackStateIdlingResource::class.java.name
+
+        override fun isIdleNow(): Boolean {
+            val context = ApplicationProvider.getApplicationContext<Context>()
+            val playbackStateTracker =
+                (context as CucumberTestMPOApplication).testPlaybackStateTracker
+            val idle = playbackStateTracker.playbackStates.find { playbackState ->
+                playbackState.state == state
+            } != null
+
+            if (idle) {
+                resourceCallback?.onTransitionToIdle()
+            }
+            return idle
         }
 
         override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback) {

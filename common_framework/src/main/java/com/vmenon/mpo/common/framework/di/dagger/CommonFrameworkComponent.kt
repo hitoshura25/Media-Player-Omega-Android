@@ -18,6 +18,7 @@ import com.vmenon.mpo.navigation.domain.search.SearchNavigationLocation
 import com.vmenon.mpo.system.domain.BuildConfigProvider
 import com.vmenon.mpo.system.domain.Clock
 import com.vmenon.mpo.system.domain.Logger
+import com.vmenon.mpo.system.domain.PatternMatcher
 import com.vmenon.mpo.system.domain.ThreadUtil
 import com.vmenon.mpo.system.framework.di.dagger.SystemFrameworkComponent
 import dagger.BindsInstance
@@ -52,6 +53,7 @@ interface CommonFrameworkComponent {
     fun authService(): AuthService
     fun api(): MediaPlayerOmegaRetrofitService
     fun buildConfigProvider(): BuildConfigProvider
+    fun patternMatcher(): PatternMatcher
 
     fun downloadDao(): DownloadDao
     fun episodeDao(): EpisodeDao

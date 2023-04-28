@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.8"
 }
 ext.excludes = [
         '**/databinding/*Binding.*',
@@ -46,22 +46,33 @@ ext.excludes = [
         '**/*_Factory*.*',
         '**/*_Provide*Factory*.*',
         '**/*Extensions*.*',
+        '**/*MPOApplication*.*',
 ]
+
+ext.useLogging = false
+def dynamicFeaturesEnabled = (project.findProperty("useDynamicFeatures") ?: "true").toBoolean()
 
 subprojects.each {subproject ->
     subproject.afterEvaluate {
         subproject.plugins.withId('com.android.application') {
             subproject.apply plugin: 'jacoco'
-            subproject.android.testCoverage.jacocoVersion = jacoco.toolVersion
+            subproject.jacoco.toolVersion = jacoco.toolVersion
+            subproject.android.jacoco.version = jacoco.toolVersion
             subproject.android.applicationVariants.all { variant ->
                 createVariantCoverage(subproject, variant)
             }
         }
         subproject.plugins.withId('com.android.library') {
-            subproject.apply plugin: 'jacoco'
-            subproject.android.testCoverage.jacocoVersion = jacoco.toolVersion
-            subproject.android.libraryVariants.all { variant ->
-                createVariantCoverage(subproject, variant)
+            // Fix for trying to include both navigation-graph and navigation-graph-dynamic
+            def skipModule = ((subproject.name == "navigation_graph" && dynamicFeaturesEnabled) ||
+                    (subproject.name == "navigation_graph_dynamic" && !dynamicFeaturesEnabled))
+            if (!skipModule) {
+                subproject.apply plugin: 'jacoco'
+                subproject.jacoco.toolVersion = jacoco.toolVersion
+                subproject.android.jacoco.version = jacoco.toolVersion
+                subproject.android.libraryVariants.all { variant ->
+                    createVariantCoverage(subproject, variant)
+                }
             }
         }
         subproject.plugins.withId('java-library') {
@@ -90,10 +101,31 @@ def setupWithAggregateCoverage(variantName, JacocoReport projectTask) {
 def createAggregateCoverage(variantName) {
     JacocoReport aggregateTask = rootProject.tasks.create(name: "aggregate${variantName.capitalize()}TestCoverage", type: JacocoReport, group: 'reporting') {
         reports {
-            html.enabled = true
-            xml.enabled = true
+            xml.required = true
+            csv.required = false
         }
         doLast {
+            if (project.useLogging) {
+                println("aggregate${variantName.capitalize()}TestCoverageVerification")
+                println("---------------------------------------------------------------------------")
+                println("getClassDirectories:")
+                getClassDirectories().forEach { file ->
+                    println(file.absolutePath)
+                }
+                println("---------------------------------------------------------------------------")
+                println("getSourceDirectories:")
+                getSourceDirectories().forEach { file ->
+                    println(file.absolutePath)
+                }
+                println("---------------------------------------------------------------------------")
+                println("getExecutionData:")
+                getExecutionData().forEach { file ->
+                    println(file.absolutePath)
+                }
+                println("")
+                println("")
+            }
+
             def m = new File("${rootProject.buildDir}/reports/jacoco/aggregate${variantName.capitalize()}TestCoverage/html/index.html")
                     .text =~ /Total[^%]*>(\d?\d?\d?%)/
             if (m) {
@@ -122,6 +154,7 @@ def createAggregateCoverage(variantName) {
         }
         getClassDirectories().setFrom(aggregateTask.getClassDirectories())
         getSourceDirectories().setFrom(aggregateTask.getSourceDirectories())
+        getAdditionalSourceDirs().setFrom(aggregateTask.getAdditionalSourceDirs())
         getExecutionData().setFrom(aggregateTask.getExecutionData())
     }
 
@@ -155,21 +188,45 @@ def createVariantCoverage(subproject, variant) {
     def testTaskName = "test${variantName.capitalize()}UnitTest"
     def androidTestTaskName = "create${variantName.capitalize()}CoverageReport"
 
+
     // Add unit test coverage tasks for module
     JacocoReport reportTask = subproject.tasks.create(name: "${testTaskName}Coverage", type: JacocoReport) {
         group = "Reporting"
         description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build."
 
         reports {
-            html.enabled = true
-            xml.enabled = true
+            xml.required = true
+            csv.required = false
         }
 
         getClassDirectories().setFrom(moduleClassDirectories)
         getSourceDirectories().setFrom(moduleSourceDirectories)
+        getAdditionalSourceDirs().setFrom(moduleSourceDirectories)
         getExecutionData().setFrom(moduleExecutionData)
 
+        if (project.useLogging) {
+            println("${testTaskName}Coverage")
+            println("---------------------------------------------------------------------------")
+            println("getClassDirectories:")
+            getClassDirectories().forEach { file ->
+                println(file.absolutePath)
+            }
+            println("---------------------------------------------------------------------------")
+            println("getSourceDirectories:")
+            getSourceDirectories().forEach { file ->
+                println(file.absolutePath)
+            }
+            println("---------------------------------------------------------------------------")
+            println("getExecutionData:")
+            getExecutionData().forEach { file ->
+                println(file.absolutePath)
+            }
+            println("")
+            println("")
+        }
+
         doLast {
+            println "Coverage file: ${subproject.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html"
             def m = new File("${subproject.buildDir}/reports/jacoco/${testTaskName}Coverage/html/index.html")
                     .text =~ /Total[^%]*>(\d?\d?\d?%)/
             if (m) {

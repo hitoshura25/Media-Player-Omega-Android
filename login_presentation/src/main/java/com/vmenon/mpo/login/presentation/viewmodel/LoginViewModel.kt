@@ -1,19 +1,31 @@
 package com.vmenon.mpo.login.presentation.viewmodel
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.vmenon.mpo.login.presentation.R
 import com.vmenon.mpo.common.domain.ContentEvent
 import com.vmenon.mpo.common.domain.toContentEvent
 import com.vmenon.mpo.auth.domain.AuthService
 import com.vmenon.mpo.auth.domain.CredentialsResult
 import com.vmenon.mpo.auth.domain.biometrics.BiometricsManager
-import com.vmenon.mpo.auth.domain.biometrics.PromptReason.*
+import com.vmenon.mpo.auth.domain.biometrics.PromptReason
 import com.vmenon.mpo.auth.domain.biometrics.PromptRequest
 import com.vmenon.mpo.login.domain.LoginService
 import com.vmenon.mpo.login.presentation.RegistrationFormValidator
-import com.vmenon.mpo.login.presentation.model.*
+import com.vmenon.mpo.login.presentation.model.AccountState
+import com.vmenon.mpo.login.presentation.model.LoadingState
+import com.vmenon.mpo.login.presentation.model.LoggedInState
+import com.vmenon.mpo.login.presentation.model.LoginState
+import com.vmenon.mpo.login.presentation.model.RegisterState
+import com.vmenon.mpo.login.presentation.model.RegistrationObservable
+import com.vmenon.mpo.login.presentation.model.RegistrationValid
 import com.vmenon.mpo.system.domain.BuildConfigProvider
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,13 +43,16 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var buildConfigProvider: BuildConfigProvider
 
+    @Inject
+    lateinit var validator: RegistrationFormValidator
+
+    internal var dispatcher: CoroutineDispatcher = Dispatchers.IO
+
     val registration by lazy {
-        val registrationObservable = RegistrationObservable()
-        registrationObservable.addOnPropertyChangedCallback(validator)
+        val registrationObservable = RegistrationObservable(validator)
         registrationObservable
     }
 
-    private val validator = RegistrationFormValidator()
     private val loginStateFromUI = MutableLiveData<ContentEvent<AccountState>>()
 
     private val loginState by lazy {
@@ -64,14 +79,14 @@ class LoginViewModel : ViewModel() {
     }
 
     fun loginClicked(fragment: Fragment) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             authService.startAuthentication(fragment.requireActivity())
         }
     }
 
     fun logoutClicked(fragment: Fragment) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             authService.logout(fragment.requireActivity())
             loginService.userLoggedOut()
@@ -79,7 +94,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun performRegistration(fragment: Fragment) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             loginStateFromUI.postValue(LoadingState.toContentEvent())
             loginService.registerUser(
                 registration.getFirstName(),
@@ -92,7 +107,7 @@ class LoginViewModel : ViewModel() {
     }
 
     fun userDoesNotWantBiometrics() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             loginService.userDeclinedBiometricsEnrollment()
         }
     }
@@ -104,7 +119,7 @@ class LoginViewModel : ViewModel() {
         biometricsManager.requestBiometricPrompt(
             fragment,
             PromptRequest(
-                reason = Encryption,
+                reason = PromptReason.Encryption,
                 title = fragment.getString(R.string.enroll_in_biometrics),
                 subtitle = fragment.getString(R.string.confirm_to_complete_enrollment),
                 confirmationRequired = false,
@@ -120,7 +135,7 @@ class LoginViewModel : ViewModel() {
                 biometricsManager.requestBiometricPrompt(
                     fragment,
                     PromptRequest(
-                        reason = Decryption(credentialsResult.encryptedData),
+                        reason = PromptReason.Decryption(credentialsResult.encryptedData),
                         title = fragment.getString(R.string.login),
                         subtitle = fragment.getString(R.string.confirm_to_login),
                         confirmationRequired = false,
@@ -135,7 +150,7 @@ class LoginViewModel : ViewModel() {
         authenticated: Boolean,
         mutableLiveData: MutableLiveData<ContentEvent<AccountState>>
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             mutableLiveData.postValue(LoadingState.toContentEvent())
             if (authenticated) {
                 val userResult = loginService.getUser()

@@ -19,6 +19,11 @@ android {
         )
         testInstrumentationRunner "com.vmenon.mpo.CommonTestRunner"
     }
+    testOptions {
+        // Used for Unit testing Android dependent elements in /test folder
+        unitTests.includeAndroidResources  = true
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -36,6 +41,8 @@ dependencies {
     implementation Libs.appcompat
     implementation Libs.gson
     api Libs.biometric
+
+    testImplementation project(':common_framework_test')
 
     androidTestImplementation project(':common_framework_test')
     androidTestImplementation Libs.androidx_test_ext_junit

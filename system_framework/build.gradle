@@ -5,7 +5,10 @@ dependencies {
     api project(':system_domain')
 
     implementation Libs.kotlinx_coroutines_core
-
+    implementation Libs.core_ktx
     implementation Libs.dagger
     kapt Libs.dagger_compiler
+
+    testImplementation project(':common_test')
+
 }

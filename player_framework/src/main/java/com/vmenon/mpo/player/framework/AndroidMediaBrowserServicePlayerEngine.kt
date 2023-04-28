@@ -8,9 +8,14 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
-import com.vmenon.mpo.player.domain.*
-import com.vmenon.mpo.player.domain.PlaybackState.*
+import com.vmenon.mpo.player.domain.MediaPlayerEngine
+import com.vmenon.mpo.player.domain.PlaybackMedia
+import com.vmenon.mpo.player.domain.PlaybackMediaRequest
+import com.vmenon.mpo.player.domain.PlaybackState
+import com.vmenon.mpo.player.domain.PlaybackState.State
+import com.vmenon.mpo.player.domain.PlayerClient
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,14 +24,17 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class AndroidMediaBrowserServicePlayerEngine(
-    private val context: Context
+open class AndroidMediaBrowserServicePlayerEngine(
+    private val context: Context,
 ) : MediaPlayerEngine {
 
-    private var mediaBrowser: MediaBrowserCompat? = null
-    private var mediaController: MediaControllerCompat? = null
-    private var connected = false
+    @VisibleForTesting
+    internal var mediaController: MediaControllerCompat? = null
 
+    @VisibleForTesting
+    internal var connected = false
+
+    private var mediaBrowser: MediaBrowserCompat? = null
     private val mainScope = MainScope()
 
     private suspend fun connectToSession(): Boolean =
@@ -43,20 +51,11 @@ class AndroidMediaBrowserServicePlayerEngine(
                 null
             )
             mediaBrowser.connect()
-            AndroidXMediaPlayerEngine@ this.mediaBrowser = mediaBrowser
+            this.mediaBrowser = mediaBrowser
         }
 
     private val playbackStateFlow = MutableSharedFlow<PlaybackState>()
-    private val controllerCallback = object : MediaControllerCompat.Callback() {
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            mainScope.launch { sendPlaybackState() }
-        }
-
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            mainScope.launch { sendPlaybackState() }
-        }
-    }
-
+    private val controllerCallback by lazy { createCallback() }
     override suspend fun connectClient(playerClient: PlayerClient): Boolean {
         val activity = getActivityFromClient(playerClient)
         connected = connectToSession()
@@ -145,6 +144,17 @@ class AndroidMediaBrowserServicePlayerEngine(
 
     override val playbackStateChanges: Flow<PlaybackState>
         get() = playbackStateFlow.asSharedFlow()
+
+    protected open fun createCallback(): MediaControllerCompat.Callback =
+        object : MediaControllerCompat.Callback() {
+            override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
+                mainScope.launch { sendPlaybackState() }
+            }
+
+            override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+                mainScope.launch { sendPlaybackState() }
+            }
+        }
 
     private suspend fun sendPlaybackState() {
         getCurrentPlaybackState()?.let { playbackStateFlow.emit(it) }

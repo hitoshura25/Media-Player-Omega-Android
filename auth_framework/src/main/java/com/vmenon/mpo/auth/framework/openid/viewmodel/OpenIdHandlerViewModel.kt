@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,11 +15,11 @@ import com.vmenon.mpo.auth.framework.openid.OpenIdAuthenticator
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment.Companion.EXTRA_OPERATION
 import com.vmenon.mpo.auth.framework.openid.fragment.OpenIdHandlerFragment.Companion.Operation
 import com.vmenon.mpo.system.domain.Logger
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
-import net.openid.appauth.EndSessionResponse
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
@@ -30,8 +31,15 @@ class OpenIdHandlerViewModel : ViewModel() {
     lateinit var logger: Logger
 
     private val authenticated = MutableLiveData<Boolean>()
-    private var startAuthContract: ActivityResultLauncher<Intent>? = null
-    private var logoutContract: ActivityResultLauncher<Intent>? = null
+
+    @VisibleForTesting
+    internal var dispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    @VisibleForTesting
+    internal var startAuthContract: ActivityResultLauncher<Intent>? = null
+
+    @VisibleForTesting
+    internal var logoutContract: ActivityResultLauncher<Intent>? = null
 
     fun authenticated(): LiveData<Boolean> = authenticated
 
@@ -49,10 +57,10 @@ class OpenIdHandlerViewModel : ViewModel() {
     }
 
     fun onResume(fragment: Fragment) {
-        val operation =
-            fragment.arguments?.getSerializable(EXTRA_OPERATION) as Operation?
+        val arguments = fragment.arguments ?: return
+        val operation = arguments.getSerializable(EXTRA_OPERATION) as Operation?
         if (operation != null) {
-            fragment.arguments?.remove(EXTRA_OPERATION)
+            arguments.remove(EXTRA_OPERATION)
             when (operation) {
                 Operation.PERFORM_AUTH -> startAuthContract?.let { contract ->
                     handlePerformAuthOperationRequest(contract)
@@ -66,13 +74,13 @@ class OpenIdHandlerViewModel : ViewModel() {
     }
 
     private fun handlePerformAuthOperationRequest(launcher: ActivityResultLauncher<Intent>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             (authenticator as OpenIdAuthenticator).performAuthenticate(launcher)
         }
     }
 
     private fun handleEndSessionRequest(launcher: ActivityResultLauncher<Intent>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             if (!(authenticator as OpenIdAuthenticator).performLogoutIfNecessary(launcher)) {
                 authenticated.postValue(false) // Already logged out I Guess
             }
@@ -81,7 +89,7 @@ class OpenIdHandlerViewModel : ViewModel() {
 
     private fun handlePerformAuthOperationResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(dispatcher) {
                 (authenticator as OpenIdAuthenticator).handleAuthResponse(
                     AuthorizationResponse.fromIntent(data),
                     AuthorizationException.fromIntent(data)
@@ -100,7 +108,7 @@ class OpenIdHandlerViewModel : ViewModel() {
             exception = AuthorizationException.fromIntent(data)
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             (authenticator as OpenIdAuthenticator).handleEndSessionResponse(
                 exception
             )

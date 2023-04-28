@@ -8,7 +8,6 @@ import com.vmenon.mpo.player.domain.PlaybackMediaRequest
 import com.vmenon.mpo.player.domain.NavigationParamsConverter
 import com.vmenon.mpo.player.domain.PlaybackMedia
 import java.io.File
-import java.lang.IllegalArgumentException
 
 class DefaultNavigationParamsConverter : NavigationParamsConverter {
     override suspend fun createPlaybackMediaRequest(
@@ -31,9 +30,6 @@ class DefaultNavigationParamsConverter : NavigationParamsConverter {
                         mediaSource.mediaFile
                     )
                 }
-                else -> throw IllegalArgumentException(
-                    "Unsupported MediaSource ${mediaSource::class.java.name}"
-                )
             }
         }
     }

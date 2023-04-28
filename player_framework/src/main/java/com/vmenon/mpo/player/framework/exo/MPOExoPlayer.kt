@@ -3,34 +3,55 @@ package com.vmenon.mpo.player.framework.exo
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
+import android.os.Handler
 import android.view.SurfaceHolder
-import com.google.android.exoplayer2.*
+import androidx.annotation.VisibleForTesting
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.vmenon.mpo.extensions.useFileDescriptor
 import com.vmenon.mpo.player.framework.BaseMPOPlayer
+import com.vmenon.mpo.system.domain.Logger
 import java.io.File
+import java.util.concurrent.Executor
 import javax.inject.Inject
 
 /**
  * Uses ExoPlayer under the hood
  */
-class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
-    private var exoPlayer: SimpleExoPlayer? = null
+class MPOExoPlayer @Inject constructor(
+    context: Context,
+    mainThreadHandler: Handler,
+    executor: Executor,
+    private val exoPlayerBuilder: SimpleExoPlayer.Builder,
+    private val logger: Logger,
+) : BaseMPOPlayer(mainThreadHandler, executor) {
+
+    @VisibleForTesting
+    internal var exoPlayer: SimpleExoPlayer? = null
+
+    @VisibleForTesting
+    internal var seekRequested = false
+
+    @VisibleForTesting
+    internal var prepareRequested = false
+
+    @VisibleForTesting
+    internal var surfaceHolder: SurfaceHolder? = null
+
+    @VisibleForTesting
+    internal val eventListener = ExoPlayerEventListener()
+
     private val appContext: Context = context.applicationContext
-    private var seekRequested = false
-    private var prepareRequested = false
-    private var surfaceHolder: SurfaceHolder? = null
-    private val eventListener = ExoPlayerEventListener()
     private val mediaMetadataRetriever = MediaMetadataRetriever()
 
     override val isPlaying: Boolean
@@ -64,11 +85,11 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
     }
 
     override fun seekTo(position: Long) {
-        if (exoPlayer == null) {
-            currentPos = position
-        } else {
+        exoPlayer?.let { player ->
             seekRequested = true
-            exoPlayer?.seekTo(position)
+            player.seekTo(position)
+        } ?: run {
+            currentPos = position
         }
     }
 
@@ -109,16 +130,15 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
     }
 
     private fun createMediaPlayerIfNeeded() {
-        Log.d("MPO", "createMediaPlayerIfNeeded. needed? " + (exoPlayer == null))
+        logger.println("createMediaPlayerIfNeeded. needed? " + (exoPlayer == null))
         if (exoPlayer == null) {
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(CONTENT_TYPE_SPEECH)
                 .setUsage(USAGE_MEDIA)
                 .build()
-            exoPlayer = SimpleExoPlayer.Builder(appContext)
-                .setAudioAttributes(audioAttributes, false)
+            val player = exoPlayerBuilder.setAudioAttributes(audioAttributes, false)
                 .build()
-            exoPlayer?.addListener(ExoPlayerEventListener())
+            player.addListener(ExoPlayerEventListener())
 
             /** TODO
              * // Make sure the media player will acquire a wake-lock while
@@ -128,56 +148,36 @@ class MPOExoPlayer @Inject constructor(context: Context) : BaseMPOPlayer() {
              * PowerManager.PARTIAL_WAKE_LOCK); */
 
             if (surfaceHolder != null) {
-                exoPlayer?.setVideoSurfaceHolder(surfaceHolder)
+                player.setVideoSurfaceHolder(surfaceHolder)
             }
 
+            exoPlayer = player
         }
     }
 
-    private inner class ExoPlayerEventListener : Player.Listener {
-        override fun onTracksChanged(
-            trackGroups: TrackGroupArray,
-            trackSelections: TrackSelectionArray
-        ) {
-
-        }
-
-        override fun onLoadingChanged(isLoading: Boolean) {
-
-        }
-
-        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+    internal inner class ExoPlayerEventListener : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
             when (playbackState) {
                 Player.STATE_READY -> {
                     if (seekRequested) {
                         seekRequested = false
                         mListener?.onMediaSeekFinished()
                     }
-
                     if (prepareRequested) {
                         prepareRequested = false
-
-                        Log.d("MPO", "Prepared, currentPosition: " + exoPlayer?.currentPosition)
-
+                        logger.println("Prepared, currentPosition: " + exoPlayer?.currentPosition)
                         mListener?.onMediaPrepared()
                     }
                 }
                 Player.STATE_ENDED -> mListener?.onMediaFinished()
                 else -> {
+                    // no-op
                 }
             }
         }
 
-        override fun onRepeatModeChanged(repeatMode: Int) {
-
-        }
-
         override fun onPlayerError(error: PlaybackException) {
-            Log.w("MPO", "ExoPlayer error", error)
-        }
-
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
-
+            logger.println("ExoPlayer error", error)
         }
     }
 }

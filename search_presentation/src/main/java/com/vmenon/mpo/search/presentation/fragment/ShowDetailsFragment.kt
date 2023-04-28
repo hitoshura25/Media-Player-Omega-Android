@@ -31,7 +31,7 @@ import com.vmenon.mpo.view.R
 class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentShowDetailsBinding>(),
     AppBarLayout.OnOffsetChangedListener,
     NavigationOrigin<ShowDetailsParams> by NavigationOrigin.from(ShowDetailsLocation) {
-    private lateinit var loadingStateHelper: LoadingStateHelper
+    private var loadingStateHelper: LoadingStateHelper? = null
 
     private var collapsed = false
     private var scrollRange = -1
@@ -72,9 +72,9 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
         showDetailsViewModel.states().observe(viewLifecycleOwner, Observer { event ->
             event.unhandledContent()?.let { state ->
                 if (state.loading) {
-                    loadingStateHelper.showLoadingState()
+                    loadingStateHelper?.showLoadingState()
                 } else {
-                    loadingStateHelper.showContentState()
+                    loadingStateHelper?.showContentState()
                 }
                 if (state.showDetails != null) {
                     collapsedToolbarTitle = state.showDetails.show.name
@@ -155,7 +155,7 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
                 }
             })
         }
-        loadingStateHelper.showContentState()
+        loadingStateHelper?.showContentState()
         toggleSubscribeButton(showDetails.subscribed)
     }
 
@@ -165,4 +165,9 @@ class ShowDetailsFragment : BaseViewBindingFragment<SearchComponent, FragmentSho
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentShowDetailsBinding =
         FragmentShowDetailsBinding.inflate(inflater, container, false)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        loadingStateHelper = null
+    }
 }

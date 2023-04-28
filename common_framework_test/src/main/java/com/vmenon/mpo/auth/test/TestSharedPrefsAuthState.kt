@@ -13,7 +13,9 @@ class TestSharedPrefsAuthState(context: Context) : SharedPrefsAuthState(context)
     fun makeRequiresAuthState() {
         scope.launch {
             biometricDecryptionCipher = null
+            storedCredentials = null
             getCredentials()
+            println("Stored credentials: $storedCredentials")
         }
     }
 }

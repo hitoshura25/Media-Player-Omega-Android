@@ -2,9 +2,7 @@ package com.vmenon.mpo.view
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -76,15 +74,6 @@ abstract class BaseFragment<COMPONENT : Any> : Fragment() {
     override fun onDetach() {
         super.onDetach()
         logger.println("${javaClass.name} onDetach")
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        logger.println("${javaClass.name} onCreateView")
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

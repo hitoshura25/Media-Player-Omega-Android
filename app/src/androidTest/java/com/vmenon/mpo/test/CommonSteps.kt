@@ -14,10 +14,10 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import com.vmenon.mpo.CucumberTestMPOApplication
+import com.vmenon.mpo.player.domain.PlaybackState
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -47,6 +47,8 @@ open class CommonSteps : BaseSteps() {
         release()
         mockWebDispatcher.clear()
         mockWebServer.shutdown()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        (context as CucumberTestMPOApplication).testPlaybackStateTracker.playbackStates.clear()
     }
 
     @Given("I have launched the app")
@@ -190,6 +192,24 @@ open class CommonSteps : BaseSteps() {
         browserText(password, "okta-signin-password")
         browserClickOn("okta-signin-submit")
         waitForApp()
+    }
+
+    @When("Biometrics is mocked with none enrolled")
+    fun biometrics_is_mocked_with_none_enrolled() {
+        (ApplicationProvider.getApplicationContext<Context>() as CucumberTestMPOApplication)
+            .mockBiometricsManager.mockedAuthType = BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
+    }
+
+    @When("Biometrics is mocked with success")
+    fun biometrics_is_mocked_with_success() {
+        (ApplicationProvider.getApplicationContext<Context>() as CucumberTestMPOApplication)
+            .mockBiometricsManager.mockedAuthType = BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    @When("I need to reauth with biometrics")
+    fun i_need_to_reauth_with_biometrics() {
+        (ApplicationProvider.getApplicationContext<Context>() as CucumberTestMPOApplication)
+            .testSharedPrefsAuthState.makeRequiresAuthState()
     }
 
     @When("I choose not to enroll in biometrics")
@@ -337,13 +357,29 @@ open class CommonSteps : BaseSteps() {
         waitForText(text)
     }
 
+    @Then("I should see text containing {string} on the display")
+    fun i_should_see_text_containing_s_on_the_display(text: String) {
+        waitForText(text, useSubstring = true)
+    }
+
     @Then("I should not see text {string} on the display")
     fun i_should_not_see_text_s_on_the_display(text: String) {
         waitForTextToBeGone(text)
     }
 
+    @Then("I should not see text containing {string} on the display")
+    fun i_should_not_see_text_containing_s_on_the_display(text: String) {
+        waitForTextToBeGone(text, useSubstring = true)
+    }
+
     @Then("I should see content description {string} on the display")
     fun i_should_see_content_description_s_on_the_display(description: String) {
         waitForContentDescription(description)
+    }
+
+    @Then("I should receive playback state {string}")
+    fun i_should_receive_playback_state(state: String) {
+        val playbackState = PlaybackState.State.valueOf(state)
+        waitForPlaybackState(playbackState)
     }
 }

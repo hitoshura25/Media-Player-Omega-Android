@@ -51,6 +51,8 @@ public object Libs {
 
     public const val androidx_media_media: String = "androidx.media:media:_"
 
+    public const val multidex: String = "androidx.multidex:multidex:_"
+
     public const val navigation_dynamic_features_fragment: String =
             "androidx.navigation:navigation-dynamic-features-fragment:_"
 
@@ -97,11 +99,31 @@ public object Libs {
 
     public const val logback_classic: String = "ch.qos.logback:logback-classic:_"
 
-    public const val multidex: String = "com.android.support:multidex:_"
-
     public const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:_"
 
-    public const val lint_gradle: String = "com.android.tools.lint:lint-gradle:_"
+    public const val android_device_provider_ddmlib: String =
+            "com.android.tools.utp:android-device-provider-ddmlib:_"
+
+    public const val android_device_provider_gradle: String =
+            "com.android.tools.utp:android-device-provider-gradle:_"
+
+    public const val android_test_plugin_host_additional_test_output: String =
+            "com.android.tools.utp:android-test-plugin-host-additional-test-output:_"
+
+    public const val android_test_plugin_host_coverage: String =
+            "com.android.tools.utp:android-test-plugin-host-coverage:_"
+
+    public const val android_test_plugin_host_device_info: String =
+            "com.android.tools.utp:android-test-plugin-host-device-info:_"
+
+    public const val android_test_plugin_host_logcat: String =
+            "com.android.tools.utp:android-test-plugin-host-logcat:_"
+
+    public const val android_test_plugin_host_retention: String =
+            "com.android.tools.utp:android-test-plugin-host-retention:_"
+
+    public const val android_test_plugin_result_listener_gradle: String =
+            "com.android.tools.utp:android-test-plugin-result-listener-gradle:_"
 
     public const val stetho: String = "com.facebook.stetho:stetho:_"
 
@@ -139,6 +161,16 @@ public object Libs {
     public const val google_services: String = "com.google.gms:google-services:_"
 
     public const val guava: String = "com.google.guava:guava:_"
+
+    public const val android_driver_instrumentation: String =
+            "com.google.testing.platform:android-driver-instrumentation:_"
+
+    public const val android_test_plugin: String =
+            "com.google.testing.platform:android-test-plugin:_"
+
+    public const val com_google_testing_platform_core: String = "com.google.testing.platform:core:_"
+
+    public const val launcher: String = "com.google.testing.platform:launcher:_"
 
     public const val dexmaker_mockito: String = "com.linkedin.dexmaker:dexmaker-mockito:_"
 
@@ -194,6 +226,9 @@ public object Libs {
 
     public const val kotlinx_coroutines_core: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:_"
+
+    public const val kotlinx_coroutines_rx2: String =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:_"
 
     public const val kotlinx_coroutines_test: String =
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:_"

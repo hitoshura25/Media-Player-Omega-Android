@@ -10,6 +10,9 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
+def dynamicFeaturesEnabled = (project.findProperty("useDynamicFeatures") ?: "true").toBoolean()
+def cucumberFlag = (project.findProperty("cucumberFlag") ?: "regression").toString()
+
 def buildNumber = System.getenv('BUILD_NUMBER')
 
 android {
@@ -30,14 +33,18 @@ android {
         testInstrumentationRunner "com.vmenon.mpo.test.CucumberTestRunner"
         testInstrumentationRunnerArguments clearPackageData: "true", listener: "com.vmenon.mpo.test.TestListener"
         buildConfigField("String", "buildNumber", "\"${buildNumber != null ? buildNumber : 0}\"")
+        buildConfigField("boolean", "DYNAMIC_FEATURES", dynamicFeaturesEnabled.toString())
     }
-    dynamicFeatures = [
-            ':downloads_feature',
-            ':login_feature',
-            ':my_library_feature',
-            ':player_feature',
-            ':search_feature'
-    ]
+
+    if (dynamicFeaturesEnabled) {
+        dynamicFeatures = [
+                ':downloads_feature',
+                ':login_feature',
+                ':my_library_feature',
+                ':player_feature',
+                ':search_feature'
+        ]
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -57,22 +64,25 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/rxjava.properties'
-        exclude '**/attach_hotspot_windows.dll'
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/licenses/ASM'
-        exclude 'META-INF/LGPL2.1'
-        pickFirst 'jacoco-agent.properties'
+        resources {
+            excludes += ['META-INF/rxjava.properties', '**/attach_hotspot_windows.dll', 'META-INF/AL2.0', 'META-INF/licenses/ASM', 'META-INF/LGPL2.1']
+            pickFirsts += ['jacoco-agent.properties']
+        }
     }
     buildFeatures {
         viewBinding true
         dataBinding true
     }
-    lintOptions {
+    installation {
+        installOptions '-g'
+    }
+    lint {
         abortOnError false
     }
-    adbOptions {
-        installOptions '-g'
+    testOptions {
+        // Used for Unit testing Android dependent elements in /test folder
+        unitTests.includeAndroidResources  = true
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -93,10 +103,22 @@ dependencies {
     implementation project(':my_library_framework')
     implementation project(':player_framework')
     implementation project(':search_framework')
+    implementation project(':navigation_domain')
     implementation project(':navigation_framework')
     implementation project(':common_converters')
     implementation project(':common_view')
     implementation project(':persistence_room')
+
+    if (dynamicFeaturesEnabled) {
+        implementation project(':navigation_graph_dynamic')
+    } else {
+        implementation project(':navigation_graph')
+        implementation project(':login_presentation')
+        implementation project(':my_library_presentation')
+        implementation project(':downloads_presentation')
+        implementation project(':search_presentation')
+        implementation project(':player_presentation')
+    }
 
     implementation Libs.com_google_android_play_core
     implementation Libs.constraintlayout
@@ -116,6 +138,7 @@ dependencies {
     implementation Libs.work_runtime_ktx
     implementation Libs.navigation_fragment_ktx
     implementation Libs.navigation_ui_ktx
+    implementation Libs.navigation_dynamic_features_fragment
 
     implementation platform(Libs.firebase_bom)
     implementation Libs.firebase_analytics_ktx
@@ -130,7 +153,10 @@ dependencies {
     testImplementation Libs.junit_junit
     testImplementation Libs.mockito_kotlin
 
+    androidTestImplementation project(':auth_data')
     androidTestImplementation project(':common_framework_test')
+    androidTestImplementation project(':player_domain')
+
     androidTestImplementation Libs.androidx_test_ext_junit
     androidTestImplementation Libs.androidx_test_rules
     androidTestImplementation Libs.espresso_core
@@ -241,9 +267,12 @@ task generateMockWebServerCertificate {
 
 project.afterEvaluate {
     generateDebugResources.dependsOn generateMockWebServerCertificate
-    generateDebugResValues.dependsOn generateMockWebServerCertificate
+    generateDebugAssets.dependsOn generateMockWebServerCertificate
     generateDebugAndroidTestAssets.dependsOn generateMockWebServerCertificate
+    generateDebugAndroidTestResources.dependsOn generateMockWebServerCertificate
+
     buildBundleApksDebug.dependsOn generateMockWebServerCertificate
+    installDebug.dependsOn generateMockWebServerCertificate
 
     // Skip connectedAndroidTest in this module since we're using Cucumber and need to use the
     // bundleTool in order to test with the dynamic feature modules
@@ -255,8 +284,15 @@ project.afterEvaluate {
         if (androidTestCoverageReportTask != null) {
             def cucumberTask = tasks.create(name: "run${variant.name.capitalize()}CucumberTests", type: Exec) {
                 workingDir "$rootProject.projectDir"
-                commandLine './runCucumberTests.sh'
-            }.dependsOn(["deployBundleApks${variant.name.capitalize()}", "install${variant.name.capitalize()}AndroidTest"])
+                commandLine './runCucumberTests.sh', cucumberFlag
+            }.dependsOn("install${variant.name.capitalize()}AndroidTest")
+
+            if (dynamicFeaturesEnabled) {
+                cucumberTask.dependsOn(["deployBundleApks${variant.name.capitalize()}", "install${variant.name.capitalize()}AndroidTest"])
+            } else {
+                cucumberTask.dependsOn("install${variant.name.capitalize()}")
+            }
+
             androidTestCoverageReportTask.dependsOn(cucumberTask)
         }
     }

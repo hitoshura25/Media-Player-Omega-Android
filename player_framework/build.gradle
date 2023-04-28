@@ -19,4 +19,6 @@ dependencies {
     kapt Libs.dagger_compiler
 
     implementation Libs.androidx_media_media
+
+    testImplementation project(':common_test')
 }

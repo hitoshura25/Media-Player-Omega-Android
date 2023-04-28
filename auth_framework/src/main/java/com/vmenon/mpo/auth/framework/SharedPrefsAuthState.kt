@@ -33,14 +33,6 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
 
     @VisibleForTesting
     protected var storedCredentials: CredentialsResult? = null
-        protected set(value) {
-            if (field != value) {
-                field = value
-                scope.launch {
-                    credentialState.emit(value ?: CredentialsResult.None)
-                }
-            }
-        }
 
     init {
         scope.launch {
@@ -50,7 +42,7 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
 
     override suspend fun getCredentials(): CredentialsResult {
         if (storedCredentials == null || storedCredentials is RequiresBiometricAuth) {
-            storedCredentials = readFromSharedPrefs()
+            updateStoredCredentials(readFromSharedPrefs())
         }
         return storedCredentials ?: CredentialsResult.None
     }
@@ -61,7 +53,7 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
 
     override suspend fun storeCredentials(credentials: Credentials) {
         storeToSharedPrefs(credentials)
-        this.storedCredentials = CredentialsResult.Success(credentials)
+        updateStoredCredentials(CredentialsResult.Success(credentials))
     }
 
     override suspend fun userLoggedOut() {
@@ -70,7 +62,7 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
             sharedPreferences.edit().clear().apply()
         }
         sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, true).apply()
-        this.storedCredentials = null
+        updateStoredCredentials(null)
         this.biometricDecryptionCipher = null
         this.biometricEncryptionCipher = null
     }
@@ -83,6 +75,12 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
                 is CredentialsResult.Success -> storeToSharedPrefs(
                     credentialsResult.credentials
                 )
+                CredentialsResult.None -> {
+
+                }
+                is RequiresBiometricAuth -> {
+
+                }
             }
         }
     }
@@ -93,6 +91,15 @@ open class SharedPrefsAuthState(context: Context) : AuthState {
         }
         if (getCredentials() is CredentialsResult.Success) {
             sharedPreferences.edit().putBoolean(USER_LOGGED_OUT, false).apply()
+        }
+    }
+
+    private fun updateStoredCredentials(newCredentialsResult: CredentialsResult?) {
+        if (storedCredentials != newCredentialsResult) {
+            storedCredentials = newCredentialsResult
+            scope.launch {
+                credentialState.emit(newCredentialsResult ?: CredentialsResult.None)
+            }
         }
     }
 
