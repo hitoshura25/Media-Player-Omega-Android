@@ -8,6 +8,7 @@ This is an attempt to create an Android application used to manage and enjoy pod
 ### Who do I talk to? ###
 
 * Vinayak Menon (vviswana@gmail.com)
+* 
 
 # LICENSE #
       Copyright 2017 Vinayak Menon
